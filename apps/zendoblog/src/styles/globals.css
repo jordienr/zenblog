@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+*:focus {
+  outline: 1.5px solid theme("colors.orange.300");
+  outline-offset: 1.5px;
+}
+*::selection {
+  background-color: theme("colors.orange.100");
+  color: theme("colors.orange.500");
+}
+
+.actions {
+  @apply flex items-center justify-end gap-2 md:flex-row;
+}
+.btn {
+  @apply flex w-full items-center justify-center gap-2 rounded-md border bg-white px-4 py-2 text-center font-medium tracking-wide text-slate-700 hover:bg-slate-50 sm:w-auto;
+}
+
+.btn.btn-icon {
+  @apply inline-flex h-10 w-10 max-w-[40px] items-center border-none bg-transparent;
+}
+.btn.btn-icon:hover {
+  @apply bg-orange-100 text-orange-500 transition-all;
+}
+.btn.btn-icon:hover svg {
+  @apply text-orange-500 transition-all;
+}
+.btn.btn-icon svg {
+  @apply h-5 w-5 min-w-[20px] text-slate-400;
+}
+
+.btn.btn-primary {
+  @apply border border-transparent bg-black text-white transition-all;
+}
+.btn.btn-primary:hover {
+  border: 1px solid theme("colors.orange.600");
+  box-shadow: inset 0 1px 0px 0px theme("colors.orange.300");
+
+  background: theme("colors.orange.500")
+    linear-gradient(
+      180deg,
+      theme("colors.orange.400") 0%,
+      theme("colors.orange.600") 100%
+    );
+  text-shadow: 0 -1px 0px theme("colors.orange.600");
+}
+.btn.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.btn svg {
+  @apply h-5 w-5 text-slate-400;
+}
+.btn.btn-primary svg {
+  @apply text-slate-100;
+}
+.btn.btn-text {
+  @apply border-none text-slate-500 hover:text-slate-600;
+}
+.btn.btn-icon {
+  @apply w-auto rounded-full px-3;
+}
+.btn.btn-red {
+  @apply border border-red-600 bg-red-500 text-white shadow-inner shadow-red-400 drop-shadow-md hover:bg-red-500/90;
+}
+.btn.btn-primary-text {
+  @apply border-none bg-transparent text-orange-500 hover:bg-white;
+}
+input {
+  width: 100%;
+  border-radius: theme("borderRadius.md") !important;
+  border-color: theme("colors.slate.200") !important;
+}
+input:focus {
+  border-color: theme("colors.orange.500") !important;
+  box-shadow: 0 0 0 3px rgba(231, 163, 86, 0.5) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+input:hover:not(:focus) {
+  border-color: theme("colors.orange.300") !important;
+  transition: all 0.2s ease-in-out !important;
+}
+label {
+  color: theme("colors.slate.600") !important;
+  font-size: theme("fontSize.sm") !important;
+}
+input[type="checkbox"]:checked {
+  border-color: theme("colors.orange.500") !important;
+  background-color: theme("colors.orange.500") !important;
+}
+
+@layer utilities {
+  .highlight {
+    box-shadow: inner 0 0 -2px red;
+  }
+}
+
+.ProseMirror {
+  padding: 0.5rem;
+  width: 100%;
+  min-width: 100%;
+}
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror *::before {
+  font-family: theme("fontFamily.mono");
+  position: absolute;
+  left: -14px;
+  font-size: 14px;
+  color: theme("colors.slate.300");
+  margin-top: 8px;
+  margin-right: 0.5rem;
+}
+.ProseMirror h2::before {
+  content: "H2";
+}
+.ProseMirror h3::before {
+  content: "H3";
+}
+.ProseMirror h4::before {
+  content: "H4";
+}
+.ProseMirror h5::before {
+  content: "H5";
+}
+.ProseMirror h6::before {
+  content: "H6";
+}
+
+.section {
+  @apply rounded-xl border-[0.3px] bg-gradient-to-b from-white to-slate-50 shadow-sm;
+}
+
+.section-title {
+  @apply text-xl font-semibold text-slate-700;
+}

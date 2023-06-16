@@ -1,0 +1,18 @@
+{
+  "name": "@znd/client",
+  "version": "0.1.1-beta.1",
+  "description": "The typescript client for zendoblog",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "npm test",
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "publish": "npm publish --access public",
+    "publish:beta": "npm publish --access public --tag beta"
+  },
+  "keywords": [
+    "zendoblog"
+  ],
+  "author": "Jordi Enric",
+  "license": "MIT"
+}
