@@ -1,3 +1,4 @@
+import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
 import { createAPIClient } from "@/lib/app/api";
 import Link from "next/link";
@@ -6,7 +7,7 @@ import { useQuery } from "react-query";
 
 export default function Dashboard() {
   const api = createAPIClient();
-  const { isLoading, data, error } = useQuery("blogs", api.blogs.getAll);
+  const { data, error, isLoading } = useQuery("blogs", api.blogs.getAll);
 
   return (
     <AppLayout>
@@ -20,7 +21,12 @@ export default function Dashboard() {
               </Link>
             </div>
           </div>
-          {data?.length === 0 && !isLoading && (
+          { isLoading && (
+            <div className="py-12 flex-center">
+              <Spinner />
+            </div>
+          )}
+          {data?.length === 0 && (
             <div className="text-center">Start by creating a blog</div>
           )}
           <ul className="mx-2 grid grid-cols-1 gap-2 py-2 md:grid-cols-2">
@@ -28,11 +34,11 @@ export default function Dashboard() {
               return (
                 <li
                   className="group rounded-lg border bg-gradient-to-b from-white to-slate-50 shadow-sm transition-all hover:border-orange-400"
-                  key={blog.slug}
+                  key={blog.id}
                 >
                   <Link
                     className="block w-full min-w-[320px] gap-3 rounded-lg p-4  "
-                    href={`/blogs/${blog.slug}/posts`}
+                    href={`/blogs/${blog.id}/posts`}
                   >
                     <div className="flex items-center gap-4">
                       <div>
@@ -47,7 +53,7 @@ export default function Dashboard() {
                     </div>
                     <div className="actions mt-4">
                       <Link
-                        href={`/blogs/${blog.slug}/settings`}
+                        href={`/blogs/${blog.id}/settings`}
                         className="btn btn-icon"
                         title="Settings"
                         aria-label="Settings"
@@ -55,7 +61,7 @@ export default function Dashboard() {
                         <IoSettingsSharp size="24" />
                       </Link>
                       <Link
-                        href={`/blogs/${blog.slug}/create`}
+                        href={`/blogs/${blog.id}/create`}
                         className="btn btn-primary max-w-[144px]"
                       >
                         <IoAddCircle size="24" />

@@ -171,9 +171,22 @@ const Home = () => {
               <p className="inline-flex items-center rounded-full border border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 px-3 py-1 text-xs text-orange-500">
                 Sign up for a special launch discount
               </p>
-              <h1 className="mt-2 text-left text-3xl font-semibold ">
-                Add a blog to your website in 2 lines of code
-                <span className="text-orange-500">.</span>
+              <h1 className="max-w-sm flex-wrap mt-2 text-left text-3xl font-semibold flex gap-2">
+                {"Add a blog to your website in 2 lines of code".split(" ").map((w, i) => <motion.span
+                  initial={{
+                    opacity: 0,
+                    y: 20,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: 0.2,
+                    delay: i * 0.1,
+                  }}
+                  className="inline-block"
+                key={w}>{w}</motion.span>)}
               </h1>
               <p className="mt-2 text-lg text-slate-500">
                 The modern headless CMS for TypeScript developers

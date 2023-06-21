@@ -9,39 +9,13 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      api_keys: {
-        Row: {
-          blog_id: string
-          created_at: string
-          id: string
-          key: string
-          name: string
-          user_id: string
-        }
-        Insert: {
-          blog_id: string
-          created_at?: string
-          id?: string
-          key: string
-          name: string
-          user_id?: string
-        }
-        Update: {
-          blog_id?: string
-          created_at?: string
-          id?: string
-          key?: string
-          name?: string
-          user_id?: string
-        }
-      }
       blogs: {
         Row: {
           created_at: string
           description: string | null
           emoji: string
           id: string
-          slug: string
+          public_id: string
           title: string
           user_id: string
         }
@@ -50,7 +24,7 @@ export interface Database {
           description?: string | null
           emoji: string
           id?: string
-          slug: string
+          public_id?: string
           title: string
           user_id?: string
         }
@@ -59,10 +33,11 @@ export interface Database {
           description?: string | null
           emoji?: string
           id?: string
-          slug?: string
+          public_id?: string
           title?: string
           user_id?: string
         }
+        Relationships: []
       }
       homepage_signup: {
         Row: {
@@ -83,11 +58,11 @@ export interface Database {
           id?: number
           name?: string
         }
+        Relationships: []
       }
       posts: {
         Row: {
           blog_id: string
-          blog_slug: string
           content: string
           created_at: string
           id: string
@@ -99,7 +74,6 @@ export interface Database {
         }
         Insert: {
           blog_id: string
-          blog_slug: string
           content: string
           created_at?: string
           id?: string
@@ -111,7 +85,6 @@ export interface Database {
         }
         Update: {
           blog_id?: string
-          blog_slug?: string
           content?: string
           created_at?: string
           id?: string
@@ -121,6 +94,14 @@ export interface Database {
           updated_at?: string
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {

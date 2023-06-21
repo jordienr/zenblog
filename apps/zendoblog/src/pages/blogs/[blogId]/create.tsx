@@ -1,0 +1,210 @@
+import type { GetServerSideProps } from "next";
+import { getAuth } from "@clerk/nextjs/server";
+import { getClient } from "@/lib/supabase";
+import AppLayout from "@/layouts/AppLayout";
+import { useForm } from "react-hook-form";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { generateSlug } from "@/lib/utils/slugs";
+import { z } from "zod";
+import {
+  EditorContent,
+  JSONContent,
+  useEditor,
+} from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Heading from "@tiptap/extension-heading";
+import { useAppStore } from "@/store/app";
+import { Blog } from "@/lib/models/blogs/Blogs";
+import ImageExt from "@tiptap/extension-image";
+
+const formSchema = z.object({
+  title: z.string(),
+  slug: z.string(),
+  published: z.boolean(),
+});
+type FormData = z.infer<typeof formSchema>;
+
+export default function BlogDashboard() {
+  async function getDB() {
+    const token = await auth.getToken({ template: "supabase" });
+    if (!token) {
+      throw new Error("No token");
+    }
+    return getClient(token);
+  }
+
+  const { handleSubmit, register, setValue } = useForm<FormData>();
+
+  async function uploadImage(file: File) {
+    // wait 2s
+    // return the image url
+    const db = await getDB();
+
+    console.log(auth.userId);
+
+    const { data, error } = await db.storage
+      .from("images")
+      .upload("image.png", file);
+
+    console.log(data, error);
+
+    return data;
+  }
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      ImageExt,
+      Heading.configure({
+        levels: [2, 3, 4, 5, 6],
+      }),
+    ],
+    content: "",
+  });
+
+  const auth = useAuth();
+  const router = useRouter();
+  const [title, setTitle] = useState("");
+  const blogId = router.query.blogId as string;
+  const store = useAppStore();
+
+  const onSubmit = handleSubmit(async (data) => {
+    store.startLoading();
+    const token = await auth.getToken({ template: "supabase" });
+
+    try {
+      const formData = formSchema.parse(data);
+
+      if (!token || !auth.userId) {
+        alert("Error creating blog, please try again");
+        return;
+      }
+
+      const sb = getClient(token);
+
+      const payload = {
+        title: formData.title,
+        slug: formData.slug,
+        content: JSON.stringify(editor?.getJSON()),
+        blog_id: blogId,
+        user_id: auth.userId,
+        published: formData.published,
+      };
+
+      const res = await sb.from("posts").insert(payload);
+
+      console.log(payload);
+
+      const jsonContent = editor?.getJSON();
+      if (!jsonContent) {
+        throw new Error("No content");
+      }
+
+      console.log(editor?.getJSON());
+
+      if (res.error) {
+        console.error(res.error);
+        if (res.error.code === "23505") {
+          alert("A post with that slug already exists");
+          return;
+        } else {
+          alert("Error creating post, please try again");
+        }
+      } else {
+        await router.push(`/blogs/${blogId}/posts`);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error creating blog, please try again");
+    } finally {
+      store.stopLoading();
+    }
+  });
+
+  // useEffect(() => {
+  //   window.addEventListener("keydown", async (e) => {
+  //     if (e.key === "s" && e.metaKey) {
+  //       // e.preventDefault();
+  //       console.log("saving");
+  //     }
+  //     if (e.key === "v" && e.metaKey) {
+  //       // e.preventDefault();
+  //       console.log("pasting");
+  //       const clipboard = await navigator.clipboard.readText();
+  //       console.log(clipboard);
+  //       // if its an image, grab the image and upload it to supabase
+  //       const files = await navigator.clipboard.read();
+  //       console.log(files);
+
+  //     }
+  //   });
+  // }, []);
+
+  return (
+    <AppLayout>
+      <div className="relative mx-auto flex max-w-5xl flex-col">
+        <form
+          onSubmit={onSubmit}
+          className="flex-grow pb-24 pt-3"
+        >
+          <div className="sticky top-0 right-0 left-0 z-40 mx-auto flex max-w-5xl justify-end gap-4 p-4">
+            <div className="flex items-center">
+              <label
+                className="flex items-center gap-2 font-semibold"
+                htmlFor="published"
+              >
+                <input
+                  id="published"
+                  type="checkbox"
+                  {...register("published")}
+                  className="h-6 w-6 rounded-md shadow-sm"
+                />
+                Publish
+              </label>
+            </div>
+            <button type="submit" className="btn btn-primary max-w-[120px]">
+              Save
+              {/* <Shortcut shortcut="cmd S" /> */}
+            </button>
+          </div>
+          <div className="mx-auto flex flex-col gap-3 bg-white">
+            <label
+              htmlFor="slug"
+              className="flex items-center gap-1 px-2 py-1.5 transition-all hover:bg-white"
+            >
+              <input
+                {...register("slug")}
+                required
+                title="Slug"
+                placeholder="a-really-good-slug"
+                className="focus:ring-none w-full rounded-lg bg-transparent font-mono p-2"
+              />
+            </label>
+            <label htmlFor="title" className="px-2">
+              <input
+                type="test"
+                placeholder={"A really good title"}
+                {...register("title", {
+                  required: true,
+                  onChange: (e) => {
+                    setTitle(e.target.value);
+                    setValue("slug", generateSlug(e.target.value));
+                  },
+                })}
+                required
+                className="h-14 w-full rounded-lg border-none bg-transparent text-xl font-semibold text-slate-800 hover:bg-white md:text-3xl px-2"
+              />
+            </label>
+
+            <EditorContent
+              className="prose:min-w-none prose flex min-h-[600px] w-full max-w-none rounded-md px-2 text-lg text-slate-600"
+              editor={editor}
+            />
+          </div>
+        </form>
+      </div>
+    </AppLayout>
+  );
+}

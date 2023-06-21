@@ -1,14 +1,12 @@
 import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
 import { createAPIClient } from "@/lib/app/api";
-import { Post } from "@/lib/models/posts/Posts";
 import { useRouter } from "next/router";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useQuery } from "react-query";
-import { motion } from "framer-motion";
 import Link from "next/link";
 
-function StatePill({ published }: { published: Post["published"] }) {
+function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
   if (published) {
     return (
@@ -25,11 +23,11 @@ function StatePill({ published }: { published: Post["published"] }) {
 }
 export default function BlogPosts() {
   const router = useRouter();
-  const slug = router.query.slug as string;
+  const blogId = router.query.blogId as string;
 
   const api = createAPIClient();
-  const { isLoading, data, error } = useQuery(["posts", slug], () =>
-    api.posts.getAll(slug)
+  const { isLoading, data, error } = useQuery(["posts", blogId], () =>
+    api.posts.getAll(blogId)
   );
 
   function getFormattedPosts() {
@@ -71,7 +69,7 @@ export default function BlogPosts() {
             </h1>
             <div className="flex gap-2">
               <Link
-                href={`/blogs/${blog.slug}/settings`}
+                href={`/blogs/${blog.id}/settings`}
                 className="btn btn-icon"
                 title="Settings"
                 aria-label="Settings"
@@ -80,7 +78,7 @@ export default function BlogPosts() {
               </Link>
 
               <Link
-                href={`/blogs/${blog.slug}/create`}
+                href={`/blogs/${blog.id}/create`}
                 className="btn btn-secondary max-w-[120px]"
               >
                 New post
@@ -93,7 +91,7 @@ export default function BlogPosts() {
               <div className="p-12 text-center">
                 <span className="font-mono text-lg">Nothing here yet</span>
                 <Link
-                  href={`/blogs/${blog.slug}/create`}
+                  href={`/blogs/${blog.id}/create`}
                   className="btn btn-primary mx-auto mt-4 max-w-xs"
                 >
                   Create your first post
@@ -103,7 +101,7 @@ export default function BlogPosts() {
             {getFormattedPosts().map((post) => {
               return (
                 <Link
-                  href={`/blogs/${slug}/post/${post.slug}`}
+                  href={`/blogs/${blogId}/post/${post.slug}`}
                   className="flex items-center justify-between rounded-sm p-3 hover:bg-slate-100/60"
                   key={post.slug}
                 >

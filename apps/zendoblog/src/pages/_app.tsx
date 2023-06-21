@@ -11,9 +11,6 @@ import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from "react-query";

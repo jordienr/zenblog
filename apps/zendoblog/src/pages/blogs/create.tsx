@@ -45,7 +45,6 @@ export default function CreateBlog() {
       title: data.title,
       description: data.description,
       emoji: data.emoji,
-      slug: data.slug,
     });
 
     if (res.error) {
@@ -73,11 +72,6 @@ export default function CreateBlog() {
           <label htmlFor="title">
             <span className="block">Title</span>
             <input type="text" id="title" required {...register("title")} />
-          </label>
-
-          <label htmlFor="slug">
-            <span className="block">Slug</span>
-            <input type="text" id="slug" required {...register("slug")} />
           </label>
 
           <label htmlFor="description">

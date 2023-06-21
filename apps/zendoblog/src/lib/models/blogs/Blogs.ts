@@ -6,7 +6,6 @@ export type BD_BLOG = Database["public"]["Tables"]["blogs"]["Row"];
 const BASE_BLOG = {
   id: z.string(),
   title: z.string(),
-  slug: z.string(),
   emoji: z.string(),
   description: z.string(),
   created_at: z.string(),
@@ -22,7 +21,6 @@ export type GetBlogRes = z.infer<typeof Blog>;
 
 export const PatchBlog = z.object({
   title: BASE_BLOG.title.optional(),
-  slug: BASE_BLOG.slug.optional(),
   emoji: BASE_BLOG.emoji.optional(),
   description: BASE_BLOG.description.optional(),
 });

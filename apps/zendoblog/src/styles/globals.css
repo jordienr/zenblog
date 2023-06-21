@@ -143,3 +143,17 @@ input[type="checkbox"]:checked {
 .section-title {
   @apply text-xl font-semibold text-slate-700;
 }
+
+.flex-center {
+  @apply flex items-center justify-center;
+}
+.flex-x-center {
+  @apply flex items-center;
+}
+.flex-y-center {
+  @apply flex justify-center;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}

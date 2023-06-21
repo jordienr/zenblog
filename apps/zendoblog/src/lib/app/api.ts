@@ -1,9 +1,10 @@
 import { Blog, DeleteBlogRes, PatchBlog } from "@/lib/models/blogs/Blogs";
 import { z } from "zod";
-import { getPostsRes } from "../models/posts/Posts";
+import { getPostBySlugRes, getPostsRes } from "../models/posts/Posts";
 import { deleteAPIKeysRes, getAPIKeysRes } from "../models/apiKeys/APIKeys";
 import { GetBlogRes } from "../models/blogs/Blogs";
 import { APIKey } from "../models/apiKeys/APIKeys";
+import { JSONContent } from "@tiptap/react";
 
 export function createAPIClient() {
   async function _fetch<T extends z.ZodTypeAny>(
@@ -69,11 +70,9 @@ export function createAPIClient() {
     return res;
   }
 
-  async function getPostsForBlog(blogSlug: string) {
-    console.log("blogSlug", blogSlug);
-
+  async function getPostsForBlog(blogId: string) {
     const res = await _fetch(
-      `/api/blogs/${blogSlug}/posts`,
+      `/api/blogs/${blogId}/posts`,
       { method: "GET" },
       getPostsRes
     );
@@ -81,31 +80,40 @@ export function createAPIClient() {
     return res;
   }
 
-  async function getAPIKeysForBlog(blogSlug: string) {
+  async function getPostBySlug(blogId: string, postSlug: string) {
     const res = await _fetch(
-      `/api/blogs/${blogSlug}/api-keys`,
+      `/api/blogs/${blogId}/posts/${postSlug}`,
       { method: "GET" },
-      getAPIKeysRes
+      getPostBySlugRes
     );
 
     return res;
   }
 
-  async function postApiKey(blogSlug: string, apiKeyName: string) {
+  async function deletePostBySlug(blogId: string, postSlug: string) {
     const res = await _fetch(
-      `/api/blogs/${blogSlug}/api-keys`,
-      { method: "POST", body: JSON.stringify({ name: apiKeyName }) },
-      APIKey
-    );
-
-    return res;
-  }
-
-  async function deleteApiKey(key: string) {
-    const res = await _fetch(
-      `/api/api-keys/${key}`,
+      `/api/blogs/${blogId}/posts/${postSlug}`,
       { method: "DELETE" },
-      deleteAPIKeysRes
+      z.object({ success: z.boolean() })
+    );
+
+    return res;
+  }
+
+  async function updatePostBySlug(
+    blogId: string,
+    postSlug: string,
+    body: {
+      title: string;
+      slug: string;
+      published: boolean;
+      content: JSONContent;
+    }
+  ) {
+    const res = await _fetch(
+      `/api/blogs/${blogId}/posts/${postSlug}`,
+      { method: "PATCH", body: JSON.stringify(body) },
+      z.object({ success: z.boolean() })
     );
 
     return res;
@@ -120,11 +128,9 @@ export function createAPIClient() {
     },
     posts: {
       getAll: getPostsForBlog,
-    },
-    apiKeys: {
-      getAll: getAPIKeysForBlog,
-      create: postApiKey,
-      delete: deleteApiKey,
+      get: getPostBySlug,
+      delete: deletePostBySlug,
+      update: updatePostBySlug,
     },
   };
 }

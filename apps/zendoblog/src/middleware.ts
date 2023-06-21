@@ -1,20 +1,20 @@
-import { withClerkMiddleware, getAuth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import { isPublicPath } from "@/lib/utils/auth";
+import { authMiddleware } from "@clerk/nextjs";
 
-export default withClerkMiddleware((req) => {
-  if (isPublicPath(req.nextUrl.pathname)) {
-    return NextResponse.next();
-  }
-  // if the user is not signed in redirect them to the sign in page.
-  const { userId } = getAuth(req);
-
-  if (!userId) {
-    const signInUrl = new URL("/sign-in", req.url);
-    signInUrl.searchParams.set("redirect_url", req.url);
-    return NextResponse.redirect(signInUrl);
-  }
-  return NextResponse.next();
+// regex for /api/public/*
+const regex = /^\/api\/public\/.*/;
+export default authMiddleware({
+  publicRoutes: [regex],
+  beforeAuth(req, res) {
+    const isAPI = req.url.includes("/api");
+    if (isAPI) {
+      console.log('API 🪵', req.method, req.url)
+      return
+    }
+    console.log('🪵', req.method, req.url)
+    return
+  },
 });
 
-export const config = { matcher: "/((?!.*\\.).*)" };
+export const config = {
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+};
