@@ -1,18 +1,16 @@
-type Post = {
+export type Post = {
     slug: string;
     title: string;
+    content: any;
 };
-type PostData = {
-    title: string;
-    slug: string;
+export type PostWithContent = Post & {
     content: string;
 };
-type CreateClientOpts = {
-    privateKey: string;
+export type CreateClientOpts = {
+    blogId: string;
 };
-export declare function createClient({ privateKey }: CreateClientOpts): {
+export declare function createClient({ blogId }: CreateClientOpts): {
     getPosts(): Promise<Post[]>;
-    getPost(id: string): Promise<PostData>;
+    getPost(slug: string): Promise<PostWithContent>;
 };
-export {};
 //# sourceMappingURL=index.d.ts.map

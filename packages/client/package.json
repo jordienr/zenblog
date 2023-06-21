@@ -3,9 +3,11 @@
   "version": "0.1.1-beta.1",
   "description": "The typescript client for zendoblog",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "npm test",
     "build": "tsc",
+    "dev": "tsc -w",
     "prepublishOnly": "npm run build",
     "publish": "npm publish --access public",
     "publish:beta": "npm publish --access public --tag beta"

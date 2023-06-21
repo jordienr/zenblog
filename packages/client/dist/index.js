@@ -1,44 +1,43 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createClient = void 0;
-const BASE_URL = "https://localhost:300/api";
+const BASE_URL = "http://localhost:3000/api";
 function throwError(msg) {
     throw new Error("[🍊] " + msg);
 }
-function wait(ms) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    });
-}
-function createClient({ privateKey }) {
-    if (!privateKey) {
-        throwError("privateKey is required");
+export function createClient({ blogId }) {
+    if (!blogId) {
+        throwError("blogId is required");
     }
     return {
-        getPosts() {
-            return __awaiter(this, void 0, void 0, function* () {
-                return [
-                    { title: "How to start a cult", slug: "how-to-start-a-cult" },
-                    { title: "Cultpreneurship", slug: "cultpreneurship" },
-                    { title: "Groupthinking essentials", slug: "groupthinking-essentials" },
-                ];
-            });
+        async getPosts() {
+            try {
+                const res = await fetch(`http://localhost:3000/api/public/${blogId}/posts`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                console.log('GETPOSTS 1', res);
+                if (!res.ok) {
+                    console.log('GETPOSTS ERROR', res.status, res.statusText, res);
+                    return [];
+                }
+                const data = await res.json();
+                console.log('GETPOSTS 3', data);
+                return data;
+            }
+            catch (error) {
+                console.error(error);
+                return [];
+            }
         },
-        getPost(id) {
-            return __awaiter(this, void 0, void 0, function* () {
-                return { title: "hello world", slug: "hello-world", content: "..." };
+        async getPost(slug) {
+            const res = await fetch(`http://localhost:3000/api/public/${blogId}/post/${slug}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
+            return await res.json();
         },
     };
 }
-exports.createClient = createClient;
 //# sourceMappingURL=index.js.map

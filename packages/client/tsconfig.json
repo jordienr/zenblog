@@ -4,11 +4,11 @@
   "compilerOptions": {
     "declaration": true,
     "declarationMap": true,
-    "module": "CommonJS",
+    "module": "ES2020",
     "outDir": "dist",
     "rootDir": "./",
     "sourceMap": true,
-    "target": "ES2015",
+    "target": "ES2020",
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "Node",
