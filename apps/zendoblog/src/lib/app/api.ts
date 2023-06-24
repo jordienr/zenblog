@@ -120,6 +120,14 @@ export function createAPIClient() {
   }
 
   return {
+    user: {
+      setup: () =>
+        _fetch(
+          "/api/user/setup",
+          { method: "GET" },
+          z.object({ success: z.boolean() })
+        ),
+    },
     blogs: {
       get: getBlog,
       getAll: getBlogs,
