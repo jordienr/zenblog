@@ -8,6 +8,7 @@ export default async function handler(
 ) {
   const db = await getAuthedDB(req, res);
   if (!db) return res.status(401).json({ error: "Unauthorized" });
+  const CLERK_BASE_URL = "https://api.clerk.dev/v1/invitations";
 
   const { userId } = getAuth(req);
   const blogId = req.query.blogId as string;
@@ -28,12 +29,24 @@ export default async function handler(
 
     return res.status(200).json(invitations);
   } else if (method === "POST") {
-    console.log("POST INVITATION", req.body);
     const { name, email } = JSON.parse(req.body);
 
     if (!name || !email) {
       return res.status(400).json({ error: "Missing name or email" });
     }
+
+    const clerk = await fetch(CLERK_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+      },
+      body: JSON.stringify({
+        email_address: email,
+      }),
+    });
+
+    console.log(clerk);
 
     const { data: invitation, error } = await db
       .from("invitations")
