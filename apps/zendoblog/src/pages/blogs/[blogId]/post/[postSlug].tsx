@@ -1,12 +1,10 @@
 import AppLayout from "@/layouts/AppLayout";
-import { getClient } from "@/lib/supabase";
 import { useRouter } from "next/router";
 import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useState } from "react";
 import { PencilIcon, SaveIcon, Trash2Icon } from "lucide-react";
 import Heading from "@tiptap/extension-heading";
-import { useAuth } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMutation, useQuery } from "react-query";
@@ -42,19 +40,17 @@ export default function Post() {
 
   const editor = useEditor({
     extensions: [StarterKit, Heading.configure({ levels: [2, 3, 4, 5, 6] })],
-    content: JSON.parse(post?.content || "{}"),
+    content: post?.content,
   });
 
   function toggleEditable() {
     if (!post) return;
-    console.log("toggleEditable", post.title, post.published);
-    console.log("content", post.content);
     const newEditable = !editable;
     setEditable(newEditable);
     setValue("title", post.title);
     setValue("published", post.published);
     setValue("slug", post.slug);
-    editor?.setOptions({ content: JSON.parse(post.content || "{}") });
+    editor?.commands.setContent(post.content);
   }
 
   const deletePost = useMutation({
@@ -146,7 +142,7 @@ export default function Post() {
                   {...register("title")}
                   className="mt-1 w-full border-none bg-transparent text-3xl font-semibold outline-none hover:bg-white focus:bg-white"
                 />
-                <div className="mt-4">
+                <div className="prose mt-4">
                   <EditorContent editor={editor} />
                 </div>
               </div>
@@ -162,7 +158,7 @@ export default function Post() {
                   {post?.slug}
                 </span>
                 <h1 className="text-3xl font-semibold">{post?.title}</h1>
-                <ContentRenderer content={JSON.parse(post.content)} />
+                <ContentRenderer content={post.content} />
               </div>
             )}
           </div>

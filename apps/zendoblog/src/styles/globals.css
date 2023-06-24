@@ -111,31 +111,6 @@ input[type="checkbox"]:checked {
   outline: none;
 }
 
-.ProseMirror *::before {
-  font-family: theme("fontFamily.mono");
-  position: absolute;
-  left: -14px;
-  font-size: 14px;
-  color: theme("colors.slate.300");
-  margin-top: 8px;
-  margin-right: 0.5rem;
-}
-.ProseMirror h2::before {
-  content: "H2";
-}
-.ProseMirror h3::before {
-  content: "H3";
-}
-.ProseMirror h4::before {
-  content: "H4";
-}
-.ProseMirror h5::before {
-  content: "H5";
-}
-.ProseMirror h6::before {
-  content: "H6";
-}
-
 .section {
   @apply rounded-xl border-[0.3px] bg-gradient-to-b from-white to-slate-50 shadow-sm;
 }
@@ -154,6 +129,8 @@ input[type="checkbox"]:checked {
   @apply flex justify-center;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   text-wrap: balance;
 }

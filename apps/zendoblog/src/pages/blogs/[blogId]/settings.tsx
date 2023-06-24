@@ -1,16 +1,13 @@
-import { HiddenField } from "@/components/HiddenField";
-import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
 import { createAPIClient } from "@/lib/app/api";
-import { APIKey } from "@/lib/models/apiKeys/APIKeys";
 import { PatchBlog } from "@/lib/models/blogs/Blogs";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { CgTrash } from "react-icons/cg";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
 import { EmojiPicker } from "@/components/EmojiPicker";
+import { Invitations } from "@/components/Blogs/Invitations";
+import { Members } from "@/components/Blogs/Members";
 
 export default function BlogSettings() {
   type FormData = {
@@ -49,7 +46,6 @@ export default function BlogSettings() {
 
       reset(formData);
       refetchBlog();
-
     } catch (error) {
       console.error(error);
       alert("Error updating blog, please try again");
@@ -98,9 +94,9 @@ export default function BlogSettings() {
 
   return (
     <AppLayout>
-      <div className="mx-auto mt-8 max-w-2xl p-4 flex flex-col gap-10 px-3">
+      <div className="mx-auto mt-8 flex max-w-2xl flex-col gap-10 p-4 px-3">
         <section className="section p-3">
-          <h1 className="text-xl font-medium">
+          <h1 className="text-xl font-bold">
             {blog.emoji} {blog.title}
           </h1>
           <p className="text-slate-600">{blog.description}</p>
@@ -151,30 +147,45 @@ export default function BlogSettings() {
         </section>
 
         <section className="section p-3">
-        <h2 className="text-xl font-semibold">API Guide</h2>
-                <h3 className="font-semibold mt-8 mb-4">Install the zendo API client</h3>
-                <pre className="bg-slate-800 text-slate-200 p-4 rounded-lg">
-                    <code>
-                    npm install @znd/client
-                    </code>
-                </pre>
+          <h2 className="text-xl font-semibold">Invitations</h2>
+          <p className="text-slate-500">
+            Invite others to this blog so they can write and manage content.
+          </p>
+          <Invitations blog={blog} />
+        </section>
 
-                <h3 className="font-semibold mt-8 mb-4">Create a client</h3>
+        <section className="section p-3">
+          <h2 className="text-xl font-semibold">Members</h2>
+          <Members blog={blog} />
+        </section>
 
-                <pre className="bg-slate-800 text-slate-200 p-4 rounded-lg">
+        <section className="section p-3">
+          <h2 className="text-xl font-semibold">API Guide</h2>
+          <h3 className="mb-4 mt-8 font-semibold">
+            Install the zendo API client
+          </h3>
+          <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
+            <code>npm install @znd/client</code>
+          </pre>
 
-                    <code>
-                    import &#123; createClient &#125; from "@znd/client";
-                    <br />
-                    <br />
-                    const cms = createClient(&#123;
-                    <br />
-                    blogId: <span className="text-green-400 bg-green-500/20 p-1 rounded-lg">"{blog.id}"</span>,
-                    <br />
-                    &#125;);
+          <h3 className="mb-4 mt-8 font-semibold">Create a client</h3>
 
-                  </code>
-                </pre>                    
+          <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
+            <code>
+              import &#123; createClient &#125; from "@znd/client";
+              <br />
+              <br />
+              const cms = createClient(&#123;
+              <br />
+              blogId:{" "}
+              <span className="rounded-lg bg-green-500/20 p-1 text-green-400">
+                "{blog.id}"
+              </span>
+              ,
+              <br />
+              &#125;);
+            </code>
+          </pre>
         </section>
 
         <section className="section border border-red-100 bg-gradient-to-b from-white to-red-100 p-3 text-red-600">

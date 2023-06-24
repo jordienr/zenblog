@@ -8,7 +8,7 @@
 - [] Featured Images
 - [] Excerpts
 - [] Authors
- 
+
 ## Blogs
 
 - [x] Create blog
@@ -40,8 +40,16 @@
 - [x] Add method to fetch all posts
 - [x] Add method to fetch a single post
 
+## Invitations
+
+- [] Create invitation
+- [] Accept invitation
+- [] Reject invitation
+- [] Delete invitation
+
 ## Members
 
+- [] Send invitation email to join blog
 - [] Add members to a blog
 - [] Remove members from a blog
 - [] As a member, view all posts in a blog

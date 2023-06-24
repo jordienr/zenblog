@@ -8,11 +8,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { generateSlug } from "@/lib/utils/slugs";
 import { z } from "zod";
-import {
-  EditorContent,
-  JSONContent,
-  useEditor,
-} from "@tiptap/react";
+import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Heading from "@tiptap/extension-heading";
 import { useAppStore } from "@/store/app";
@@ -87,7 +83,7 @@ export default function BlogDashboard() {
       const payload = {
         title: formData.title,
         slug: formData.slug,
-        content: JSON.stringify(editor?.getJSON()),
+        content: editor?.getJSON(),
         blog_id: blogId,
         user_id: auth.userId,
         published: formData.published,
@@ -145,11 +141,8 @@ export default function BlogDashboard() {
   return (
     <AppLayout>
       <div className="relative mx-auto flex max-w-5xl flex-col">
-        <form
-          onSubmit={onSubmit}
-          className="flex-grow pb-24 pt-3"
-        >
-          <div className="sticky top-0 right-0 left-0 z-40 mx-auto flex max-w-5xl justify-end gap-4 p-4">
+        <form onSubmit={onSubmit} className="flex-grow pb-24 pt-3">
+          <div className="sticky left-0 right-0 top-0 z-40 mx-auto flex max-w-5xl justify-end gap-4 p-4">
             <div className="flex items-center">
               <label
                 className="flex items-center gap-2 font-semibold"
@@ -179,7 +172,7 @@ export default function BlogDashboard() {
                 required
                 title="Slug"
                 placeholder="a-really-good-slug"
-                className="focus:ring-none w-full rounded-lg bg-transparent font-mono p-2"
+                className="focus:ring-none w-full rounded-lg bg-transparent p-2 font-mono"
               />
             </label>
             <label htmlFor="title" className="px-2">
@@ -194,7 +187,7 @@ export default function BlogDashboard() {
                   },
                 })}
                 required
-                className="h-14 w-full rounded-lg border-none bg-transparent text-xl font-semibold text-slate-800 hover:bg-white md:text-3xl px-2"
+                className="h-14 w-full rounded-lg border-none bg-transparent px-2 text-xl font-semibold text-slate-800 hover:bg-white md:text-3xl"
               />
             </label>
 

@@ -10,12 +10,9 @@ import {
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import PlausibleProvider from "next-plausible";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 
 // Fonts
 const inter = Inter({

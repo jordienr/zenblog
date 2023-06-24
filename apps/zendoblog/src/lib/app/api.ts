@@ -126,6 +126,39 @@ export function createAPIClient() {
       update: patchBlog,
       delete: deleteBlog,
     },
+    invitations: {
+      create: (blogId: string, name: string, email: string) =>
+        _fetch(
+          `/api/blogs/${blogId}/invitations`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              name,
+              email,
+            }),
+          },
+          z.unknown()
+        ),
+      getAll: (blogId: string) =>
+        _fetch(
+          `/api/blogs/${blogId}/invitations`,
+          { method: "GET" },
+          z.array(
+            z.object({
+              id: z.string(),
+              name: z.string(),
+              email: z.string(),
+              blog_id: z.string(),
+            })
+          )
+        ),
+      delete: (blogId: string, invitationId: string) =>
+        _fetch(
+          `/api/blogs/${blogId}/invitations/${invitationId}`,
+          { method: "DELETE" },
+          z.object({ success: z.boolean() })
+        ),
+    },
     posts: {
       getAll: getPostsForBlog,
       get: getPostBySlug,

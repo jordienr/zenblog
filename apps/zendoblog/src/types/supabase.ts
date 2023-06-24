@@ -63,7 +63,7 @@ export interface Database {
       posts: {
         Row: {
           blog_id: string
-          content: string
+          content: Json
           created_at: string
           id: string
           published: boolean
@@ -74,7 +74,7 @@ export interface Database {
         }
         Insert: {
           blog_id: string
-          content: string
+          content?: Json
           created_at?: string
           id?: string
           published?: boolean
@@ -85,7 +85,7 @@ export interface Database {
         }
         Update: {
           blog_id?: string
-          content?: string
+          content?: Json
           created_at?: string
           id?: string
           published?: boolean
