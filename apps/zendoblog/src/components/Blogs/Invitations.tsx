@@ -55,7 +55,7 @@ export function Invitations({ blog }: { blog: Blog }) {
     <div>
       <ul className="mt-4 flex flex-col gap-2">
         {invitations.data?.length === 0 && (
-          <div className="py-8 text-center text-gray-500">
+          <div className="rounded-xl bg-slate-100 py-8 text-center font-mono text-gray-500">
             No invitations sent yet
           </div>
         )}
@@ -83,7 +83,7 @@ export function Invitations({ blog }: { blog: Blog }) {
         ))}
       </ul>
       <form className="flex flex-col gap-2" onSubmit={onSubmit}>
-        <h3 className="mt-4 font-semibold">Invite people to {blog.title}</h3>
+        <h3 className="mt-4 font-medium">Invite people to {blog.title}</h3>
         <div className="flex gap-4">
           <input
             type="text"

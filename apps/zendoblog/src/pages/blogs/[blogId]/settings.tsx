@@ -96,10 +96,10 @@ export default function BlogSettings() {
     <AppLayout>
       <div className="mx-auto mt-8 flex max-w-2xl flex-col gap-10 p-4 px-3">
         <section className="section p-3">
-          <h1 className="text-xl font-bold">
+          <h1 className="text-xl font-medium">
             {blog.emoji} {blog.title}
           </h1>
-          <p className="text-slate-600">{blog.description}</p>
+          <p className="text-sm text-slate-600">{blog.description}</p>
           <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-2">
             <div className="flex items-end gap-4">
               <label htmlFor="emoji" title="Emoji">
@@ -147,28 +147,26 @@ export default function BlogSettings() {
         </section>
 
         <section className="section p-3">
-          <h2 className="text-xl font-semibold">Invitations</h2>
-          <p className="text-slate-500">
+          <h2 className="text-lg font-medium">Invitations</h2>
+          <p className="text-sm text-slate-500">
             Invite others to this blog so they can write and manage content.
           </p>
           <Invitations blog={blog} />
         </section>
 
         <section className="section p-3">
-          <h2 className="text-xl font-semibold">Members</h2>
+          <h2 className="text-lg font-medium">Members</h2>
           <Members blog={blog} />
         </section>
 
         <section className="section p-3">
-          <h2 className="text-xl font-semibold">API Guide</h2>
-          <h3 className="mb-4 mt-8 font-semibold">
-            Install the zendo API client
-          </h3>
+          <h2 className="text-lg font-medium">API Guide</h2>
+          <h3 className="mb-4 mt-8">1. Install the zendo API client</h3>
           <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
             <code>npm install @znd/client</code>
           </pre>
 
-          <h3 className="mb-4 mt-8 font-semibold">Create a client</h3>
+          <h3 className="mb-4 mt-8">2. Create a client</h3>
 
           <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
             <code>
@@ -189,8 +187,8 @@ export default function BlogSettings() {
         </section>
 
         <section className="section border border-red-100 bg-gradient-to-b from-white to-red-100 p-3 text-red-600">
-          <h2 className="mb-4 text-xl font-bold">🚨 Danger zone</h2>
-          <p className="text-lg">
+          <h2 className="mb-4 text-lg font-medium">🚨 Danger zone</h2>
+          <p className="text-sm">
             This action cannot be undone. This will permanently delete the blog.
             This will also delete all posts in the blog.
           </p>

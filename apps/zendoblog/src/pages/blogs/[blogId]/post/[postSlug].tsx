@@ -99,13 +99,16 @@ export default function Post() {
         <form onSubmit={onSubmit} className="mx-auto max-w-5xl p-3">
           {editable && (
             <div className="flex items-center justify-between py-2">
-              <div>
+              <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={handleDeleteClick}
-                  className="btn"
+                  className="btn btn-red"
                 >
-                  <Trash2Icon color="gray" className="h-6 w-6" /> Delete
+                  <Trash2Icon color="white" className="h-6 w-6" /> Delete
+                </button>
+                <button className="btn" onClick={() => setEditable(false)}>
+                  Cancel
                 </button>
               </div>
               <div className="actions">
@@ -131,16 +134,15 @@ export default function Post() {
           )}
           <div className="">
             {editable ? (
-              <div className="w-full">
+              <div className="w-full rounded-sm bg-white">
                 <input
                   type="text"
                   {...register("slug")}
                   className="w-full border-none bg-transparent font-mono text-sm outline-none hover:bg-white focus:bg-white"
                 />
-                <input
-                  type="text"
+                <textarea
                   {...register("title")}
-                  className="mt-1 w-full border-none bg-transparent text-3xl font-semibold outline-none hover:bg-white focus:bg-white"
+                  className="w-full max-w-2xl whitespace-break-spaces border-none bg-transparent text-3xl font-semibold outline-none hover:bg-white focus:bg-white"
                 />
                 <div className="prose mt-4">
                   <EditorContent editor={editor} />
@@ -154,11 +156,13 @@ export default function Post() {
                     Edit
                   </button>
                 </div>
-                <span className="font-mono text-sm text-slate-500">
-                  {post?.slug}
-                </span>
-                <h1 className="text-3xl font-semibold">{post?.title}</h1>
-                <ContentRenderer content={post.content} />
+                <div className="rounded-md bg-white p-4 shadow-sm">
+                  <span className="font-mono text-sm text-slate-500">
+                    {post?.slug}
+                  </span>
+                  <h1 className="text-3xl font-semibold">{post?.title}</h1>
+                  <ContentRenderer content={post.content} />
+                </div>
               </div>
             )}
           </div>

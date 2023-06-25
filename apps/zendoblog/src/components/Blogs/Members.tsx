@@ -17,8 +17,8 @@ export function Members({ blog }: { blog: Blog }) {
 
   return (
     <div>
-      <div className="flex justify-between py-4">
-        <div className="text-lg font-bold">You</div>
+      <div className="flex gap-2 py-4">
+        <div className="">You</div>
         <div className="text-gray-500">
           {currentUser.user?.emailAddresses[0]?.toString() || "No email found"}
         </div>

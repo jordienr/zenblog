@@ -134,3 +134,8 @@ h2,
 h3 {
   text-wrap: balance;
 }
+
+textarea:active {
+  border: none;
+  outline: none;
+}
