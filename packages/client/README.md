@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-    npm install @zendoblog/client
+    npm install @znd/client
 ```
 
 ## Usage example
@@ -12,9 +12,9 @@
 import { createClient } from "@zendoblog/client";
 
 const cms = createClient({
-  privateKey: "MY_PRIVATE_KEY", // Go to your blog settings to get your private key
+  blogId: "MY_BLOG_ID", // Go to your blog settings to get your blog id
 });
 
-const posts = await cms.getAll();
-const post = await cms.getBySlug("blog-slug");
+const posts = await cms.posts.getAll();
+const post = await cms.posts.getBySlug("post-slug");
 ```
