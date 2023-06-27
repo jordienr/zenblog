@@ -170,14 +170,14 @@ export default function BlogSettings() {
 
           <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
             <code>
-              import &#123; createClient &#125; from "@znd/client";
+              {`import &#123; createClient &#125; from "@znd/client";`}
               <br />
               <br />
               const cms = createClient(&#123;
               <br />
               blogId:{" "}
               <span className="rounded-lg bg-green-500/20 p-1 text-green-400">
-                "{blog.id}"
+                {`"${blog.id}"`}
               </span>
               ,
               <br />
