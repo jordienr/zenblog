@@ -14,11 +14,6 @@ const BASE_URL = "https://localhost:300/api";
 function throwError(msg) {
     throw new Error("[🍊] " + msg);
 }
-function wait(ms) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    });
-}
 function createClient({ privateKey }) {
     if (!privateKey) {
         throwError("privateKey is required");
