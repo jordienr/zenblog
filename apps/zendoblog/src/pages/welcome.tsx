@@ -22,11 +22,11 @@ export default function Welcome() {
         <h1 className="text-3xl">Welcome</h1>
         {isLoading && (
           <p className="max-w-xs text-slate-700">
-            We're setting up your workspace.
+            We&apos;re setting up your workspace.
             <br /> Please give us a second...
           </p>
         )}
-        {!isLoading && <p>Everything's ready, let's go.</p>}
+        {!isLoading && <p>Everything&apos;s ready, let&apos;s go.</p>}
         {!isLoading && (
           <button
             onClick={() => router.push("/blogs")}
