@@ -36,10 +36,9 @@ export default function Dashboard() {
       <aside className="flex h-screen w-64 flex-col border-r p-4">
         <BlogSelector />
 
-        {posts.data?.map((post) => (
+        {posts.data?.posts?.map((post) => (
           <div key={post.id} className="flex flex-col">
             <h2>{post.title}</h2>
-            <p>{post.content}</p>
           </div>
         ))}
       </aside>
