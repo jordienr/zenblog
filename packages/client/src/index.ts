@@ -57,25 +57,27 @@ export function createClient({ blogId }: CreateClientOpts) {
   }
 
   return {
-    async getPosts(): Promise<Post[]> {
-      const posts = await _fetch(`/posts`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    posts: {
+      getAll: async function (): Promise<Post[]> {
+        const posts = await _fetch(`/posts`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      return posts;
-    },
-    async getPost(slug: string): Promise<PostWithContent> {
-      const post = await _fetch(`/post/${slug}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        return posts as Post[];
+      },
+      getBySlug: async function (slug: string): Promise<PostWithContent> {
+        const post = await _fetch(`/post/${slug}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      return post;
+        return post as PostWithContent;
+      },
     },
   };
 }

@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createClient = void 0;
 const env = process.env.NODE_ENV || "development";
 const config = {
     development: {
@@ -11,18 +14,18 @@ function logError(msg) {
     console.error("[🍊] ", msg);
 }
 function getConfig() {
-    return config[ env ];
+    return config[env];
 }
 function throwError(msg) {
     logError(msg);
     throw new Error("[🍊] " + msg);
 }
-export function createClient({ blogId }) {
+function createClient({ blogId }) {
     const config = getConfig();
     async function _fetch(path, opts) {
         const res = await fetch(`${config.api}/${blogId}/${path}`, opts);
         if (!res.ok) {
-            throwError("Error fetching");
+            throwError("Error fetching data from API");
         }
         const data = await res.json();
         return data;
@@ -51,4 +54,5 @@ export function createClient({ blogId }) {
         },
     };
 }
+exports.createClient = createClient;
 //# sourceMappingURL=index.js.map
