@@ -32,7 +32,7 @@ export async function getServerSideProps() {
     const cms = createClient({
       blogId: "fc966b9f-419c-4c40-a941-c1122cac8875",
     });
-    const data = await cms.getPosts();
+    const data = await cms.posts.getAll();
     console.log(data);
 
     return {
