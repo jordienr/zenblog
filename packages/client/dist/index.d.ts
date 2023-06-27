@@ -10,7 +10,9 @@ export type CreateClientOpts = {
     blogId: string;
 };
 export declare function createClient({ blogId }: CreateClientOpts): {
-    getPosts(): Promise<Post[]>;
-    getPost(slug: string): Promise<PostWithContent>;
+    posts: {
+        getAll: () => Promise<Post[]>;
+        getBySlug: (slug: string) => Promise<PostWithContent>;
+    };
 };
 //# sourceMappingURL=index.d.ts.map

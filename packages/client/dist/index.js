@@ -34,23 +34,25 @@ function createClient({ blogId }) {
         throwError("blogId is required");
     }
     return {
-        async getPosts() {
-            const posts = await _fetch(`/posts`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            return posts;
-        },
-        async getPost(slug) {
-            const post = await _fetch(`/post/${slug}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            return post;
+        posts: {
+            getAll: async function () {
+                const posts = await _fetch(`/posts`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                return posts;
+            },
+            getBySlug: async function (slug) {
+                const post = await _fetch(`/post/${slug}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                return post;
+            },
         },
     };
 }
