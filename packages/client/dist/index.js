@@ -11,7 +11,7 @@ function logError(msg) {
     console.error("[🍊] ", msg);
 }
 function getConfig() {
-    return config[env];
+    return config[ env ];
 }
 function throwError(msg) {
     logError(msg);

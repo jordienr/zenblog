@@ -18,5 +18,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@types/inquirer": "^9.0.3"
+  }
 }

@@ -46,7 +46,7 @@ export function createClient({ blogId }: CreateClientOpts) {
   async function _fetch(path: string, opts: RequestInit) {
     const res = await fetch(`${config.api}/${blogId}/${path}`, opts);
     if (!res.ok) {
-      throwError("Error fetching");
+      throwError("Error fetching data from API");
     }
     const data = await res.json();
     return data;
