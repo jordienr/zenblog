@@ -1,24 +1,11 @@
-const env = process.env.NODE_ENV || "development";
-const config: Record<
-  string,
-  {
-    api: string;
-  }
-> = {
-  development: {
-    api: "http://localhost:3000/api/public",
-  },
-  production: {
-    api: "https://zendo.blog/api/public",
-  },
-};
-
 function logError(msg: string) {
   console.error("[🍊] ", msg);
 }
 
 function getConfig() {
-  return config[env];
+  return {
+    api: "https://zendo.blog/api",
+  };
 }
 
 function throwError(msg: string) {
