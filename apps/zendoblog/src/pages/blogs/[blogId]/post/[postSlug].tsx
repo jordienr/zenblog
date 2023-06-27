@@ -157,10 +157,10 @@ export default function Post() {
                   </button>
                 </div>
                 <div className="rounded-md bg-white p-4 shadow-sm">
-                  <span className="font-mono text-sm text-slate-500">
+                  <span className="p-2 font-mono text-sm text-slate-500">
                     {post?.slug}
                   </span>
-                  <h1 className="text-3xl font-semibold">{post?.title}</h1>
+                  <h1 className="px-2 text-3xl font-semibold">{post?.title}</h1>
                   <ContentRenderer content={post.content} />
                 </div>
               </div>

@@ -1,3 +1,4 @@
+import { BlogSelector } from "@/components/Blogs/BlogSelector";
 import ZendoLogo from "@/components/ZendoLogo";
 import { useAppStore } from "@/store/app";
 import { UserButton, useAuth } from "@clerk/nextjs";
@@ -12,7 +13,7 @@ export default function AppLayout({ children, loading }: Props) {
 
   return (
     <div
-      className={`min-h-screen border-b bg-slate-100 bg-grid-slate-200/50 ${
+      className={`bg-grid-slate-200/50 min-h-screen border-b bg-slate-100 ${
         loading ? "overflow-hidden" : ""
       }`}
     >
@@ -28,14 +29,7 @@ export default function AppLayout({ children, loading }: Props) {
             <Link href="/" className="rounded-md px-1 text-lg font-medium">
               <ZendoLogo />
             </Link>
-            {isSignedIn && (
-              <Link
-                href="/blogs"
-                className="rounded-md px-2 py-1 text-slate-600 transition-all hover:bg-orange-200/30 hover:text-orange-500"
-              >
-                Blogs
-              </Link>
-            )}
+            {isSignedIn && <BlogSelector />}
           </div>
 
           <UserButton />
