@@ -1,8 +1,3 @@
-const BASE_URL = "https://localhost:300/api";
-
-function throwError(msg: string) {
-  throw new Error("[🍊] " + msg);
-}
 
 type Post = {
   slug: string;
@@ -20,6 +15,11 @@ type CreateClientOpts = {
 };
 
 export function createClient({ privateKey }: CreateClientOpts) {
+  function throwError(msg: string) {
+    console.error("[🍊] " + msg);
+    throw new Error("[🍊] " + msg);
+  }
+  
   if (!privateKey) {
     throwError("privateKey is required");
   }
