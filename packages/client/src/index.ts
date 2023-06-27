@@ -4,7 +4,7 @@ function logError(msg: string) {
 
 function getConfig() {
   return {
-    api: "https://zendo.blog/api",
+    api: "https://zendo.blog/api/public",
   };
 }
 

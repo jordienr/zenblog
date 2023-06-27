@@ -1,20 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createClient = void 0;
-const env = process.env.NODE_ENV || "development";
-const config = {
-    development: {
-        api: "http://localhost:3000/api/public",
-    },
-    production: {
-        api: "https://zendo.blog/api/public",
-    },
-};
 function logError(msg) {
     console.error("[🍊] ", msg);
 }
 function getConfig() {
-    return config[env];
+    return {
+        api: "https://zendo.blog/api",
+    };
 }
 function throwError(msg) {
     logError(msg);
