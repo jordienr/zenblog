@@ -6,6 +6,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint:web": "turbo run lint --filter=@znd/web",
+    "build:web": "turbo run build --filter=@znd/web",
     "build:client": "turbo run build --filter=@znd/client",
     "publish:client": "turbo run publish --filter=@znd/client"
   },
