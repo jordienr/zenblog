@@ -1,7 +1,11 @@
 import { authMiddleware } from "@clerk/nextjs";
 
 // regex for /api/public/*
-const regex = /^\/api\/public\/.*/;
+const publicPages = ["/"];
+
+// regex for / only
+const regex = new RegExp(`^(${publicPages.join("|")})$`);
+
 export default authMiddleware({
   publicRoutes: [regex],
   debug: false,
