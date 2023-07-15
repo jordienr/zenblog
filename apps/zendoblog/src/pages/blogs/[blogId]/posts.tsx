@@ -6,7 +6,7 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { useQuery } from "react-query";
 import Link from "next/link";
 
-function StatePill({ published }: { published: boolean }) {
+export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
   if (published) {
     return (

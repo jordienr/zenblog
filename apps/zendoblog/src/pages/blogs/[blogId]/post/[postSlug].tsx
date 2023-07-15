@@ -11,6 +11,8 @@ import { useMutation, useQuery } from "react-query";
 import { createAPIClient } from "@/lib/app/api";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Spinner from "@/components/Spinner";
+import Link from "next/link";
+import { StatePill } from "../posts";
 
 export default function Post() {
   const [editable, setEditable] = useState(false);
@@ -36,6 +38,11 @@ export default function Post() {
     error: postError,
   } = useQuery(["posts", router.query.blogId, router.query.postSlug], () =>
     api.posts.get(blogId, postSlug)
+  );
+
+  const { data: posts, error: postsError } = useQuery(
+    ["posts", router.query.blogId],
+    () => api.posts.getAll(blogId)
   );
 
   const editor = useEditor({
@@ -90,49 +97,68 @@ export default function Post() {
   return (
     <AppLayout>
       {/* {router.query.postSlug} - {router.query.slug} */}
-      {isLoading && (
-        <div className="flex-center p-12">
-          <Spinner />
-        </div>
-      )}
-      {post && (
-        <form onSubmit={onSubmit} className="mx-auto max-w-5xl p-3">
-          {editable && (
-            <div className="flex items-center justify-between py-2">
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleDeleteClick}
-                  className="btn btn-red"
-                >
-                  <Trash2Icon color="white" className="h-6 w-6" /> Delete
-                </button>
-                <button className="btn" onClick={() => setEditable(false)}>
-                  Cancel
-                </button>
-              </div>
-              <div className="actions">
-                <label
-                  className="mr-2 flex items-center gap-2 font-semibold"
-                  htmlFor="published"
-                >
-                  <input
-                    id="published"
-                    type="checkbox"
-                    {...register("published")}
-                    className="h-6 w-6 rounded-md shadow-sm"
-                  />
-                  Publish
-                </label>
+      <div className="flex px-2">
+        {posts && (
+          <div className="flex max-w-xs flex-col divide-y rounded-md bg-white shadow-sm">
+            {posts.posts?.map((post) => (
+              <Link
+                key={post.slug}
+                href={`/blogs/${blogId}/post/${post.slug}`}
+                className={`flex max-w-sm items-center justify-between p-2 font-medium hover:bg-gray-100 ${
+                  post.slug === postSlug && "bg-orange-100"
+                }`}
+              >
+                {post.published ? "🟢" : "🟠"} {post.title}
+              </Link>
+            ))}
+          </div>
+        )}
+        {isLoading && (
+          <div className="flex-center p-12">
+            <Spinner />
+          </div>
+        )}
+        {post && (
+          <form
+            onSubmit={onSubmit}
+            className="mx-auto flex-grow overflow-y-auto px-2"
+          >
+            {editable && (
+              <div className="flex items-center justify-between py-2">
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDeleteClick}
+                    className="btn btn-red"
+                  >
+                    <Trash2Icon color="white" className="h-6 w-6" /> Delete
+                  </button>
+                  <button className="btn" onClick={() => setEditable(false)}>
+                    Cancel
+                  </button>
+                </div>
+                <div className="actions">
+                  <label
+                    className="mr-2 flex items-center gap-2 font-semibold"
+                    htmlFor="published"
+                  >
+                    <input
+                      id="published"
+                      type="checkbox"
+                      {...register("published")}
+                      className="h-6 w-6 rounded-md shadow-sm"
+                    />
+                    Publish
+                  </label>
 
-                <button type="submit" className="btn btn-primary">
-                  <SaveIcon color="white" className="h-6 w-6" />
-                  Save
-                </button>
+                  <button type="submit" className="btn btn-primary">
+                    <SaveIcon color="white" className="h-6 w-6" />
+                    Save
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-          <div className="">
+            )}
+
             {editable ? (
               <div className="w-full rounded-sm bg-white">
                 <input
@@ -149,25 +175,35 @@ export default function Post() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-end">
-                  <button onClick={toggleEditable} className="btn btn-primary">
-                    <PencilIcon color="white" className="h-6 w-6" />
-                    Edit
-                  </button>
-                </div>
-                <div className="rounded-md bg-white p-4 shadow-sm">
-                  <span className="p-2 font-mono text-sm text-slate-500">
-                    {post?.slug}
-                  </span>
-                  <h1 className="px-2 text-3xl font-semibold">{post?.title}</h1>
+              <div className="rounded-md bg-white p-4 shadow-sm">
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between">
+                    <div>
+                      <span className="p-2 font-mono text-sm text-slate-500">
+                        {post?.slug}
+                      </span>
+                      <h1 className="px-2 text-3xl font-semibold">
+                        {post?.title}
+                      </h1>
+                    </div>
+                    <div>
+                      <button
+                        onClick={toggleEditable}
+                        className="btn btn-primary"
+                      >
+                        <PencilIcon color="white" className="h-6 w-6" />
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+
                   <ContentRenderer content={post.content} />
                 </div>
               </div>
             )}
-          </div>
-        </form>
-      )}
+          </form>
+        )}
+      </div>
     </AppLayout>
   );
 }

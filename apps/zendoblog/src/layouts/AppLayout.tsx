@@ -24,7 +24,7 @@ export default function AppLayout({ children, loading }: Props) {
       )}
 
       <nav className="bg-gradient-to-b from-white to-transparent">
-        <div className="mx-auto flex max-w-5xl justify-between p-3">
+        <div className="mx-auto flex justify-between p-3">
           <div className="flex items-center gap-2">
             <Link href="/" className="rounded-md px-1 text-lg font-medium">
               <ZendoLogo />

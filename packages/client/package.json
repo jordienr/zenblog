@@ -1,9 +1,10 @@
 {
-  "name": "@znd/client",
-  "version": "0.2.3",
+  "name": "@zendo/cms",
+  "version": "0.2.4",
   "description": "The typescript client for zendoblog",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "public": true,
   "scripts": {
     "test": "npm test",
     "build": "tsc",
@@ -16,5 +17,9 @@
     "zendoblog"
   ],
   "author": "Jordi Enric",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@tiptap/pm": "^2.0.3",
+    "@tiptap/react": "^2.0.3"
+  }
 }

@@ -17,6 +17,7 @@ export type Post = {
   slug: string;
   title: string;
   content: any;
+  createdAt: string;
 };
 
 export type PostWithContent = Post & {

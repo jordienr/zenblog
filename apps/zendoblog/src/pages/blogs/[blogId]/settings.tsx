@@ -163,25 +163,20 @@ export default function BlogSettings() {
           <h2 className="text-lg font-medium">API Guide</h2>
           <h3 className="mb-4 mt-8">1. Install the zendo API client</h3>
           <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
-            <code>npm install @znd/client</code>
+            <code>{`npm install @zendo/cms`}</code>
           </pre>
 
           <h3 className="mb-4 mt-8">2. Create a client</h3>
 
           <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
             <code>
-              {`import &#123; createClient &#125; from "@znd/client";`}
+              {`import createClient from "@zendo/cms";`}
               <br />
-              <br />
-              const cms = createClient(&#123;
-              <br />
-              blogId:{" "}
-              <span className="rounded-lg bg-green-500/20 p-1 text-green-400">
-                {`"${blog.id}"`}
-              </span>
-              ,
-              <br />
-              &#125;);
+              {`
+const cms = createClient({
+  blogId: "${blog.id}",
+})
+              `}
             </code>
           </pre>
         </section>

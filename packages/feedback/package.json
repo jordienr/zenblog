@@ -1,5 +1,5 @@
 {
-  "name": "@znd/feedback",
+  "name": "@zendo/feedback",
   "version": "0.1.1-beta.1",
   "description": "Easiest way to capture your users feedback",
   "main": "dist/index.js",

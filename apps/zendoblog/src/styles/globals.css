@@ -20,7 +20,7 @@
   @apply flex items-center justify-end gap-2 md:flex-row;
 }
 .btn {
-  @apply flex w-full items-center justify-center gap-2 rounded-md border bg-white px-4 py-2 text-center font-medium tracking-wide text-slate-700 hover:bg-slate-50 sm:w-auto;
+  @apply flex w-full items-center justify-center gap-2 rounded-lg border bg-white px-4 py-2 text-center font-medium tracking-wide text-slate-700 hover:bg-slate-50 sm:w-auto;
 }
 
 .btn.btn-icon {
@@ -41,7 +41,7 @@
 }
 .btn.btn-primary:hover {
   border: 1px solid theme("colors.orange.600");
-  box-shadow: inset 0 1px 0px 0px theme("colors.orange.300");
+  box-shadow: inset 0 1.3px 1px 0px theme("colors.orange.300");
 
   background: theme("colors.orange.500")
     linear-gradient(
@@ -49,7 +49,7 @@
       theme("colors.orange.400") 0%,
       theme("colors.orange.600") 100%
     );
-  text-shadow: 0 -1px 0px theme("colors.orange.600");
+  text-shadow: 0 0px 1px theme("colors.orange.600");
 }
 .btn.btn-primary:active {
   transform: translateY(1px);

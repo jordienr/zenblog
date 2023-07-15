@@ -1,4 +1,4 @@
-import { ContentRenderer } from "@/components/ContentRenderer";
+import { ContentRenderer } from "@znd/ui";
 import AppLayout from "@/layouts/AppLayout";
 import { createClient, Post } from "@znd/client";
 import { GetServerSidePropsContext } from "next";
@@ -16,7 +16,9 @@ export default function BlogPostPage({ post }: Props) {
             <h2 className="text-2xl font-semibold">{post.title}</h2>
             <div>{post.slug}</div>
 
-            <ContentRenderer content={post.content} />
+            <div className="prose">
+              <ContentRenderer content={post.content} />
+            </div>
           </div>
         ) : (
           <div className=" bg-white p-3 shadow-sm">not found</div>

@@ -1,5 +1,5 @@
 {
-  "name": "@znd/website",
+  "name": "@zendo/website",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -36,6 +36,7 @@
     "@types/uuid": "^9.0.1",
     "@uidotdev/usehooks": "^2.0.1",
     "@znd/client": "*",
+    "@znd/ui": "*",
     "cmdk": "^0.2.0",
     "formik": "^2.2.9",
     "framer-motion": "^10.12.12",
