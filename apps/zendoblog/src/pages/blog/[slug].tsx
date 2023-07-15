@@ -1,6 +1,6 @@
-import { ContentRenderer } from "@znd/ui";
+import { ContentRenderer } from "@zendo/ui";
 import AppLayout from "@/layouts/AppLayout";
-import { createClient, Post } from "@znd/client";
+import { createClient, Post } from "../../../../../packages/cms/src";
 import { GetServerSidePropsContext } from "next";
 
 type Props = {

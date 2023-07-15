@@ -43,6 +43,24 @@ export default {
 
       matchUtilities(
         {
+          "text-shadow": (value: string) => ({
+            textShadow: `0 0 2px ${value}`,
+          }),
+        },
+        { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
+      );
+
+      matchUtilities(
+        {
+          "inner-glow": (value: any) => ({
+            boxShadow: `inset 0 0 5px 2px ${value}`,
+          }),
+        },
+        { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
+      );
+
+      matchUtilities(
+        {
           highlight: (value: any) => ({
             boxShadow: `inset 0 1px 0 0 ${value}`,
           }),

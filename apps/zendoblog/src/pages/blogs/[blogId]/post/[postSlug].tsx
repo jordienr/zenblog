@@ -3,13 +3,13 @@ import { useRouter } from "next/router";
 import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useState } from "react";
-import { PencilIcon, SaveIcon, Trash2Icon } from "lucide-react";
+import { PencilIcon, SaveIcon, Trash2Icon, XIcon } from "lucide-react";
 import Heading from "@tiptap/extension-heading";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMutation, useQuery } from "react-query";
 import { createAPIClient } from "@/lib/app/api";
-import { ContentRenderer } from "@/components/ContentRenderer";
+import { ContentRenderer } from "@/components/Content/ContentRenderer";
 import Spinner from "@/components/Spinner";
 import Link from "next/link";
 import { StatePill } from "../posts";
@@ -98,21 +98,6 @@ export default function Post() {
     <AppLayout>
       {/* {router.query.postSlug} - {router.query.slug} */}
       <div className="flex px-2">
-        {posts && (
-          <div className="flex max-w-xs flex-col divide-y rounded-md bg-white shadow-sm">
-            {posts.posts?.map((post) => (
-              <Link
-                key={post.slug}
-                href={`/blogs/${blogId}/post/${post.slug}`}
-                className={`flex max-w-sm items-center justify-between p-2 font-medium hover:bg-gray-100 ${
-                  post.slug === postSlug && "bg-orange-100"
-                }`}
-              >
-                {post.published ? "🟢" : "🟠"} {post.title}
-              </Link>
-            ))}
-          </div>
-        )}
         {isLoading && (
           <div className="flex-center p-12">
             <Spinner />
@@ -125,16 +110,19 @@ export default function Post() {
           >
             {editable && (
               <div className="flex items-center justify-between py-2">
-                <div className="flex gap-2">
+                <div className="flex gap-2 rounded-xl bg-white shadow-sm">
+                  <button
+                    className="btn btn-icon"
+                    onClick={() => setEditable(false)}
+                  >
+                    <XIcon color="gray" className="h-6 w-6" />
+                  </button>
                   <button
                     type="button"
                     onClick={handleDeleteClick}
-                    className="btn btn-red"
+                    className="btn btn-icon"
                   >
-                    <Trash2Icon color="white" className="h-6 w-6" /> Delete
-                  </button>
-                  <button className="btn" onClick={() => setEditable(false)}>
-                    Cancel
+                    <Trash2Icon color="red" className="h-6 w-6" />
                   </button>
                 </div>
                 <div className="actions">

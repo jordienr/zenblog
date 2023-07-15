@@ -1,6 +1,6 @@
 import AppLayout from "@/layouts/AppLayout";
 import { getEnv } from "@/lib/utils/env";
-import { createClient, Post } from "@znd/client";
+import { createClient, Post } from "../../../../../packages/cms/src";
 import Link from "next/link";
 
 type Props = {

@@ -29,7 +29,12 @@ export default function AppLayout({ children, loading }: Props) {
             <Link href="/" className="rounded-md px-1 text-lg font-medium">
               <ZendoLogo />
             </Link>
-            {isSignedIn && <BlogSelector />}
+            <Link
+              href="/blogs"
+              className="rounded-md px-1 text-lg font-medium text-slate-600"
+            >
+              Blogs
+            </Link>
           </div>
 
           <UserButton />
