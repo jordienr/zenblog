@@ -3,7 +3,7 @@ import { PencilIcon } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
-  post: Post;
+  post: any;
 };
 export function ContentEditor({ post }: Props) {
   const [editable, setEditable] = useState(false);
