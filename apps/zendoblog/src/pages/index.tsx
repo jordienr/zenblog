@@ -289,13 +289,13 @@ const Home = () => {
             <div className="mt-4">
               <pre className="overflow-auto rounded-lg bg-slate-800 text-blue-100">
                 {`
-  import { createClient } from "@zendoblog/client";
+  import { createClient } from "@zendoblog/cms";
 
   const cms = createClient({
-    privateKey: env.ZENDO_API_KEY,
+    blogId: env.ZENDO_BLOG_ID,
   });
 
-  const posts = await cms.getPosts();
+  const posts = await cms.posts.getAll();
                 `}
               </pre>
             </div>
