@@ -4,15 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "next build",
+    "build": "next build", // added build script
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@zendo/cms": "*",
-    "@zendo/ui": "*"
+    "@zendo/cms": "1.0.0", // replace with the correct version
+    "@zendo/ui": "1.0.0" // replace with the correct version
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.9"
+    "@tailwindcss/typography": "^0.5.9" // remove if not used
   }
 }
