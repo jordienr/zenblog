@@ -1,15 +1,20 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Link from "next/link";
+import Head from "next/head";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-      <head>
+      <Head>
         <title>tailwindutils</title>
         <meta name="description" content="tailwindutils" />
         <link rel="icon" href="/favicon.ico" />
-      </head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css"
+        ></link>
+      </Head>
       <div className="min-h-screen bg-slate-50 p-8 font-mono text-slate-800 md:p-24">
         <Component {...pageProps} />
         <footer className="mt-24">

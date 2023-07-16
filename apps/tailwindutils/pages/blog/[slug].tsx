@@ -8,7 +8,7 @@ export default function BlogPost({ posts }: any) {
       <Link href="/">↩ All utils</Link>
       <h1 className="my-5 text-2xl font-bold">{posts.title}</h1>
       {/* <pre>{JSON.stringify(posts, null, 2)}</pre> */}
-      <article className="prose prose-sm">
+      <article className="prose">
         <ContentRenderer content={posts.content} />
       </article>
     </main>

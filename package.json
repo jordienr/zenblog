@@ -4,6 +4,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "deploy": "git commit --allow-empty -m \"Deploy\" && git push",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "build:ui": "turbo run build --filter=@zendo/ui",
     "lint:web": "turbo run lint --filter=@zendo/web",
