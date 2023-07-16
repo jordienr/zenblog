@@ -5,11 +5,11 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "build:ui": "turbo run build --filter=@znd/ui",
-    "lint:web": "turbo run lint --filter=@znd/web",
-    "build:web": "turbo run build --filter=@znd/web",
-    "build:client": "turbo run build --filter=@znd/client",
-    "publish:client": "turbo run publish --filter=@znd/client"
+    "build:ui": "turbo run build --filter=@zendo/ui",
+    "lint:web": "turbo run lint --filter=@zendo/web",
+    "build:web": "turbo run build --filter=@zendo/web",
+    "build:cms": "turbo run build --filter=@zendo/client",
+    "publish:cms": "turbo run publish --filter=@zendo/cms"
   },
   "devDependencies": {
     "@turbo/gen": "^1.9.7",

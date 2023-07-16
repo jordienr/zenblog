@@ -1,6 +1,6 @@
 {
   "name": "@zendo/cms",
-  "version": "0.2.4",
+  "version": "0.1.1",
   "description": "The typescript client for zendoblog",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

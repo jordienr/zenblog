@@ -3,13 +3,13 @@
 ## Install
 
 ```bash
-    npm install @zendo/client
+    npm install @zendo/cms
 ```
 
 ## Usage example
 
 ```typescript
-import { createClient } from "@zendo/client";
+import { createClient } from "@zendo/cms";
 
 const cms = createClient({
   blogId: "MY_BLOG_ID", // Go to your blog settings to get your blog id
