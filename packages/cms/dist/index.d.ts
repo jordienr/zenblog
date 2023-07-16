@@ -9,8 +9,10 @@ export type PostWithContent = Post & {
 };
 export type CreateClientOpts = {
     blogId: string;
+    _url?: string;
+    debug?: boolean;
 };
-export declare function createClient({ blogId }: CreateClientOpts): {
+export declare function createClient({ blogId, _url, debug }: CreateClientOpts): {
     posts: {
         getAll: () => Promise<Post[]>;
         getBySlug: (slug: string) => Promise<PostWithContent>;

@@ -21,8 +21,8 @@ export default function Dashboard() {
               </Link>
             </div>
           </div>
-          { isLoading && (
-            <div className="py-12 flex-center">
+          {isLoading && (
+            <div className="flex-center py-12">
               <Spinner />
             </div>
           )}
@@ -33,11 +33,11 @@ export default function Dashboard() {
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-lg border bg-gradient-to-b from-white to-slate-50 shadow-sm transition-all hover:border-orange-400"
+                  className="group rounded-xl border bg-gradient-to-b from-white to-slate-50 shadow-sm transition-all hover:border-orange-400"
                   key={blog.id}
                 >
                   <Link
-                    className="block w-full min-w-[320px] gap-3 rounded-lg p-4  "
+                    className="block w-full min-w-[320px] gap-3 rounded-xl p-3  "
                     href={`/blogs/${blog.id}/posts`}
                   >
                     <div className="flex items-center gap-4">
