@@ -1,0 +1,18 @@
+{
+  "name": "tailwindutils",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@zendo/cms": "*",
+    "@zendo/ui": "*"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9"
+  }
+}
