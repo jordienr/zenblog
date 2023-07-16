@@ -287,7 +287,7 @@ const Home = () => {
               Get your content easily, fully typed.
             </h2>
             <div className="mt-4">
-              <pre className="rounded-lg bg-slate-800 text-blue-100">
+              <pre className="overflow-auto rounded-lg bg-slate-800 text-blue-100">
                 {`
   import { createClient } from "@zendoblog/client";
 
