@@ -8,6 +8,7 @@
     "build:ui": "turbo run build --filter=@zendo/ui",
     "lint:web": "turbo run lint --filter=@zendo/web",
     "build:web": "turbo run build --filter=@zendo/web",
+    "build:twu": "turbo run build --filter=tailwindutils",
     "build:cms": "turbo run build --filter=@zendo/client",
     "publish:cms": "turbo run publish --filter=@zendo/cms"
   },
