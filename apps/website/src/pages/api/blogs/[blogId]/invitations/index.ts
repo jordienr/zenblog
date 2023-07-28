@@ -16,7 +16,6 @@ export default async function handler(
   const method = req.method;
 
   if (method === "GET") {
-    console.log("GET INVITATIONS");
     const { data: invitations, error } = await db
       .from("invitations")
       .select("*")
@@ -45,8 +44,6 @@ export default async function handler(
         email_address: email,
       }),
     });
-
-    console.log(clerk);
 
     const { data: invitation, error } = await db
       .from("invitations")

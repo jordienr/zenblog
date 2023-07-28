@@ -3,7 +3,7 @@ import AppLayout from "@/layouts/AppLayout";
 import { createAPIClient } from "@/lib/app/api";
 import { useRouter } from "next/router";
 import { IoSettingsSharp } from "react-icons/io5";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
 export function StatePill({ published }: { published: boolean }) {

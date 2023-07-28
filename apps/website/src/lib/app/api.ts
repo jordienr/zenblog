@@ -171,5 +171,33 @@ export function createAPIClient() {
       delete: deletePostBySlug,
       update: updatePostBySlug,
     },
+    images: {
+      getAll: (blogId: string) =>
+        _fetch(
+          `/api/blogs/${blogId}/images`,
+          { method: "GET" },
+          z.array(
+            z.object({
+              id: z.string(),
+              name: z.string(),
+              url: z.string(),
+              createdAt: z.string(),
+              updatedAt: z.string(),
+            })
+          )
+        ),
+
+      upload(blogId: string, file: File) {
+        const body = new FormData();
+        body.append("file", file);
+
+        console.log("APIC: ", body);
+        return _fetch(
+          `/api/upload`,
+          { method: "POST", body: JSON.stringify(body) },
+          z.any()
+        );
+      },
+    },
   };
 }

@@ -3,7 +3,7 @@ import { useBlogQuery } from "@/queries/blogs";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export function Members({ blog }: { blog: Blog }) {
   const router = useRouter();

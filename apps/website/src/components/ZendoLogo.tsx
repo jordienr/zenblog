@@ -1,4 +1,4 @@
-import { useAppStore } from "@/store/app";
+import Image from "next/image";
 
 const Logo = () => (
   <div className="ml-1 text-xl font-bold text-slate-800">
@@ -7,10 +7,12 @@ const Logo = () => (
 );
 
 export default function ZendoLogo() {
-  const { loading } = useAppStore();
-
-  if (loading) {
-    return <>Loading</>;
-  }
-  return <Logo />;
+  return (
+    <Image
+      src="/logo.svg"
+      alt="An orange cut in half, or, the zendo.blog logo"
+      width={32}
+      height={32}
+    />
+  );
 }

@@ -1,13 +1,14 @@
 import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
 import { createAPIClient } from "@/lib/app/api";
+import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
 import { IoSettingsSharp, IoAddCircle } from "react-icons/io5";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Dashboard() {
   const api = createAPIClient();
-  const { data, error, isLoading } = useQuery("blogs", api.blogs.getAll);
+  const { data, error, isLoading } = useBlogsQuery();
 
   return (
     <AppLayout>

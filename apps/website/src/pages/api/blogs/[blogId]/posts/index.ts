@@ -30,8 +30,7 @@ export default async function handler(
 
   if (!db) return res.status(401).json({ error: "Unauthorized" });
 
-  const getBlog = () =>
-    db.from("blogs").select("*").eq("id", blogId).single();
+  const getBlog = () => db.from("blogs").select("*").eq("id", blogId).single();
   const getPosts = () =>
     db
       .from("posts")
@@ -52,7 +51,6 @@ export default async function handler(
 
   const [blogRes, postsRes] = await Promise.all([getBlog(), getPosts()]);
 
-  console.log(postsRes)
   if (!blogRes.data) {
     return res.status(404).json({ error: "Blog not found" });
   }

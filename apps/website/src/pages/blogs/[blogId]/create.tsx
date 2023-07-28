@@ -38,13 +38,9 @@ export default function BlogDashboard() {
     // return the image url
     const db = await getDB();
 
-    console.log(auth.userId);
-
     const { data, error } = await db.storage
       .from("images")
       .upload("image.png", file);
-
-    console.log(data, error);
 
     return data;
   }
@@ -91,14 +87,10 @@ export default function BlogDashboard() {
 
       const res = await sb.from("posts").insert(payload);
 
-      console.log(payload);
-
       const jsonContent = editor?.getJSON();
       if (!jsonContent) {
         throw new Error("No content");
       }
-
-      console.log(editor?.getJSON());
 
       if (res.error) {
         console.error(res.error);
@@ -187,12 +179,12 @@ export default function BlogDashboard() {
                   },
                 })}
                 required
-                className="h-14 w-full rounded-lg border-none bg-transparent px-2 text-xl font-semibold text-slate-800 hover:bg-white md:text-3xl"
+                className="h-14 w-full rounded-lg border-none bg-transparent px-2 font-serif text-2xl font-medium text-slate-800 hover:bg-white md:text-3xl"
               />
             </label>
 
             <EditorContent
-              className="prose:min-w-none prose flex min-h-[600px] w-full max-w-none rounded-md px-2 text-lg text-slate-600"
+              className="prose:min-w-none h2:font-serif prose flex min-h-[600px] w-full max-w-none rounded-md px-2 text-lg text-slate-600"
               editor={editor}
             />
           </div>

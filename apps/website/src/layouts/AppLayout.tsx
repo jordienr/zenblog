@@ -13,7 +13,7 @@ export default function AppLayout({ children, loading }: Props) {
 
   return (
     <div
-      className={`bg-grid-slate-200/50 min-h-screen border-b bg-slate-100 ${
+      className={`min-h-screen border-b bg-white ${
         loading ? "overflow-hidden" : ""
       }`}
     >
@@ -23,15 +23,15 @@ export default function AppLayout({ children, loading }: Props) {
         </div>
       )}
 
-      <nav className="bg-gradient-to-b from-white to-transparent">
-        <div className="mx-auto flex justify-between p-3">
-          <div className="flex items-center gap-2">
+      <nav className="sticky top-0 h-12 bg-white shadow-sm">
+        <div className="mx-auto flex h-full items-center justify-between px-2">
+          <div className="flex h-full items-center gap-2">
             <Link href="/" className="rounded-md px-1 text-lg font-medium">
               <ZendoLogo />
             </Link>
             <Link
               href="/blogs"
-              className="rounded-md px-1 text-lg font-medium text-slate-600"
+              className="flex h-full items-center border-x border-transparent px-2 text-slate-700 transition-all hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
             >
               Blogs
             </Link>
@@ -40,13 +40,8 @@ export default function AppLayout({ children, loading }: Props) {
           <UserButton />
         </div>
       </nav>
-      <div className="min-h-[640px]">{children}</div>
-      <footer>
-        <div className=" mt-24 bg-gradient-to-b from-transparent to-white pb-40 pt-24 text-center font-mono text-slate-800">
-          <span className="text-slate-600">thanks for using </span>
-          <ZendoLogo />
-        </div>
-      </footer>
+      <div className="min-h-[900px]">{children}</div>
+      <footer></footer>
     </div>
   );
 }

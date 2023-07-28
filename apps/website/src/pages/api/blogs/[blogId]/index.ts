@@ -12,7 +12,6 @@ export default async function handler(
   const blogId = req.query.blogId as string;
 
   if (req.method === "PATCH") {
-    console.log("req.body", req.body);
     const data = PatchBlog.safeParse(JSON.parse(req.body));
 
     if (!data.success) {

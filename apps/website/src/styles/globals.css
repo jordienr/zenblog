@@ -20,7 +20,7 @@
   @apply flex items-center justify-end gap-2 md:flex-row;
 }
 .btn {
-  @apply flex w-full items-center justify-center gap-2 rounded-lg border bg-white px-4 py-2 text-center font-medium tracking-wide text-slate-700 hover:bg-slate-50 sm:w-auto;
+  @apply flex w-full items-center justify-center gap-2 rounded-lg border bg-white px-4 py-2 text-center text-sm tracking-wide text-slate-700 hover:bg-slate-50 sm:w-auto;
 }
 
 .btn.btn-icon {
@@ -106,12 +106,25 @@ input[type="checkbox"]:checked {
 }
 
 .ProseMirror {
-  padding: 0.5rem;
+  padding: 0 0.5rem;
+  margin: 0;
   width: 100%;
   min-width: 100%;
 }
 .ProseMirror:focus {
   outline: none;
+}
+
+.ProseMirror p > code {
+  background-color: theme("colors.orange.50");
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+  color: theme("colors.orange.500");
+  letter-spacing: 0.4px;
+}
+.ProseMirror p > code::after,
+.ProseMirror p > code::before {
+  content: "";
 }
 
 .section {

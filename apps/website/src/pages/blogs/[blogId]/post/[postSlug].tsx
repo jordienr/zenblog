@@ -1,18 +1,83 @@
-import AppLayout from "@/layouts/AppLayout";
 import { useRouter } from "next/router";
-import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
+import { Editor, EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useState } from "react";
-import { PencilIcon, SaveIcon, Trash2Icon, XIcon } from "lucide-react";
+import {
+  BoldIcon,
+  CodeIcon,
+  ItalicIcon,
+  PencilIcon,
+  SaveIcon,
+  Strikethrough,
+  Trash2Icon,
+} from "lucide-react";
+import { PiArrowBendUpLeftBold } from "react-icons/pi";
 import Heading from "@tiptap/extension-heading";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createAPIClient } from "@/lib/app/api";
 import { ContentRenderer } from "@/components/Content/ContentRenderer";
 import Spinner from "@/components/Spinner";
+import { CgArrowTopLeft } from "react-icons/cg";
+import { BsFillImageFill } from "react-icons/bs";
 import Link from "next/link";
-import { StatePill } from "../posts";
+import { ImagePicker } from "@/components/Images/ImagePicker";
+
+function EditorMenuButton({
+  children,
+  active,
+  ...props
+}: {
+  children: React.ReactNode;
+  active: boolean;
+} & React.ComponentPropsWithoutRef<"button">) {
+  const className = `p-1 text-slate-400 hover:text-slate-600 ${
+    active ? "text-orange-500" : ""
+  }`;
+
+  return (
+    <button type="button" className={className} {...props}>
+      {children}
+    </button>
+  );
+}
+
+function EditorMenu({ editor }: { editor: Editor | null }) {
+  const SIZE = 18;
+  const menuButtons = [
+    {
+      icon: <BoldIcon size={SIZE} />,
+      command: () => editor?.chain().focus().toggleBold().run(),
+    },
+    {
+      icon: <ItalicIcon size={SIZE} />,
+      command: () => editor?.chain().focus().toggleItalic().run(),
+    },
+    {
+      icon: <Strikethrough size={SIZE} />,
+      command: () => editor?.chain().focus().toggleStrike().run(),
+    },
+    {
+      icon: <CodeIcon size={SIZE} />,
+      command: () => editor?.chain().focus().toggleCode().run(),
+    },
+  ];
+
+  return (
+    <div className="flex rounded-2xl bg-white p-2">
+      {menuButtons.map(({ icon, command }, i) => (
+        <EditorMenuButton
+          active={editor?.isActive(command) || false}
+          key={i}
+          onClick={() => command()}
+        >
+          {icon}
+        </EditorMenuButton>
+      ))}
+    </div>
+  );
+}
 
 export default function Post() {
   const [editable, setEditable] = useState(false);
@@ -62,6 +127,9 @@ export default function Post() {
 
   const deletePost = useMutation({
     mutationFn: () => api.posts.delete(blogId, postSlug),
+    onSuccess: () => {
+      window.location.reload();
+    },
   });
 
   async function handleDeleteClick() {
@@ -76,6 +144,9 @@ export default function Post() {
         content: JSONContent;
       } & FormData
     ) => api.posts.update(blogId, postSlug, data),
+    onSuccess: () => {
+      window.location.reload();
+    },
   });
 
   const onSubmit = handleSubmit(async (data) => {
@@ -94,138 +165,122 @@ export default function Post() {
     setEditable(false);
   });
 
+  if (isLoading) {
+    return (
+      <div className="flex-center p-12">
+        <Spinner />
+      </div>
+    );
+  }
   return (
-    <AppLayout>
-      {/* {router.query.postSlug} - {router.query.slug} */}
-      <div className="flex px-2">
-        {isLoading && (
-          <div className="flex-center p-12">
-            <Spinner />
-          </div>
-        )}
-        {post && (
+    <div className="flex min-h-screen flex-col bg-white pb-32">
+      {editable && (
+        <>
           <form
             onSubmit={onSubmit}
-            className="mx-auto flex-grow overflow-y-auto px-2"
+            className="flex items-center justify-between border-b p-3"
           >
-            {editable && (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex gap-2 rounded-xl bg-white shadow-sm">
-                  <button
-                    className="btn btn-icon"
-                    onClick={() => setEditable(false)}
-                  >
-                    <XIcon color="gray" className="h-6 w-6" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDeleteClick}
-                    className="btn btn-icon"
-                  >
-                    <Trash2Icon color="red" className="h-6 w-6" />
-                  </button>
-                </div>
-                <div className="actions">
-                  <label
-                    className="mr-2 flex items-center gap-2 font-semibold"
-                    htmlFor="published"
-                  >
-                    <input
-                      id="published"
-                      type="checkbox"
-                      {...register("published")}
-                      className="h-6 w-6 rounded-md shadow-sm"
-                    />
-                    Publish
-                  </label>
-
-                  <button type="submit" className="btn btn-primary">
-                    <SaveIcon color="white" className="h-6 w-6" />
-                    Save
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {editable ? (
-              <div className="w-full rounded-sm bg-white">
+            <div className="flex gap-2 rounded-xl">
+              <button
+                className="btn btn-icon"
+                onClick={() => setEditable(false)}
+              >
+                <PiArrowBendUpLeftBold color="gray" className="h-6 w-6" />
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteClick}
+                className="btn btn-icon"
+              >
+                <Trash2Icon color="red" className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="actions">
+              <label
+                className="mr-2 flex items-center gap-2 font-semibold"
+                htmlFor="published"
+              >
                 <input
-                  type="text"
-                  {...register("slug")}
-                  className="w-full border-none bg-transparent font-mono text-sm outline-none hover:bg-white focus:bg-white"
+                  id="published"
+                  type="checkbox"
+                  {...register("published")}
+                  className="h-6 w-6 rounded-md shadow-sm"
                 />
-                <textarea
-                  {...register("title")}
-                  className="w-full max-w-2xl whitespace-break-spaces border-none bg-transparent text-3xl font-semibold outline-none hover:bg-white focus:bg-white"
-                />
-                <div className="prose mt-4">
-                  <EditorContent editor={editor} />
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-md bg-white p-4 shadow-sm">
-                <div className="flex flex-col gap-2">
-                  <div className="flex justify-between">
-                    <div>
-                      <span className="p-2 font-mono text-sm text-slate-500">
-                        {post?.slug}
-                      </span>
-                      <h1 className="px-2 text-3xl font-semibold">
-                        {post?.title}
-                      </h1>
-                    </div>
-                    <div>
-                      <button
-                        onClick={toggleEditable}
-                        className="btn btn-primary"
-                      >
-                        <PencilIcon color="white" className="h-6 w-6" />
-                        Edit
-                      </button>
-                    </div>
-                  </div>
+                Publish
+              </label>
 
-                  <ContentRenderer content={post.content} />
-                </div>
-              </div>
-            )}
+              <button type="submit" className="btn btn-primary">
+                <SaveIcon color="white" className="h-6 w-6" />
+                Save
+              </button>
+            </div>
           </form>
-        )}
-      </div>
-    </AppLayout>
+          <div className="mx-auto mt-2 flex max-w-2xl flex-col">
+            <div className="group border-b border-slate-100 pb-2">
+              <div className="flex justify-between gap-2 opacity-0 transition-all group-focus-within:opacity-100 group-hover:opacity-100">
+                <label
+                  className="flex w-full items-center gap-2"
+                  htmlFor="slug"
+                >
+                  <input
+                    type="text"
+                    {...register("slug")}
+                    className="w-full bg-slate-50 font-mono text-xs outline-none"
+                  />
+                  <button className="btn font-mono text-xs">Auto</button>
+                </label>
+                <ImagePicker>
+                  <span className="btn btn-text whitespace-nowrap !text-xs">
+                    <BsFillImageFill className="h-4 w-4" />
+                    Add cover image
+                  </span>
+                </ImagePicker>
+              </div>
+
+              <input
+                type="text"
+                {...register("title")}
+                className="mt-1 w-full max-w-2xl whitespace-break-spaces rounded-xl border-none bg-transparent text-3xl font-semibold outline-none hover:bg-white focus:bg-white"
+              />
+            </div>
+            <div className="prose group">
+              <div className="border-b border-slate-100 opacity-0 transition-all group-focus-within:opacity-100 group-hover:opacity-100">
+                <EditorMenu editor={editor} />
+              </div>
+              <div className="-mt-4">
+                <EditorContent editor={editor} />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {!editable && (
+        <div className="flex-grow overflow-y-auto">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between p-3">
+              <Link className="btn btn-icon" href={`/blogs/${blogId}/posts`}>
+                <PiArrowBendUpLeftBold className="h-6 w-6" />
+              </Link>
+              <div>
+                <button onClick={toggleEditable} className="btn btn-icon">
+                  <PencilIcon className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="mx-auto max-w-2xl">
+              <div>
+                <span className="p-2 font-mono text-sm text-slate-500">
+                  {post?.slug}
+                </span>
+                <h1 className="px-2 text-3xl font-semibold">{post?.title}</h1>
+              </div>
+              <ContentRenderer content={post?.content} />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//   const { getToken, userId } = getAuth(ctx.req);
-//   const token = await getToken({ template: "supabase" });
-
-//   if (!token) {
-//     return {
-//       redirect: {
-//         destination: "/sign-in",
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   const sb = getClient(token);
-
-//   const { data, error } = await sb
-//     .from("posts")
-//     .select("*")
-//     .eq("user_id", userId)
-//     .eq("slug", ctx.query.postSlug)
-//     .eq("blog_id", ctx.query.blogId)
-//     .single();
-
-//   if (error) {
-//     console.error(error);
-//   }
-
-//   return {
-//     props: {
-//       foo: "bar",
-//       post: data,
-//     },
-//   };
-// };

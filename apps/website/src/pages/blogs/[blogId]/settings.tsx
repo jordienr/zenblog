@@ -3,7 +3,7 @@ import { createAPIClient } from "@/lib/app/api";
 import { PatchBlog } from "@/lib/models/blogs/Blogs";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { EmojiPicker } from "@/components/EmojiPicker";
 import { Invitations } from "@/components/Blogs/Invitations";

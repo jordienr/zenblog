@@ -122,7 +122,6 @@ const Home = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     const formData = formSchema.parse(data);
-    console.log(formData);
 
     const sb = getClient();
 
@@ -140,7 +139,7 @@ const Home = () => {
         <meta name="description" content="Headless CMS for TS devs" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="bg-grid-slate-200/50 min-h-screen bg-slate-50">
+      <div className="bg-grid-slate-100/50 min-h-screen bg-white">
         <div className="mx-auto max-w-5xl">
           <nav className="flex items-center justify-between p-3">
             <ZendoLogo />
@@ -168,11 +167,8 @@ const Home = () => {
           </nav>
           <main className="px-4">
             <div className="mt-12 max-w-sm">
-              <p className="inline-flex items-center rounded-full border border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 px-3 py-1 text-xs text-orange-500">
-                Sign up for a special launch discount
-              </p>
-              <h1 className="mt-2 flex max-w-sm flex-wrap gap-2 text-left text-3xl font-semibold">
-                {"Add a blog to your website in 2 lines of code"
+              <h1 className="mt-2 flex max-w-sm flex-wrap gap-2 text-left text-3xl font-semibold leading-7">
+                {"Add a blog to your website in 2 minutes"
                   .split(" ")
                   .map((w, i) => (
                     <motion.span
@@ -195,7 +191,7 @@ const Home = () => {
                     </motion.span>
                   ))}
               </h1>
-              <p className="mt-2 text-lg text-slate-500">
+              <p className="mt-2 max-w-xs font-mono text-lg text-slate-500">
                 The modern headless CMS for TypeScript developers
               </p>
             </div>
@@ -233,7 +229,7 @@ const Home = () => {
                     type="submit"
                     className="btn btn-primary w-full min-w-full"
                   >
-                    Let me know when you launch
+                    Sign me up for the beta
                   </button>
                 </div>
               </form>
@@ -249,8 +245,8 @@ const Home = () => {
               </div>
             )}
           </main>
-          <section className="section mx-3 mt-16 px-3">
-            <ul className="mt-4 grid-cols-2 md:grid">
+          <section className=" mx-3 mt-16">
+            <ul className="mt-4 grid-cols-2 gap-1 md:grid">
               {features.map((feature, index) => {
                 return (
                   <motion.li
@@ -266,14 +262,14 @@ const Home = () => {
                       duration: 0.2,
                       delay: index * 0.1,
                     }}
-                    className="cursor-default px-4 py-3"
+                    className="cursor-default rounded-xl bg-white/5 backdrop-blur-sm px-5 py-3"
                     key={feature.title}
                   >
                     <div className="flex gap-4">
                       <div className="py-2">{feature.icon}</div>
                       <div>
                         <h3 className="text-lg font-medium">{feature.title}</h3>
-                        <p className="text-gray-600">{feature.description}</p>
+                        <p className="text-slate-500">{feature.description}</p>
                       </div>
                     </div>
                   </motion.li>

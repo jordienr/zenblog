@@ -15,7 +15,7 @@ export default function App({ Component, pageProps }: AppProps) {
           href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css"
         ></link>
       </Head>
-      <div className="min-h-screen bg-slate-50 p-8 font-mono text-slate-800 md:p-24">
+      <div className="min-h-screen bg-slate-50 p-8 text-slate-800 md:p-24">
         <Component {...pageProps} />
         <footer className="mt-24">
           <Link className="p-2" href="https://zendo.blog?ref=tailwindutils">

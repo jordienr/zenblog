@@ -2,14 +2,14 @@ import Spinner from "@/components/Spinner";
 import { createAPIClient } from "@/lib/app/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Welcome() {
   // Checks invitations for user
   // If user has invitations, add them to the blog
   const api = createAPIClient();
   const router = useRouter();
-  const { isLoading } = useQuery("userSetup", () => api.user.setup());
+  const { isLoading } = useQuery(["userSetup"], () => api.user.setup());
 
   return (
     <div className="flex-center my-56">

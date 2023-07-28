@@ -9,7 +9,5 @@ export function generateSlug(title: string): string {
     .replace(/\p{Diacritic}/gu, "")
     .replace(/-$/, "");
 
-  console.log("normalizedSlug", normalizedSlug);
-
   return normalizedSlug;
 }

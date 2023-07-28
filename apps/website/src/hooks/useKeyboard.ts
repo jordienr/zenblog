@@ -5,7 +5,6 @@ type Key = "ctrl" | "shift" | "alt" | string;
 export const useKeyboardShortcut = (keys: Key[], callback: () => void) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.log("keys", keys, callback);
       if (
         keys.every(
           (key) =>

@@ -19,7 +19,11 @@ export async function getAuthedDB(req: NextApiRequest, res: NextApiResponse) {
   const { getToken } = getAuth(req);
   const token = await getToken({ template: "supabase" });
 
-  return getClient(token || "");
+  if (!token) {
+    throw new Error("Missing Supabase token");
+  }
+
+  return getClient(token);
 }
 
 export async function getAuthAndDB(req: NextApiRequest, res: NextApiResponse) {

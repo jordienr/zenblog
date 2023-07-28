@@ -7,7 +7,7 @@ import {
 } from "@/queries/invitations";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { HiTrash } from "react-icons/hi";
 export function Invitations({ blog }: { blog: Blog }) {
   const router = useRouter();
@@ -37,7 +37,6 @@ export function Invitations({ blog }: { blog: Blog }) {
 
   const onSubmit = invitationForm.handleSubmit(async (formData) => {
     try {
-      console.log(formData);
       await createInvitation.mutateAsync(formData);
       invitationForm.reset();
       invitations.refetch();

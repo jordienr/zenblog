@@ -31,8 +31,6 @@ export default function CreateBlog() {
     store.startLoading();
     const token = await getToken({ template: "supabase" });
 
-    console.log(token);
-
     if (!token) {
       alert("Error creating blog, please try again");
       await router.push("/sign-in");

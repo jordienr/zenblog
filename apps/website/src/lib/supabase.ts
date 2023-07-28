@@ -21,6 +21,9 @@ export function getClient(supabaseAccessToken?: string) {
           Authorization: `Bearer ${supabaseAccessToken}`,
         },
       },
+      auth: {
+        persistSession: false,
+      },
     });
 
     return supabase;

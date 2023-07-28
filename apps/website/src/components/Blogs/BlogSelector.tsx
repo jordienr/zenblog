@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiAdjustments, HiChevronDown, HiCog, HiPlus } from "react-icons/hi";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export function BlogSelector() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export function BlogSelector() {
     }
   };
 
-  const blogs = useQuery("blogs", () => {
+  const blogs = useQuery(["blogs"], () => {
     return api.blogs.getAll();
   });
 
