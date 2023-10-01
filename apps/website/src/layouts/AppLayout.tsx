@@ -1,7 +1,7 @@
 import { BlogSelector } from "@/components/Blogs/BlogSelector";
 import ZendoLogo from "@/components/ZendoLogo";
 import { useAppStore } from "@/store/app";
-import { UserButton, useAuth } from "@clerk/nextjs";
+// import { UserButton, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
   loading?: boolean;
 };
 export default function AppLayout({ children, loading }: Props) {
-  const { isSignedIn } = useAuth();
+  // const { isSignedIn } = useAuth();
 
   return (
     <div
@@ -37,11 +37,13 @@ export default function AppLayout({ children, loading }: Props) {
             </Link>
           </div>
 
-          <UserButton />
+          {/* <UserButton /> */}
         </div>
       </nav>
       <div className="min-h-[900px]">{children}</div>
-      <footer></footer>
+      <footer className="mt-24 bg-slate-50 py-24 text-center font-serif">
+        🍊
+      </footer>
     </div>
   );
 }

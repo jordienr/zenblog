@@ -3,7 +3,7 @@ export type Json =
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[]
 
 export interface Database {
@@ -60,10 +60,70 @@ export interface Database {
         }
         Relationships: []
       }
+      invitations: {
+        Row: {
+          blog_id: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      members: {
+        Row: {
+          blog_id: string
+          created_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string
+          id?: number
+          user_id: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string
+          id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "members_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       posts: {
         Row: {
           blog_id: string
           content: Json
+          cover_image: string | null
           created_at: string
           id: string
           published: boolean
@@ -75,6 +135,7 @@ export interface Database {
         Insert: {
           blog_id: string
           content?: Json
+          cover_image?: string | null
           created_at?: string
           id?: string
           published?: boolean
@@ -86,6 +147,7 @@ export interface Database {
         Update: {
           blog_id?: string
           content?: Json
+          cover_image?: string | null
           created_at?: string
           id?: string
           published?: boolean

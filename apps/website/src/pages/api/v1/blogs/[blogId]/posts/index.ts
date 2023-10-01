@@ -1,8 +1,8 @@
 // Next API Function GET all blogs
 
-import { getAuthedDB } from "@/lib/server/handler";
 import { getPostsRes } from "@/lib/models/posts/Posts";
-import { getAuth } from "@clerk/nextjs/server";
+import { getServerClient } from "@/lib/server/supabase";
+// import { getAuth } from "@clerk/nextjs/server";
 import { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
@@ -24,8 +24,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const db = await getAuthedDB(req, res);
-  const { userId } = getAuth(req);
+  const { db } = await getServerClient(req, res);
+  // const { userId } = getAuth(req);
   const blogId = req.query.blogId;
 
   if (!db) return res.status(401).json({ error: "Unauthorized" });
@@ -43,11 +43,11 @@ export default async function handler(
     created_at,
     updated_at,
     blog_id,
-    user_id
+    user_id,
+    cover_image
   `
       )
-      .eq("blog_id", blogId)
-      .eq("user_id", userId);
+      .eq("blog_id", blogId);
 
   const [blogRes, postsRes] = await Promise.all([getBlog(), getPosts()]);
 

@@ -102,9 +102,17 @@ export default function BlogPosts() {
               return (
                 <Link
                   href={`/blogs/${blogId}/post/${post.slug}`}
-                  className="flex items-center justify-between rounded-sm p-3 hover:bg-slate-100/60"
+                  className="flex items-center gap-4 rounded-sm p-3 hover:bg-slate-100/60"
                   key={post.slug}
                 >
+                  {post.cover_image && (
+                    <div>
+                      <img
+                        src={post.cover_image}
+                        className="h-16 w-16 rounded-md object-cover"
+                      />
+                    </div>
+                  )}
                   <div>
                     <h2 className="text-lg font-medium">{post.title}</h2>
                     <div className="flex items-center gap-2 text-xs text-slate-500">

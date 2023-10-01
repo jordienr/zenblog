@@ -9,27 +9,11 @@ if (!supabaseKey) {
   throw new Error("Missing supabaseKey");
 }
 
-export function getClient(supabaseAccessToken?: string) {
+export function getClientClient() {
   if (!supabaseKey) {
     throw new Error("Missing supabaseKey");
   }
+  const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
-  if (supabaseAccessToken) {
-    const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
-      global: {
-        headers: {
-          Authorization: `Bearer ${supabaseAccessToken}`,
-        },
-      },
-      auth: {
-        persistSession: false,
-      },
-    });
-
-    return supabase;
-  } else {
-    const supabase = createClient<Database>(supabaseUrl, supabaseKey);
-
-    return supabase;
-  }
+  return supabase;
 }

@@ -10,8 +10,9 @@ import {
   SaveIcon,
   Strikethrough,
   Trash2Icon,
+  WrenchIcon,
 } from "lucide-react";
-import { PiArrowBendUpLeftBold } from "react-icons/pi";
+import { PiArrowBendUpLeftBold, PiCodeBlock } from "react-icons/pi";
 import Heading from "@tiptap/extension-heading";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,10 +20,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createAPIClient } from "@/lib/app/api";
 import { ContentRenderer } from "@/components/Content/ContentRenderer";
 import Spinner from "@/components/Spinner";
-import { CgArrowTopLeft } from "react-icons/cg";
+import { CgArrowTopLeft, CgWebsite } from "react-icons/cg";
 import { BsFillImageFill } from "react-icons/bs";
 import Link from "next/link";
 import { ImagePicker } from "@/components/Images/ImagePicker";
+import { Button } from "@/components/Button";
+import { BlogImage } from "@/lib/types/BlogImage";
 
 function EditorMenuButton({
   children,
@@ -32,7 +35,7 @@ function EditorMenuButton({
   children: React.ReactNode;
   active: boolean;
 } & React.ComponentPropsWithoutRef<"button">) {
-  const className = `p-1 text-slate-400 hover:text-slate-600 ${
+  const className = `p-2 rounded-md hover:bg-slate-100/80 text-slate-400 hover:text-slate-600 ${
     active ? "text-orange-500" : ""
   }`;
 
@@ -62,10 +65,14 @@ function EditorMenu({ editor }: { editor: Editor | null }) {
       icon: <CodeIcon size={SIZE} />,
       command: () => editor?.chain().focus().toggleCode().run(),
     },
+    {
+      icon: <PiCodeBlock size={SIZE} />,
+      command: () => editor?.chain().focus().toggleCodeBlock().run(),
+    },
   ];
 
   return (
-    <div className="flex rounded-2xl bg-white p-2">
+    <div className="flex rounded-2xl bg-white p-1">
       {menuButtons.map(({ icon, command }, i) => (
         <EditorMenuButton
           active={editor?.isActive(command) || false}
@@ -141,13 +148,22 @@ export default function Post() {
   const updatePost = useMutation({
     mutationFn: (
       data: {
-        content: JSONContent;
+        content?: JSONContent;
+        cover_image?: string;
       } & FormData
     ) => api.posts.update(blogId, postSlug, data),
     onSuccess: () => {
       window.location.reload();
     },
   });
+
+  function onCoverImageSelect(image: BlogImage) {
+    const newPost = {
+      ...post,
+      cover_image: image.url,
+    };
+    updatePost.mutate(newPost);
+  }
 
   const onSubmit = handleSubmit(async (data) => {
     const slugHasChanged = data.slug !== postSlug;
@@ -173,12 +189,12 @@ export default function Post() {
     );
   }
   return (
-    <div className="flex min-h-screen flex-col bg-white pb-32">
+    <div className="flex min-h-screen w-full flex-col bg-white pb-32">
       {editable && (
         <>
           <form
             onSubmit={onSubmit}
-            className="flex items-center justify-between border-b p-3"
+            className="flex w-full items-center justify-between border-b p-3"
           >
             <div className="flex gap-2 rounded-xl">
               <button
@@ -209,15 +225,22 @@ export default function Post() {
                 Publish
               </label>
 
+              <Button variant="secondary">
+                <CgWebsite />
+                SEO
+              </Button>
               <button type="submit" className="btn btn-primary">
                 <SaveIcon color="white" className="h-6 w-6" />
                 Save
               </button>
             </div>
           </form>
-          <div className="mx-auto mt-2 flex max-w-2xl flex-col">
-            <div className="group border-b border-slate-100 pb-2">
-              <div className="flex justify-between gap-2 opacity-0 transition-all group-focus-within:opacity-100 group-hover:opacity-100">
+          <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col">
+            <div className="flex items-center justify-center bg-slate-100">
+              <img className="max-h-96" src={post?.cover_image} />
+            </div>
+            <div className="group mt-4 border-b border-slate-100 pb-2">
+              <div className="flex w-full justify-between gap-2 transition-all">
                 <label
                   className="flex w-full items-center gap-2"
                   htmlFor="slug"
@@ -227,12 +250,11 @@ export default function Post() {
                     {...register("slug")}
                     className="w-full bg-slate-50 font-mono text-xs outline-none"
                   />
-                  <button className="btn font-mono text-xs">Auto</button>
                 </label>
-                <ImagePicker>
+                <ImagePicker onSelect={onCoverImageSelect}>
                   <span className="btn btn-text whitespace-nowrap !text-xs">
                     <BsFillImageFill className="h-4 w-4" />
-                    Add cover image
+                    Cover image
                   </span>
                 </ImagePicker>
               </div>
@@ -244,7 +266,7 @@ export default function Post() {
               />
             </div>
             <div className="prose group">
-              <div className="border-b border-slate-100 opacity-0 transition-all group-focus-within:opacity-100 group-hover:opacity-100">
+              <div className="border-b border-slate-100 transition-all">
                 <EditorMenu editor={editor} />
               </div>
               <div className="-mt-4">
@@ -257,7 +279,7 @@ export default function Post() {
 
       {!editable && (
         <div className="flex-grow overflow-y-auto">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col">
             <div className="flex items-center justify-between p-3">
               <Link className="btn btn-icon" href={`/blogs/${blogId}/posts`}>
                 <PiArrowBendUpLeftBold className="h-6 w-6" />
@@ -268,8 +290,10 @@ export default function Post() {
                 </button>
               </div>
             </div>
-
-            <div className="mx-auto max-w-2xl">
+            <div className="flex items-center justify-center bg-slate-100">
+              <img src={post?.cover_image} className="max-h-96 object-cover" />
+            </div>
+            <div className="mx-auto mt-4 w-full max-w-2xl">
               <div>
                 <span className="p-2 font-mono text-sm text-slate-500">
                   {post?.slug}

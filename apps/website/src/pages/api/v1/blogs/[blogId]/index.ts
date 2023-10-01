@@ -1,14 +1,13 @@
-// Next API Function GET all blogs
-
-import { getAuthAndDB } from "@/lib/server/handler";
 import { NextApiRequest, NextApiResponse } from "next";
 import { PatchBlog } from "@/lib/models/blogs/Blogs";
+import { getServerClient } from "@/lib/server/supabase";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { db, auth } = await getAuthAndDB(req, res);
+  const { db, user } = await getServerClient(req, res);
+
   const blogId = req.query.blogId as string;
 
   if (req.method === "PATCH") {
@@ -24,7 +23,7 @@ export default async function handler(
       .from("blogs")
       .update({ title, emoji, description })
       .eq("id", blogId)
-      .eq("user_id", auth.userId)
+      .eq("user_id", user?.id)
       .select()
       .single();
 
@@ -50,7 +49,7 @@ export default async function handler(
       .from("blogs")
       .delete()
       .eq("id", blogId)
-      .eq("user_id", auth.userId)
+      .eq("user_id", user?.id)
       .single();
 
     if (error) {

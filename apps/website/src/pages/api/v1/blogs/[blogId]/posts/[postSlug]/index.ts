@@ -1,33 +1,35 @@
 // Next API Function GET all blogs
 
-import { getAuthAndDB } from "@/lib/server/handler";
 import { NextApiRequest, NextApiResponse } from "next";
 import { PatchPost } from "@/lib/models/posts/Posts";
+import { getServerClient } from "@/lib/server/supabase";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { db, auth } = await getAuthAndDB(req, res);
+  const { db, user } = await getServerClient(req, res);
   const blogId = req.query.blogId as string;
   const postSlug = req.query.postSlug as string;
 
   if (req.method === "PATCH") {
     const data = PatchPost.safeParse(JSON.parse(req.body));
 
+    console.log("----> data", data);
+
     if (!data.success) {
       return res.status(400).json({ error: data.error.message });
     }
 
-    const { title, slug, content, published } = data.data;
+    const { title, slug, content, published, cover_image } = data.data;
 
     const updated_at = new Date().toISOString();
 
     const { data: post, error } = await db
       .from("posts")
-      .update({ title, content, slug, published, updated_at })
+      .update({ title, content, slug, published, cover_image, updated_at })
       .eq("blog_id", blogId)
-      .eq("user_id", auth.userId)
+      .eq("user_id", user?.id)
       .eq("slug", postSlug)
       .select()
       .single();
@@ -44,7 +46,7 @@ export default async function handler(
       .select("*")
       .eq("slug", postSlug)
       .eq("blog_id", blogId)
-      .eq("user_id", auth.userId)
+      .eq("user_id", user?.id)
       .single();
 
     if (error) {
@@ -57,7 +59,7 @@ export default async function handler(
       .from("posts")
       .delete()
       .eq("blog_id", blogId)
-      .eq("user_id", auth.userId)
+      .eq("user_id", user?.id)
       .eq("slug", postSlug)
       .single();
 

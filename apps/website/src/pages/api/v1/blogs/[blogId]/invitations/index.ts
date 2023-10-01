@@ -1,16 +1,16 @@
-import { getAuthedDB } from "@/lib/server/handler";
-import { getAuth } from "@clerk/nextjs/server";
+// import { getAuth } from "@clerk/nextjs/server";
+import { getServerClient } from "@/lib/server/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const db = await getAuthedDB(req, res);
+  const { db } = await getServerClient(req, res);
   if (!db) return res.status(401).json({ error: "Unauthorized" });
   const CLERK_BASE_URL = "https://api.clerk.dev/v1/invitations";
 
-  const { userId } = getAuth(req);
+  // const { userId } = getAuth(req);
   const blogId = req.query.blogId as string;
 
   const method = req.method;
