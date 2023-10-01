@@ -1,8 +1,7 @@
 import AppLayout from "@/layouts/AppLayout";
 import { generateSlug } from "@/lib/utils/slugs";
-import { getClient } from "@/lib/supabase";
 import { useAppStore } from "@/store/app";
-import { useAuth } from "@clerk/nextjs";
+// import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -15,7 +14,7 @@ export default function CreateBlog() {
     slug: string;
   };
   const { register, handleSubmit, watch, setValue } = useForm<FormData>();
-  const { getToken } = useAuth();
+  // const { getToken } = useAuth();
   const router = useRouter();
   const watchTitle = watch("title");
   const store = useAppStore();
@@ -29,34 +28,32 @@ export default function CreateBlog() {
 
   const onSubmit = async (data: FormData) => {
     store.startLoading();
-    const token = await getToken({ template: "supabase" });
+    // const token = await getToken({ template: "supabase" });
 
-    if (!token) {
-      alert("Error creating blog, please try again");
-      await router.push("/sign-in");
-      return;
-    }
+    // if (!token) {
+    //   alert("Error creating blog, please try again");
+    //   await router.push("/sign-in");
+    //   return;
+    // }
 
-    const sb = getClient(token);
+    // const res = await sb.from("blogs").insert({
+    //   title: data.title,
+    //   description: data.description,
+    //   emoji: data.emoji,
+    // });
 
-    const res = await sb.from("blogs").insert({
-      title: data.title,
-      description: data.description,
-      emoji: data.emoji,
-    });
-
-    if (res.error) {
-      console.error(res.error);
-      if (res.error.code === "23505") {
-        alert("A blog with that slug already exists");
-        return;
-      } else {
-        alert("Error creating blog, please try again");
-      }
-    } else {
-      store.stopLoading();
-      await router.push("/blogs");
-    }
+    // if (res.error) {
+    //   console.error(res.error);
+    //   if (res.error.code === "23505") {
+    //     alert("A blog with that slug already exists");
+    //     return;
+    //   } else {
+    //     alert("Error creating blog, please try again");
+    //   }
+    // } else {
+    //   store.stopLoading();
+    //   await router.push("/blogs");
+    // }
   };
 
   watch("title");

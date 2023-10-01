@@ -1,11 +1,8 @@
 import type { GetServerSideProps } from "next";
-import { getAuth } from "@clerk/nextjs/server";
-import { getClient } from "@/lib/supabase";
 import AppLayout from "@/layouts/AppLayout";
 import { useForm } from "react-hook-form";
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { generateSlug } from "@/lib/utils/slugs";
 import { z } from "zod";
 import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
@@ -14,6 +11,8 @@ import Heading from "@tiptap/extension-heading";
 import { useAppStore } from "@/store/app";
 import { Blog } from "@/lib/models/blogs/Blogs";
 import ImageExt from "@tiptap/extension-image";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Editor } from "novel";
 
 const formSchema = z.object({
   title: z.string(),
@@ -23,26 +22,15 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function BlogDashboard() {
-  async function getDB() {
-    const token = await auth.getToken({ template: "supabase" });
-    if (!token) {
-      throw new Error("No token");
-    }
-    return getClient(token);
-  }
-
   const { handleSubmit, register, setValue } = useForm<FormData>();
 
   async function uploadImage(file: File) {
     // wait 2s
     // return the image url
-    const db = await getDB();
-
-    const { data, error } = await db.storage
-      .from("images")
-      .upload("image.png", file);
-
-    return data;
+    // const { data, error } = await db.storage
+    //   .from("images")
+    //   .upload("image.png", file);
+    // return data;
   }
 
   const editor = useEditor({
@@ -56,36 +44,35 @@ export default function BlogDashboard() {
     content: "",
   });
 
-  const auth = useAuth();
+  // const auth = useAuth();
   const router = useRouter();
   const [title, setTitle] = useState("");
   const blogId = router.query.blogId as string;
   const store = useAppStore();
+  const supa = useSupabaseClient();
 
   const onSubmit = handleSubmit(async (data) => {
     store.startLoading();
-    const token = await auth.getToken({ template: "supabase" });
+    // const token = await auth.getToken({ template: "supabase" });
 
     try {
       const formData = formSchema.parse(data);
+      const user = await supa.auth.getUser();
 
-      if (!token || !auth.userId) {
-        alert("Error creating blog, please try again");
-        return;
+      if (!user.data.user) {
+        throw new Error("No user");
       }
-
-      const sb = getClient(token);
 
       const payload = {
         title: formData.title,
         slug: formData.slug,
         content: editor?.getJSON(),
         blog_id: blogId,
-        user_id: auth.userId,
+        user_id: user.data.user.id,
         published: formData.published,
       };
 
-      const res = await sb.from("posts").insert(payload);
+      const res = await supa.from("posts").insert(payload);
 
       const jsonContent = editor?.getJSON();
       if (!jsonContent) {
@@ -184,8 +171,8 @@ export default function BlogDashboard() {
             </label>
 
             <EditorContent
-              className="prose:min-w-none h2:font-serif prose flex min-h-[600px] w-full max-w-none rounded-md px-2 text-lg text-slate-600"
               editor={editor}
+              className="prose:min-w-none h2:font-serif prose flex min-h-[600px] w-full max-w-none rounded-md px-2 text-lg text-slate-600"
             />
           </div>
         </form>

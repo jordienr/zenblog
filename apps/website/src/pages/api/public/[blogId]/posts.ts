@@ -1,4 +1,4 @@
-import { getClient } from "@/lib/supabase";
+import { getClientClient } from "@/lib/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   try {
     console.log("🪵 req.query.blogId", req.query.blogId);
-    const db = getClient();
+    const db = getClientClient();
     const blogId = req.query.blogId as string;
     const { data, error } = await db
       .from("posts")

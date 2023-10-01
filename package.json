@@ -27,6 +27,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "@types/inquirer": "^9.0.3"
+    "@types/inquirer": "^9.0.3",
+    "next": "^13.4.18"
   }
 }

@@ -1,15 +1,14 @@
 // Next API Function GET all blogs
 
-import { getAuthAndDB } from "@/lib/server/handler";
 import { NextApiRequest, NextApiResponse } from "next";
 import { FileObject } from "@supabase/storage-js/src/lib/types";
-import { get } from "http";
+import { getServerClient } from "@/lib/server/supabase";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { db, auth } = await getAuthAndDB(req, res);
+  const { db } = await getServerClient(req, res);
   const blogId = req.query.blogId as string;
 
   function getImageUrl(image: FileObject) {
@@ -21,7 +20,6 @@ export default async function handler(
   }
 
   // const postSlug = req.query.postSlug as string;
-  console.log("IMAGES 🍋🍋🍋🍋🍋", blogId);
 
   if (req.method === "GET") {
     const { data, error } = await db.storage.from("images").list(blogId, {
@@ -39,8 +37,6 @@ export default async function handler(
         updatedAt: image.updated_at,
       };
     });
-
-    console.log("IMAGES 🍋🍋🍋🍋🍋", data);
 
     if (error) {
       return res.status(500).json({ error: error.message });

@@ -9,7 +9,7 @@ const Logo = () => (
 export default function ZendoLogo() {
   return (
     <Image
-      src="/logo.svg"
+      src="/static/logo.svg"
       alt="An orange cut in half, or, the zendo.blog logo"
       width={32}
       height={32}

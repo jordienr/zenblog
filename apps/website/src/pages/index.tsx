@@ -13,16 +13,13 @@ import { Command } from "lucide-react";
 import { CgTrees } from "react-icons/cg";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { getClient } from "@/lib/supabase";
-import { useState } from "react";
+import { getClientClient } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ZendoLogo from "@/components/ZendoLogo";
-import { useAuth } from "@clerk/nextjs";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-// import { oneDark as dark } from "react-syntax-highlighter/dist/esm/styles/prism";
-
-// import { atomOneDark } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import Image from "next/image";
+import { useUser } from "@supabase/auth-helpers-react";
+import { HiArrowLeft } from "react-icons/hi";
 
 const Home = () => {
   const features = [
@@ -71,43 +68,18 @@ const Home = () => {
     },
   ];
 
-  const pricing = [
-    {
-      title: "Indie",
-      description:
-        "Zendo offers a free plan for personal use. You can have as many blogs as you want. You can have as many posts as you want. You can have as many authors as you want.",
-      price: "9",
-      features: [
-        "Unlimited blogs",
-        "Unlimited posts",
-        "Up to 10 thousand page views per month",
-      ],
-    },
-    {
-      title: "Pro",
-      description:
-        "Zendo offers a fair pricing for businesses. You can have as many blogs as you want. You can have as many posts as you want. You can have as many authors as you want.",
-      price: "49",
-      features: [
-        "Unlimited blogs",
-        "Unlimited posts",
-        "Up to 500 thousand page views per month",
-      ],
-    },
-    {
-      title: "Agency",
-      description:
-        "Zendo offers a fair pricing for agencies. You can have as many blogs as you want. You can have as many posts as you want. You can have as many authors as you want.",
-      price: "199",
-      features: [
-        "Unlimited blogs",
-        "Unlimited posts",
-        "Up to 5 million page views per month",
-      ],
-    },
-  ];
+  const user = useUser();
 
-  const { isSignedIn } = useAuth();
+  useEffect(() => {
+    const client = getClientClient();
+    client.auth.getSession().then((res) => {
+      console.log("sess", res);
+    });
+
+    client.auth.getUser().then((res) => {
+      console.log("user", res);
+    });
+  }, []);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -123,7 +95,7 @@ const Home = () => {
   const onSubmit = handleSubmit(async (data) => {
     const formData = formSchema.parse(data);
 
-    const sb = getClient();
+    const sb = getClientClient();
 
     await sb.from("homepage_signup").insert(formData);
 
@@ -137,7 +109,7 @@ const Home = () => {
       <Head>
         <title>zendoblog</title>
         <meta name="description" content="Headless CMS for TS devs" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <div className="bg-grid-slate-100/50 min-h-screen bg-white">
         <div className="mx-auto max-w-5xl">
@@ -156,8 +128,20 @@ const Home = () => {
               >
                 <FaTwitter size="24" />
               </Link>
-              {isSignedIn && (
-                <div>
+
+              {!user && (
+                <Link
+                  href="/sign-in"
+                  className="btn btn-primary inline-block"
+                  title="Sign in"
+                  aria-label="Sign in"
+                >
+                  Sign in
+                </Link>
+              )}
+
+              {user && (
+                <div className="flex">
                   <Link className="btn btn-primary inline-block" href="/blogs">
                     My Blogs
                   </Link>
@@ -165,9 +149,10 @@ const Home = () => {
               )}
             </div>
           </nav>
+
           <main className="px-4">
-            <div className="mt-12 max-w-sm">
-              <h1 className="mt-2 flex max-w-sm flex-wrap gap-2 text-left text-3xl font-semibold leading-7">
+            <div className="mx-auto mt-12 max-w-lg text-center">
+              <h1 className="mt-2 text-5xl font-semibold leading-snug">
                 {"Add a blog to your website in 2 minutes"
                   .split(" ")
                   .map((w, i) => (
@@ -184,20 +169,20 @@ const Home = () => {
                         duration: 0.2,
                         delay: i * 0.1,
                       }}
-                      className="inline-block"
+                      className="mr-2.5 inline-block"
                       key={w}
                     >
                       {w}
                     </motion.span>
                   ))}
               </h1>
-              <p className="mt-2 max-w-xs font-mono text-lg text-slate-500">
+              <p className="mx-auto mt-2 max-w-xs font-mono text-xl text-slate-500">
                 The modern headless CMS for TypeScript developers
               </p>
             </div>
             {!hasSubmitted && (
               <form
-                className="mt-6 flex max-w-sm flex-col gap-2"
+                className="mx-auto mt-6 flex max-w-sm flex-col gap-2"
                 onSubmit={onSubmit}
               >
                 <div className="flex gap-2">
@@ -245,7 +230,7 @@ const Home = () => {
               </div>
             )}
           </main>
-          <section className=" mx-3 mt-16">
+          <section className=" section mx-3 mt-16">
             <ul className="mt-4 grid-cols-2 gap-1 md:grid">
               {features.map((feature, index) => {
                 return (
@@ -262,7 +247,7 @@ const Home = () => {
                       duration: 0.2,
                       delay: index * 0.1,
                     }}
-                    className="cursor-default rounded-xl bg-white/5 backdrop-blur-sm px-5 py-3"
+                    className="cursor-default rounded-xl bg-white/5 px-5 py-3 backdrop-blur-sm"
                     key={feature.title}
                   >
                     <div className="flex gap-4">
@@ -283,9 +268,9 @@ const Home = () => {
               Get your content easily, fully typed.
             </h2>
             <div className="mt-4">
-              <pre className="overflow-auto rounded-lg bg-slate-800 text-blue-100">
+              <pre className="overflow-auto rounded-lg bg-slate-800 pl-8 font-mono text-blue-100">
                 {`
-  import { createClient } from "@zendoblog/cms";
+  import { createClient } from "@zendo/cms";
 
   const cms = createClient({
     blogId: env.ZENDO_BLOG_ID,
@@ -301,10 +286,10 @@ const Home = () => {
             <h2 className="section-title">Simple UI to manage your blogs</h2>
             <Image
               className="mt-4 rounded-lg shadow-sm"
-              src="/zendoblog-screenshot-1.png"
+              src="/static/zendoblog-screenshot-1.png"
               alt="Screenshot of the ZendoBlog UI"
               loading="lazy"
-              blurDataURL="/zendoblog-screenshot-1.png"
+              blurDataURL="/static/zendoblog-screenshot-1.png"
               placeholder="blur"
               width={1440}
               height={900}

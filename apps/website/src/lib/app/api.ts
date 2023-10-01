@@ -4,6 +4,14 @@ import { getPostBySlugRes, getPostsRes } from "../models/posts/Posts";
 import { GetBlogRes } from "../models/blogs/Blogs";
 import { JSONContent } from "@tiptap/react";
 
+export type UpdatePostBody = {
+  title?: string;
+  slug?: string;
+  published?: boolean;
+  content?: JSONContent;
+  cover_image?: string;
+};
+
 export function createAPIClient() {
   async function _fetch<T extends z.ZodTypeAny>(
     input: RequestInfo,
@@ -11,7 +19,8 @@ export function createAPIClient() {
     type: T
   ): Promise<z.infer<T>> {
     const headers = new Headers(init?.headers);
-    const res = await fetch(input, { ...init, headers });
+    const URL_START = "/api/v1";
+    const res = await fetch(URL_START + input, { ...init, headers });
 
     console.log(`[🛫 Req ${init.method} ${input}] `, init.body);
 
@@ -33,24 +42,20 @@ export function createAPIClient() {
   }
 
   async function getBlogs() {
-    const res = await _fetch("/api/blogs", { method: "GET" }, z.array(Blog));
+    const res = await _fetch("/blogs", { method: "GET" }, z.array(Blog));
 
     return res;
   }
 
   async function getBlog(slug: string) {
-    const res = await _fetch(
-      `/api/blogs/${slug}`,
-      { method: "GET" },
-      GetBlogRes
-    );
+    const res = await _fetch(`/blogs/${slug}`, { method: "GET" }, GetBlogRes);
 
     return res;
   }
 
   async function deleteBlog(slug: string) {
     const res = await _fetch(
-      `/api/blogs/${slug}`,
+      `/blogs/${slug}`,
       { method: "DELETE" },
       DeleteBlogRes
     );
@@ -60,7 +65,7 @@ export function createAPIClient() {
 
   async function patchBlog(slug: string, body: PatchBlog) {
     const res = await _fetch(
-      `/api/blogs/${slug}`,
+      `/blogs/${slug}`,
       { method: "PATCH", body: JSON.stringify(body) },
       GetBlogRes
     );
@@ -70,7 +75,7 @@ export function createAPIClient() {
 
   async function getPostsForBlog(blogId: string) {
     const res = await _fetch(
-      `/api/blogs/${blogId}/posts`,
+      `/blogs/${blogId}/posts`,
       { method: "GET" },
       getPostsRes
     );
@@ -80,7 +85,7 @@ export function createAPIClient() {
 
   async function getPostBySlug(blogId: string, postSlug: string) {
     const res = await _fetch(
-      `/api/blogs/${blogId}/posts/${postSlug}`,
+      `/blogs/${blogId}/posts/${postSlug}`,
       { method: "GET" },
       getPostBySlugRes
     );
@@ -90,7 +95,7 @@ export function createAPIClient() {
 
   async function deletePostBySlug(blogId: string, postSlug: string) {
     const res = await _fetch(
-      `/api/blogs/${blogId}/posts/${postSlug}`,
+      `/blogs/${blogId}/posts/${postSlug}`,
       { method: "DELETE" },
       z.object({ success: z.boolean() })
     );
@@ -101,15 +106,10 @@ export function createAPIClient() {
   async function updatePostBySlug(
     blogId: string,
     postSlug: string,
-    body: {
-      title: string;
-      slug: string;
-      published: boolean;
-      content: JSONContent;
-    }
+    body: UpdatePostBody
   ) {
     const res = await _fetch(
-      `/api/blogs/${blogId}/posts/${postSlug}`,
+      `/blogs/${blogId}/posts/${postSlug}`,
       { method: "PATCH", body: JSON.stringify(body) },
       z.object({ success: z.boolean() })
     );
@@ -121,7 +121,7 @@ export function createAPIClient() {
     user: {
       setup: () =>
         _fetch(
-          "/api/user/setup",
+          "/user/setup",
           { method: "GET" },
           z.object({ success: z.boolean() })
         ),
@@ -135,7 +135,7 @@ export function createAPIClient() {
     invitations: {
       create: (blogId: string, name: string, email: string) =>
         _fetch(
-          `/api/blogs/${blogId}/invitations`,
+          `/blogs/${blogId}/invitations`,
           {
             method: "POST",
             body: JSON.stringify({
@@ -147,7 +147,7 @@ export function createAPIClient() {
         ),
       getAll: (blogId: string) =>
         _fetch(
-          `/api/blogs/${blogId}/invitations`,
+          `/blogs/${blogId}/invitations`,
           { method: "GET" },
           z.array(
             z.object({
@@ -160,7 +160,7 @@ export function createAPIClient() {
         ),
       delete: (blogId: string, invitationId: string) =>
         _fetch(
-          `/api/blogs/${blogId}/invitations/${invitationId}`,
+          `/blogs/${blogId}/invitations/${invitationId}`,
           { method: "DELETE" },
           z.object({ success: z.boolean() })
         ),
@@ -174,7 +174,7 @@ export function createAPIClient() {
     images: {
       getAll: (blogId: string) =>
         _fetch(
-          `/api/blogs/${blogId}/images`,
+          `/blogs/${blogId}/images`,
           { method: "GET" },
           z.array(
             z.object({
@@ -193,7 +193,7 @@ export function createAPIClient() {
 
         console.log("APIC: ", body);
         return _fetch(
-          `/api/upload`,
+          `/upload`,
           { method: "POST", body: JSON.stringify(body) },
           z.any()
         );
