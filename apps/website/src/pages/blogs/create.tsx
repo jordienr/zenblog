@@ -1,5 +1,6 @@
 import AppLayout from "@/layouts/AppLayout";
 import { generateSlug } from "@/lib/utils/slugs";
+import { useCreateBlogMutation } from "@/queries/blogs";
 import { useAppStore } from "@/store/app";
 // import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
@@ -26,34 +27,26 @@ export default function CreateBlog() {
     }
   }, [watchTitle, setValue]);
 
+  const createBlog = useCreateBlogMutation();
+
   const onSubmit = async (data: FormData) => {
     store.startLoading();
-    // const token = await getToken({ template: "supabase" });
 
-    // if (!token) {
-    //   alert("Error creating blog, please try again");
-    //   await router.push("/sign-in");
-    //   return;
-    // }
+    const res = await createBlog.mutateAsync({
+      title: data.title,
+      description: data.description,
+      emoji: data.emoji,
+    });
 
-    // const res = await sb.from("blogs").insert({
-    //   title: data.title,
-    //   description: data.description,
-    //   emoji: data.emoji,
-    // });
+    console.log(res);
 
-    // if (res.error) {
-    //   console.error(res.error);
-    //   if (res.error.code === "23505") {
-    //     alert("A blog with that slug already exists");
-    //     return;
-    //   } else {
-    //     alert("Error creating blog, please try again");
-    //   }
-    // } else {
-    //   store.stopLoading();
-    //   await router.push("/blogs");
-    // }
+    if (createBlog.isError) {
+      console.error(createBlog.error);
+      alert("Error creating blog, please try again");
+    } else {
+      store.stopLoading();
+      await router.push("/blogs");
+    }
   };
 
   watch("title");

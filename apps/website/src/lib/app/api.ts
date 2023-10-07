@@ -1,3 +1,4 @@
+import { create } from "zustand";
 import { Blog, DeleteBlogRes, PatchBlog } from "@/lib/models/blogs/Blogs";
 import { z } from "zod";
 import { getPostBySlugRes, getPostsRes } from "../models/posts/Posts";
@@ -73,6 +74,31 @@ export function createAPIClient() {
     return res;
   }
 
+  async function createBlog({
+    title,
+    description,
+    emoji,
+  }: {
+    title: string;
+    description: string;
+    emoji: string;
+  }) {
+    const res = await _fetch(
+      "/blogs",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          title,
+          description,
+          emoji,
+        }),
+      },
+      z.null()
+    );
+
+    return res;
+  }
+
   async function getPostsForBlog(blogId: string) {
     const res = await _fetch(
       `/blogs/${blogId}/posts`,
@@ -117,6 +143,7 @@ export function createAPIClient() {
     return res;
   }
 
+  // TODO!: move these methods to separate files this is getting too big
   return {
     user: {
       setup: () =>
@@ -131,6 +158,7 @@ export function createAPIClient() {
       getAll: getBlogs,
       update: patchBlog,
       delete: deleteBlog,
+      create: createBlog,
     },
     invitations: {
       create: (blogId: string, name: string, email: string) =>
