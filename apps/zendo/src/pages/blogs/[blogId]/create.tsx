@@ -12,7 +12,6 @@ import { useAppStore } from "@/store/app";
 import { Blog } from "@/lib/models/blogs/Blogs";
 import ImageExt from "@tiptap/extension-image";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Editor } from "novel";
 
 const formSchema = z.object({
   title: z.string(),

@@ -65,6 +65,7 @@
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
     "@types/eslint": "^8.21.3",
+    "@types/formidable": "^3.4.3",
     "@types/node": "^18.15.5",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.28",

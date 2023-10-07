@@ -146,18 +146,26 @@ export default function Post() {
   }
 
   const updatePost = useMutation({
-    mutationFn: (
-      data: {
-        content?: JSONContent;
-        cover_image?: string;
-      } & FormData
-    ) => api.posts.update(blogId, postSlug, data),
+    mutationFn: (data: {
+      title: string;
+      published: boolean;
+      slug: string;
+      id: string;
+      created_at: string;
+      updated_at: string;
+      blog_id: string;
+      user_id: string;
+      cover_image?: string;
+      content?: any;
+    }) => api.posts.update(blogId, postSlug, data),
     onSuccess: () => {
       window.location.reload();
     },
   });
 
   function onCoverImageSelect(image: BlogImage) {
+    if (!post) return;
+
     const newPost = {
       ...post,
       cover_image: image.url,
@@ -237,7 +245,7 @@ export default function Post() {
           </form>
           <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col">
             <div className="flex items-center justify-center bg-slate-100">
-              <img className="max-h-96" src={post?.cover_image} />
+              <img className="max-h-96" src={post?.cover_image || ""} />
             </div>
             <div className="group mt-4 border-b border-slate-100 pb-2">
               <div className="flex w-full justify-between gap-2 transition-all">
@@ -291,7 +299,10 @@ export default function Post() {
               </div>
             </div>
             <div className="flex items-center justify-center bg-slate-100">
-              <img src={post?.cover_image} className="max-h-96 object-cover" />
+              <img
+                src={post?.cover_image || ""}
+                className="max-h-96 object-cover"
+              />
             </div>
             <div className="mx-auto mt-4 w-full max-w-2xl">
               <div>

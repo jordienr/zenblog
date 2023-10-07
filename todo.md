@@ -2,7 +2,7 @@
 
 ## Features
 
-- [] Add PolyScale cache to Supabase for faster queries
+- [] Add PolyScale cache to Supabase for faster queries?
 - [] Categories
 - [] Tags
 - [] Featured Images

@@ -25,11 +25,11 @@ export default async function handler(
 
     if (invitations) {
       invitations.forEach(async (invitation) => {
-        await db.from("members").insert({
-          blog_id: invitation.blog_id,
-          // user_id: userId,
-          role: "MEMBER",
-        });
+        // await db.from("members").insert({
+        //   blog_id: invitation.blog_id,
+        //   // user_id: userId,
+        //   // role: "MEMBER",
+        // });
       });
     }
 
