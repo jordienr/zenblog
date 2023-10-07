@@ -14,7 +14,6 @@ import { Toaster } from "sonner";
 import { useState } from "react";
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { useAuth } from "@/lib/client/auth";
 
 // Fonts
 const inter = Inter({
@@ -33,7 +32,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
   const [queryClient] = useState(() => new QueryClient());
   const [supabaseClient] = useState(() => createPagesBrowserClient());
-  const auth = useAuth();
 
   return (
     <div className={ibmPlexMono.variable + " " + inter.variable}>
