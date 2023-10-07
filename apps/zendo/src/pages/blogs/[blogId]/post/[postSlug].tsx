@@ -99,6 +99,13 @@ export default function Post() {
     title: z.string(),
     published: z.boolean(),
     slug: z.string(),
+    id: z.string(),
+    created_at: z.string(),
+    updated_at: z.string(),
+    blog_id: z.string(),
+    user_id: z.string(),
+    cover_image: z.string().optional(),
+    content: z.any(),
   });
 
   type FormData = z.infer<typeof formSchema>;
