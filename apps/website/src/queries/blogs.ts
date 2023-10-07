@@ -1,5 +1,5 @@
 import { createAPIClient } from "@/lib/app/api";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const api = createAPIClient();
 
@@ -16,3 +16,13 @@ export const useBlogsQuery = () =>
     staleTime: 1000 * 60 * 5, // 5 minutes
     cacheTime: 1000 * 60 * 60 * 24, // 1 day
   });
+
+export const useCreateBlogMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(api.blogs.create, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(keys.blogs());
+    },
+  });
+};

@@ -9,7 +9,7 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import { SiTypescript } from "react-icons/si";
-import { Command } from "lucide-react";
+import { Command, Star } from "lucide-react";
 import { CgTrees } from "react-icons/cg";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -111,11 +111,14 @@ const Home = () => {
         <meta name="description" content="Headless CMS for TS devs" />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="bg-grid-slate-100/50 min-h-screen bg-white">
+      <div className="bg-grid-slate-200/50 min-h-screen bg-slate-50">
         <div className="mx-auto max-w-5xl">
           <nav className="flex items-center justify-between p-3">
-            <ZendoLogo />
-            <div className="flex items-center gap-4">
+            <div className="flex-grow">
+              <ZendoLogo />
+            </div>
+
+            <div className="flex flex-grow items-center justify-end gap-4">
               {/* <Link href="/blog" className="text-lg underline">
                 Blog
               </Link> */}
@@ -152,7 +155,17 @@ const Home = () => {
 
           <main className="px-4">
             <div className="mx-auto mt-12 max-w-lg text-center">
-              <h1 className="mt-2 text-5xl font-semibold leading-snug">
+              <div className="flex justify-center">
+                <Link
+                  className="flex items-center gap-1 rounded-xl border bg-white px-3 py-1 text-sm font-medium shadow-sm hover:text-amber-500"
+                  target="_blank"
+                  href="https://github.com/jordienr/zendo"
+                >
+                  <Star className="text-amber-500" size="20" />
+                  Star us on GitHub
+                </Link>
+              </div>
+              <h1 className="line leading-20 mt-2 text-5xl font-semibold leading-snug">
                 {"Add a blog to your website in 2 minutes"
                   .split(" ")
                   .map((w, i) => (
@@ -176,8 +189,11 @@ const Home = () => {
                     </motion.span>
                   ))}
               </h1>
-              <p className="mx-auto mt-2 max-w-xs font-mono text-xl text-slate-500">
-                The modern headless CMS for TypeScript developers
+              <p className="mx-auto mt-2 max-w-md font-mono text-xl font-medium text-slate-500">
+                Open source CMS for <br />{" "}
+                <span className="text-blue-400">TypeScript</span> and{" "}
+                <span className="text-green-400">Supabase </span>
+                developers
               </p>
             </div>
             {!hasSubmitted && (
