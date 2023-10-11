@@ -1,6 +1,7 @@
 import { BlogSelector } from "@/components/Blogs/BlogSelector";
 import ZendoLogo from "@/components/ZendoLogo";
 import { useAppStore } from "@/store/app";
+import { Github, Twitter } from "lucide-react";
 // import { UserButton, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 
@@ -13,7 +14,7 @@ export default function AppLayout({ children, loading }: Props) {
 
   return (
     <div
-      className={`min-h-screen border-b bg-white ${
+      className={`flex min-h-screen flex-col border-b bg-white ${
         loading ? "overflow-hidden" : ""
       }`}
     >
@@ -40,9 +41,23 @@ export default function AppLayout({ children, loading }: Props) {
           {/* <UserButton /> */}
         </div>
       </nav>
-      <div className="min-h-[900px]">{children}</div>
-      <footer className="mt-24 bg-slate-50 py-24 text-center font-serif">
-        🍊
+      <div className="min-h-screen bg-slate-50 pb-24 shadow-md">{children}</div>
+      <footer className="flex justify-between border-t bg-slate-100 p-8 font-mono text-slate-700">
+        <ul>
+          <li>Thanks for checking out Zendo</li>
+        </ul>
+        <ul className="flex gap-2">
+          <li>
+            <Link href="https://github.com/jordienr/zendo">
+              <Github size="24" />
+            </Link>
+          </li>
+          <li>
+            <Link href="https://twitter.com/tryzendo">
+              <Twitter size="24" />
+            </Link>
+          </li>
+        </ul>
       </footer>
     </div>
   );

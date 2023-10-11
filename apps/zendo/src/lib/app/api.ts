@@ -93,7 +93,7 @@ export function createAPIClient() {
           emoji,
         }),
       },
-      z.null()
+      GetBlogRes
     );
 
     return res;

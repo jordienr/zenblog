@@ -13,6 +13,11 @@ module.exports = {
     "./src/**/*.{ts,tsx}",
   ],
   theme: {
+    border: {
+      DEFAULT: "0.3px solid var(--border-color)",
+      1: "1px",
+      2: "2px",
+    },
     container: {
       center: true,
       padding: "2rem",

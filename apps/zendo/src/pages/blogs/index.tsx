@@ -5,10 +5,13 @@ import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
 import { IoSettingsSharp, IoAddCircle } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/Button";
+import { useRouter } from "next/router";
 
 export default function Dashboard() {
   const api = createAPIClient();
   const { data, error, isLoading } = useBlogsQuery();
+  const router = useRouter();
 
   return (
     <AppLayout>
@@ -53,21 +56,29 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="actions mt-4">
-                      <Link
-                        href={`/blogs/${blog.id}/settings`}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(`/blogs/${blog.id}/settings`);
+                        }}
                         className="btn btn-icon"
                         title="Settings"
                         aria-label="Settings"
                       >
                         <IoSettingsSharp size="24" />
-                      </Link>
-                      <Link
-                        href={`/blogs/${blog.id}/create`}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(`/blogs/${blog.id}/create`);
+                        }}
                         className="btn btn-primary max-w-[144px]"
                       >
                         <IoAddCircle size="24" />
                         New post
-                      </Link>
+                      </button>
                     </div>
                   </Link>
                 </li>

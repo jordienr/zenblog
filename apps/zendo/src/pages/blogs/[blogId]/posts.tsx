@@ -33,12 +33,21 @@ export default function BlogPosts() {
   function getFormattedPosts() {
     if (!data || !data.posts) return [];
 
-    return data.posts.map((post) => {
+    const formattedPosts = data.posts.map((post) => {
       return {
         ...post,
         created_at: new Date(post.created_at || "").toLocaleDateString(),
       };
     });
+
+    const sortedPosts = formattedPosts.sort((a, b) => {
+      return (
+        new Date(b.created_at || "").getTime() -
+        new Date(a.created_at || "").getTime()
+      );
+    });
+
+    return sortedPosts.reverse();
   }
 
   if (isLoading) {
@@ -115,10 +124,10 @@ export default function BlogPosts() {
                   )}
                   <div>
                     <h2 className="text-lg font-medium">{post.title}</h2>
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <span>{post.created_at}</span>
-                      <StatePill published={post.published} />
-                    </div>
+                  </div>
+                  <StatePill published={post.published} />
+                  <div className="ml-auto flex items-center gap-2 text-xs text-slate-500">
+                    <span>{post.created_at}</span>
                   </div>
                 </Link>
               );

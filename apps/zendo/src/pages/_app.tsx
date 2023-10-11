@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { Inter, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono, Archivo } from "next/font/google";
 import "@/styles/globals.css";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
@@ -21,6 +21,11 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const archivo = Archivo({
+  subsets: ["latin"],
+  variable: "--font-archivo",
+});
+
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["200", "300", "400", "500", "600", "700"],
@@ -34,7 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [supabaseClient] = useState(() => createPagesBrowserClient());
 
   return (
-    <div className={ibmPlexMono.variable + " " + inter.variable}>
+    <div className={`${inter.variable} ${ibmPlexMono.variable}`}>
       <SessionContextProvider
         supabaseClient={supabaseClient}
         initialSession={pageProps.initialSession}

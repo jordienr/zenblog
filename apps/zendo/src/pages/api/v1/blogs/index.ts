@@ -16,17 +16,20 @@ export default async function handler(
   if (req.method === "POST") {
     const body = JSON.parse(req.body);
 
-    const { data, error } = await db.from("blogs").insert({
-      title: body.title,
-      description: body.description,
-      emoji: body.emoji,
-    });
+    const { data, error } = await db
+      .from("blogs")
+      .insert({
+        title: body.title,
+        description: body.description,
+        emoji: body.emoji,
+      })
+      .select();
 
     if (error) {
       return res.status(500).json({ error: error.message });
     }
 
-    return res.status(200);
+    return res.status(200).json({ ...data[0] });
   } else if (req.method === "GET") {
     const { data: blogs, error } = await db.from("blogs").select("*");
 

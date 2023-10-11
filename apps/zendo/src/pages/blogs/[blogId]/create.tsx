@@ -34,11 +34,12 @@ export default function BlogDashboard() {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      ImageExt,
-      Heading.configure({
-        levels: [2, 3, 4, 5, 6],
+      StarterKit.configure({
+        heading: {
+          levels: [2, 3, 4, 5, 6],
+        },
       }),
+      ImageExt,
     ],
     content: "",
   });

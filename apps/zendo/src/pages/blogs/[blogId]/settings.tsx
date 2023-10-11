@@ -3,11 +3,12 @@ import { createAPIClient } from "@/lib/app/api";
 import { PatchBlog } from "@/lib/models/blogs/Blogs";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { EmojiPicker } from "@/components/EmojiPicker";
 import { Invitations } from "@/components/Blogs/Invitations";
 import { Members } from "@/components/Blogs/Members";
+import { CodeBlock } from "@/components/CodeBlock";
 
 export default function BlogSettings() {
   type FormData = {
@@ -52,8 +53,12 @@ export default function BlogSettings() {
     }
   });
 
+  const queryClient = useQueryClient();
   const { mutateAsync: deleteBlogMutation } = useMutation({
     mutationFn: () => api.blogs.delete(blogId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["blogs"]);
+    },
   });
   async function deleteBlog() {
     await deleteBlogMutation();
@@ -160,28 +165,28 @@ export default function BlogSettings() {
         </section>
 
         <section className="section p-3">
-          <h2 className="text-lg font-medium">API Guide</h2>
+          <h2 className="text-lg font-medium">Integration guide</h2>
           <h3 className="mb-4 mt-8">1. Install the zendo API client</h3>
-          <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
-            <code>{`npm install @zendo/cms`}</code>
-          </pre>
+          <CodeBlock language="bash">{`npm install @zendo/cms`}</CodeBlock>
 
           <h3 className="mb-4 mt-8">2. Create a client</h3>
 
-          <pre className="rounded-lg bg-slate-800 p-4 text-slate-200">
-            <code>
-              {`import createClient from "@zendo/cms";`}
-              <br />
-              {`
+          <CodeBlock title="/pages/blog.tsx">
+            {`
+import { createClient } from "@zendo/cms";
+
 const cms = createClient({
   blogId: "${blog.id}",
-})
-              `}
-            </code>
-          </pre>
+});
+            `}
+          </CodeBlock>
+
+          <h3>
+            3. Use the client to fetch posts and render them on your website
+          </h3>
         </section>
 
-        <section className="section border border-red-100 bg-gradient-to-b from-white to-red-100 p-3 text-red-600">
+        <section className="section border border-red-300 bg-gradient-to-b from-white to-red-50 p-3 text-red-600">
           <h2 className="mb-4 text-lg font-medium">🚨 Danger zone</h2>
           <p className="text-sm">
             This action cannot be undone. This will permanently delete the blog.

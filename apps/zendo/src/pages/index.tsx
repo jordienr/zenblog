@@ -165,7 +165,7 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="line leading-20 mt-2 text-5xl font-semibold leading-snug">
+              <h1 className="line mt-2 font-mono text-5xl font-semibold leading-tight tracking-tight">
                 {"Add a blog to your website in 2 minutes"
                   .split(" ")
                   .map((w, i) => (
@@ -189,10 +189,10 @@ const Home = () => {
                     </motion.span>
                   ))}
               </h1>
-              <p className="mx-auto mt-2 max-w-md font-mono text-xl font-medium text-slate-500">
+              <p className="mx-auto mt-2 max-w-md text-xl font-medium text-slate-700">
                 Open source CMS for <br />{" "}
-                <span className="text-blue-400">TypeScript</span> and{" "}
-                <span className="text-green-400">Supabase </span>
+                <span className="text-blue-500">TypeScript</span> and{" "}
+                <span className="text-green-500">Supabase </span>
                 developers
               </p>
             </div>
@@ -230,7 +230,7 @@ const Home = () => {
                     type="submit"
                     className="btn btn-primary w-full min-w-full"
                   >
-                    Sign me up for the beta
+                    Request invite!
                   </button>
                 </div>
               </form>

@@ -128,7 +128,7 @@ input[type="checkbox"]:checked {
 }
 
 .section {
-  @apply rounded-xl border-[0.3px] bg-gradient-to-b from-white to-slate-50 shadow-sm;
+  @apply rounded-xl border-[0.3px] bg-white shadow-sm;
 }
 
 .section-title {
@@ -147,7 +147,10 @@ input[type="checkbox"]:checked {
 
 h1,
 h2,
-h3 {
+h3,
+h4,
+h5,
+h6 {
   text-wrap: balance;
 }
 

@@ -18,6 +18,6 @@ const config = {
     locales: [ "en" ],
     defaultLocale: "en",
   },
-  transpilePackages: [ "@znd/ui" ],
+  transpilePackages: [ "@znd/ui", "react-syntax-highlighter" ],
 };
 export default config;
