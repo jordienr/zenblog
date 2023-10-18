@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { Inter, IBM_Plex_Mono, Archivo } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
@@ -21,14 +21,9 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const archivo = Archivo({
-  subsets: ["latin"],
-  variable: "--font-archivo",
-});
-
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   variable: "--font-ibm-plex-mono",
 });
 
@@ -36,10 +31,14 @@ const ibmPlexMono = IBM_Plex_Mono({
 function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
   const [queryClient] = useState(() => new QueryClient());
-  const [supabaseClient] = useState(() => createPagesBrowserClient());
+  const [supabaseClient] = useState(() =>
+    createPagesBrowserClient({
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    })
+  );
 
   return (
-    <div className={`${inter.variable} ${ibmPlexMono.variable}`}>
+    <div className={`${ibmPlexMono.variable} ${inter.variable}`}>
       <SessionContextProvider
         supabaseClient={supabaseClient}
         initialSession={pageProps.initialSession}

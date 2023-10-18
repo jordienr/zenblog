@@ -13,7 +13,10 @@
     "build:web": "turbo run build --filter=@zendo/web",
     "build:twu": "turbo run build --filter=tailwindutils",
     "build:cms": "turbo run build --filter=@zendo/client",
-    "publish:cms": "turbo run publish --filter=@zendo/cms"
+    "publish:cms": "turbo run publish --filter=@zendo/cms",
+    "supa:start": "npx supabase start",
+    "supa:stop": "npx supabase stop",
+    "supa:open": "open http://localhost:54323"
   },
   "devDependencies": {
     "@turbo/gen": "^1.9.7",

@@ -153,11 +153,11 @@ const Home = () => {
             </div>
           </nav>
 
-          <main className="px-4">
+          <main className="px-4 font-sans">
             <div className="mx-auto mt-12 max-w-lg text-center">
               <div className="flex justify-center">
                 <Link
-                  className="flex items-center gap-1 rounded-xl border bg-white px-3 py-1 text-sm font-medium shadow-sm hover:text-amber-500"
+                  className="flex items-center gap-1 rounded-xl border bg-white px-3 py-1 font-mono text-sm font-medium shadow-sm hover:text-amber-500"
                   target="_blank"
                   href="https://github.com/jordienr/zendo"
                 >
@@ -165,7 +165,7 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="line mt-2 font-mono text-5xl font-semibold leading-tight tracking-tight">
+              <h1 className="line mt-2 text-5xl font-bold leading-[55px]">
                 {"Add a blog to your website in 2 minutes"
                   .split(" ")
                   .map((w, i) => (
@@ -189,11 +189,23 @@ const Home = () => {
                     </motion.span>
                   ))}
               </h1>
-              <p className="mx-auto mt-2 max-w-md text-xl font-medium text-slate-700">
-                Open source CMS for <br />{" "}
-                <span className="text-blue-500">TypeScript</span> and{" "}
-                <span className="text-green-500">Supabase </span>
-                developers
+              <p className="mx-auto mt-2 max-w-md text-xl font-medium text-slate-600">
+                Open source blogging CMS.
+                <br /> Built with{" "}
+                <a
+                  href="https://nextjs.org"
+                  className="cursor-alias text-black underline"
+                >
+                  Next.js
+                </a>{" "}
+                and{" "}
+                <a
+                  href="https://supabase.com"
+                  className="cursor-alias text-green-600 underline"
+                >
+                  Supabase
+                </a>
+                . Easily self-hostable. Works with any stack.
               </p>
             </div>
             {!hasSubmitted && (

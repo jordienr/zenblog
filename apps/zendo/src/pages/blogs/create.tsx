@@ -96,7 +96,9 @@ export default function CreateBlog() {
               </h2>
               <div className="flex justify-center gap-4">
                 <NextActionItem
-                  onClick={() => router.push(`/blogs/${createBlog.data?.id}`)}
+                  onClick={() =>
+                    router.push(`/blogs/${createBlog.data?.id}/create`)
+                  }
                   icon="🧑‍🚀"
                 >
                   Write my first post

@@ -316,7 +316,7 @@ export default function Post() {
                 <span className="p-2 font-mono text-sm text-slate-500">
                   {post?.slug}
                 </span>
-                <h1 className="px-2 text-3xl font-semibold">{post?.title}</h1>
+                <h1 className="px-2 text-3xl font-medium">{post?.title}</h1>
               </div>
               <ContentRenderer content={post?.content} />
             </div>

@@ -14,7 +14,7 @@ export default function AppLayout({ children, loading }: Props) {
 
   return (
     <div
-      className={`flex min-h-screen flex-col border-b bg-white ${
+      className={`flex min-h-screen flex-col border-b bg-white font-sans ${
         loading ? "overflow-hidden" : ""
       }`}
     >

@@ -3,9 +3,7 @@ import AppLayout from "@/layouts/AppLayout";
 import { createAPIClient } from "@/lib/app/api";
 import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
-import { IoSettingsSharp, IoAddCircle } from "react-icons/io5";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/Button";
+import { IoSettingsSharp, IoAdd } from "react-icons/io5";
 import { useRouter } from "next/router";
 
 export default function Dashboard() {
@@ -76,7 +74,7 @@ export default function Dashboard() {
                         }}
                         className="btn btn-primary max-w-[144px]"
                       >
-                        <IoAddCircle size="24" />
+                        <IoAdd size="24" />
                         New post
                       </button>
                     </div>
