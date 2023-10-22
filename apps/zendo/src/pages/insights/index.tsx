@@ -213,7 +213,7 @@ const Insights = (props: Props) => {
         )}
         {res ? (
           <div className="space-y-3">
-            <TextTypePicker />
+            <TextTypePicker onTextTypeChange={(c) => console.log(c)} />
             <InsightBlock title="Grammar tips">
               <ul className="ml-4 list-disc space-y-3 text-sm">
                 {res.grammar_insights.map((val) => (
