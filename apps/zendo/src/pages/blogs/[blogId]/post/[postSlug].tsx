@@ -277,10 +277,10 @@ export default function Post() {
               <input
                 type="text"
                 {...register("title")}
-                className="mt-1 w-full max-w-2xl whitespace-break-spaces rounded-xl border-none bg-transparent text-3xl font-semibold outline-none hover:bg-white focus:bg-white"
+                className="mt-1 w-full max-w-2xl whitespace-break-spaces rounded-xl border-none bg-transparent font-serif text-4xl font-medium outline-none hover:bg-white focus:bg-white"
               />
             </div>
-            <div className="prose group">
+            <div className="prose prose-headings:font-serif prose-h2:font-normal group">
               <div className="border-b border-slate-100 transition-all">
                 <EditorMenu editor={editor} />
               </div>

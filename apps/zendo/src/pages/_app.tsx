@@ -38,7 +38,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 
   return (
-    <div className={`${ibmPlexMono.variable} ${inter.variable}`}>
+    <div
+      className={`${ibmPlexMono.variable} ${inter.variable} ${inter.className}`}
+    >
       <SessionContextProvider
         supabaseClient={supabaseClient}
         initialSession={pageProps.initialSession}
@@ -70,7 +72,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               </>
             </Hydrate>
 
-            <ReactQueryDevtools initialIsOpen={false} />
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
           </QueryClientProvider>
         </PlausibleProvider>
       </SessionContextProvider>

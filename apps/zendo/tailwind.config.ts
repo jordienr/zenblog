@@ -33,6 +33,7 @@ module.exports = {
         DEFAULT: "shadow",
       },
       fontFamily: {
+        default: ["var(--font-inter)"],
         sans: ["var(--font-inter)"],
         mono: ["var(--font-ibm-plex-mono)"],
       },

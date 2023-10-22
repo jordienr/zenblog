@@ -20,6 +20,7 @@ import ZendoLogo from "@/components/ZendoLogo";
 import Image from "next/image";
 import { useUser } from "@supabase/auth-helpers-react";
 import { HiArrowLeft } from "react-icons/hi";
+import { LoggedInUser } from "@/components/LoggedInUser";
 
 const Home = () => {
   const features = [
@@ -119,9 +120,16 @@ const Home = () => {
             </div>
 
             <div className="flex flex-grow items-center justify-end gap-4">
-              {/* <Link href="/blog" className="text-lg underline">
-                Blog
-              </Link> */}
+              <LoggedInUser>
+                <Link href="/blog" className="text-lg underline">
+                  Blog
+                </Link>
+              </LoggedInUser>
+              <LoggedInUser>
+                <Link href="/insights" className="text-lg underline">
+                  Insights
+                </Link>
+              </LoggedInUser>
               <Link
                 target="_blank"
                 href="https://twitter.com/tryzendo"
@@ -154,7 +162,7 @@ const Home = () => {
           </nav>
 
           <main className="px-4 font-sans">
-            <div className="mx-auto mt-12 max-w-lg text-center">
+            <div className="mx-auto mt-12 max-w-2xl text-center">
               <div className="flex justify-center">
                 <Link
                   className="flex items-center gap-1 rounded-xl border bg-white px-3 py-1 font-mono text-sm font-medium shadow-sm hover:text-amber-500"
@@ -165,33 +173,49 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="line mt-2 text-5xl font-bold leading-[55px]">
-                {"Add a blog to your website in 2 minutes"
-                  .split(" ")
-                  .map((w, i) => (
-                    <motion.span
-                      initial={{
-                        opacity: 0,
-                        y: 20,
-                      }}
-                      animate={{
-                        opacity: 1,
-                        y: 0,
-                      }}
-                      transition={{
-                        duration: 0.2,
-                        delay: i * 0.1,
-                      }}
-                      className="mr-2.5 inline-block"
-                      key={w}
-                    >
-                      {w}
-                    </motion.span>
-                  ))}
+              <h1 className="mt-2 text-5xl font-bold leading-[55px] tracking-tight text-slate-900">
+                {"Add a blog to your website".split(" ").map((w, i) => (
+                  <motion.span
+                    initial={{
+                      opacity: 0,
+                      y: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.2,
+                      delay: i * 0.1,
+                    }}
+                    className="mr-3"
+                    key={w}
+                  >
+                    {w}
+                  </motion.span>
+                ))}
+
+                <motion.span
+                  initial={{
+                    opacity: 0,
+                    y: 20,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: 0.2,
+                    delay: 1,
+                  }}
+                  className="mr-2.5 inline-block bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text font-mono text-6xl font-extrabold italic tracking-tighter text-transparent"
+                >
+                  in 2 minutes
+                </motion.span>
               </h1>
-              <p className="mx-auto mt-2 max-w-md text-xl font-medium text-slate-600">
+              <p className="mx-auto mt-4 max-w-md text-lg font-medium text-slate-600">
                 Open source blogging CMS.
-                <br /> Built with{" "}
+                {/* <br /> Built with{" "}
                 <a
                   href="https://nextjs.org"
                   className="cursor-alias text-black underline"
@@ -204,8 +228,8 @@ const Home = () => {
                   className="cursor-alias text-green-600 underline"
                 >
                   Supabase
-                </a>
-                . Easily self-hostable. Works with any stack.
+                </a> */}{" "}
+                Easily self-hostable. Works with any stack.
               </p>
             </div>
             {!hasSubmitted && (
@@ -258,6 +282,33 @@ const Home = () => {
               </div>
             )}
           </main>
+          <section className="mt-24 flex justify-center p-2">
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 100,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                rotateX: "1deg",
+              }}
+              transition={{
+                duration: 0.2,
+                delay: 1,
+              }}
+              className="section rounded-xl bg-opacity-60 p-2 shadow-sm"
+            >
+              <Image
+                src="/static/landing_screenshot.png"
+                alt="Screenshot of the ZendoBlog UI"
+                className="rounded-md border shadow-sm"
+                quality={100}
+                width={1100}
+                height={600}
+              />
+            </motion.div>
+          </section>
           <section className=" section mx-3 mt-16">
             <ul className="mt-4 grid-cols-2 gap-1 md:grid">
               {features.map((feature, index) => {
