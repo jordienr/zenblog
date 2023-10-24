@@ -13,6 +13,17 @@ export function OpenSource() {
     [0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
+  const heartArr = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+
+  const [selectedArr, setSelectedArr] = useState(openSourceArr);
 
   function getRandomOpacity(min: number, max: number) {
     return Math.random() * (max - min) + min;
@@ -45,9 +56,9 @@ export function OpenSource() {
       <div
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        className="rounded-md bg-gradient-to-b from-slate-800 to-slate-900 p-2"
+        className="rounded-md bg-gradient-to-b from-slate-800 to-slate-900 p-4"
       >
-        {openSourceArr.map((row, i) => (
+        {selectedArr.map((row, i) => (
           <div key={i} className="flex flex-row justify-center">
             {row.map((col, j) => (
               <motion.div
@@ -59,6 +70,17 @@ export function OpenSource() {
             ))}
           </div>
         ))}
+        <div className="flex justify-center">
+          <a
+            onMouseEnter={() => setSelectedArr(heartArr)}
+            onMouseLeave={() => setSelectedArr(openSourceArr)}
+            className="mx-auto mt-2 inline-flex items-center justify-center gap-2 rounded-lg border border-slate-600 bg-slate-800 p-1 px-3 text-center font-mono font-medium text-white hover:bg-gray-700/70"
+            href="https://github.com/jordienr/zendo"
+            target="_blank"
+          >
+            <span className="text-xl">⭐</span> Star us on GitHub
+          </a>
+        </div>
       </div>
     </>
   );
