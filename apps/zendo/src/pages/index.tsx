@@ -21,6 +21,7 @@ import Image from "next/image";
 import { useUser } from "@supabase/auth-helpers-react";
 import { HiArrowLeft } from "react-icons/hi";
 import { LoggedInUser } from "@/components/LoggedInUser";
+import { OpenSource } from "@/components/OpenSource";
 
 const Home = () => {
   const features = [
@@ -340,6 +341,10 @@ const Home = () => {
                 );
               })}
             </ul>
+          </section>
+
+          <section className="section mx-3 mt-12 p-3">
+            <OpenSource />
           </section>
 
           <section className="section mx-3 mt-12 p-3">
