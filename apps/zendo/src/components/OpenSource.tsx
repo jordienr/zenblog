@@ -21,7 +21,7 @@ export function OpenSource() {
   function getVariants(n: number) {
     return {
       hidden: {
-        opacity: getRandomOpacity(0.3, 0.7),
+        opacity: getRandomOpacity(0.3, 0.9),
       },
       visible: {
         opacity: n ? getRandomOpacity(0.7, 1) : getRandomOpacity(0.1, 0.3),
