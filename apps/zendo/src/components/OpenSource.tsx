@@ -65,7 +65,7 @@ export function OpenSource() {
                 variants={getVariants(col)}
                 animate={hover ? "visible" : "hidden"}
                 key={j}
-                className={`m-0.5 aspect-square h-6 w-6 rounded-md border border-green-300 bg-green-500`}
+                className={`m-0.5 aspect-square h-3 w-3 rounded-sm border border-green-300 bg-green-500 md:h-6 md:w-6 md:rounded-md`}
               ></motion.div>
             ))}
           </div>
