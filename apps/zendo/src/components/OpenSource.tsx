@@ -56,7 +56,7 @@ export function OpenSource() {
       <div
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        className="rounded-md bg-gradient-to-b from-slate-800 to-slate-900 p-4"
+        className="overflow-hidden rounded-md bg-gradient-to-b from-slate-800 to-slate-900 p-4"
       >
         {selectedArr.map((row, i) => (
           <div key={i} className="flex flex-row justify-center">
@@ -65,7 +65,7 @@ export function OpenSource() {
                 variants={getVariants(col)}
                 animate={hover ? "visible" : "hidden"}
                 key={j}
-                className={`m-0.5 h-6 w-6 rounded-md border border-green-300 bg-green-500`}
+                className={`m-0.5 aspect-square h-6 w-6 rounded-md border border-green-300 bg-green-500`}
               ></motion.div>
             ))}
           </div>

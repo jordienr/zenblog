@@ -174,7 +174,7 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-2 text-5xl font-bold leading-[55px] tracking-tight text-slate-900">
+              <h1 className="mt-2 text-3xl font-bold leading-[55px] tracking-tight text-slate-900 md:text-5xl">
                 {"Add a blog to your website".split(" ").map((w, i) => (
                   <motion.span
                     initial={{
@@ -189,7 +189,7 @@ const Home = () => {
                       duration: 0.2,
                       delay: i * 0.1,
                     }}
-                    className="mr-3"
+                    className="mr-1 md:mr-3"
                     key={w}
                   >
                     {w}
@@ -209,7 +209,7 @@ const Home = () => {
                     duration: 0.2,
                     delay: 1,
                   }}
-                  className="mr-2.5 inline-block bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text font-mono text-6xl font-extrabold italic tracking-tighter text-transparent"
+                  className="mr-2.5 inline-block bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text font-mono text-3xl font-extrabold italic tracking-tighter text-transparent md:text-6xl"
                 >
                   in 2 minutes
                 </motion.span>
