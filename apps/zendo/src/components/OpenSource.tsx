@@ -34,6 +34,12 @@ export function OpenSource() {
       hidden: {
         opacity: getRandomOpacity(0.3, 0.9),
         scale: 0.8,
+        transition: {
+          duration: 0.3,
+          type: "spring",
+          bounce: 0.3,
+          delay: Math.random() * (0.5 - 0.1) + 0.1,
+        },
       },
       visible: {
         opacity: n ? getRandomOpacity(0.7, 1) : getRandomOpacity(0.1, 0.3),
