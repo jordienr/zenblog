@@ -1,7 +1,7 @@
-# Zendo CMS
+# Zenblog.com
 
 Open source CMS for TypeScript developers.
 
 Currently in development.
 
-[zendo.blog](https://zendo.blog)
+[zenblog.com](https://zenblog.com)
