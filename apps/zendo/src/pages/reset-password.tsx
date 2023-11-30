@@ -1,5 +1,4 @@
-import { Button } from "@/components/Button";
-import { ZenButton } from "@/components/ZenButton";
+import { Button } from "@/components/ui/button";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 
@@ -54,9 +53,7 @@ export default function ResetPassword() {
           Email
           <input type="email" name="email" id="email" />
         </label>
-        <ZenButton type="submit" variant="primary">
-          Send reset link
-        </ZenButton>
+        <Button type="submit">Send reset link</Button>
       </form>
     </>
   );

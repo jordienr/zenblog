@@ -20,19 +20,18 @@ export const CodeBlock = ({
   });
 
   return (
-    <div className="rounded-lg bg-black font-mono text-white">
+    <div className="rounded-lg bg-slate-900 font-mono text-white">
       <div className="flex items-center justify-between px-2">
-        <h2 className="text-xs">{title || language}</h2>
-        <button onClick={copy} className="p-2">
-          {isCopied ? <Check size="20" /> : <Clipboard size="20" />}
+        <h2 className="text-xs text-slate-300">{title || language}</h2>
+        <button onClick={copy} className="p-2 text-slate-300">
+          {isCopied ? <Check size="18" /> : <Clipboard size="18" />}
         </button>
       </div>
       <SyntaxHighlighter
         customStyle={{
           padding: "1rem",
-          fontSize: "0.9rem",
           borderRadius: "0.5rem",
-          backgroundColor: "#1e1e1e",
+          backgroundColor: "#0f172a",
         }}
         language={language}
         style={atomOneDark}
