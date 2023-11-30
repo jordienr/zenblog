@@ -1,4 +1,4 @@
-import { ZenButton } from "@/components/ZenButton";
+import { Button } from "@/components/ui/button";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 
@@ -47,9 +47,9 @@ export default function ResetPasswordConfirmation() {
           Repeat new password
           <input type="password2" name="password2" id="password2" />
         </label>
-        <ZenButton type="submit" variant="primary">
+        <Button type="submit" variant="default">
           Save
-        </ZenButton>
+        </Button>
       </form>
     </>
   );

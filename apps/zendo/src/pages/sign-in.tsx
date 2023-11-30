@@ -1,4 +1,4 @@
-import { ZenButton } from "@/components/ZenButton";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -17,7 +17,12 @@ export default function SignIn() {
     const form = e.currentTarget;
     const email = form.email.value;
 
-    const { data, error } = await supabase.auth.signInWithOtp({ email });
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/blogs`,
+      },
+    });
 
     if (error) {
       alert(error.message);
@@ -74,9 +79,7 @@ export default function SignIn() {
               Password
               <input required type="password" name="password" />
             </label>
-            <ZenButton variant="primary" type="submit" loading={loading}>
-              Sign in
-            </ZenButton>
+            <Button type="submit">Sign in</Button>
           </form>
         </TabsContent>
 
@@ -90,9 +93,7 @@ export default function SignIn() {
               Email
               <input required type="email" name="email" />
             </label>
-            <ZenButton variant="primary" type="submit" loading={loading}>
-              Sign in
-            </ZenButton>
+            <Button type="submit">Sign in</Button>
           </form>
         </TabsContent>
       </Tabs>

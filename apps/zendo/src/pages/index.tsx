@@ -21,15 +21,19 @@ import Image from "next/image";
 import { useUser } from "@supabase/auth-helpers-react";
 import { HiArrowLeft } from "react-icons/hi";
 import { LoggedInUser } from "@/components/LoggedInUser";
-import { OpenSource } from "@/components/OpenSource";
+import { OpenSource } from "@/components/Homepage/Cards/OpenSource";
+import TypeSafety from "@/components/Homepage/Cards/TypeSafety";
+import { ZendoEditor } from "@/components/Editor/ZendoEditor";
+import { CodeBlock } from "@/components/CodeBlock";
+import BaseCard from "@/components/Homepage/Cards/BaseCard";
+import ReactComponents from "@/components/Homepage/Cards/ReactComponents";
+import CodeExamples from "@/components/Homepage/Cards/CodeExamples";
+import Demo from "@/components/Homepage/Cards/Demo";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const Home = () => {
   const features = [
-    {
-      title: "Headless CMS",
-      description: "Built for developers. Stack agnostic.",
-      icon: <FaCode size="24" className="text-orange-500" />,
-    },
     {
       title: "Type safety",
       description:
@@ -67,6 +71,11 @@ const Home = () => {
       title: "Analytics",
       description: "Easily find out how many page views your blog posts have.",
       icon: <FaRegChartBar size="24" className="text-orange-500" />,
+    },
+    {
+      title: "Open Source",
+      description: "Built with Next.js and Supabase.",
+      icon: <FaCode size="24" className="text-orange-500" />,
     },
   ];
 
@@ -114,7 +123,7 @@ const Home = () => {
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <div className="bg-grid-slate-200/50 min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto flex max-w-5xl flex-col">
           <nav className="flex items-center justify-between p-3">
             <div className="flex-grow">
               <ZendoLogo />
@@ -166,7 +175,7 @@ const Home = () => {
             <div className="mx-auto mt-12 max-w-2xl text-center">
               <div className="flex justify-center">
                 <Link
-                  className="flex items-center gap-1 rounded-xl border bg-white px-3 py-1 font-mono text-sm font-medium shadow-sm hover:text-amber-500"
+                  className="flex items-center gap-1 rounded-xl border bg-white px-3 py-1 text-sm font-medium shadow-sm hover:text-amber-500"
                   target="_blank"
                   href="https://github.com/jordienr/zendo"
                 >
@@ -175,62 +184,10 @@ const Home = () => {
                 </Link>
               </div>
               <h1 className="mt-2 text-3xl font-bold leading-[55px] tracking-tight text-slate-900 md:text-5xl">
-                {"Add a blog to your website".split(" ").map((w, i) => (
-                  <motion.span
-                    initial={{
-                      opacity: 0,
-                      y: 20,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    transition={{
-                      duration: 0.2,
-                      delay: i * 0.1,
-                    }}
-                    className="mr-1 md:mr-3"
-                    key={w}
-                  >
-                    {w}
-                  </motion.span>
-                ))}
-
-                <motion.span
-                  initial={{
-                    opacity: 0,
-                    y: 20,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  transition={{
-                    duration: 0.2,
-                    delay: 1,
-                  }}
-                  className="mr-2.5 inline-block bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text font-mono text-3xl font-extrabold italic tracking-tighter text-transparent md:text-6xl"
-                >
-                  in 2 minutes
-                </motion.span>
+                Add a blog to your <br /> website in 2 minutes
               </h1>
-              <p className="mx-auto mt-4 max-w-md text-lg font-medium text-slate-600">
-                Open source blogging CMS.
-                {/* <br /> Built with{" "}
-                <a
-                  href="https://nextjs.org"
-                  className="cursor-alias text-black underline"
-                >
-                  Next.js
-                </a>{" "}
-                and{" "}
-                <a
-                  href="https://supabase.com"
-                  className="cursor-alias text-green-600 underline"
-                >
-                  Supabase
-                </a> */}{" "}
-                Easily self-hostable. Works with any stack.
+              <p className="mx-auto mt-4 max-w-md text-lg text-slate-600">
+                Open source blogging CMS <br /> Works with any stack
               </p>
             </div>
             {!hasSubmitted && (
@@ -238,12 +195,11 @@ const Home = () => {
                 className="mx-auto mt-6 flex max-w-sm flex-col gap-2"
                 onSubmit={onSubmit}
               >
-                <div className="flex gap-2">
+                <div className="flex gap-2 [&>*]:w-full">
                   <label htmlFor="name">
-                    <input
+                    <Input
                       type="text"
                       id="name"
-                      className="rounded-t-xl px-4 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                       placeholder="Name"
                       aria-label="Name"
                       title="Name"
@@ -251,24 +207,20 @@ const Home = () => {
                     />
                   </label>
                   <label htmlFor="email">
-                    <input
+                    <Input
                       {...register("email", { required: true })}
                       type="email"
                       id="email"
                       aria-label="Email"
-                      className="rounded-b-xl px-4 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
                       placeholder="Email"
                       title="Email"
                     />
                   </label>
                 </div>
-                <div className="actions">
-                  <button
-                    type="submit"
-                    className="btn btn-primary w-full min-w-full"
-                  >
+                <div className="">
+                  <Button className="w-full" type="submit">
                     Request invite!
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}
@@ -283,148 +235,21 @@ const Home = () => {
               </div>
             )}
           </main>
-          <section className="mt-24 flex justify-center p-2">
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 100,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                rotateX: "1deg",
-              }}
-              transition={{
-                duration: 0.2,
-                delay: 1,
-              }}
-              className="section rounded-xl bg-opacity-60 p-2 shadow-sm"
-            >
-              <Image
-                src="/static/landing_screenshot.png"
-                alt="Screenshot of the ZendoBlog UI"
-                className="rounded-md border shadow-sm"
-                quality={100}
-                width={1100}
-                height={600}
-              />
-            </motion.div>
-          </section>
-          <section className=" section mx-3 mt-16">
-            <ul className="mt-4 grid-cols-2 gap-1 md:grid">
-              {features.map((feature, index) => {
-                return (
-                  <motion.li
-                    initial={{
-                      opacity: 0,
-                      y: 20,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    transition={{
-                      duration: 0.2,
-                      delay: index * 0.1,
-                    }}
-                    className="cursor-default rounded-xl bg-white/5 px-5 py-3 backdrop-blur-sm"
-                    key={feature.title}
-                  >
-                    <div className="flex gap-4">
-                      <div className="py-2">{feature.icon}</div>
-                      <div>
-                        <h3 className="text-lg font-medium">{feature.title}</h3>
-                        <p className="text-slate-500">{feature.description}</p>
-                      </div>
-                    </div>
-                  </motion.li>
-                );
-              })}
-            </ul>
-          </section>
 
-          <section className="section mx-3 mt-12 p-3">
-            <OpenSource />
-          </section>
-
-          <section className="section mx-3 mt-12 p-3">
-            <h2 className="section-title">
-              Get your content easily, fully typed.
-            </h2>
-            <div className="mt-4">
-              <pre className="overflow-auto rounded-lg bg-slate-800 pl-8 font-mono text-blue-100">
-                {`
-  import { createClient } from "@zendo/cms";
-
-  const cms = createClient({
-    blogId: env.ZENDO_BLOG_ID,
-  });
-
-  const posts = await cms.posts.getAll();
-                `}
-              </pre>
+          <div className="mt-12 grid gap-4 p-2 md:grid-cols-2">
+            <div className="col-span-2">
+              <Demo />
             </div>
-          </section>
 
-          <section className="section mx-3 mt-12 p-3">
-            <h2 className="section-title">Simple UI to manage your blogs</h2>
-            <Image
-              className="mt-4 rounded-lg shadow-sm"
-              src="/static/zendoblog-screenshot-1.png"
-              alt="Screenshot of the ZendoBlog UI"
-              loading="lazy"
-              blurDataURL="/static/zendoblog-screenshot-1.png"
-              placeholder="blur"
-              width={1440}
-              height={900}
-            />
-          </section>
-
-          {/* <section className="m-3 mt-16 rounded-xl border-[0.3px] bg-gradient-to-b from-white to-slate-50 px-3 py-4 shadow-sm">
-            <h2 className="my-4 text-center text-2xl font-semibold">
-              Simple usage based pricing
-            </h2>
-            <ul className="mx-auto mt-4 grid-cols-3 md:grid">
-              {pricing.map((price, index) => {
-                return (
-                  <motion.li
-                    initial={{
-                      opacity: 0,
-                      y: 20,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    transition={{
-                      duration: 0.2,
-                      delay: index * 0.1,
-                    }}
-                    className="cursor-default px-4 py-3"
-                    key={price.title}
-                  >
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between gap-4">
-                        <h3 className="text-xl font-medium">{price.title}</h3>
-                        <div className="rounded-lg border border-orange-100 bg-orange-50 p-1 text-sm font-medium text-orange-600">
-                          €{price.price}/mo
-                        </div>
-                      </div>
-                      <div className="flex flex-col">
-                        {price.features.map((feature) => {
-                          return (
-                            <p className="text-gray-600" key={feature}>
-                              {feature}
-                            </p>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </motion.li>
-                );
-              })}
-            </ul>
-          </section> */}
+            <OpenSource />
+            <TypeSafety />
+            <div className="col-span-2">
+              <ReactComponents />
+            </div>
+            <div className="col-span-2">
+              <CodeExamples />
+            </div>
+          </div>
         </div>
         <footer>
           <div className=" mt-24 bg-gradient-to-b from-transparent to-white pb-40 pt-24 text-center font-semibold text-slate-800">

@@ -26,15 +26,17 @@ module.exports = {
       },
     },
     extend: {
-      "text-shadow": {
-        DEFAULT: "0 2px 0 rgba(0, 0, 0, 0.05)",
+      textShadow: {
+        sm: "0 1px 2px var(--tw-shadow-color)",
+        DEFAULT: "0 2px 4px var(--tw-shadow-color)",
+        lg: "0 8px 16px var(--tw-shadow-color)",
       },
       highlight: {
         DEFAULT: "shadow",
       },
       fontFamily: {
         default: ["var(--font-inter)"],
-        sans: ["var(--font-inter)"],
+        // sans: ["var(--font-inter)"],
         mono: ["var(--font-ibm-plex-mono)"],
       },
       colors: {
@@ -62,7 +64,6 @@ module.exports = {
   plugins: [
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
     function ({ matchUtilities, theme }: any) {
       matchUtilities(
         {
@@ -78,7 +79,7 @@ module.exports = {
       matchUtilities(
         {
           "text-shadow": (value: any) => ({
-            textShadow: `0 0 2px ${value}`,
+            textShadow: value,
           }),
         },
         { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
@@ -101,6 +102,38 @@ module.exports = {
         },
         { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
       );
+    },
+    function ({ addUtilities }: any) {
+      const flexUtilities = {
+        ".flex-col": {
+          display: "flex",
+          "flex-direction": "column",
+        },
+        ".flex-x-center": {
+          display: "flex",
+          "justify-content": "center",
+        },
+        ".flex-y-center": {
+          display: "flex",
+          "align-items": "center",
+        },
+        ".flex-center": {
+          display: "flex",
+          "align-items": "center",
+          "justify-content": "center",
+        },
+        // Additional utility to fix x and y inversion in flex-col
+        ".flex-col.flex-x-center": {
+          "align-items": "center",
+          "justify-content": "start",
+        },
+        ".flex-col.flex-y-center": {
+          "justify-content": "center",
+          "align-items": "start",
+        },
+      };
+
+      addUtilities(flexUtilities, ["responsive", "hover"]);
     },
   ],
 };
