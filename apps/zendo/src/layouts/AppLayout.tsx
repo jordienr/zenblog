@@ -44,9 +44,9 @@ export default function AppLayout({ children, loading }: Props) {
       <div className="min-h-screen bg-slate-50 pb-24 shadow-md">{children}</div>
       <footer className="flex justify-between border-t bg-slate-100 p-8 font-mono text-slate-700">
         <ul>
-          <li>Thanks for checking out Zendo</li>
+          <li>thanks for checking out zenblog</li>
         </ul>
-        <ul className="flex gap-2">
+        <ul className="flex gap-4">
           <li>
             <Link href="https://github.com/jordienr/zendo">
               <Github size="24" />

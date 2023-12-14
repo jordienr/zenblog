@@ -24,7 +24,7 @@ import { CgArrowTopLeft, CgWebsite } from "react-icons/cg";
 import { BsFillImageFill } from "react-icons/bs";
 import Link from "next/link";
 import { ImagePicker } from "@/components/Images/ImagePicker";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui/button";
 import { BlogImage } from "@/lib/types/BlogImage";
 
 function EditorMenuButton({

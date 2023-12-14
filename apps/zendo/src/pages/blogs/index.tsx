@@ -5,6 +5,7 @@ import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
 import { IoSettingsSharp, IoAdd } from "react-icons/io5";
 import { useRouter } from "next/router";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const api = createAPIClient();
@@ -18,9 +19,11 @@ export default function Dashboard() {
           <div className="flex items-center justify-between p-4">
             <h1 className="text-xl font-semibold">My blogs</h1>
             <div>
-              <Link className="btn" href="/blogs/create">
-                Create
-              </Link>
+              <Button asChild>
+                <Link className="btn" href="/blogs/create">
+                  Create
+                </Link>
+              </Button>
             </div>
           </div>
           {isLoading && (
@@ -54,7 +57,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="actions mt-4">
-                      <button
+                      <Button
+                        size={"icon"}
+                        variant={"ghost"}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -65,8 +70,8 @@ export default function Dashboard() {
                         aria-label="Settings"
                       >
                         <IoSettingsSharp size="24" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -76,7 +81,7 @@ export default function Dashboard() {
                       >
                         <IoAdd size="24" />
                         New post
-                      </button>
+                      </Button>
                     </div>
                   </Link>
                 </li>

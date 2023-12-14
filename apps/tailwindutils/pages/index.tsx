@@ -1,4 +1,4 @@
-import { Post } from "@zendo/cms";
+import { Post } from "zenblog";
 import Link from "next/link";
 import { getCMS } from "@/zendo";
 

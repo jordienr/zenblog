@@ -18,7 +18,7 @@ function getConfig(url) {
         };
     }
     return {
-        api: "https://zendo.blog/api/public",
+        api: "https://zenblog.com/api/public",
     };
 }
 function throwError(msg, ...args) {
@@ -61,7 +61,7 @@ function createClient({ blogId, _url, debug }) {
                         createdAt: post.created_at,
                     };
                 });
-                return normalizedPosts;
+                return normalizedPosts; // to do: validate
             },
             getBySlug: async function (slug) {
                 const post = await _fetch(`post/${slug}`, {
@@ -70,7 +70,7 @@ function createClient({ blogId, _url, debug }) {
                         "Content-Type": "application/json",
                     },
                 });
-                return post;
+                return post; // to do: validate
             },
         },
     };
