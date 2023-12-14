@@ -1,4 +1,4 @@
-import { ContentRenderer } from "@zendo/ui";
+import { ContentRenderer } from "../../../../../packages/zenblog/ui";
 import AppLayout from "@/layouts/AppLayout";
 import { createClient, Post } from "../../../../../packages/cms/src";
 import { GetServerSidePropsContext } from "next";

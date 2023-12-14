@@ -1,4 +1,4 @@
-import { createClient } from "@zendo/cms";
+import { createClient } from "zenblog";
 
 export function getCMS() {
   const cms = createClient({

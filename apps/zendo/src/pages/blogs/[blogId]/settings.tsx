@@ -167,13 +167,13 @@ export default function BlogSettings() {
         <section className="section p-3">
           <h2 className="text-lg font-medium">Integration guide</h2>
           <h3 className="mb-4 mt-8">1. Install the zendo API client</h3>
-          <CodeBlock language="bash">{`npm install @zendo/cms`}</CodeBlock>
+          <CodeBlock language="bash">{`npm install zenblog`}</CodeBlock>
 
           <h3 className="mb-4 mt-8">2. Create a client</h3>
 
           <CodeBlock title="/pages/blog.tsx">
             {`
-import { createClient } from "@zendo/cms";
+import { createClient } from "zenblog";
 
 const cms = createClient({
   blogId: "${blog.id}",

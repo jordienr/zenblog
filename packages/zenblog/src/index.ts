@@ -17,7 +17,7 @@ function getConfig(url?: string): { api: string } {
     };
   }
   return {
-    api: "https://zendo.blog/api/public",
+    api: "https://zenblog.com/api/public",
   };
 }
 
@@ -86,7 +86,7 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
           };
         });
 
-        return normalizedPosts as Post[];
+        return normalizedPosts as Post[]; // to do: validate
       },
       getBySlug: async function (slug: string): Promise<PostWithContent> {
         const post = await _fetch(`post/${slug}`, {
@@ -96,7 +96,7 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
           },
         });
 
-        return post as PostWithContent;
+        return post as PostWithContent; // to do: validate
       },
     },
   };
