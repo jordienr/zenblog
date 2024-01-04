@@ -53,7 +53,7 @@ export default function AppLayout({ children, loading }: Props) {
             </Link>
           </li>
           <li>
-            <Link href="https://twitter.com/tryzendo">
+            <Link href="https://twitter.com/zenbloghq">
               <Twitter size="24" />
             </Link>
           </li>

@@ -133,7 +133,7 @@ const Home = () => {
               </LoggedInUser>
               <Link
                 target="_blank"
-                href="https://twitter.com/tryzendo"
+                href="https://twitter.com/zenbloghq"
                 className="flex items-center justify-center rounded-full p-2 text-lg text-blue-500 hover:bg-blue-100"
                 title="Follow us on Twitter"
                 aria-label="Follow us on Twitter"
