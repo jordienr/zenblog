@@ -32,6 +32,7 @@ export const CodeBlock = ({
           padding: "1rem",
           borderRadius: "0.5rem",
           backgroundColor: "#0f172a",
+          fontSize: "0.82rem",
         }}
         language={language}
         style={atomOneDark}

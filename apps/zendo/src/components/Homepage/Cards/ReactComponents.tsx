@@ -19,7 +19,7 @@ const ReactComponents = (props: Props) => {
       title="React Components"
       caption="Use our React components to build your website faster"
     >
-      <div className="mx-4 flex w-full gap-6 p-2">
+      <div className="mx-4 flex w-full flex-col gap-6 p-2 md:flex-row">
         <CodeBlock title="pages/blog.tsx" language="tsx">
           {`
   import { PostList } from "@zendo/cms";

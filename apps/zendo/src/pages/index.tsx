@@ -118,11 +118,14 @@ const Home = () => {
   return (
     <>
       <Head>
-        <title>zendoblog</title>
-        <meta name="description" content="Headless CMS for TS devs" />
+        <title>zenblog</title>
+        <meta
+          name="description"
+          content="blogging cms and api for typescript devs"
+        />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="bg-grid-slate-200/50 min-h-screen bg-slate-50">
+      <div className="bg-gradient-to-b from-slate-50 via-white to-slate-50">
         <div className="mx-auto flex max-w-5xl flex-col">
           <nav className="flex items-center justify-between p-3">
             <div className="flex-grow">
@@ -151,14 +154,16 @@ const Home = () => {
               </Link>
 
               {!user && (
-                <Link
-                  href="/sign-in"
-                  className="btn btn-primary inline-block"
-                  title="Sign in"
-                  aria-label="Sign in"
-                >
-                  Sign in
-                </Link>
+                <Button asChild>
+                  <Link
+                    href="/sign-in"
+                    className="btn btn-primary inline-block"
+                    title="Sign in"
+                    aria-label="Sign in"
+                  >
+                    Sign in
+                  </Link>
+                </Button>
               )}
 
               {user && (
@@ -183,8 +188,11 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-2 text-3xl font-bold leading-[55px] tracking-tight text-slate-900 md:text-5xl">
-                Add a blog to your <br /> website in 2 minutes
+              <h1 className="mt-2 text-4xl font-bold   text-slate-900 md:text-5xl">
+                Add a blog to your <br /> website{" "}
+                <span className="bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent">
+                  in 2 minutes
+                </span>
               </h1>
               <p className="mx-auto mt-4 max-w-md text-lg text-slate-600">
                 Open source blogging CMS <br /> Works with any stack
@@ -225,35 +233,34 @@ const Home = () => {
               </form>
             )}
             {hasSubmitted && (
-              <div className="mt-6 flex max-w-xs flex-col gap-4">
+              <div className="mx-auto mt-6 flex max-w-xs flex-col gap-4 rounded-xl border bg-white py-4 text-center shadow-sm">
+                <span className="-mb-2 text-3xl">🎉</span>
                 <p className="text-lg font-semibold">
                   Thank you for signing up!
                 </p>
-                <p className="text-gray-600">
+                <p className="-mt-4 text-gray-600">
                   We will let you know when we launch.
                 </p>
               </div>
             )}
           </main>
 
-          <div className="mt-12 grid gap-4 p-2 md:grid-cols-2">
-            <div className="col-span-2">
-              <Demo />
+          <div className="mt-12 flex flex-col gap-4 p-2">
+            <div className="grid gap-4 md:grid-cols-2">
+              <OpenSource />
+              <TypeSafety />
             </div>
-
-            <OpenSource />
-            <TypeSafety />
             <div className="col-span-2">
               <ReactComponents />
             </div>
-            <div className="col-span-2">
+            {/* <div className="col-span-2">
               <CodeExamples />
-            </div>
+            </div> */}
           </div>
         </div>
         <footer>
           <div className=" mt-24 bg-gradient-to-b from-transparent to-white pb-40 pt-24 text-center font-semibold text-slate-800">
-            thanks for checking out zendo
+            thanks for checking out zen
             <span className="text-orange-500">blog</span>
           </div>
         </footer>

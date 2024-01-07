@@ -48,7 +48,7 @@ export default function AppLayout({ children, loading }: Props) {
         </ul>
         <ul className="flex gap-4">
           <li>
-            <Link href="https://github.com/jordienr/zendo">
+            <Link href="https://github.com/jordienr/zenblog">
               <Github size="24" />
             </Link>
           </li>

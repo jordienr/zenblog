@@ -1,12 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
-import { createAPIClient } from "@/lib/app/api";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import imageCompression from "browser-image-compression";
-import Spinner from "../Spinner";
 import { Loader } from "lucide-react";
 
 type Props = {
