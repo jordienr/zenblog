@@ -10,10 +10,10 @@ const TypeSafety = (props: Props) => {
       caption="Fully typed API client that you can use in your app to fetch your
     content. No GraphQL."
     >
-      <div className="group flex h-full items-center justify-center">
+      <div className="group flex h-full items-center justify-center transition-all hover:scale-125">
         <svg
           className=""
-          width="180"
+          width="110"
           height="200"
           viewBox="0 0 94 110"
           fill="none"
