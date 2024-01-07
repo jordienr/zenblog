@@ -43,7 +43,7 @@ export default function BlogDashboard() {
       const payload = {
         title: formData.title,
         slug: formData.slug,
-        content: editor?.getJSON(),
+        // content: editor?.getJSON(),
         blog_id: blogId,
         user_id: user.data.user.id,
         published: formData.published,
@@ -51,10 +51,10 @@ export default function BlogDashboard() {
 
       const res = await supa.from("posts").insert(payload);
 
-      const jsonContent = editor?.getJSON();
-      if (!jsonContent) {
-        throw new Error("No content");
-      }
+      // const jsonContent = editor?.getJSON();
+      // if (!jsonContent) {
+      //   throw new Error("No content");
+      // }
 
       if (res.error) {
         console.error(res.error);
@@ -75,5 +75,5 @@ export default function BlogDashboard() {
     }
   });
 
-  return <ZendoEditor />;
+  // return <ZendoEditor />;
 }

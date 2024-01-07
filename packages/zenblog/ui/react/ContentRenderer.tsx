@@ -5,7 +5,7 @@ import {
   ReactNodeViewRenderer,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { lowlight } from "lowlight";
+import lowlight from "lowlight";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { CodeBlockComponent } from "./CodeBlockComponent";
 

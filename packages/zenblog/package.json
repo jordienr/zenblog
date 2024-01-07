@@ -1,5 +1,5 @@
 {
-  "name": "zenblog",
+  "name": "zenblog-website",
   "version": "0.1.2",
   "description": "The typescript client for zenblog",
   "main": "dist/index.js",
