@@ -1,7 +1,10 @@
-import { ZenButton } from "@/components/ZenButton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
@@ -17,7 +20,12 @@ export default function SignIn() {
     const form = e.currentTarget;
     const email = form.email.value;
 
-    const { data, error } = await supabase.auth.signInWithOtp({ email });
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/blogs`,
+      },
+    });
 
     if (error) {
       alert(error.message);
@@ -54,7 +62,7 @@ export default function SignIn() {
     <div className="mx-auto my-32 flex max-w-sm flex-col gap-4">
       <div>
         <Link className="text-slate-400" href="/">
-          <HiArrowLeft size={24} />
+          <CornerUpLeft size={18} />
         </Link>
       </div>
       <Tabs defaultValue="password">
@@ -66,17 +74,15 @@ export default function SignIn() {
         <TabsContent value="password">
           <form className="mt-4 flex flex-col gap-4" onSubmit={onSubmit}>
             <h1 className="text-2xl font-medium">Sign in with Password</h1>
-            <label>
-              Email
-              <input required type="email" name="email" />
-            </label>
-            <label>
-              Password
-              <input required type="password" name="password" />
-            </label>
-            <ZenButton variant="primary" type="submit" loading={loading}>
-              Sign in
-            </ZenButton>
+            <div>
+              <Label htmlFor="password">Email</Label>
+              <Input required type="email" name="email" />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input required type="password" name="password" />
+            </div>
+            <Button type="submit">Sign in</Button>
           </form>
         </TabsContent>
 
@@ -86,13 +92,11 @@ export default function SignIn() {
             onSubmit={onSubmitMagicLink}
           >
             <h1 className="text-2xl font-medium">Sign in with Magic Link</h1>
-            <label>
-              Email
-              <input required type="email" name="email" />
-            </label>
-            <ZenButton variant="primary" type="submit" loading={loading}>
-              Sign in
-            </ZenButton>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input required type="email" name="email" />
+            </div>
+            <Button type="submit">Sign in</Button>
           </form>
         </TabsContent>
       </Tabs>

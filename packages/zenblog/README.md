@@ -1,15 +1,15 @@
-# Official zendo.blog API Client
+# Official zenblog API Client
 
 ## Install
 
 ```bash
-    npm install @zendo/cms
+    npm install zenblog
 ```
 
 ## Usage example
 
 ```typescript
-import { createClient } from "@zendo/cms";
+import { createClient } from "zenblog";
 
 const cms = createClient({
   blogId: "MY_BLOG_ID", // Go to your blog settings to get your blog id

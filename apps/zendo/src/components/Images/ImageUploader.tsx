@@ -1,22 +1,48 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
-import { createAPIClient } from "@/lib/app/api";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { Button } from "../Button";
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import imageCompression from "browser-image-compression";
+import { Loader } from "lucide-react";
 
 type Props = {
   blogId: string;
   onSuccessfulUpload?: () => void;
 };
 export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
-  const router = useRouter();
   const [image, setImage] = useState(null as File | null);
-  const [createObjectURL, setCreateObjectURL] = useState(null as string | null);
-  const [imageInfo, setImageInfo] = useState(null as any);
+  const [createObjectURL, setCreateObjectURL] = useState<string | null>(null);
+  const [imageInfo, setImageInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   const supa = useSupabaseClient();
+
+  useEffect(() => {
+    // on mount, listen for paste events
+    // if the paste event has image data, add it to the input for upload
+    const handlePaste = (e: ClipboardEvent) => {
+      setLoading(true);
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.indexOf("image") === 0) {
+          const blob = item.getAsFile();
+          if (blob) {
+            uploadToClient({ target: { files: [blob] } } as any);
+            // setImage(blob);
+            // setCreateObjectURL(URL.createObjectURL(blob));
+          }
+        }
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, []);
 
   async function uploadImageToBlogAndGetURL(file: File) {
     const { data, error } = await supa.storage
@@ -48,6 +74,7 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
           resolve({
             width: img.width,
             height: img.height,
+            size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
           });
         };
 
@@ -77,19 +104,42 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
   }
 
   const uploadToClient = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Upload to client");
     if (e.target.files && e.target.files[0]) {
-      const i = e.target.files[0];
+      const imageFile = e.target.files[0];
 
-      setImage(i);
-      const imageInfo = await getImageInfo(i);
+      const options = {
+        maxSizeMB: 5,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+      console.log("originalFile instanceof Blob", imageFile instanceof Blob); // true
+      console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+      const compressedFile = await imageCompression(imageFile, options);
+      console.log(
+        "compressedFile instanceof Blob",
+        compressedFile instanceof Blob
+      ); // true
+      console.log(
+        `compressedFile size ${compressedFile.size / 1024 / 1024} MB`
+      ); // smaller than maxSizeMB
+
+      setImage(compressedFile);
+      const imageInfo = await getImageInfo(compressedFile);
       setImageInfo(imageInfo);
-      setCreateObjectURL(URL.createObjectURL(i));
+      setCreateObjectURL(URL.createObjectURL(compressedFile));
+      setLoading(false);
     }
   };
 
   return (
     <div className="w-full">
       <form onSubmit={onSubmit}>
+        {loading && (
+          <div className="flex-x-center flex-y-center p-24">
+            <Loader className="animate-spin" />
+          </div>
+        )}
         {image && (
           <div className="bg-grid-slate-200 flex flex-col items-center justify-center overflow-auto rounded-xl border bg-slate-100 p-4">
             <img
@@ -97,20 +147,26 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
               src={createObjectURL || ""}
             />
             {imageInfo && (
-              <span className="font-mono text-slate-500">{`${imageInfo.height}x${imageInfo.width}px`}</span>
+              <>
+                <span className=" text-slate-500">{`${imageInfo.height}x${imageInfo.width}px`}</span>
+                <span className=" text-slate-500">{imageInfo.size}</span>
+              </>
             )}
           </div>
         )}
 
         <input
-          className="mt-4 font-mono"
+          className="mt-4"
           type="file"
           name="file"
           onChange={uploadToClient}
           multiple
         />
         <div className="actions mt-4">
-          <Button variant="primary" type="submit">
+          <div className="mr-auto text-center text-sm text-slate-400">
+            Cmd + V to paste an image
+          </div>
+          <Button variant="default" type="submit">
             Upload
           </Button>
         </div>

@@ -18,12 +18,14 @@ import { SessionContextProvider } from "@supabase/auth-helpers-react";
 // Fonts
 const inter = Inter({
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-inter",
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  display: "swap",
   variable: "--font-ibm-plex-mono",
 });
 
@@ -38,9 +40,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 
   return (
-    <div
-      className={`${ibmPlexMono.variable} ${inter.variable} ${inter.className}`}
-    >
+    <div className={`${ibmPlexMono.variable} ${inter.variable}`}>
       <SessionContextProvider
         supabaseClient={supabaseClient}
         initialSession={pageProps.initialSession}

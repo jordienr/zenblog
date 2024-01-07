@@ -1,5 +1,5 @@
 {
-  "name": "z",
+  "name": "@zenblog/root",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -31,5 +31,9 @@
   "dependencies": {
     "@types/inquirer": "^9.0.3",
     "next": "^13.4.18"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }
