@@ -9,6 +9,9 @@ import { EmojiPicker } from "@/components/EmojiPicker";
 import { Invitations } from "@/components/Blogs/Invitations";
 import { Members } from "@/components/Blogs/Members";
 import { CodeBlock } from "@/components/CodeBlock";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export default function BlogSettings() {
   type FormData = {
@@ -117,9 +120,11 @@ export default function BlogSettings() {
                   )}
                 ></Controller>
               </label>
-              <label className="flex-grow" htmlFor="title">
-                <span className="block">Title</span>
-                <input
+              <div>
+                <Label className="flex-grow" htmlFor="title">
+                  Title
+                </Label>
+                <Input
                   type="text"
                   id="title"
                   required
@@ -127,11 +132,11 @@ export default function BlogSettings() {
                     value: blog.title,
                   })}
                 />
-              </label>
+              </div>
             </div>
-            <label htmlFor="description">
-              <span className="block">Description</span>
-              <input
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Input
                 type="text"
                 id="description"
                 required
@@ -139,14 +144,10 @@ export default function BlogSettings() {
                   value: blog.description || "",
                 })}
               />
-            </label>
+            </div>
 
             <div className="actions">
-              {isDirty && (
-                <button className="btn btn-primary" type="submit">
-                  Save
-                </button>
-              )}
+              {isDirty && <Button type="submit">Save</Button>}
             </div>
           </form>
         </section>

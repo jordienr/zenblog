@@ -134,12 +134,12 @@ const Home = () => {
 
             <div className="flex flex-grow items-center justify-end gap-4">
               <LoggedInUser>
-                <Link href="/blog" className="text-lg underline">
+                <Link href="/blog" className="underline">
                   Blog
                 </Link>
               </LoggedInUser>
               <LoggedInUser>
-                <Link href="/insights" className="text-lg underline">
+                <Link href="/insights" className="underline">
                   Insights
                 </Link>
               </LoggedInUser>
@@ -168,9 +168,14 @@ const Home = () => {
 
               {user && (
                 <div className="flex">
-                  <Link className="btn btn-primary inline-block" href="/blogs">
-                    My Blogs
-                  </Link>
+                  <Button asChild>
+                    <Link
+                      className="btn btn-primary inline-block"
+                      href="/blogs"
+                    >
+                      My Blogs
+                    </Link>
+                  </Button>
                 </div>
               )}
             </div>
@@ -180,7 +185,7 @@ const Home = () => {
             <div className="mx-auto mt-12 max-w-2xl text-center">
               <div className="flex justify-center">
                 <Link
-                  className="flex items-center gap-1 rounded-xl border bg-white px-3 py-1 text-sm font-medium shadow-sm hover:text-amber-500"
+                  className="flex items-center gap-1 rounded-xl bg-white px-3 py-1 text-sm font-medium shadow-sm hover:text-amber-500"
                   target="_blank"
                   href="https://github.com/jordienr/zendo"
                 >
@@ -188,13 +193,13 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-2 text-4xl font-bold   text-slate-900 md:text-5xl">
+              <h1 className="mt-2 bg-gradient-to-b from-slate-600 to-slate-900 bg-clip-text text-4xl font-bold text-transparent md:text-5xl lg:text-6xl">
                 Add a blog to your <br /> website{" "}
-                <span className="bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-br from-orange-600 to-orange-300 bg-clip-text text-transparent">
                   in 2 minutes
                 </span>
               </h1>
-              <p className="mx-auto mt-4 max-w-md text-lg text-slate-600">
+              <p className="mx-auto mt-2 max-w-md text-lg text-slate-500">
                 Open source blogging CMS <br /> Works with any stack
               </p>
             </div>

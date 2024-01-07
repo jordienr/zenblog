@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -76,22 +77,26 @@ export default function BlogPosts() {
               <span className="mr-2 text-2xl">{blog.emoji}</span>
               {blog.title}
             </h1>
-            <div className="flex gap-2">
-              <Link
-                href={`/blogs/${blog.id}/settings`}
-                className="btn btn-icon"
-                title="Settings"
-                aria-label="Settings"
-              >
-                <IoSettingsSharp size="24" />
-              </Link>
+            <div className="flex items-center gap-2">
+              <Button asChild size="icon" variant={"ghost"}>
+                <Link
+                  href={`/blogs/${blog.id}/settings`}
+                  className="btn btn-icon"
+                  title="Settings"
+                  aria-label="Settings"
+                >
+                  <IoSettingsSharp size="24" />
+                </Link>
+              </Button>
 
-              <Link
-                href={`/blogs/${blog.id}/create`}
-                className="btn btn-secondary max-w-[120px]"
-              >
-                New post
-              </Link>
+              <Button asChild>
+                <Link
+                  href={`/blogs/${blog.id}/create`}
+                  className="btn btn-secondary max-w-[120px]"
+                >
+                  New post
+                </Link>
+              </Button>
             </div>
           </div>
 
