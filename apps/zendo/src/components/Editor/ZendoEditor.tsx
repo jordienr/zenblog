@@ -45,7 +45,12 @@ type Props = {
 };
 
 export const ZendoEditor = (props: Props) => {
-  const { register, handleSubmit, setValue, watch } = useForm<FormData>();
+  const { register, handleSubmit, setValue, watch } = useForm<FormData>({
+    defaultValues: {
+      title: props.post?.title || "",
+      slug: props.post?.slug || "",
+    },
+  });
   const router = useRouter();
   const blogId = (router.query.id as string) || "demo";
 
@@ -56,6 +61,7 @@ export const ZendoEditor = (props: Props) => {
   }, [title, setValue]);
 
   const editor = useEditor({
+    content: props.post?.content || "",
     editorProps: {
       editable: () => !props.readOnly || false,
       handlePaste: (view, event) => {
@@ -170,7 +176,7 @@ export const ZendoEditor = (props: Props) => {
              font-medium outline-none transition-all hover:bg-slate-50 focus-visible:bg-slate-100"
           />
         </div>
-        <div className="prose prose-headings:font-serif prose-h2:font-normal group">
+        <div className="prose prose-h2:font-medium group">
           {!props.readOnly && (
             <div className="border-b border-slate-100 transition-all">
               <EditorMenu editor={editor} />

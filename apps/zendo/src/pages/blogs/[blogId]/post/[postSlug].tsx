@@ -332,12 +332,7 @@ export default function Post() {
         </div>
       )} */}
 
-      <ZendoEditor
-        onSave={() => {}}
-        onDelete={() => {}}
-        readOnly={true}
-        post={post}
-      />
+      <ZendoEditor onSave={() => {}} onDelete={() => {}} post={post} />
     </div>
   );
 }
