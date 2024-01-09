@@ -19,11 +19,11 @@ const ReactComponents = (props: Props) => {
       title="React Components"
       caption="Use our React components to build your website faster"
     >
-      <div className="mx-4 flex w-full flex-col gap-6 p-2 md:flex-row">
+      <div className="mx-4 mb-4 flex w-full flex-col gap-2 p-2 md:flex-row">
         <CodeBlock title="pages/blog.tsx" language="tsx">
           {`
-  import { PostList } from "@zendo/cms";
-  import { createClient } from "@zendo/cms";
+  import { PostList } from "zenblog/ui";
+  import { createClient } from "zenblog/client";
 
   const Blog = () => {
 

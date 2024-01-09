@@ -6,11 +6,13 @@ import {
   BoldIcon,
   CodeIcon,
   ItalicIcon,
-  PencilIcon,
+  PenLine,
+  Pencil,
   SaveIcon,
   Strikethrough,
+  Trash,
   Trash2Icon,
-  WrenchIcon,
+  Undo2,
 } from "lucide-react";
 import { PiArrowBendUpLeftBold, PiCodeBlock } from "react-icons/pi";
 import Heading from "@tiptap/extension-heading";
@@ -26,65 +28,69 @@ import Link from "next/link";
 import { ImagePicker } from "@/components/Images/ImagePicker";
 import { Button } from "@/components/ui/button";
 import { BlogImage } from "@/lib/types/BlogImage";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 
-function EditorMenuButton({
-  children,
-  active,
-  ...props
-}: {
-  children: React.ReactNode;
-  active: boolean;
-} & React.ComponentPropsWithoutRef<"button">) {
-  const className = `p-2 rounded-md hover:bg-slate-100/80 text-slate-400 hover:text-slate-600 ${
-    active ? "text-orange-500" : ""
-  }`;
+// function EditorMenuButton({
+//   children,
+//   active,
+//   ...props
+// }: {
+//   children: React.ReactNode;
+//   active: boolean;
+// } & React.ComponentPropsWithoutRef<"button">) {
+//   const className = `p-2 rounded-md hover:bg-slate-100/80 text-slate-400 hover:text-slate-600 ${
+//     active ? "text-orange-500" : ""
+//   }`;
 
-  return (
-    <button type="button" className={className} {...props}>
-      {children}
-    </button>
-  );
-}
+//   return (
+//     <button type="button" className={className} {...props}>
+//       {children}
+//     </button>
+//   );
+// }
 
-function EditorMenu({ editor }: { editor: Editor | null }) {
-  const SIZE = 18;
-  const menuButtons = [
-    {
-      icon: <BoldIcon size={SIZE} />,
-      command: () => editor?.chain().focus().toggleBold().run(),
-    },
-    {
-      icon: <ItalicIcon size={SIZE} />,
-      command: () => editor?.chain().focus().toggleItalic().run(),
-    },
-    {
-      icon: <Strikethrough size={SIZE} />,
-      command: () => editor?.chain().focus().toggleStrike().run(),
-    },
-    {
-      icon: <CodeIcon size={SIZE} />,
-      command: () => editor?.chain().focus().toggleCode().run(),
-    },
-    {
-      icon: <PiCodeBlock size={SIZE} />,
-      command: () => editor?.chain().focus().toggleCodeBlock().run(),
-    },
-  ];
+// function EditorMenu({ editor }: { editor: Editor | null }) {
+//   const SIZE = 18;
+//   const menuButtons = [
+//     {
+//       icon: <BoldIcon size={SIZE} />,
+//       command: () => editor?.chain().focus().toggleBold().run(),
+//     },
+//     {
+//       icon: <ItalicIcon size={SIZE} />,
+//       command: () => editor?.chain().focus().toggleItalic().run(),
+//     },
+//     {
+//       icon: <Strikethrough size={SIZE} />,
+//       command: () => editor?.chain().focus().toggleStrike().run(),
+//     },
+//     {
+//       icon: <CodeIcon size={SIZE} />,
+//       command: () => editor?.chain().focus().toggleCode().run(),
+//     },
+//     {
+//       icon: <PiCodeBlock size={SIZE} />,
+//       command: () => editor?.chain().focus().toggleCodeBlock().run(),
+//     },
+//   ];
 
-  return (
-    <div className="flex rounded-2xl bg-white p-1">
-      {menuButtons.map(({ icon, command }, i) => (
-        <EditorMenuButton
-          active={editor?.isActive(command) || false}
-          key={i}
-          onClick={() => command()}
-        >
-          {icon}
-        </EditorMenuButton>
-      ))}
-    </div>
-  );
-}
+//   return (
+//     <div className="flex rounded-2xl bg-white p-1">
+//       {menuButtons.map(({ icon, command }, i) => (
+//         <EditorMenuButton
+//           active={editor?.isActive(command) || false}
+//           key={i}
+//           onClick={() => command()}
+//         >
+//           {icon}
+//         </EditorMenuButton>
+//       ))}
+//     </div>
+//   );
+// }
 
 export default function Post() {
   const [editable, setEditable] = useState(false);
@@ -205,49 +211,50 @@ export default function Post() {
   }
   return (
     <div className="flex min-h-screen w-full flex-col bg-white pb-32">
-      {editable && (
+      {/* {editable && (
         <>
           <form
             onSubmit={onSubmit}
-            className="flex w-full items-center justify-between border-b p-3"
+            className="flex w-full items-center justify-between border-b p-1.5"
           >
             <div className="flex gap-2 rounded-xl">
-              <button
-                className="btn btn-icon"
+              <Button
+                variant="ghost"
+                size={"icon"}
                 onClick={() => setEditable(false)}
               >
-                <PiArrowBendUpLeftBold color="gray" className="h-6 w-6" />
-              </button>
-              <button
+                <PiArrowBendUpLeftBold />
+              </Button>
+              <Button
+                size={"icon"}
+                variant={"ghost"}
                 type="button"
                 onClick={handleDeleteClick}
-                className="btn btn-icon"
               >
-                <Trash2Icon color="red" className="h-6 w-6" />
-              </button>
+                <Trash size="16" />
+              </Button>
             </div>
             <div className="actions">
-              <label
+              <Label
                 className="mr-2 flex items-center gap-2 font-semibold"
                 htmlFor="published"
               >
-                <input
+                <Checkbox
                   id="published"
-                  type="checkbox"
                   {...register("published")}
-                  className="h-6 w-6 rounded-md shadow-sm"
+                  className="h-5 w-5 shadow-sm"
                 />
                 Publish
-              </label>
+              </Label>
 
               <Button variant="secondary">
                 <CgWebsite />
                 SEO
               </Button>
-              <button type="submit" className="btn btn-primary">
-                <SaveIcon color="white" className="h-6 w-6" />
+              <Button type="submit">
+                <SaveIcon color="white" />
                 Save
-              </button>
+              </Button>
             </div>
           </form>
           <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col">
@@ -256,36 +263,35 @@ export default function Post() {
             </div>
             <div className="group mt-4 border-b border-slate-100 pb-2">
               <div className="flex w-full justify-between gap-2 transition-all">
-                <label
-                  className="flex w-full items-center gap-2"
-                  htmlFor="slug"
-                >
+                <label className="flex w-full items-center" htmlFor="slug">
                   <input
                     type="text"
                     {...register("slug")}
-                    className="w-full bg-slate-50 font-mono text-xs outline-none"
+                    className="w-full rounded-md bg-slate-50 p-2 font-mono text-xs outline-none"
                   />
                 </label>
                 <ImagePicker onSelect={onCoverImageSelect}>
-                  <span className="btn btn-text whitespace-nowrap !text-xs">
-                    <BsFillImageFill className="h-4 w-4" />
-                    Cover image
-                  </span>
+                  <Button asChild variant={"secondary"} size="sm">
+                    <div>
+                      <BsFillImageFill className="h-4 w-4" />
+                      Cover image
+                    </div>
+                  </Button>
                 </ImagePicker>
               </div>
 
               <input
                 type="text"
                 {...register("title")}
-                className="mt-1 w-full max-w-2xl whitespace-break-spaces rounded-xl border-none bg-transparent font-serif text-4xl font-medium outline-none hover:bg-white focus:bg-white"
+                className="mt-1 w-full max-w-2xl whitespace-break-spaces border-none bg-transparent text-4xl font-medium outline-none hover:bg-white focus:bg-white"
               />
             </div>
-            <div className="prose prose-headings:font-serif prose-h2:font-normal group">
+            <div className="prose prose-h2:font-medium group">
               <div className="border-b border-slate-100 transition-all">
                 <EditorMenu editor={editor} />
               </div>
-              <div className="-mt-4">
-                <EditorContent editor={editor} />
+              <div className="-mt-2">
+                <EditorContent editor={editor} placeholder="Something great" />
               </div>
             </div>
           </div>
@@ -295,14 +301,16 @@ export default function Post() {
       {!editable && (
         <div className="flex-grow overflow-y-auto">
           <div className="flex flex-col">
-            <div className="flex items-center justify-between p-3">
-              <Link className="btn btn-icon" href={`/blogs/${blogId}/posts`}>
-                <PiArrowBendUpLeftBold className="h-6 w-6" />
-              </Link>
+            <div className="flex items-center justify-between p-1.5">
+              <Button asChild variant={"ghost"} size={"icon"}>
+                <Link href={`/blogs/${blogId}/posts`}>
+                  <Undo2 />
+                </Link>
+              </Button>
               <div>
-                <button onClick={toggleEditable} className="btn btn-icon">
-                  <PencilIcon className="h-6 w-6" />
-                </button>
+                <Button variant={"ghost"} onClick={toggleEditable}>
+                  <PenLine /> Edit
+                </Button>
               </div>
             </div>
             <div className="flex items-center justify-center bg-slate-100">
@@ -322,7 +330,14 @@ export default function Post() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
+
+      <ZendoEditor
+        onSave={() => {}}
+        onDelete={() => {}}
+        readOnly={true}
+        post={post}
+      />
     </div>
   );
 }

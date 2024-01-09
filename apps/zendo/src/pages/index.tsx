@@ -200,7 +200,8 @@ const Home = () => {
                 </span>
               </h1>
               <p className="mx-auto mt-2 max-w-md text-lg text-slate-500">
-                Open source blogging CMS <br /> Works with any stack
+                Open source blogging CMS. Works with any stack. <br />
+                Powered by Supabase and NextJS.
               </p>
             </div>
             {!hasSubmitted && (

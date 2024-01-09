@@ -8,11 +8,8 @@ const Logo = () => (
 
 export default function ZendoLogo() {
   return (
-    <Image
-      src="/static/logo.svg"
-      alt="An orange cut in half, or, the zendo.blog logo"
-      width={32}
-      height={32}
-    />
+    <div className="font-bold text-lg bg-gradient-to-br from-black to-slate-600 text-transparent bg-clip-text tracking-tight">
+      zen<span className="bg-gradient-to-br from-orange-600 to-orange-400 text-transparent bg-clip-text">blog</span>
+    </div>
   );
 }

@@ -39,6 +39,9 @@ type EditorContent = {
 
 type Props = {
   onSave: (content: EditorContent) => void;
+  onDelete: () => void;
+  readOnly?: boolean;
+  post?: any;
 };
 
 export const ZendoEditor = (props: Props) => {
@@ -54,6 +57,7 @@ export const ZendoEditor = (props: Props) => {
 
   const editor = useEditor({
     editorProps: {
+      editable: () => !props.readOnly || false,
       handlePaste: (view, event) => {
         console.log("handlePaste", view, event);
         if (
@@ -81,7 +85,6 @@ export const ZendoEditor = (props: Props) => {
         addProseMirrorPlugins() {
           return [UploadImagesPlugin()];
         },
-        
       }),
     ],
   });
@@ -135,7 +138,7 @@ export const ZendoEditor = (props: Props) => {
       </form>
       <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2">
         <div className="flex items-center justify-center bg-slate-100">
-          <img className="max-h-96" src={""} />
+          <img className="max-h-96" src={""} alt="" />
         </div>
         <div className="group mt-4 border-b border-slate-100 pb-2">
           <div className="flex w-full justify-between gap-2 transition-all">
@@ -149,10 +152,12 @@ export const ZendoEditor = (props: Props) => {
               />
             </label>
             <ImagePicker onSelect={onCoverImageSelect}>
-              <span className="btn btn-text whitespace-nowrap !text-xs">
-                <BsFillImageFill className="h-4 w-4" />
-                Cover image
-              </span>
+              <Button asChild variant={"secondary"}>
+                <span className="btn btn-text whitespace-nowrap !text-xs">
+                  <BsFillImageFill className="h-4 w-4" />
+                  Cover image
+                </span>
+              </Button>
             </ImagePicker>
           </div>
 
@@ -160,21 +165,24 @@ export const ZendoEditor = (props: Props) => {
             placeholder="A great title"
             type="text"
             {...register("title")}
-            className="mt-1 w-full max-w-2xl whitespace-break-spaces rounded-xl border-none bg-transparent p-2 font-serif
+            className="mt-1 w-full max-w-2xl whitespace-break-spaces rounded-xl border-none bg-transparent p-2
             text-4xl
              font-medium outline-none transition-all hover:bg-slate-50 focus-visible:bg-slate-100"
           />
         </div>
         <div className="prose prose-headings:font-serif prose-h2:font-normal group">
-          <div className="border-b border-slate-100 transition-all">
-            <EditorMenu editor={editor} />
-          </div>
+          {!props.readOnly && (
+            <div className="border-b border-slate-100 transition-all">
+              <EditorMenu editor={editor} />
+            </div>
+          )}
           <div
             onClick={() => editor?.chain().focus().toggleBold().run()}
             className="prose -mt-2 min-h-[700px] cursor-text rounded-lg transition-all focus-within:bg-slate-50 hover:bg-slate-50"
           >
             <EditorContent className="" editor={editor} />
             <button
+              className="border"
               onClick={() => {
                 const html = editor?.getHTML();
                 const json = editor?.getJSON();

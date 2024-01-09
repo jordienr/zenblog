@@ -9,6 +9,9 @@ import { Controller, useForm } from "react-hook-form";
 import useWindowSize from "react-use/lib/useWindowSize";
 import Confetti from "react-confetti";
 import { Code } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export default function CreateBlog() {
   const DEFAULT_EMOJI = "📝";
@@ -125,9 +128,9 @@ export default function CreateBlog() {
               className="flex flex-col gap-4"
               onSubmit={handleSubmit(onSubmit)}
             >
-              <div className="flex gap-2">
-                <label htmlFor="emoji">
-                  <span className="block">Emoji</span>
+              <div className="flex items-end gap-4">
+                <Label htmlFor="emoji">
+                  <span className="sr-only block">Emoji</span>
                   <Controller
                     control={control}
                     name="emoji"
@@ -137,31 +140,31 @@ export default function CreateBlog() {
                     )}
                   ></Controller>
                   {/* <input type="text" id="emoji" required {...register("emoji")} /> */}
-                </label>
-                <label className="flex-grow" htmlFor="title">
-                  <span className="block">Title</span>
-                  <input
+                </Label>
+                <div className="w-full">
+                  <Label className="flex-grow" htmlFor="title">
+                    Title
+                  </Label>
+                  <Input
                     type="text"
                     id="title"
                     required
                     {...register("title")}
                   />
-                </label>
+                </div>
               </div>
 
-              <label htmlFor="description">
-                <span className="block">Description</span>
-                <input
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Input
                   type="text"
                   id="description"
                   required
                   {...register("description")}
                 />
-              </label>
+              </div>
 
-              <button className="btn btn-primary" type="submit">
-                Create
-              </button>
+              <Button type="submit">Create blog</Button>
             </form>
           </div>
         )}

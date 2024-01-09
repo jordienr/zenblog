@@ -21,7 +21,7 @@ const formSchema = z.object({
 });
 type FormData = z.infer<typeof formSchema>;
 
-export default function BlogDashboard() {
+export default function CreatePost() {
   const { handleSubmit, register, setValue } = useForm<FormData>();
 
   const router = useRouter();
@@ -75,5 +75,5 @@ export default function BlogDashboard() {
     }
   });
 
-  // return <ZendoEditor />;
+  return <ZendoEditor onSave={() => {}} />;
 }

@@ -103,13 +103,16 @@ export default function BlogPosts() {
           <div className="mt-4 rounded-xl border bg-white py-2 shadow-sm">
             {getFormattedPosts().length === 0 && (
               <div className="p-12 text-center">
-                <span className="font-mono text-lg">Nothing here yet</span>
-                <Link
-                  href={`/blogs/${blog.id}/create`}
-                  className="btn btn-primary mx-auto mt-4 max-w-xs"
-                >
-                  Create your first post
-                </Link>
+                <div className="text-2xl">🤔</div>
+                <div className="text-lg text-slate-500">Nothing here yet</div>
+                <Button asChild>
+                  <Link
+                    href={`/blogs/${blog.id}/create`}
+                    className="btn btn-primary mx-auto mt-4 max-w-xs"
+                  >
+                    Create your first post
+                  </Link>
+                </Button>
               </div>
             )}
             {getFormattedPosts().map((post) => {
