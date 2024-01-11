@@ -75,5 +75,12 @@ export default function CreatePost() {
     }
   });
 
-  return <ZendoEditor onSave={() => {}} />;
+  return (
+    <ZendoEditor
+      onSave={(content) => {
+        console.log(content);
+      }}
+      onDelete={() => {}}
+    />
+  );
 }

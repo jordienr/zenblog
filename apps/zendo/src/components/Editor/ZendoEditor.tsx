@@ -15,25 +15,24 @@ import { generateSlug } from "@/lib/utils/slugs";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { useRouter } from "next/router";
+import { useBlogQuery } from "@/queries/blogs";
+import Link from "next/link";
 
 const formSchema = z.object({
   title: z.string(),
   published: z.boolean(),
   slug: z.string(),
-  id: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-  blog_id: z.string(),
-  user_id: z.string(),
   cover_image: z.string().optional(),
   content: z.any(),
 });
+
 type FormData = z.infer<typeof formSchema>;
 
 type EditorContent = {
   content: JSONContent;
   title: string;
   slug: string;
+  cover_image?: string;
   published: boolean;
 };
 
@@ -41,18 +40,32 @@ type Props = {
   onSave: (content: EditorContent) => void;
   onDelete: () => void;
   readOnly?: boolean;
-  post?: any;
+  post?: {
+    id: string;
+    title: string;
+    slug: string;
+    published: boolean;
+    cover_image?: string;
+    content: JSONContent;
+  };
 };
 
 export const ZendoEditor = (props: Props) => {
-  const { register, handleSubmit, setValue, watch } = useForm<FormData>({
-    defaultValues: {
-      title: props.post?.title || "",
-      slug: props.post?.slug || "",
-    },
-  });
+  const { register, handleSubmit, setValue, watch, getValues } =
+    useForm<FormData>({
+      defaultValues: {
+        title: props.post?.title || "",
+        slug: props.post?.slug || "",
+        published: props.post?.published || false,
+        cover_image: props.post?.cover_image || "",
+      },
+    });
   const router = useRouter();
-  const blogId = (router.query.id as string) || "demo";
+  const blogId = (router.query.blogId as string) || "demo";
+  const [coverImgUrl, setCoverImgUrl] = React.useState<string | null>(null);
+  const [showImagePicker, setShowImagePicker] = React.useState(false);
+
+  const blogQuery = useBlogQuery(blogId);
 
   const title = watch("title");
 
@@ -96,15 +109,21 @@ export const ZendoEditor = (props: Props) => {
   });
 
   const formSubmit = handleSubmit(async (data) => {
-    console.log(data);
+    const content = editor?.getJSON() || {};
+    const published = data.published ? true : false;
+
+    props.onSave({
+      content,
+      title: data.title,
+      slug: data.slug,
+      cover_image: data.cover_image,
+      published,
+    });
   });
 
-  function handleDeleteClick() {
-    console.log("delete");
-  }
-
-  function onCoverImageSelect() {
-    console.log("cover image select");
+  function onCoverImageSelect(image: string) {
+    setCoverImgUrl(image);
+    setValue("cover_image", image);
   }
 
   return (
@@ -113,19 +132,24 @@ export const ZendoEditor = (props: Props) => {
         onSubmit={formSubmit}
         className="flex w-full items-center justify-between border-b px-3 py-1.5"
       >
-        <div className="flex gap-2 rounded-xl">
-          <Button
-            size="icon"
-            variant="ghost"
-            type="button"
-            onClick={handleDeleteClick}
+        <div className="flex items-center gap-2 rounded-xl text-sm font-medium tracking-tight text-slate-800">
+          <Link
+            href={`/blogs/${blogQuery.data?.id}/posts`}
+            className="flex items-center gap-1.5"
           >
-            <Trash2Icon color="red" className="h-6 w-6" />
-          </Button>
+            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 text-lg">
+              {blogQuery.data?.emoji}
+            </span>
+            <span>{blogQuery.data?.title}</span>
+          </Link>
+          <div className="text-xs text-slate-300">/</div>
+          <div>
+            <span>{props.post?.title}</span>
+          </div>
         </div>
         <div className="actions">
           <Label
-            className="mr-2 flex items-center gap-2 font-semibold"
+            className="mr-2 flex items-center gap-2 text-sm font-semibold"
             htmlFor="published"
           >
             <Checkbox id="published" {...register("published")} />
@@ -144,9 +168,9 @@ export const ZendoEditor = (props: Props) => {
       </form>
       <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2">
         <div className="flex items-center justify-center bg-slate-100">
-          <img className="max-h-96" src={""} alt="" />
+          <img className="max-h-96" src={coverImgUrl || ""} alt="" />
         </div>
-        <div className="group mt-4 border-b border-slate-100 pb-2">
+        <div className="group mt-4 pb-2">
           <div className="flex w-full justify-between gap-2 transition-all">
             <label className="flex w-full items-center gap-2" htmlFor="slug">
               <input
@@ -157,8 +181,16 @@ export const ZendoEditor = (props: Props) => {
                 autoComplete="off"
               />
             </label>
-            <ImagePicker onSelect={onCoverImageSelect}>
-              <Button asChild variant={"secondary"}>
+            <ImagePicker
+              open={showImagePicker}
+              onOpenChange={setShowImagePicker}
+              onSelect={(img) => {
+                onCoverImageSelect(img.url);
+                setShowImagePicker(false);
+              }}
+              onCancel={() => {}}
+            >
+              <Button asChild variant={"secondary"} className="h-8">
                 <span className="btn btn-text whitespace-nowrap !text-xs">
                   <BsFillImageFill className="h-4 w-4" />
                   Cover image
@@ -177,26 +209,12 @@ export const ZendoEditor = (props: Props) => {
           />
         </div>
         <div className="prose prose-h2:font-medium group">
-          {!props.readOnly && (
-            <div className="border-b border-slate-100 transition-all">
-              <EditorMenu editor={editor} />
-            </div>
-          )}
+          {!props.readOnly && <EditorMenu editor={editor} />}
           <div
             onClick={() => editor?.chain().focus().toggleBold().run()}
             className="prose -mt-2 min-h-[700px] cursor-text rounded-lg transition-all focus-within:bg-slate-50 hover:bg-slate-50"
           >
             <EditorContent className="" editor={editor} />
-            <button
-              className="border"
-              onClick={() => {
-                const html = editor?.getHTML();
-                const json = editor?.getJSON();
-                console.log(html, json);
-              }}
-            >
-              value
-            </button>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import imageCompression from "browser-image-compression";
 import { Loader } from "lucide-react";
+import { Input } from "../ui/input";
 
 type Props = {
   blogId: string;
@@ -155,7 +156,7 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
           </div>
         )}
 
-        <input
+        <Input
           className="mt-4"
           type="file"
           name="file"

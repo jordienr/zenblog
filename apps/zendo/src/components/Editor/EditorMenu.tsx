@@ -54,7 +54,7 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
   ];
 
   return (
-    <div className="flex rounded-2xl bg-white p-1">
+    <div className="flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
       {menuButtons.map(({ icon, command }, i) => (
         <EditorMenuButton
           active={editor?.isActive(command) || false}
