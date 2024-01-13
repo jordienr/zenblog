@@ -103,7 +103,7 @@ export default function BlogPosts() {
           <div className="mt-4 rounded-xl border bg-white py-2 shadow-sm">
             {getFormattedPosts().length === 0 && (
               <div className="p-12 text-center">
-                <div className="text-2xl">🤔</div>
+                <div className="text-2xl">✏️</div>
                 <div className="text-lg text-slate-500">Nothing here yet</div>
                 <Button asChild>
                   <Link

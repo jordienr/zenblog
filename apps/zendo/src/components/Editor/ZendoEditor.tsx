@@ -2,7 +2,7 @@
 import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import React, { useEffect } from "react";
 import { Button } from "../ui/button";
-import { SaveIcon, Trash2Icon, Settings2 } from "lucide-react";
+import { SaveIcon, Trash2Icon, Settings2, ChevronRight } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { ImagePicker } from "../Images/ImagePicker";
@@ -15,8 +15,16 @@ import { generateSlug } from "@/lib/utils/slugs";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { useRouter } from "next/router";
-import { useBlogQuery } from "@/queries/blogs";
+import { useBlogQuery, useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { usePostsQuery } from "@/queries/posts";
 
 const formSchema = z.object({
   title: z.string(),
@@ -64,6 +72,9 @@ export const ZendoEditor = (props: Props) => {
   const blogId = (router.query.blogId as string) || "demo";
   const [coverImgUrl, setCoverImgUrl] = React.useState<string | null>(null);
   const [showImagePicker, setShowImagePicker] = React.useState(false);
+
+  const blogsQuery = useBlogsQuery();
+  const postsQuery = usePostsQuery();
 
   const blogQuery = useBlogQuery(blogId);
 
@@ -132,20 +143,66 @@ export const ZendoEditor = (props: Props) => {
         onSubmit={formSubmit}
         className="flex w-full items-center justify-between border-b px-3 py-1.5"
       >
-        <div className="flex items-center gap-2 rounded-xl text-sm font-medium tracking-tight text-slate-800">
-          <Link
-            href={`/blogs/${blogQuery.data?.id}/posts`}
-            className="flex items-center gap-1.5"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 text-lg">
-              {blogQuery.data?.emoji}
-            </span>
-            <span>{blogQuery.data?.title}</span>
-          </Link>
-          <div className="text-xs text-slate-300">/</div>
-          <div>
-            <span>{props.post?.title}</span>
+        <div className="flex items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-slate-800">
+          {blogsQuery.isLoading ? null : (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <div
+                  // href={`/blogs/${blogQuery.data?.id}/posts`}
+                  className="flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100"
+                >
+                  <span className="flex h-6 w-6 items-center justify-center text-lg">
+                    {blogQuery.data?.emoji}
+                  </span>
+                  <span>{blogQuery.data?.title}</span>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="-mt-1 max-w-[240px]">
+                {blogsQuery.data?.map((blog) => (
+                  <DropdownMenuItem key={blog.id} asChild>
+                    <Link
+                      href={`/blogs/${blog.id}/posts`}
+                      className="flex gap-2 px-2 py-1 hover:bg-slate-100"
+                    >
+                      <span>{blog.emoji}</span>
+                      <span>{blog.title}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          <div className="text-slate-300">
+            <ChevronRight size="16" />
           </div>
+          {postsQuery.isLoading ? null : (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <div
+                  // href={`/blogs/${blogQuery.data?.id}/posts`}
+                  className="flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100"
+                >
+                  <span>{props.post?.title || "Untitled"}</span>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="-mt-1 max-w-[240px]">
+                {postsQuery.data?.posts?.map((post) => (
+                  <DropdownMenuItem key={post.id} asChild>
+                    <Link
+                      href={`/blogs/${blogId}/post/${post.slug}`}
+                      className="flex gap-2 px-2 py-1 hover:bg-slate-100"
+                    >
+                      <span className="text-xs">
+                        {post.published ? "🟢" : "🟠"}
+                      </span>
+                      <span>{post.title}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
         <div className="actions">
           <Label
