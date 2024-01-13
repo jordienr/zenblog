@@ -127,7 +127,6 @@ export default function Post() {
       }>
     ) => api.posts.update(blogId, postSlug, data),
     onSuccess: () => {
-      // window.location.reload();
       queryClient.invalidateQueries(["posts", blogId, postSlug]);
     },
   });

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
 import { createAPIClient } from "@/lib/app/api";
@@ -6,6 +7,13 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { MoreVertical, Trash } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -126,6 +134,7 @@ export default function BlogPosts() {
                     <div>
                       <img
                         src={post.cover_image}
+                        alt=""
                         className="h-16 w-16 rounded-md object-cover"
                       />
                     </div>
@@ -136,6 +145,26 @@ export default function BlogPosts() {
                   <StatePill published={post.published} />
                   <div className="ml-auto flex items-center gap-2 text-xs text-slate-500">
                     <span>{post.created_at}</span>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant={"ghost"}
+                          size={"icon"}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                        >
+                          <MoreVertical size="16" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>
+                          <Trash size="16" />
+                          <span className="ml-2">Delete</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </Link>
               );

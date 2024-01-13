@@ -32,6 +32,7 @@ import {
 } from "../ui/dropdown-menu";
 import { usePostsQuery } from "@/queries/posts";
 import { IoClose } from "react-icons/io5";
+import Debugger from "../Debugger";
 
 const formSchema = z.object({
   title: z.string(),
@@ -78,7 +79,7 @@ export const ZendoEditor = (props: Props) => {
   const router = useRouter();
   const blogId = (router.query.blogId as string) || "demo";
   const [coverImgUrl, setCoverImgUrl] = React.useState<string | undefined>(
-    undefined
+    props.post?.cover_image || ""
   );
   const [showImagePicker, setShowImagePicker] = React.useState(false);
 
@@ -239,18 +240,14 @@ export const ZendoEditor = (props: Props) => {
               className="absolute -right-2 -top-2 z-10 rounded-full border bg-white p-1 shadow-sm"
               type="button"
               onClick={() => {
-                setCoverImgUrl(undefined);
+                setCoverImgUrl("");
                 setValue("cover_image", "");
               }}
             >
               <IoClose />
             </button>
           )}
-          <img
-            className="max-h-96"
-            src={coverImgUrl || props.post?.cover_image || ""}
-            alt=""
-          />
+          <img className="max-h-96" src={coverImgUrl || ""} alt="" />
         </div>
         <div className="group mt-4 pb-2">
           <div className="flex w-full justify-between gap-2 transition-all">
@@ -298,6 +295,9 @@ export const ZendoEditor = (props: Props) => {
           >
             <EditorContent className="" editor={editor} />
           </div>
+          <Debugger>
+            <pre>{JSON.stringify(editor?.getJSON(), null, 2)}</pre>
+          </Debugger>
         </div>
       </div>
     </>
