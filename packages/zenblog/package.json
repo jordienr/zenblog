@@ -1,5 +1,5 @@
 {
-  "name": "zenblog-website",
+  "name": "zenblog",
   "version": "0.1.2",
   "description": "The typescript client for zenblog",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
     "publish:beta": "npm publish --access public --tag beta"
   },
   "keywords": [
-    "zendoblog"
+    "zenblog"
   ],
   "author": "Jordi Enric",
   "license": "MIT",

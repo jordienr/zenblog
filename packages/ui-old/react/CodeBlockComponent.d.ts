@@ -1,2 +1,0 @@
-export declare function CodeBlockComponent({ node: { attrs: { language }, }, updateAttributes, extension, }: any): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=CodeBlockComponent.d.ts.map

@@ -11,7 +11,7 @@ export default async function handler(
     const blogId = req.query.blogId as string;
     const { data, error } = await db
       .from("posts")
-      .select("*")
+      .select("slug, title, cover_image, created_at, updated_at")
       .eq("blog_id", blogId);
     if (error) {
       console.error(error);

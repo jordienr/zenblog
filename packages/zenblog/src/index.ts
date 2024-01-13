@@ -29,8 +29,10 @@ function throwError(msg: string, ...args: any[]) {
 export type Post = {
   slug: string;
   title: string;
-  content: any;
-  createdAt: string;
+  content?: any;
+  cover_image?: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type PostWithContent = Post & {
@@ -53,14 +55,18 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
 
     log("fetching ", URL, opts);
     const res = await fetch(URL, opts);
-    log("res", res);
+    const json = await res.json();
+    log("res", {
+      status: res.status,
+      statusText: res.statusText,
+      ok: res.ok,
+      json,
+    });
     if (!res.ok) {
       throwError("Error fetching data from API", res);
     }
 
-    const data = await res.json();
-    log("data", data);
-    return data;
+    return json;
   }
 
   if (!blogId) {
@@ -82,7 +88,9 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
           return {
             slug: post.slug,
             title: post.title,
-            createdAt: post.created_at,
+            created_at: post.created_at,
+            updated_at: post.updated_at,
+            cover_image: post.cover_image,
           };
         });
 
