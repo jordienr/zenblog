@@ -13,7 +13,7 @@ export const getPostBySlugRes = z.object({
   updated_at: z.string(),
   blog_id: z.string(),
   user_id: z.string(),
-  cover_image: z.string().nullable(),
+  cover_image: z.string().optional(),
 });
 
 export const getPostsRes = z.object({

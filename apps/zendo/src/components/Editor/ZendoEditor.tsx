@@ -37,14 +37,14 @@ const formSchema = z.object({
   title: z.string(),
   published: z.boolean(),
   slug: z.string(),
-  cover_image: z.string().optional(),
+  cover_image: z.string(),
   content: z.any(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 type EditorContent = {
-  content: JSONContent;
+  content?: any;
   title: string;
   slug: string;
   cover_image?: string;
@@ -61,7 +61,7 @@ type Props = {
     slug: string;
     published: boolean;
     cover_image?: string;
-    content: JSONContent;
+    content?: any;
   };
 };
 
@@ -88,6 +88,7 @@ export const ZendoEditor = (props: Props) => {
   const blogQuery = useBlogQuery(blogId);
 
   const title = watch("title");
+  const published = watch("published");
 
   useEffect(() => {
     setValue("slug", generateSlug(title || ""));
@@ -98,7 +99,6 @@ export const ZendoEditor = (props: Props) => {
     editorProps: {
       editable: () => !props.readOnly || false,
       handlePaste: (view, event) => {
-        console.log("handlePaste", view, event);
         if (
           event.clipboardData &&
           event.clipboardData.files &&
@@ -130,14 +130,12 @@ export const ZendoEditor = (props: Props) => {
 
   const formSubmit = handleSubmit(async (data) => {
     const content = editor?.getJSON() || {};
-    const published = data.published ? true : false;
-
     props.onSave({
       content,
       title: data.title,
       slug: data.slug,
-      cover_image: data.cover_image,
-      published,
+      cover_image: data.cover_image || "",
+      published: data.published,
     });
   });
 
@@ -156,10 +154,7 @@ export const ZendoEditor = (props: Props) => {
           {blogsQuery.isLoading ? null : (
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <div
-                  // href={`/blogs/${blogQuery.data?.id}/posts`}
-                  className="flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100"
-                >
+                <div className="flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100">
                   <span className="flex h-6 w-6 items-center justify-center text-lg">
                     {blogQuery.data?.emoji}
                   </span>
@@ -192,7 +187,7 @@ export const ZendoEditor = (props: Props) => {
                   // href={`/blogs/${blogQuery.data?.id}/posts`}
                   className="flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100"
                 >
-                  <span>{props.post?.title || "Untitled"}</span>
+                  <span>{props.post?.title || title || ""}</span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="-mt-1 max-w-[240px]">
@@ -218,7 +213,12 @@ export const ZendoEditor = (props: Props) => {
             className="mr-2 flex items-center gap-2 text-sm font-semibold"
             htmlFor="published"
           >
-            <Checkbox id="published" {...register("published")} />
+            <input
+              type="checkbox"
+              id="published"
+              {...register("published")}
+              className="h-4 w-4 rounded-lg border-none bg-transparent p-2 text-slate-800 outline-none transition-all hover:bg-slate-50 focus-visible:bg-slate-100"
+            />
             Publish
           </Label>
 
@@ -240,13 +240,17 @@ export const ZendoEditor = (props: Props) => {
               type="button"
               onClick={() => {
                 setCoverImgUrl(undefined);
-                setValue("cover_image", undefined);
+                setValue("cover_image", "");
               }}
             >
               <IoClose />
             </button>
           )}
-          <img className="max-h-96" src={coverImgUrl || ""} alt="" />
+          <img
+            className="max-h-96"
+            src={coverImgUrl || props.post?.cover_image || ""}
+            alt=""
+          />
         </div>
         <div className="group mt-4 pb-2">
           <div className="flex w-full justify-between gap-2 transition-all">

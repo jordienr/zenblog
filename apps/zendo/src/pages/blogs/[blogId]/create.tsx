@@ -13,6 +13,7 @@ import { Blog } from "@/lib/models/blogs/Blogs";
 import ImageExt from "@tiptap/extension-image";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { ZendoEditor } from "@/components/Editor/ZendoEditor";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   title: z.string(),
@@ -77,8 +78,14 @@ export default function CreatePost() {
 
   return (
     <ZendoEditor
-      onSave={(content) => {
-        console.log(content);
+      onSave={async (content) => {
+        try {
+          await supa.from("posts").insert({ ...content, blog_id: blogId });
+          toast.success("Post saved!");
+        } catch (error) {
+          toast.error("Failed to save post");
+          console.error(error);
+        }
       }}
       onDelete={() => {}}
     />
