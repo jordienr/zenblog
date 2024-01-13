@@ -136,25 +136,25 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
   return (
     <div className="w-full">
       <form onSubmit={onSubmit}>
-        {loading && (
-          <div className="flex-x-center flex-y-center p-24">
-            <Loader className="animate-spin" />
-          </div>
-        )}
-        {image && (
-          <div className="bg-grid-slate-200 flex flex-col items-center justify-center overflow-auto rounded-xl border bg-slate-100 p-4">
+        <div className="bg-grid-slate-200 flex min-h-[300px] flex-col items-center justify-center overflow-auto rounded-xl border bg-slate-100 p-4">
+          {loading && (
+            <div className="flex-x-center flex-y-center p-8">
+              <Loader className="animate-spin" />
+            </div>
+          )}
+          {image && (
             <img
               className="max-h-80 border bg-white shadow-sm"
               src={createObjectURL || ""}
             />
-            {imageInfo && (
-              <>
-                <span className=" text-slate-500">{`${imageInfo.height}x${imageInfo.width}px`}</span>
-                <span className=" text-slate-500">{imageInfo.size}</span>
-              </>
-            )}
-          </div>
-        )}
+          )}
+          {imageInfo && (
+            <>
+              <span className=" text-slate-500">{`${imageInfo.height}x${imageInfo.width}px`}</span>
+              <span className=" text-slate-500">{imageInfo.size}</span>
+            </>
+          )}
+        </div>
 
         <Input
           className="mt-4"
