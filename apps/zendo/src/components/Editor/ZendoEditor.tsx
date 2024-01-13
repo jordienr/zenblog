@@ -2,7 +2,13 @@
 import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import React, { useEffect } from "react";
 import { Button } from "../ui/button";
-import { SaveIcon, Trash2Icon, Settings2, ChevronRight } from "lucide-react";
+import {
+  SaveIcon,
+  Trash2Icon,
+  Settings2,
+  ChevronRight,
+  Cross,
+} from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { ImagePicker } from "../Images/ImagePicker";
@@ -25,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { usePostsQuery } from "@/queries/posts";
+import { IoClose } from "react-icons/io5";
 
 const formSchema = z.object({
   title: z.string(),
@@ -70,7 +77,9 @@ export const ZendoEditor = (props: Props) => {
     });
   const router = useRouter();
   const blogId = (router.query.blogId as string) || "demo";
-  const [coverImgUrl, setCoverImgUrl] = React.useState<string | null>(null);
+  const [coverImgUrl, setCoverImgUrl] = React.useState<string | undefined>(
+    undefined
+  );
   const [showImagePicker, setShowImagePicker] = React.useState(false);
 
   const blogsQuery = useBlogsQuery();
@@ -141,7 +150,7 @@ export const ZendoEditor = (props: Props) => {
     <>
       <form
         onSubmit={formSubmit}
-        className="flex w-full items-center justify-between border-b px-3 py-1.5"
+        className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-white px-3 py-1.5"
       >
         <div className="flex items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-slate-800">
           {blogsQuery.isLoading ? null : (
@@ -224,7 +233,19 @@ export const ZendoEditor = (props: Props) => {
         </div>
       </form>
       <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2">
-        <div className="flex items-center justify-center bg-slate-100">
+        <div className="relative mt-2 flex items-center justify-center bg-slate-100">
+          {coverImgUrl && (
+            <button
+              className="absolute -right-2 -top-2 z-10 rounded-full border bg-white p-1 shadow-sm"
+              type="button"
+              onClick={() => {
+                setCoverImgUrl(undefined);
+                setValue("cover_image", undefined);
+              }}
+            >
+              <IoClose />
+            </button>
+          )}
           <img className="max-h-96" src={coverImgUrl || ""} alt="" />
         </div>
         <div className="group mt-4 pb-2">
