@@ -12,14 +12,15 @@ export default async function Home() {
   };
 
   return (
-    <main className="flex flex-col gap-4 p-8">
+    <main className="flex min-h-[500px] flex-col gap-4 p-8">
       {posts.map((post) => (
         <Link
-          className="text-lg font-medium underline"
+          className="flex items-center gap-4"
           href={`/blog/${post.slug}`}
           key={post.slug}
         >
-          {post.title} · {formatDate(post.created_at)}
+          <span className="text-slate-400">{formatDate(post.created_at)}</span>
+          <span>{post.title}</span>
         </Link>
       ))}
     </main>
