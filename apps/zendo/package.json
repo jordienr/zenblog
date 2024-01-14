@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "dev": "NODE_OPTIONS='--inspect' next dev -p 3000",
     "lint": "next lint",
     "start": "next start",
     "supabase:typegen": "npx supabase gen types typescript --project-id ppfseefimhneysnokffx --schema public > src/types/supabase.ts"
   },
   "dependencies": {
+    "zenblog": "*",
+    "@zenblog/react": "*",
     "@clerk/clerk-js": "^4.44.0",
     "@clerk/nextjs": "^4.17.3",
     "@emoji-mart/data": "^1.1.2",
@@ -55,7 +57,7 @@
     "highlight.js": "^11.9.0",
     "lucide-react": "^0.216.0",
     "mini-svg-data-uri": "^1.4.4",
-    "next": "^13.4.1",
+    "next": "^14.0.4",
     "next-plausible": "^3.7.2",
     "openai": "^4.12.4",
     "react": "18.2.0",

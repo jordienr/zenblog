@@ -38,7 +38,7 @@ const formSchema = z.object({
   title: z.string(),
   published: z.boolean(),
   slug: z.string(),
-  cover_image: z.string(),
+  cover_image: z.string().nullable(),
   content: z.any(),
 });
 
