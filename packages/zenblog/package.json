@@ -1,6 +1,6 @@
 {
   "name": "zenblog",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "The typescript client for zenblog",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,9 +17,5 @@
     "zenblog"
   ],
   "author": "Jordi Enric",
-  "license": "MIT",
-  "dependencies": {
-    "@tiptap/pm": "^2.0.3",
-    "@tiptap/react": "^2.0.3"
-  }
+  "license": "MIT"
 }
