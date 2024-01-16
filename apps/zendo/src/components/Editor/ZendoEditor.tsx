@@ -8,6 +8,7 @@ import {
   Settings2,
   ChevronRight,
   Cross,
+  List,
 } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -33,6 +34,7 @@ import {
 import { usePostsQuery } from "@/queries/posts";
 import { IoClose } from "react-icons/io5";
 import Debugger from "../Debugger";
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 
 const formSchema = z.object({
   title: z.string(),
@@ -54,7 +56,6 @@ type EditorContent = {
 
 type Props = {
   onSave: (content: EditorContent) => void;
-  onDelete: () => void;
   readOnly?: boolean;
   post?: {
     id: string;
@@ -174,6 +175,16 @@ export const ZendoEditor = (props: Props) => {
                     </Link>
                   </DropdownMenuItem>
                 ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link
+                    href={`/blogs/`}
+                    className="flex gap-2 px-2 py-1 hover:bg-slate-100"
+                  >
+                    <List size="14" />
+                    <span>All blogs</span>
+                  </Link>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}

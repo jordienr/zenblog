@@ -46,6 +46,7 @@ export default function BlogPosts() {
       return {
         ...post,
         created_at: new Date(post.created_at || "").toLocaleDateString(),
+        updated_at: new Date(post.updated_at || "").toLocaleDateString(),
       };
     });
 
@@ -56,7 +57,7 @@ export default function BlogPosts() {
       );
     });
 
-    return sortedPosts.reverse();
+    return sortedPosts;
   }
 
   if (isLoading) {
@@ -159,7 +160,9 @@ export default function BlogPosts() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          
+                        }}>
                           <Trash size="16" />
                           <span className="ml-2">Delete</span>
                         </DropdownMenuItem>
