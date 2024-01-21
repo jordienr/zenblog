@@ -1,8 +1,6 @@
-import { BlogSelector } from "@/components/Blogs/BlogSelector";
+import UserButton from "@/components/UserButton";
 import ZendoLogo from "@/components/ZendoLogo";
-import { useAppStore } from "@/store/app";
 import { Github, Twitter } from "lucide-react";
-// import { UserButton, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 
 type Props = {
@@ -32,13 +30,14 @@ export default function AppLayout({ children, loading }: Props) {
             </Link>
             <Link
               href="/blogs"
-              className="flex h-full items-center border-x border-transparent px-2 text-slate-700 transition-all hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+              className="rounded-full px-3 py-1 text-sm font-medium text-slate-600 hover:bg-orange-50 hover:text-orange-600"
             >
               Blogs
             </Link>
           </div>
-
-          {/* <UserButton /> */}
+          <div>
+            <UserButton />
+          </div>
         </div>
       </nav>
       <div className="min-h-screen bg-slate-50 pb-24 shadow-md">{children}</div>

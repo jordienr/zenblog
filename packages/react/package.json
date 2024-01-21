@@ -2,39 +2,18 @@
   "name": "@zenblog/react",
   "version": "0.0.1",
   "license": "MIT",
-  "private": false,
   "description": "Zenblog React Components",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Jordi Enric",
   "scripts": {
+    "build": "tsup",
     "lint": "TIMING=1 eslint \"**/*.{ts,tsx,js,jsx}\" --fix",
-    "clean": "rm -rf .turbo"
+    "publish": "npm publish --access public"
   },
   "sideEffects": false,
   "type": "module",
-  "exports": {
-    ".": "./src/index.ts",
-    "./*": [
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*/index.ts"
-    ],
-    "./tailwind": {
-      "require": "./src/tailwind.cjs"
-    }
-  },
-  "files": [
-    "src"
-  ],
-  "typesVersions": {
-    "*": {
-      "*": [
-        "src/*",
-        "src/*/index"
-      ]
-    }
-  },
   "peerDependencies": {
-    "next": "*",
     "react": "^17.0.0 || ^18.0.0-0",
     "react-dom": "^17.0.0 || ^18.0.0-0"
   },
@@ -49,6 +28,7 @@
   "devDependencies": {
     "@types/react": "latest",
     "eslint": "^8.11.0",
+    "tsup": "^8.0.1",
     "typescript": "4.8.4"
   }
 }

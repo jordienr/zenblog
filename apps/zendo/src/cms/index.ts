@@ -7,3 +7,7 @@ export const getBlogClient = () => {
 
   return blog;
 };
+
+export const docs = createClient({
+  blogId: "12cc7bb4-4ea8-452d-a17d-5a15b148ae33",
+});

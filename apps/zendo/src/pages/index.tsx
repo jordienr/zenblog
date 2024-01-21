@@ -132,25 +132,23 @@ const Home = () => {
               <ZendoLogo />
             </div>
 
-            <div className="flex flex-grow items-center justify-end gap-4">
+            <div className="flex flex-grow items-center justify-end gap-4 font-medium text-slate-600">
               <LoggedInUser>
-                <Link href="/blog" className="underline">
-                  Blog
-                </Link>
-              </LoggedInUser>
-              <LoggedInUser>
-                <Link href="/insights" className="underline">
-                  Insights
+                <Link
+                  className="rounded-full px-3 py-1.5 hover:text-slate-800"
+                  href="/docs"
+                >
+                  Docs
                 </Link>
               </LoggedInUser>
               <Link
                 target="_blank"
                 href="https://twitter.com/zenbloghq"
-                className="flex items-center justify-center rounded-full p-2 text-lg text-blue-500 hover:bg-blue-100"
+                className="flex items-center justify-center rounded-full p-2 text-lg text-blue-500 transition-all hover:bg-blue-100"
                 title="Follow us on Twitter"
                 aria-label="Follow us on Twitter"
               >
-                <FaTwitter size="24" />
+                <FaTwitter size="18" />
               </Link>
 
               {!user && (

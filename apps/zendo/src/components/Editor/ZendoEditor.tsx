@@ -9,6 +9,10 @@ import {
   ChevronRight,
   Cross,
   List,
+  ChevronDown,
+  ChevronLeft,
+  CornerLeftUp,
+  CornerUpLeft,
 } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -30,11 +34,11 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
 import { usePostsQuery } from "@/queries/posts";
 import { IoClose } from "react-icons/io5";
 import Debugger from "../Debugger";
-import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 
 const formSchema = z.object({
   title: z.string(),
@@ -155,14 +159,21 @@ export const ZendoEditor = (props: Props) => {
         <div className="flex items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-slate-800">
           {blogsQuery.isLoading ? null : (
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <div className="flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100">
-                  <span className="flex h-6 w-6 items-center justify-center text-lg">
-                    {blogQuery.data?.emoji}
-                  </span>
-                  <span>{blogQuery.data?.title}</span>
-                </div>
-              </DropdownMenuTrigger>
+              <div className="flex items-center">
+                <Button size="icon" variant={"ghost"} asChild>
+                  <Link href={`/blogs/${blogQuery.data?.id}/posts`}>
+                    <CornerUpLeft size="16" />
+                  </Link>
+                </Button>
+                <DropdownMenuTrigger asChild>
+                  <Button variant={"ghost"}>
+                    <span className="flex h-6 w-6 items-center justify-center text-lg">
+                      {blogQuery.data?.emoji}
+                    </span>
+                    <span>{blogQuery.data?.title}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+              </div>
               <DropdownMenuContent className="-mt-1 max-w-[240px]">
                 {blogsQuery.data?.map((blog) => (
                   <DropdownMenuItem key={blog.id} asChild>
@@ -192,15 +203,15 @@ export const ZendoEditor = (props: Props) => {
           <div className="text-slate-300">
             <ChevronRight size="16" />
           </div>
+
           {postsQuery.isLoading ? null : (
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <div
-                  // href={`/blogs/${blogQuery.data?.id}/posts`}
-                  className="flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-slate-100"
-                >
-                  <span>{props.post?.title || title || ""}</span>
-                </div>
+                <Button variant={"ghost"}>
+                  <div className="flex items-center gap-1.5 rounded-md p-1.5 hover:bg-slate-100">
+                    <span>{props.post?.title || title || ""}</span>
+                  </div>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="-mt-1 max-w-[240px]">
                 {postsQuery.data?.posts?.map((post) => (
@@ -299,7 +310,9 @@ export const ZendoEditor = (props: Props) => {
           />
         </div>
         <div className="prose prose-h2:font-medium group">
-          {!props.readOnly && <EditorMenu editor={editor} />}
+          <div className="sticky top-14 z-10">
+            <EditorMenu editor={editor} />
+          </div>
           <div
             onClick={() => editor?.chain().focus().toggleBold().run()}
             className="prose -mt-2 min-h-[700px] cursor-text rounded-lg transition-all focus-within:bg-slate-50 hover:bg-slate-50"

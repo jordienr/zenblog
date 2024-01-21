@@ -58,8 +58,8 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
       {menuButtons.map(({ icon, command }, i) => (
         <EditorMenuButton
           active={editor?.isActive(command) || false}
-          key={i}
-          onClick={() => command()}
+          key={i + "menu-btn"}
+          onClick={command}
         >
           {icon}
         </EditorMenuButton>

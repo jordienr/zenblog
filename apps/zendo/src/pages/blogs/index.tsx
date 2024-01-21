@@ -16,12 +16,12 @@ export default function Dashboard() {
     <AppLayout>
       <div className="min-h-screen">
         <div className="mx-auto max-w-5xl">
-          <div className="flex items-center justify-between p-4">
+          <div className="flex items-center justify-between p-3">
             <h1 className="text-xl font-semibold">My blogs</h1>
             <div>
               <Button asChild>
                 <Link className="btn" href="/blogs/create">
-                  Create
+                  Create blog
                 </Link>
               </Button>
             </div>
@@ -34,7 +34,7 @@ export default function Dashboard() {
           {data?.length === 0 && (
             <div className="text-center">Start by creating a blog</div>
           )}
-          <ul className="mx-2 grid grid-cols-1 gap-2 py-2 md:grid-cols-2">
+          <ul className="mx-2 grid grid-cols-1 gap-2 md:grid-cols-2">
             {data?.map((blog) => {
               return (
                 <li

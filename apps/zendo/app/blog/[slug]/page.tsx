@@ -1,5 +1,5 @@
 import { getBlogClient } from "@/cms";
-import { ContentRenderer } from "@zenblog/react";
+import { ContentRenderer } from "@zenblog/react/dist/index";
 import React from "react";
 
 type Props = {};
