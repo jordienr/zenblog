@@ -2,7 +2,6 @@
 
 import { getPostsRes } from "@/lib/models/posts/Posts";
 import { getServerClient } from "@/lib/server/supabase";
-// import { getAuth } from "@clerk/nextjs/server";
 import { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 

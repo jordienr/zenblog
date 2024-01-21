@@ -1,6 +1,5 @@
 import { Blog } from "@/lib/models/blogs/Blogs";
 import { useBlogQuery } from "@/queries/blogs";
-// import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
@@ -8,8 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 export function Members({ blog }: { blog: Blog }) {
   const router = useRouter();
   const blogId = router.query.blogId as string;
-
-  // const currentUser = useUser();
 
   const members = useQuery(["blog", blogId, "members"], () => {
     return fetch(`/api/blogs/${blogId}/members`).then((res) => res.json());
@@ -19,9 +16,7 @@ export function Members({ blog }: { blog: Blog }) {
     <div>
       <div className="flex gap-2 py-4">
         <div className="">You</div>
-        <div className="text-gray-500">
-          {/* {currentUser.user?.emailAddresses[0]?.toString() || "No email found"} */}
-        </div>
+        <div className="text-gray-500"></div>
       </div>
       {members.data?.map(
         (member: { id: string; name: string; email: string }) => (

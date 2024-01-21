@@ -1,4 +1,3 @@
-// import { getAuth } from "@clerk/nextjs/server";
 import { getServerClient } from "@/lib/server/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,7 +8,6 @@ export default async function handler(
   const { db } = await getServerClient(req, res);
   if (!db) return res.status(401).json({ error: "Unauthorized" });
 
-  // const { userId } = getAuth(req);
   const blogId = req.query.blogId as string;
   const invitationId = req.query.invitationId as string;
 
