@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { getBlog } from "@/zenblog";
-import { ContentRenderer } from "@zenblog/react";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
@@ -22,7 +21,6 @@ export default async function Home({
       />
       <div className="prose mx-auto max-w-xl p-4">
         <h1 className="">{post.title}</h1>
-        <ContentRenderer content={post.content}></ContentRenderer>
       </div>
     </main>
   );

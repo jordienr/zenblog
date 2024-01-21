@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "zenblog": "*",
-    "@zenblog/react": "*",
     "@clerk/clerk-js": "^4.44.0",
     "@clerk/nextjs": "^4.17.3",
     "@emoji-mart/data": "^1.1.2",
