@@ -39,6 +39,15 @@ import {
 import { usePostsQuery } from "@/queries/posts";
 import { IoClose } from "react-icons/io5";
 import Debugger from "../Debugger";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
+import EditorSettings from "./EditorSettings";
 
 const formSchema = z.object({
   title: z.string(),
@@ -244,13 +253,18 @@ export const ZendoEditor = (props: Props) => {
             />
             Publish
           </Label>
-
-          <Button type="button" variant="secondary">
-            <Settings2 />
-            SEO
-          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button type="button" title="post settings" variant="secondary">
+                <Settings2 size={16} /> Settings
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <EditorSettings onSave={() => {}}></EditorSettings>
+            </SheetContent>
+          </Sheet>
           <Button type="submit">
-            <SaveIcon />
+            <SaveIcon size={16} />
             Save
           </Button>
         </div>

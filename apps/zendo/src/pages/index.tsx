@@ -125,7 +125,7 @@ const Home = () => {
         />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      <div className="">
         <div className="mx-auto flex max-w-5xl flex-col">
           <nav className="flex items-center justify-between p-3">
             <div className="flex-grow">
@@ -180,10 +180,10 @@ const Home = () => {
           </nav>
 
           <main className="px-4 font-sans">
-            <div className="mx-auto mt-12 max-w-2xl text-center">
-              <div className="flex justify-center">
+            <div className="mx-auto mt-12">
+              <div className="">
                 <Link
-                  className="flex items-center gap-1 rounded-xl bg-white px-3 py-1 text-sm font-medium shadow-sm hover:text-amber-500"
+                  className="inline-flex items-center gap-1 rounded-xl border bg-white px-3 py-1 text-sm font-medium shadow-sm hover:text-amber-500"
                   target="_blank"
                   href="https://github.com/jordienr/zendo"
                 >
@@ -191,20 +191,20 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-2 bg-gradient-to-b from-slate-600 to-slate-900 bg-clip-text text-4xl font-bold text-transparent md:text-5xl lg:text-6xl">
+              <h1 className="mt-2 bg-gradient-to-b from-slate-800 via-slate-500 to-slate-800 bg-clip-text text-3xl font-medium text-transparent md:text-5xl">
                 Add a blog to your <br /> website{" "}
-                <span className="bg-gradient-to-br from-orange-600 to-orange-300 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-br from-orange-300 to-orange-600 bg-clip-text text-transparent">
                   in 2 minutes
                 </span>
               </h1>
-              <p className="mx-auto mt-2 max-w-md text-lg text-slate-500">
+              <p className="mt-2 text-lg text-slate-500">
                 Open source blogging CMS. Works with any stack. <br />
                 Powered by Supabase and NextJS.
               </p>
             </div>
             {!hasSubmitted && (
               <form
-                className="mx-auto mt-6 flex max-w-sm flex-col gap-2"
+                className="mt-6 flex max-w-sm flex-col gap-2"
                 onSubmit={onSubmit}
               >
                 <div className="flex gap-2 [&>*]:w-full">
@@ -249,23 +249,43 @@ const Home = () => {
             )}
           </main>
 
-          <div className="mt-12 flex flex-col gap-4 p-2">
-            <div className="grid gap-4 md:grid-cols-2">
+          <div className="mt-12 flex max-w-xl flex-col gap-4 border p-4 py-6 font-mono shadow-lg">
+            <h2 className="text-lg font-medium"># why zenblog?</h2>
+            <p>
+              There are many headless CMSs out there, and most of them are
+              great.
+            </p>
+            <p>But I wanted one that had these features:</p>
+            <ul>
+              <li>- Open source.</li>
+              <li>- Type safe client, without GraphQL.</li>
+              <li>- A great editing experience.</li>
+              <li>- Easy to extend.</li>
+              <li>- Gets me up and running in 2 minutes.</li>
+              <li>- Lets me have as many blogs as I want.</li>
+              <li>- Lets me invite my friends to write with me.</li>
+              <li>- Lets me see how many views my posts have.</li>
+            </ul>
+            <p>So I built zenblog.</p>
+            <p>Jordi.</p>
+            {/* <div className="grid gap-4 md:grid-cols-2">
               <OpenSource />
               <TypeSafety />
             </div>
             <div className="col-span-2">
               <ReactComponents />
-            </div>
+            </div> */}
             {/* <div className="col-span-2">
               <CodeExamples />
             </div> */}
           </div>
         </div>
         <footer>
-          <div className=" mt-24 bg-gradient-to-b from-transparent to-white pb-40 pt-24 text-center font-semibold text-slate-800">
-            thanks for checking out zen
-            <span className="text-orange-500">blog</span>
+          <div className=" mt-24 bg-gradient-to-b from-transparent to-white p-24 font-mono text-slate-800">
+            <div className="mx-auto max-w-5xl">
+              thanks for checking out zen
+              <span className="text-orange-500">blog</span>
+            </div>
           </div>
         </footer>
       </div>

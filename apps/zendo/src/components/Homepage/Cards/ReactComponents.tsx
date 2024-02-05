@@ -18,8 +18,9 @@ const ReactComponents = (props: Props) => {
     <BaseCard
       title="React Components"
       caption="Use our React components to build your website faster"
+      className="mb-0 pb-0"
     >
-      <div className="mx-4 mb-4 flex w-full flex-col gap-2 p-2 md:flex-row">
+      <div className="mb-4 flex w-full flex-col gap-2 md:flex-row">
         <CodeBlock title="pages/blog.tsx" language="tsx">
           {`
   import { PostList } from "zenblog/ui";
