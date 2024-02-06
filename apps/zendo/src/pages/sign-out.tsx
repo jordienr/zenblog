@@ -10,7 +10,7 @@ export default function SignOut() {
 
       window.location.pathname = "/";
     });
-  }, []);
+  }, [supa]);
 
   return <>Signing out...</>;
 }

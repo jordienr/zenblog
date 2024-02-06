@@ -65,6 +65,15 @@ export function ImagePicker({
             <TabsContent value="images">
               <div className="relative">
                 <div className="grid grid-cols-2 gap-1">
+                  {data?.length === 0 ? (
+                    <div className="col-span-2 py-24">
+                      <p className="text-center text-sm text-gray-500">
+                        No images uploaded yet
+                      </p>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                   {data?.map((image) => (
                     <button
                       type="button"

@@ -12,7 +12,7 @@ export default function AppLayout({ children, loading }: Props) {
 
   return (
     <div
-      className={`flex min-h-screen flex-col border-b bg-white font-sans ${
+      className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans ${
         loading ? "overflow-hidden" : ""
       }`}
     >
@@ -22,9 +22,9 @@ export default function AppLayout({ children, loading }: Props) {
         </div>
       )}
 
-      <nav className="sticky top-0 h-12 bg-white shadow-sm">
+      <nav className="sticky top-0 mx-auto h-12 w-full max-w-5xl">
         <div className="mx-auto flex h-full items-center justify-between px-2">
-          <div className="flex h-full items-center gap-2">
+          <div className="z-20 m-2 flex h-full items-center gap-2 rounded-full bg-slate-50">
             <Link href="/" className="rounded-md px-1 text-lg font-medium">
               <ZendoLogo />
             </Link>

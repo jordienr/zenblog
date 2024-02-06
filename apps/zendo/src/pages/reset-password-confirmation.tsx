@@ -1,18 +1,22 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function ResetPasswordConfirmation() {
   const [loading, setLoading] = useState(false);
   const supabase = useSupabaseClient();
+  const router = useRouter();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setLoading(true);
-    const form = e.currentTarget;
-    const password = form.email.password;
-    const password2 = form.email.password2;
+    const formData = new FormData(e.currentTarget);
+    const password = formData.get("password") as string;
+    const password2 = formData.get("password2") as string;
 
     if (password !== password2) {
       alert("Passwords do not match");
@@ -39,14 +43,10 @@ export default function ResetPasswordConfirmation() {
       >
         <h2 className="text-2xl font-medium">New password</h2>
         <p className="text-slate-500">Pick a new password for your account.</p>
-        <label htmlFor="password">
-          New password
-          <input type="password" name="password" id="password" />
-        </label>
-        <label htmlFor="password2">
-          Repeat new password
-          <input type="password2" name="password2" id="password2" />
-        </label>
+        <Label htmlFor="password">New password</Label>
+        <Input type="password" name="password" id="password" />
+        <Label htmlFor="password2">Repeat new password</Label>
+        <Input type="password" name="password2" id="password2" />
         <Button type="submit" variant="default">
           Save
         </Button>

@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import Link from "next/link";
 
 type Props = {};
 
@@ -20,8 +21,11 @@ const UserButton = (props: Props) => {
             {user?.email?.slice(0, 1).toUpperCase()}
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className="mr-4">
           <DropdownMenuItem>{user?.email}</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/sign-out">Sign out</Link>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

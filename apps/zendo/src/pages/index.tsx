@@ -125,17 +125,17 @@ const Home = () => {
         />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="">
-        <div className="mx-auto flex max-w-5xl flex-col">
+      <div className="bg-zinc-100">
+        <div className="mx-auto flex max-w-3xl flex-col">
           <nav className="flex items-center justify-between p-3">
             <div className="flex-grow">
               <ZendoLogo />
             </div>
 
-            <div className="flex flex-grow items-center justify-end gap-4 font-medium text-slate-600">
+            <div className="flex flex-grow items-center justify-end gap-4 font-medium text-zinc-600">
               <LoggedInUser>
                 <Link
-                  className="rounded-full px-3 py-1.5 hover:text-slate-800"
+                  className="rounded-full px-3 py-1.5 hover:text-zinc-800"
                   href="/docs"
                 >
                   Docs
@@ -183,23 +183,21 @@ const Home = () => {
             <div className="mx-auto mt-12">
               <div className="">
                 <Link
-                  className="inline-flex items-center gap-1 rounded-xl border bg-white px-3 py-1 text-sm font-medium shadow-sm hover:text-amber-500"
+                  className=" inline-flex items-center gap-1 p-2 font-mono text-sm font-medium text-zinc-400 underline hover:text-amber-500"
                   target="_blank"
-                  href="https://github.com/jordienr/zendo"
+                  href="https://github.com/jordienr/zenblog"
                 >
-                  <Star className="text-amber-500" size="20" />
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-2 bg-gradient-to-b from-slate-800 via-slate-500 to-slate-800 bg-clip-text text-3xl font-medium text-transparent md:text-5xl">
+              <h1 className="mt-2 bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-800 bg-clip-text text-3xl font-bold tracking-tighter text-transparent md:text-5xl">
                 Add a blog to your <br /> website{" "}
-                <span className="bg-gradient-to-br from-orange-300 to-orange-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent">
                   in 2 minutes
                 </span>
               </h1>
-              <p className="mt-2 text-lg text-slate-500">
-                Open source blogging CMS. Works with any stack. <br />
-                Powered by Supabase and NextJS.
+              <p className="mt-2 text-lg text-zinc-500">
+                Open source, headless blogging CMS.
               </p>
             </div>
             {!hasSubmitted && (
@@ -237,7 +235,7 @@ const Home = () => {
               </form>
             )}
             {hasSubmitted && (
-              <div className="mx-auto mt-6 flex max-w-xs flex-col gap-4 rounded-xl border bg-white py-4 text-center shadow-sm">
+              <div className="mx-auto mt-6 flex max-w-xs flex-col gap-4 rounded-xl py-4 text-center">
                 <span className="-mb-2 text-3xl">🎉</span>
                 <p className="text-lg font-semibold">
                   Thank you for signing up!
@@ -249,8 +247,8 @@ const Home = () => {
             )}
           </main>
 
-          <div className="mt-12 flex max-w-xl flex-col gap-4 border p-4 py-6 font-mono shadow-lg">
-            <h2 className="text-lg font-medium"># why zenblog?</h2>
+          <div className="mx-4 mt-12 flex max-w-xl flex-col gap-4 rounded-md border bg-white p-4 py-6 font-mono shadow-lg">
+            <h2 className="text-lg font-medium"># whats this?</h2>
             <p>
               There are many headless CMSs out there, and most of them are
               great.
@@ -281,8 +279,8 @@ const Home = () => {
           </div>
         </div>
         <footer>
-          <div className=" mt-24 bg-gradient-to-b from-transparent to-white p-24 font-mono text-slate-800">
-            <div className="mx-auto max-w-5xl">
+          <div className=" mt-24 bg-gradient-to-b from-transparent to-white p-24 font-mono text-zinc-800">
+            <div className="mx-auto max-w-3xl">
               thanks for checking out zen
               <span className="text-orange-500">blog</span>
             </div>

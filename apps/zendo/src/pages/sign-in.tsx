@@ -23,7 +23,7 @@ export default function SignIn() {
     const { data, error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/blogs`,
+        emailRedirectTo: window.location.origin + "/blogs",
       },
     });
 

@@ -20,13 +20,13 @@ const layout = async ({
 
   return (
     <div className="mx-auto flex max-h-screen max-w-6xl">
-      <aside className="min-h-screen min-w-[16rem] overflow-auto border-x">
+      <aside className="flex min-h-screen min-w-[16rem] flex-col overflow-auto border-x">
         <div className="p-3 text-center">
           <Link href="/">
             <ZendoLogo />
           </Link>
         </div>
-        <ul className="p-4 font-medium">
+        <ul className="flex-grow p-4 font-medium">
           {posts.map((post) => (
             <Link
               data-state={params.slug === post.slug ? "active" : "inactive"}
@@ -44,6 +44,9 @@ const layout = async ({
             </Link>
           ))}
         </ul>
+        <div className="mt-auto justify-self-end p-4 text-center text-xs text-slate-500">
+          <p>Docs site built with zenblog</p>
+        </div>
       </aside>
       <main className="w-full flex-grow overflow-auto">{children}</main>
       <aside className="min-w-[16rem] border-x">
