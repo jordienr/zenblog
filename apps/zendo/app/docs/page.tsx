@@ -1,9 +1,7 @@
-"use client";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 const Docs = () => {
-  const router = useRouter();
-  router.push("/docs/getting-started");
+  redirect("/docs/getting-started");
 };
 
 export default Docs;

@@ -150,8 +150,7 @@ export default function Post() {
             console.error(error);
           }
         }}
-        onDelete={() => {}}
-        post={post}
+        post={post as any} // TODO: rm any
       />
     </div>
   );

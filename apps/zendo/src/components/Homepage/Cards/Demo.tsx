@@ -10,7 +10,6 @@ const Demo = (props: Props) => {
       <div className="m-2 w-full rounded-lg border">
         <div className="max-h-[700px] overflow-hidden rounded-b-md bg-white">
           <ZendoEditor
-            onDelete={() => {}}
             onSave={() => {
               console.log("saved");
             }}

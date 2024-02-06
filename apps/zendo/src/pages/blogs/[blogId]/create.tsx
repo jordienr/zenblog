@@ -87,7 +87,6 @@ export default function CreatePost() {
           console.error(error);
         }
       }}
-      onDelete={() => {}}
     />
   );
 }
