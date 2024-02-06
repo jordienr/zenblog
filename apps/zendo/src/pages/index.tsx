@@ -9,26 +9,15 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import { SiTypescript } from "react-icons/si";
-import { Command, Star } from "lucide-react";
+import { Command } from "lucide-react";
 import { CgTrees } from "react-icons/cg";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { getClientClient } from "@/lib/supabase";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import ZendoLogo from "@/components/ZendoLogo";
-import Image from "next/image";
 import { useUser } from "@supabase/auth-helpers-react";
-import { HiArrowLeft } from "react-icons/hi";
 import { LoggedInUser } from "@/components/LoggedInUser";
-import { OpenSource } from "@/components/Homepage/Cards/OpenSource";
-import TypeSafety from "@/components/Homepage/Cards/TypeSafety";
-import { ZendoEditor } from "@/components/Editor/ZendoEditor";
-import { CodeBlock } from "@/components/CodeBlock";
-import BaseCard from "@/components/Homepage/Cards/BaseCard";
-import ReactComponents from "@/components/Homepage/Cards/ReactComponents";
-import CodeExamples from "@/components/Homepage/Cards/CodeExamples";
-import Demo from "@/components/Homepage/Cards/Demo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -183,21 +172,21 @@ const Home = () => {
             <div className="mx-auto mt-12">
               <div className="">
                 <Link
-                  className=" inline-flex items-center gap-1 p-2 font-mono text-sm font-medium text-zinc-400 underline hover:text-amber-500"
+                  className=" inline-flex items-center gap-1 p-2 font-mono text-sm text-zinc-400 underline hover:text-amber-500"
                   target="_blank"
                   href="https://github.com/jordienr/zenblog"
                 >
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-2 bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-800 bg-clip-text text-3xl font-bold tracking-tighter text-transparent md:text-5xl">
+              <h1 className="mt-2 bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-800 bg-clip-text text-3xl tracking-tight text-transparent md:text-5xl">
                 Add a blog to your <br /> website{" "}
                 <span className="bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent">
                   in 2 minutes
                 </span>
               </h1>
-              <p className="mt-2 text-lg text-zinc-500">
-                Open source, headless blogging CMS.
+              <p className="mt-2 text-lg font-light text-zinc-500">
+                Open source, headless, blogging CMS.
               </p>
             </div>
             {!hasSubmitted && (
@@ -247,39 +236,24 @@ const Home = () => {
             )}
           </main>
 
-          <div className="mx-4 mt-12 flex max-w-xl flex-col gap-4 rounded-md border bg-white p-4 py-6 font-mono shadow-lg">
-            <h2 className="text-lg font-medium"># whats this?</h2>
-            <p>
-              There are many headless CMSs out there, and most of them are
-              great.
-            </p>
-            <p>But I wanted one that had these features:</p>
-            <ul>
+          <div className="mx-4 mt-12 flex max-w-xl flex-col gap-4 py-6 font-mono text-zinc-800">
+            <h2 className="text-lg font-medium"># features </h2>
+            <ul className="flex flex-col gap-3">
               <li>- Open source.</li>
-              <li>- Type safe client, without GraphQL.</li>
-              <li>- A great editing experience.</li>
+              <li>- Type safe content.</li>
+              <li>- No GraphQL.</li>
+              <li>- API.</li>
+              <li>- A *great* editing experience.</li>
               <li>- Easy to extend.</li>
-              <li>- Gets me up and running in 2 minutes.</li>
-              <li>- Lets me have as many blogs as I want.</li>
-              <li>- Lets me invite my friends to write with me.</li>
-              <li>- Lets me see how many views my posts have.</li>
+              <li>- Gets you up and running in 2 minutes.</li>
+              <li>- Have as many blogs as you want.</li>
+              <li>- Invite friends to contribute to your blog.</li>
+              <li>- Analytics.</li>
             </ul>
-            <p>So I built zenblog.</p>
-            <p>Jordi.</p>
-            {/* <div className="grid gap-4 md:grid-cols-2">
-              <OpenSource />
-              <TypeSafety />
-            </div>
-            <div className="col-span-2">
-              <ReactComponents />
-            </div> */}
-            {/* <div className="col-span-2">
-              <CodeExamples />
-            </div> */}
           </div>
         </div>
         <footer>
-          <div className=" mt-24 bg-gradient-to-b from-transparent to-white p-24 font-mono text-zinc-800">
+          <div className="mt-24 bg-gradient-to-b from-transparent to-white p-24 text-center font-mono text-zinc-800">
             <div className="mx-auto max-w-3xl">
               thanks for checking out zen
               <span className="text-orange-500">blog</span>

@@ -165,7 +165,7 @@ export const ZendoEditor = (props: Props) => {
         onSubmit={formSubmit}
         className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-white px-3 py-1.5"
       >
-        <div className="flex items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-slate-800">
+        <div className="flex items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-zinc-800">
           {blogsQuery.isLoading ? null : (
             <DropdownMenu>
               <div className="flex items-center">
@@ -188,7 +188,7 @@ export const ZendoEditor = (props: Props) => {
                   <DropdownMenuItem key={blog.id} asChild>
                     <Link
                       href={`/blogs/${blog.id}/posts`}
-                      className="flex gap-2 px-2 py-1 hover:bg-slate-100"
+                      className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
                     >
                       <span>{blog.emoji}</span>
                       <span>{blog.title}</span>
@@ -199,7 +199,7 @@ export const ZendoEditor = (props: Props) => {
                 <DropdownMenuItem asChild>
                   <Link
                     href={`/blogs/`}
-                    className="flex gap-2 px-2 py-1 hover:bg-slate-100"
+                    className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
                   >
                     <List size="14" />
                     <span>All blogs</span>
@@ -209,7 +209,7 @@ export const ZendoEditor = (props: Props) => {
             </DropdownMenu>
           )}
 
-          <div className="text-slate-300">
+          <div className="text-zinc-300">
             <ChevronRight size="16" />
           </div>
 
@@ -217,7 +217,7 @@ export const ZendoEditor = (props: Props) => {
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Button variant={"ghost"}>
-                  <div className="flex items-center gap-1.5 rounded-md p-1.5 hover:bg-slate-100">
+                  <div className="flex items-center gap-1.5 rounded-md p-1.5 hover:bg-zinc-100">
                     <span>{props.post?.title || title || ""}</span>
                   </div>
                 </Button>
@@ -227,7 +227,7 @@ export const ZendoEditor = (props: Props) => {
                   <DropdownMenuItem key={post.id} asChild>
                     <Link
                       href={`/blogs/${blogId}/post/${post.slug}`}
-                      className="flex gap-2 px-2 py-1 hover:bg-slate-100"
+                      className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
                     >
                       <span className="text-xs">
                         {post.published ? "🟢" : "🟠"}
@@ -249,7 +249,7 @@ export const ZendoEditor = (props: Props) => {
               type="checkbox"
               id="published"
               {...register("published")}
-              className="h-4 w-4 rounded-lg border-none bg-transparent p-2 text-slate-800 outline-none transition-all hover:bg-slate-50 focus-visible:bg-slate-100"
+              className="h-4 w-4 rounded-lg border-none bg-transparent p-2 text-zinc-800 outline-none transition-all hover:bg-zinc-50 focus-visible:bg-zinc-100"
             />
             Publish
           </Label>
@@ -270,7 +270,7 @@ export const ZendoEditor = (props: Props) => {
         </div>
       </form>
       <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2">
-        <div className="relative mt-2 flex items-center justify-center bg-slate-100">
+        <div className="relative mt-2 flex items-center justify-center bg-zinc-100">
           {coverImgUrl && (
             <button
               className="absolute -right-2 -top-2 z-10 rounded-full border bg-white p-1 shadow-sm"
@@ -292,7 +292,7 @@ export const ZendoEditor = (props: Props) => {
                 placeholder="a-great-title"
                 type="text"
                 {...register("slug")}
-                className="w-full rounded-lg p-2 font-mono text-xs outline-none hover:bg-slate-50 focus-visible:bg-slate-100"
+                className="w-full rounded-lg p-2 font-mono text-xs outline-none hover:bg-zinc-50 focus-visible:bg-zinc-100"
                 autoComplete="off"
               />
             </label>
@@ -320,7 +320,7 @@ export const ZendoEditor = (props: Props) => {
             {...register("title")}
             className="mt-1 w-full max-w-2xl whitespace-break-spaces rounded-xl border-none bg-transparent p-2
             text-4xl
-             font-medium outline-none transition-all hover:bg-slate-50 focus-visible:bg-slate-100"
+             font-medium outline-none transition-all hover:bg-zinc-50 focus-visible:bg-zinc-100"
           />
         </div>
         <div className="prose prose-h2:font-medium group">
@@ -329,7 +329,7 @@ export const ZendoEditor = (props: Props) => {
           </div>
           <div
             onClick={() => editor?.chain().focus().toggleBold().run()}
-            className="prose -mt-2 min-h-[700px] cursor-text rounded-lg transition-all focus-within:bg-slate-50 hover:bg-slate-50"
+            className="prose -mt-2 min-h-[700px] cursor-text rounded-lg transition-all focus-within:bg-zinc-50 hover:bg-zinc-50"
           >
             <EditorContent className="" editor={editor} />
           </div>

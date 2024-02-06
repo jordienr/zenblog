@@ -22,9 +22,9 @@ export default function AppLayout({ children, loading }: Props) {
         </div>
       )}
 
-      <nav className="sticky top-0 mx-auto h-12 w-full max-w-5xl">
-        <div className="mx-auto flex h-full items-center justify-between px-2">
-          <div className="z-20 m-2 flex h-full items-center gap-2 rounded-full bg-slate-50">
+      <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl border-b bg-zinc-50">
+        <div className="mx-auto flex h-full items-center justify-between p-4">
+          <div className="z-20  flex h-full items-center gap-2">
             <Link href="/" className="rounded-md px-1 text-lg font-medium">
               <ZendoLogo />
             </Link>

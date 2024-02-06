@@ -1,9 +1,7 @@
-import React, { useCallback, useState } from "react";
-import { Label } from "../ui/label";
+import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Plus, Trash } from "lucide-react";
-import { set } from "zod";
 
 type MetadataItem = {
   key: string;
@@ -45,8 +43,8 @@ const EditorSettings = (props: Props) => {
 
         console.log("DEBUG", newMetadata);
 
-        // setMetadata(newMetadata);
-        // props.onSave(metadata);
+        setMetadata(newMetadata);
+        props.onSave(metadata);
       }}
       className="prose-sm prose-h2:font-bold prose-h2:text-sm"
     >
@@ -60,7 +58,7 @@ const EditorSettings = (props: Props) => {
           </div>
           <div className="flex flex-col gap-1">
             {metadata.map((item, index) => (
-              <div className="flex gap-1" key={item.key}>
+              <div className="flex gap-1" key={`${item.key}-metadata-${index}`}>
                 <div className="grid flex-grow grid-cols-2 gap-1 *:rounded-md *:border *:p-1">
                   <Input
                     placeholder="key"
@@ -85,7 +83,9 @@ const EditorSettings = (props: Props) => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      setMetadata(metadata.filter((_, i) => i !== index));
+                      const newMetadata = [...metadata];
+                      newMetadata.splice(index, 1);
+                      setMetadata(newMetadata);
                     }}
                   >
                     <Trash size={16} />
@@ -106,10 +106,9 @@ const EditorSettings = (props: Props) => {
             Add metadata
           </Button>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex justify-end">
           <Button>Save</Button>
         </div>
-        <pre>{JSON.stringify(metadata, null, 2)}</pre>
       </section>
     </form>
   );

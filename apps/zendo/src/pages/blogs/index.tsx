@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { PiPencilLine } from "react-icons/pi";
 import { useEffect } from "react";
+import { Plus } from "lucide-react";
 
 export default function Dashboard() {
   const api = createAPIClient();
@@ -30,6 +31,7 @@ export default function Dashboard() {
             <div>
               <Button asChild>
                 <Link className="btn" href="/blogs/create">
+                  <Plus />
                   Create blog
                 </Link>
               </Button>
