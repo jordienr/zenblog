@@ -35,7 +35,13 @@ export default function AppLayout({ children, loading }: Props) {
               Blogs
             </Link>
           </div>
-          <div>
+          <div className="flex gap-4">
+            <Link
+              className="rounded-full px-3 py-1 text-sm font-medium text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+              href="/docs/getting-started"
+            >
+              Docs
+            </Link>
             <UserButton />
           </div>
         </div>

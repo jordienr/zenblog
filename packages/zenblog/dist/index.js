@@ -76,6 +76,7 @@ function createClient({ blogId, _url, debug }) {
                         "Content-Type": "application/json",
                     },
                 });
+                log("posts.getBySlug", post);
                 return post; // to do: validate
             },
         },

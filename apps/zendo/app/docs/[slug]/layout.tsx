@@ -20,7 +20,7 @@ const layout = async ({
 
   return (
     <div className="mx-auto flex max-h-screen max-w-6xl">
-      <aside className="flex min-h-screen min-w-[16rem] flex-col overflow-auto border-x">
+      <aside className="flex min-h-screen min-w-[16rem] flex-col overflow-auto">
         <div className="p-3 text-center">
           <Link href="/">
             <ZendoLogo />
@@ -48,8 +48,10 @@ const layout = async ({
           <p>Docs site built with zenblog</p>
         </div>
       </aside>
-      <main className="w-full flex-grow overflow-auto">{children}</main>
-      <aside className="min-w-[16rem] border-x">
+      <main className="w-full flex-grow overflow-auto border-x">
+        {children}
+      </main>
+      <aside className="min-w-[16rem]">
         <div className="flex h-12 items-center justify-end gap-0.5 border-b px-2">
           <Button variant={"ghost"} size="icon">
             <Link href="https://github.com/jordienr/zenblog">
@@ -66,12 +68,12 @@ const layout = async ({
           </Button>
         </div>
         <div className="p-2">
-          <h2 className="text-sm font-medium text-slate-500">On this page</h2>
+          {/* <h2 className="text-sm font-medium text-slate-500">On this page</h2> */}
           <ul className="mt-2">
-            <li># title 1</li>
+            {/* <li># title 1</li>
             <li># title 2</li>
             <li># title 3</li>
-            <li># title 4</li>
+            <li># title 4</li> */}
           </ul>
         </div>
       </aside>

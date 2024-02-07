@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { docs } from "@/cms";
 import { ContentRenderer } from "@/cms/ContentRenderer";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,17 @@ const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
         <Button variant="ghost" size="icon">
           <Search size={16} />
         </Button>
+      </div>
+      <div className="p-2">
+        {post.cover_image && (
+          <img
+            src={post.cover_image}
+            height="400"
+            width={(16 / 9) * 400}
+            loading="lazy"
+            alt={post.title}
+          />
+        )}
       </div>
       <div className="overflow-auto p-4">
         <ContentRenderer content={post.content} />

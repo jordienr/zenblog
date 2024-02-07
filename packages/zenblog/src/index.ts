@@ -104,6 +104,8 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
           },
         });
 
+        log("posts.getBySlug", post);
+
         return post as PostWithContent; // to do: validate
       },
     },
