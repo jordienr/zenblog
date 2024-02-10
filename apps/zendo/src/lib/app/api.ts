@@ -23,14 +23,11 @@ export function createAPIClient() {
     const URL_START = "/api/v1";
     const res = await fetch(URL_START + input, { ...init, headers });
 
-    console.log(`[🛫 Req ${init.method} ${input}] `, init.body);
-
     if (!res.ok) {
       console.error(`[🚨 ${init.method} ${input}] `, res.statusText);
       throw new Error(res.statusText);
     }
     const data = await res.json();
-    console.log(`[✅ Res ${init.method} ${input}] `, data);
 
     const result = await type.safeParseAsync(data);
 

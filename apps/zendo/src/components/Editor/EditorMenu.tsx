@@ -45,12 +45,12 @@ function EditorMenuButton({
       <Tooltip delayDuration={200}>
         <TooltipTrigger asChild>
           <Button
-            variant={"ghost"}
             tabIndex={-1}
+            variant={"ghost"}
             type="button"
             className={cn(
               "rounded-md p-2 text-zinc-400",
-              active ? "text-zinc-500" : "",
+              active ? "bg-zinc-100 text-zinc-800" : "text-zinc-400",
               props.disabled ? "" : "hover:bg-zinc-100/80 hover:text-zinc-600"
             )}
             {...props}
@@ -67,16 +67,6 @@ function EditorMenuButton({
 export function EditorMenu({ editor }: { editor: Editor | null }) {
   const SIZE = 18;
 
-  function getOSMetaKey() {
-    const isMac = /Mac|iPod|iPhone|iPad/.test(window.navigator.platform);
-    return isMac ? "Cmd" : "Ctrl";
-  }
-
-  function getMenuTooltip(command: string) {
-    const key = getOSMetaKey();
-    return command.replace("Meta", key);
-  }
-
   const Separator = {
     icon: <Dot size={SIZE} />,
     disabled: true,
@@ -88,35 +78,41 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
     command: () => void;
     disabled?: boolean;
     tooltip?: string;
+    active?: boolean;
   }[] = [
     {
-      tooltip: getMenuTooltip("Bold (Meta+B)"),
+      tooltip: "Bold (Cmd+B)",
       icon: <BoldIcon size={SIZE} />,
       command: () => editor?.chain().focus().toggleBold().run(),
+      active: editor?.isActive("bold"),
     },
     {
-      tooltip: getMenuTooltip("Italic (Meta+I)"),
+      tooltip: "Italic (Cmd+I)",
       icon: <ItalicIcon size={SIZE} />,
       command: () => editor?.chain().focus().toggleItalic().run(),
+      active: editor?.isActive("italic"),
     },
     {
-      tooltip: getMenuTooltip("Strikethrough"),
+      tooltip: "Strikethrough",
       icon: <Strikethrough size={SIZE} />,
       command: () => editor?.chain().focus().toggleStrike().run(),
+      active: editor?.isActive("strike"),
     },
     {
-      tooltip: getMenuTooltip("Code (Meta+E)"),
+      tooltip: "Code (Cmd+E)",
       icon: <CodeIcon size={SIZE} />,
       command: () => editor?.chain().focus().toggleCode().run(),
+      active: editor?.isActive("code"),
     },
     {
-      tooltip: getMenuTooltip("Code Block"),
+      tooltip: "Code Block",
       icon: <PiCodeBlock size={SIZE} />,
       command: () => editor?.chain().focus().toggleCodeBlock().run(),
+      active: editor?.isActive("codeBlock"),
     },
     Separator,
     {
-      tooltip: getMenuTooltip("Link"),
+      tooltip: "Link",
       icon: <Link size={SIZE} />,
       command: () => {
         const url = window.prompt("Enter the URL");
@@ -124,16 +120,19 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
           editor?.chain().focus().setLink({ href: url }).run();
         }
       },
+      active: editor?.isActive("link"),
     },
     {
-      tooltip: getMenuTooltip("List"),
+      tooltip: "List",
       icon: <ListIcon size={SIZE} />,
       command: () => editor?.chain().focus().toggleBulletList().run(),
+      active: editor?.isActive("bulletList"),
     },
     {
-      tooltip: getMenuTooltip("Numbered List"),
+      tooltip: "Numbered List",
       icon: <PiListNumbers size={SIZE} />,
       command: () => editor?.chain().focus().toggleOrderedList().run(),
+      active: editor?.isActive("orderedList"),
     },
   ];
 
@@ -171,15 +170,18 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
   ];
 
   return (
-    <div className="flex rounded-lg border border-zinc-200 bg-white p-1 shadow-sm">
+    <div
+      tabIndex={-1}
+      className="inline-flex rounded-xl border border-zinc-200 bg-white p-1 shadow-sm"
+    >
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger tabIndex={-1} asChild>
           <Button variant={"ghost"} className="w-24 text-zinc-500">
             {editor?.isFocused ||
             editor?.isActive("paragraph") ||
             editor?.isActive("heading")
               ? editor.isActive("heading")
-                ? "Heading"
+                ? `Heading ${editor.getAttributes("heading").level}`
                 : "Paragraph"
               : "Type"}
           </Button>
@@ -197,10 +199,10 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      {menuButtons.map(({ icon, command, disabled, tooltip }, i) => (
+      {menuButtons.map(({ icon, command, disabled, tooltip, active }, i) => (
         <EditorMenuButton
           disabled={disabled}
-          active={editor?.isActive(command) || false}
+          active={active || false}
           key={i + "menu-btn"}
           onClick={command}
           tooltip={tooltip}

@@ -9,6 +9,8 @@ import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { HiTrash } from "react-icons/hi";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 export function Invitations({ blog }: { blog: Blog }) {
   const router = useRouter();
   const blogId = router.query.blogId as string;
@@ -61,7 +63,7 @@ export function Invitations({ blog }: { blog: Blog }) {
         {invitations.data?.map((invitation) => (
           <li
             key={invitation.id}
-            className="flex justify-between gap-4 rounded-md border"
+            className="flex items-center justify-between gap-4 rounded-xl border px-1"
           >
             <ul className="flex flex-grow items-center gap-4">
               <li className="w-3/4 p-2 font-semibold">{invitation.name}</li>
@@ -72,24 +74,25 @@ export function Invitations({ blog }: { blog: Blog }) {
                 </span>
               </li>
             </ul>
-            <button
-              className="btn btn-icon"
+            <Button
+              variant={"ghost"}
+              size={"icon"}
               onClick={() => onDeleteClick(invitation.id)}
             >
               <HiTrash />
-            </button>
+            </Button>
           </li>
         ))}
       </ul>
       <form className="flex flex-col gap-2" onSubmit={onSubmit}>
         <h3 className="mt-4 font-medium">Invite people to {blog.title}</h3>
         <div className="flex gap-4">
-          <input
+          <Input
             type="text"
             placeholder="Name"
             {...invitationForm.register("name")}
           />
-          <input
+          <Input
             type="text"
             placeholder="Email"
             {...invitationForm.register("email")}
@@ -97,9 +100,7 @@ export function Invitations({ blog }: { blog: Blog }) {
         </div>
 
         <div className="actions">
-          <button type="submit" className="btn btn-primary">
-            Invite team member
-          </button>
+          <Button type="submit">Invite team member</Button>
         </div>
       </form>
     </div>

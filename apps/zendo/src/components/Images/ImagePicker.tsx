@@ -50,7 +50,7 @@ export function ImagePicker({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger>{children}</DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>

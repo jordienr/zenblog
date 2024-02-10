@@ -139,7 +139,7 @@ export default function Post() {
     );
   }
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white pb-32">
+    <div className="flex min-h-screen w-full flex-col">
       <ZendoEditor
         onSave={async (content) => {
           try {

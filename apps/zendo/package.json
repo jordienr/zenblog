@@ -10,6 +10,7 @@
     "supabase:typegen": "npx supabase gen types typescript --project-id ppfseefimhneysnokffx --schema public > src/types/supabase.ts"
   },
   "dependencies": {
+    "@builder.io/react-hydration-overlay": "^0.0.8",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
     "@groundcontrolsh/groundcontrol": "^0.3.0",
@@ -35,6 +36,7 @@
     "@tiptap/extension-horizontal-rule": "^2.1.12",
     "@tiptap/extension-image": "^2.1.12",
     "@tiptap/extension-link": "^2.2.2",
+    "@tiptap/extension-placeholder": "^2.2.2",
     "@tiptap/pm": "^2.0.3",
     "@tiptap/react": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",

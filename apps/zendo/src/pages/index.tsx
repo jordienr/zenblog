@@ -1,16 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import {
-  FaChartLine,
-  FaCode,
-  FaImage,
-  FaImages,
-  FaRegChartBar,
-  FaTwitter,
-} from "react-icons/fa";
-import { SiTypescript } from "react-icons/si";
-import { Command } from "lucide-react";
-import { CgTrees } from "react-icons/cg";
+import { FaTwitter } from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { getClientClient } from "@/lib/supabase";
@@ -22,52 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const Home = () => {
-  const features = [
-    {
-      title: "Type safety",
-      description:
-        "Fully typed API client that you can use in your app to fetch your content. No GraphQL.",
-      icon: <SiTypescript size="24" className="text-orange-500" />,
-    },
-    {
-      title: "Cmd + V Images",
-      description:
-        "Imagine having to open the system file picker just to upload an image.",
-      icon: <FaImages size="24" className="text-orange-500" />,
-    },
-    {
-      title: "SEO",
-      description: "Easily manage SEO metadata for your posts.",
-      icon: <FaChartLine size="24" className="text-orange-500" />,
-    },
-    {
-      title: "Open graph images",
-      description: "Automatic generation of open graph images for your posts.",
-      icon: <FaImage size="24" className="text-orange-500" />,
-    },
-    {
-      title: "Cmd + K",
-      description: "A modern dashboard that you can navigate easily.",
-      icon: <Command className="text-orange-500" />,
-    },
-    {
-      title: "Unlimited blogs",
-      description:
-        "It doesn't matter how many blogs you have. Simple usage based pricing.",
-      icon: <CgTrees size="24" className="text-orange-500" />,
-    },
-    {
-      title: "Analytics",
-      description: "Easily find out how many page views your blog posts have.",
-      icon: <FaRegChartBar size="24" className="text-orange-500" />,
-    },
-    {
-      title: "Open Source",
-      description: "Built with Next.js and Supabase.",
-      icon: <FaCode size="24" className="text-orange-500" />,
-    },
-  ];
-
   const user = useUser();
 
   useEffect(() => {

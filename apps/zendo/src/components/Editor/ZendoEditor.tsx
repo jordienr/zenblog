@@ -34,6 +34,7 @@ import { IoClose } from "react-icons/io5";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import EditorSettings from "./EditorSettings";
 import TiptapLink from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
 
 const formSchema = z.object({
   title: z.string(),
@@ -63,6 +64,7 @@ type Props = {
     published: boolean;
     cover_image?: string;
     content?: any;
+    metadata?: Record<string, any>;
   };
 };
 
@@ -122,6 +124,9 @@ export const ZendoEditor = (props: Props) => {
         },
       }),
       TiptapLink,
+      Placeholder.configure({
+        placeholder: "Start writing...",
+      }),
       TiptapImage.extend({
         addProseMirrorPlugins() {
           return [UploadImagesPlugin()];
@@ -132,6 +137,8 @@ export const ZendoEditor = (props: Props) => {
 
   const formSubmit = handleSubmit(async (data) => {
     const content = editor?.getJSON() || {};
+    const slugHasChanged = data.slug !== props.post?.slug;
+
     props.onSave({
       content,
       title: data.title,
@@ -139,6 +146,10 @@ export const ZendoEditor = (props: Props) => {
       cover_image: data.cover_image || "",
       published: data.published,
     });
+
+    if (slugHasChanged) {
+      router.push(`/blogs/${blogId}/post/${data.slug}`);
+    }
   });
 
   function onCoverImageSelect(image: string) {
@@ -147,10 +158,10 @@ export const ZendoEditor = (props: Props) => {
   }
 
   return (
-    <>
+    <div className="bg-zinc-50 pb-40">
       <form
         onSubmit={formSubmit}
-        className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-white px-3 py-1.5"
+        className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-zinc-50 px-3 py-1.5 text-zinc-800"
       >
         <div className="flex items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-zinc-800">
           {blogsQuery.isLoading ? null : (
@@ -202,10 +213,10 @@ export const ZendoEditor = (props: Props) => {
 
           {postsQuery.isLoading ? null : (
             <DropdownMenu>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
                 <Button variant={"ghost"}>
                   <div className="flex items-center gap-1.5 rounded-md p-1.5 hover:bg-zinc-100">
-                    <span>{props.post?.title || title || ""}</span>
+                    <span>{props.post?.title || title || "New post"}</span>
                   </div>
                 </Button>
               </DropdownMenuTrigger>
@@ -242,7 +253,7 @@ export const ZendoEditor = (props: Props) => {
           </Label>
           <Sheet>
             <SheetTrigger asChild>
-              <Button type="button" title="post settings" variant="secondary">
+              <Button type="button" title="post settings" variant="ghost">
                 <Settings2 size={16} /> Settings
               </Button>
             </SheetTrigger>
@@ -260,7 +271,7 @@ export const ZendoEditor = (props: Props) => {
           </Button>
         </div>
       </form>
-      <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2">
+      <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2 pb-40">
         <div className="relative mt-2 flex items-center justify-center bg-zinc-100">
           {coverImgUrl && (
             <button
@@ -283,7 +294,7 @@ export const ZendoEditor = (props: Props) => {
                 placeholder="a-great-title"
                 type="text"
                 {...register("slug")}
-                className="w-full rounded-lg p-2 font-mono text-xs outline-none hover:bg-zinc-50 focus-visible:bg-zinc-100"
+                className="w-full rounded-lg bg-transparent p-2 font-mono text-xs text-zinc-700 outline-none transition-all hover:bg-white focus-visible:bg-white focus-visible:shadow-sm"
                 autoComplete="off"
               />
             </label>
@@ -296,36 +307,41 @@ export const ZendoEditor = (props: Props) => {
               }}
               onCancel={() => {}}
             >
-              <Button asChild variant={"secondary"} className="h-8">
-                <span className="btn btn-text whitespace-nowrap !text-xs">
-                  <BsFillImageFill className="h-4 w-4" />
+              <Button
+                variant={"ghost"}
+                className="text-zinc-600 hover:bg-white"
+              >
+                <span className="flex gap-1.5 whitespace-nowrap !text-xs">
+                  <BsFillImageFill className="h-4 w-4 text-zinc-400" />
                   Cover image
                 </span>
               </Button>
             </ImagePicker>
           </div>
 
-          <input
+          <textarea
             placeholder="A great title"
-            type="text"
             {...register("title")}
-            className="mt-1 w-full max-w-2xl whitespace-break-spaces rounded-xl border-none bg-transparent p-2
+            style={{ resize: "none" }}
+            className="mt-1 w-full max-w-2xl rounded-xl border-none bg-transparent p-2
             text-4xl
-             font-medium outline-none transition-all hover:bg-zinc-50 focus-visible:bg-zinc-100"
+             font-medium text-zinc-800 outline-none transition-all hover:bg-white focus-visible:bg-white focus-visible:shadow-sm"
           />
         </div>
-        <div className="prose prose-h2:font-medium group">
+        <div className="group">
           <div className="sticky top-14 z-10">
             <EditorMenu editor={editor} />
           </div>
           <div
-            onClick={() => editor?.chain().focus().toggleBold().run()}
-            className="prose prose-p:text-lg -mt-2 min-h-[700px] cursor-text rounded-lg transition-all focus-within:bg-zinc-50 hover:bg-zinc-50"
+            onClick={() => {
+              editor?.commands.focus();
+            }}
+            className="prose prose-p:text-lg prose-h2:font-semibold -mt-2 min-h-[700px] cursor-text rounded-lg py-1.5 font-light leading-10 tracking-tight transition-all"
           >
-            <EditorContent className="" editor={editor} />
+            <EditorContent editor={editor} />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

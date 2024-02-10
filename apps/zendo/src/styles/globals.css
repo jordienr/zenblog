@@ -17,10 +17,11 @@
 }
 
 .ProseMirror p > code {
-  background-color: theme("colors.orange.50");
+  background-color: theme("colors.zinc.100");
+  border: 1px solid theme("colors.zinc.200");
   border-radius: 4px;
-  padding: 0.2em 0.4em;
-  color: theme("colors.orange.500");
+  padding: 0.2em;
+  color: theme("colors.zinc.700");
   letter-spacing: 0.4px;
 }
 .ProseMirror p > code::after,
@@ -58,4 +59,12 @@ h6 {
 textarea:active {
   border: none;
   outline: none;
+}
+
+.tiptap .is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }

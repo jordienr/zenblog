@@ -1,13 +1,21 @@
 # To Do
 
+## IMPORTANT
+
+- [] First time a user logs in, they should be prompted to add a password and reload the session.
+- [] Make layout work on mobile
+- [] Make inputs not zoom in on mobile
+
 ## Ideas
 
+- [] Allow users to add default metadata for posts in a blog.
 - [] Add PolyScale cache to Supabase for faster queries?
 - [] Categories
 - [] Tags
 - [] Featured Images
 - [] Excerpts
 - [] Authors
+- [] Analytics
 
 ## Blogs
 
@@ -59,8 +67,8 @@
 
 ## Docs
 
-- [] Add documentation for API client
-- [] Copypastable Zenblog Renderer component
+- [] Add documentation for integrating with Zenblog
+- [] Copypastable Zenblog Renderer component similar to shadcn
 
 ## User Feedback
 

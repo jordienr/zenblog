@@ -2,7 +2,6 @@ import type { AppProps } from "next/app";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import { useRouter } from "next/router";
-import { motion } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import {
   Hydrate,
