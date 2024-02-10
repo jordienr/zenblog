@@ -1,17 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import React, { useEffect } from "react";
 import { Button } from "../ui/button";
 import {
   SaveIcon,
-  Trash2Icon,
   Settings2,
   ChevronRight,
-  Cross,
   List,
-  ChevronDown,
-  ChevronLeft,
-  CornerLeftUp,
   CornerUpLeft,
 } from "lucide-react";
 import { z } from "zod";
@@ -23,7 +18,6 @@ import TiptapImage from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import UploadImagesPlugin, { startImageUpload } from "./upload-image";
 import { generateSlug } from "@/lib/utils/slugs";
-import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { useRouter } from "next/router";
 import { useBlogQuery, useBlogsQuery } from "@/queries/blogs";
@@ -32,22 +26,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
 import { usePostsQuery } from "@/queries/posts";
 import { IoClose } from "react-icons/io5";
-import Debugger from "../Debugger";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import EditorSettings from "./EditorSettings";
+import TiptapLink from "@tiptap/extension-link";
 
 const formSchema = z.object({
   title: z.string(),
@@ -135,6 +121,7 @@ export const ZendoEditor = (props: Props) => {
           levels: [2, 3, 4, 5, 6],
         },
       }),
+      TiptapLink,
       TiptapImage.extend({
         addProseMirrorPlugins() {
           return [UploadImagesPlugin()];
@@ -333,7 +320,7 @@ export const ZendoEditor = (props: Props) => {
           </div>
           <div
             onClick={() => editor?.chain().focus().toggleBold().run()}
-            className="prose -mt-2 min-h-[700px] cursor-text rounded-lg transition-all focus-within:bg-zinc-50 hover:bg-zinc-50"
+            className="prose prose-p:text-lg -mt-2 min-h-[700px] cursor-text rounded-lg transition-all focus-within:bg-zinc-50 hover:bg-zinc-50"
           >
             <EditorContent className="" editor={editor} />
           </div>

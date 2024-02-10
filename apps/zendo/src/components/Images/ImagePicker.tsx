@@ -29,6 +29,7 @@ export function ImagePicker({
   onSelect: (image: BlogImage) => void;
   onCancel: () => void;
   open: boolean;
+  ref?: any;
   onOpenChange: (value: boolean) => void;
 }>) {
   const api = createAPIClient();
