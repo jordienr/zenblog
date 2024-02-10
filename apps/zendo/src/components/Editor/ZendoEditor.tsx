@@ -287,14 +287,20 @@ export const ZendoEditor = (props: Props) => {
           )}
           <img className="max-h-96" src={coverImgUrl || ""} alt="" />
         </div>
-        <div className="group mt-4 pb-2">
-          <div className="flex w-full justify-between gap-2 transition-all">
-            <label className="flex w-full items-center gap-2" htmlFor="slug">
+        <div className="mt-4 pb-2">
+          <div className="flex w-full justify-between transition-all">
+            <label
+              className="group flex w-full flex-col items-start justify-center gap-1"
+              htmlFor="slug"
+            >
+              <span className="mx-2 text-xs text-zinc-400 opacity-0 transition-all group-focus-within:opacity-100">
+                slug
+              </span>
               <input
                 placeholder="a-great-title"
                 type="text"
                 {...register("slug")}
-                className="w-full rounded-lg bg-transparent p-2 font-mono text-xs text-zinc-700 outline-none transition-all hover:bg-white focus-visible:bg-white focus-visible:shadow-sm"
+                className="w-full rounded-lg border border-transparent bg-transparent p-2 font-mono text-sm text-zinc-700 outline-none transition-all hover:bg-white focus:border-zinc-300 focus-visible:bg-white focus-visible:shadow-sm"
                 autoComplete="off"
               />
             </label>
@@ -323,13 +329,12 @@ export const ZendoEditor = (props: Props) => {
             placeholder="A great title"
             {...register("title")}
             style={{ resize: "none" }}
-            className="mt-1 w-full max-w-2xl rounded-xl border-none bg-transparent p-2
-            text-4xl
-             font-medium text-zinc-800 outline-none transition-all hover:bg-white focus-visible:bg-white focus-visible:shadow-sm"
+            className="mt-1 w-full max-w-2xl rounded-xl border border-transparent bg-transparent p-2
+            text-4xl font-medium text-zinc-800 outline-none transition-all focus-within:border-zinc-300 hover:bg-white focus:shadow-sm"
           />
         </div>
         <div className="group">
-          <div className="sticky top-14 z-10">
+          <div className="sticky top-10 z-30">
             <EditorMenu editor={editor} />
           </div>
           <div

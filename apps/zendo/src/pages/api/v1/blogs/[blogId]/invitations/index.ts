@@ -1,5 +1,10 @@
 import { getServerClient } from "@/lib/server/supabase";
+import { randomUUID } from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
+import { Resend } from "resend";
+
+const resendKey = process.env.RESEND;
+const resend = new Resend(resendKey);
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,6 +40,24 @@ export default async function handler(
       .from("invitations")
       .insert({ blog_id: blogId, name, email })
       .single();
+
+    const resendRes = await resend.emails.send({
+      from: "zenblog <yo@comms.zenblog.com>",
+      to: [email],
+      subject: "new zenblog invitation",
+      text: `hey ${name}, you have been invited to join zenblog, please go to https://zenblog.com/ and sign in or create an account to accept it.`,
+      headers: {
+        "X-Entity-Ref-ID": randomUUID(),
+      },
+      tags: [
+        {
+          name: "category",
+          value: "confirm_email",
+        },
+      ],
+    });
+
+    console.log(resendRes);
 
     if (error) {
       console.error(error);
