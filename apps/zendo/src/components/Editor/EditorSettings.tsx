@@ -106,6 +106,11 @@ const EditorSettings = (props: Props) => {
             Add metadata
           </Button>
         </div>
+
+        <div>
+          <h2>Categories</h2>
+        </div>
+
         <div className="mt-4 flex justify-end">
           <Button>Save</Button>
         </div>

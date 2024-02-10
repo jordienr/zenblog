@@ -49,25 +49,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <>
-                <motion.div
-                  key={pathname}
-                  initial="pageInitial"
-                  animate="pageAnimate"
-                  exit={{ opacity: 0 }}
-                  variants={{
-                    pageInitial: {
-                      opacity: 0,
-                      y: -10,
-                    },
-                    pageAnimate: {
-                      opacity: 1,
-                      y: 0,
-                    },
-                  }}
-                >
-                  <Component key={pathname} {...pageProps} />
-                </motion.div>
-
+                <Component key={pathname} {...pageProps} />
                 <Toaster />
               </>
             </Hydrate>

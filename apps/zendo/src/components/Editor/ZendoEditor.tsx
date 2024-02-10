@@ -260,7 +260,11 @@ export const ZendoEditor = (props: Props) => {
               </Button>
             </SheetTrigger>
             <SheetContent>
-              <EditorSettings onSave={() => {}}></EditorSettings>
+              <EditorSettings
+                onSave={() => {
+                  // TO DO - save settings
+                }}
+              ></EditorSettings>
             </SheetContent>
           </Sheet>
           <Button type="submit">
@@ -333,9 +337,6 @@ export const ZendoEditor = (props: Props) => {
           >
             <EditorContent className="" editor={editor} />
           </div>
-          <Debugger>
-            <pre>{JSON.stringify(editor?.getJSON(), null, 2)}</pre>
-          </Debugger>
         </div>
       </div>
     </>

@@ -73,14 +73,19 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
     throwError("blogId is required");
   }
 
+  type ReqOpts = {
+    cache?: RequestInit["cache"];
+  };
+
   return {
     posts: {
-      getAll: async function (): Promise<Post[]> {
+      getAll: async function (opts?: ReqOpts): Promise<Post[]> {
         const posts = await _fetch(`posts`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
+          cache: opts?.cache || "default",
         });
         log("posts.getAll", posts);
 
@@ -96,12 +101,16 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
 
         return normalizedPosts as Post[]; // to do: validate
       },
-      getBySlug: async function (slug: string): Promise<PostWithContent> {
+      getBySlug: async function (
+        slug: string,
+        opts?: ReqOpts
+      ): Promise<PostWithContent> {
         const post = await _fetch(`post/${slug}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
+          cache: opts?.cache || "default",
         });
 
         log("posts.getBySlug", post);

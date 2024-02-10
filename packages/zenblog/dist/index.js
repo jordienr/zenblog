@@ -50,12 +50,13 @@ function createClient({ blogId, _url, debug }) {
     }
     return {
         posts: {
-            getAll: async function () {
+            getAll: async function (opts) {
                 const posts = await _fetch(`posts`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    cache: opts?.cache || "default",
                 });
                 log("posts.getAll", posts);
                 const normalizedPosts = posts.map((post) => {
@@ -69,12 +70,13 @@ function createClient({ blogId, _url, debug }) {
                 });
                 return normalizedPosts; // to do: validate
             },
-            getBySlug: async function (slug) {
+            getBySlug: async function (slug, opts) {
                 const post = await _fetch(`post/${slug}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    cache: opts?.cache || "default",
                 });
                 log("posts.getBySlug", post);
                 return post; // to do: validate

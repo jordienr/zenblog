@@ -1,6 +1,6 @@
 # To Do
 
-## Features
+## Ideas
 
 - [] Add PolyScale cache to Supabase for faster queries?
 - [] Categories
@@ -18,15 +18,15 @@
 - [x] View all blogs
 - Make description optional
 - Add emoji picker to Create Blog
-- Redirect to blog after creating it
+- [x] Redirect to blog after creating it
 
 ## Posts
 
 - [] See "published at" and "updated at" dates in post list
 - [x] View all posts
 - [x] Create post
-- [] View post
-- [] Edit post
+- [x] View post
+- [x] Edit post
 - [] Delete post
 
 ## SEO
@@ -57,12 +57,10 @@
 - [] As a member, edit a post in a blog
 - [] As a member, delete a post in a blog
 
-## React Components
+## Docs
 
-- [] Create ZendoProvider component
-- [] Create PostList component
-- [] Create Post component
-- [] Create ContentRenderer component
+- [] Add documentation for API client
+- [] Copypastable Zenblog Renderer component
 
 ## User Feedback
 

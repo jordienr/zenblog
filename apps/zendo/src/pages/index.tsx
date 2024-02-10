@@ -179,7 +179,7 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-2 bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-800 bg-clip-text text-3xl tracking-tight text-transparent md:text-5xl">
+              <h1 className="mt-2 bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-800 bg-clip-text text-3xl font-medium tracking-tight text-transparent md:text-5xl">
                 Add a blog to your <br /> website{" "}
                 <span className="bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent">
                   in 2 minutes

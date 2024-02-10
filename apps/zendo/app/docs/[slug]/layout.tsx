@@ -31,7 +31,7 @@ const layout = async ({
             <Link
               data-state={params.slug === post.slug ? "active" : "inactive"}
               className={
-                "group flex items-center gap-1 rounded-md p-1.5 text-slate-600 transition-all hover:text-orange-600 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600"
+                "group flex items-center gap-1 rounded-md p-1.5 text-zinc-600 transition-all hover:text-orange-600 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600"
               }
               key={post.slug}
               href={"/docs/" + post.slug}
@@ -44,7 +44,7 @@ const layout = async ({
             </Link>
           ))}
         </ul>
-        <div className="mt-auto justify-self-end p-4 text-center text-xs text-slate-500">
+        <div className="mt-auto justify-self-end p-4 text-center text-xs text-zinc-500">
           <p>Docs site built with zenblog</p>
         </div>
       </aside>
@@ -68,7 +68,7 @@ const layout = async ({
           </Button>
         </div>
         <div className="p-2">
-          {/* <h2 className="text-sm font-medium text-slate-500">On this page</h2> */}
+          {/* <h2 className="text-sm font-medium text-zinc-500">On this page</h2> */}
           <ul className="mt-2">
             {/* <li># title 1</li>
             <li># title 2</li>

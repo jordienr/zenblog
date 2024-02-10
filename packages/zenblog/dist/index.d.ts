@@ -16,8 +16,12 @@ export type CreateClientOpts = {
 };
 export declare function createClient({ blogId, _url, debug }: CreateClientOpts): {
     posts: {
-        getAll: () => Promise<Post[]>;
-        getBySlug: (slug: string) => Promise<PostWithContent>;
+        getAll: (opts?: {
+            cache?: RequestInit["cache"];
+        } | undefined) => Promise<Post[]>;
+        getBySlug: (slug: string, opts?: {
+            cache?: RequestInit["cache"];
+        } | undefined) => Promise<PostWithContent>;
     };
 };
 //# sourceMappingURL=index.d.ts.map
