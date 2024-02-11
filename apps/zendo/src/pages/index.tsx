@@ -53,10 +53,7 @@ const Home = () => {
     <>
       <Head>
         <title>zenblog</title>
-        <meta
-          name="description"
-          content="blogging cms and api for typescript devs"
-        />
+        <meta name="description" content="Open source blogging cms" />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <div className="bg-zinc-100">

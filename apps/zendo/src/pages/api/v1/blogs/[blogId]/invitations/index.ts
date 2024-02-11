@@ -1,4 +1,4 @@
-import { getServerClient } from "@/lib/server/supabase";
+import { getServerClient } from "@/lib/server/deprecated/supabase";
 import { randomUUID } from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Resend } from "resend";

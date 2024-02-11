@@ -1,7 +1,7 @@
 // Next API Function GET all blogs
 
 import { getPostsRes } from "@/lib/models/posts/Posts";
-import { getServerClient } from "@/lib/server/supabase";
+import { getServerClient } from "@/lib/server/deprecated/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 

@@ -5,7 +5,7 @@
 - [] License
 - [] FAQ on homepage
 - [] Update README
-- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, etc.
+- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, etc.
 
 ## Bugs & Improvements
 
@@ -58,7 +58,7 @@
 
 ## Docs
 
-- [] Add documentation for integrating with Zenblog
+- [x] Add documentation for integrating with Zenblog
 - [] Copypastable Zenblog Renderer component similar to shadcn
 
 ## API Client

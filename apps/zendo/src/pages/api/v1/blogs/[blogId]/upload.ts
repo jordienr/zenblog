@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
-import { getServerClient } from "@/lib/server/supabase";
+import { getServerClient } from "@/lib/server/deprecated/supabase";
 
 export const config = {
   api: {

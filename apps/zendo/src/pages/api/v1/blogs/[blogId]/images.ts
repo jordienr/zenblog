@@ -2,7 +2,7 @@
 
 import { NextApiRequest, NextApiResponse } from "next";
 import { FileObject } from "@supabase/storage-js/src/lib/types";
-import { getServerClient } from "@/lib/server/supabase";
+import { getServerClient } from "@/lib/server/deprecated/supabase";
 
 export default async function handler(
   req: NextApiRequest,

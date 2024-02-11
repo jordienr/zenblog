@@ -2,7 +2,7 @@
 
 import { NextApiRequest, NextApiResponse } from "next";
 import { PatchPost } from "@/lib/models/posts/Posts";
-import { getServerClient } from "@/lib/server/supabase";
+import { getServerClient } from "@/lib/server/deprecated/supabase";
 
 export default async function handler(
   req: NextApiRequest,

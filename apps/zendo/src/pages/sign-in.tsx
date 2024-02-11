@@ -3,15 +3,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const supabase = useSupabaseClient();
+  const user = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.email) {
+      router.push("/blogs");
+    }
+  }, [user, router]);
 
   async function onSubmitMagicLink(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

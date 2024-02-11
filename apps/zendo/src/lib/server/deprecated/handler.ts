@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getClientClient } from "../supabase";
+import { getClientClient } from "../../supabase";
 
 export async function getApiClientDB(
   req: NextApiRequest,
