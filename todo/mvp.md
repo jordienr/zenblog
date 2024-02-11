@@ -3,16 +3,28 @@
 ## General
 
 - [] License
-- [] Pricing page
 - [] FAQ on homepage
 - [] Update README
-- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, etc.
+- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, etc.
 
 ## Bugs & Improvements
 
 - [] First time a user logs in, they should be prompted to add a password and reload the session.
 - [] Make layout work on mobile
 - [] Make inputs not zoom in on mobile
+
+## Pricing
+
+- [] Add pricing page
+- [] Make pricing work
+
+### Pro plan
+
+- $50/year (2 months free) or $5/month
+- 1 editor
+- Unlimited blogs
+- Unlimited posts
+- Unlimited categories
 
 ## Blogs
 
