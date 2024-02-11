@@ -1,5 +1,11 @@
 # MVP
 
+## General
+
+- [] License
+- [] Pricing page
+- [] FAQ on homepage
+
 ## Bugs & Improvements
 
 - [] First time a user logs in, they should be prompted to add a password and reload the session.
@@ -13,9 +19,10 @@
 - [x] Delete blog
 - [x] View blog
 - [x] View all blogs
-- Make description optional
+- [x] Make description optional
 - [x] Add emoji picker to Create Blog
 - [x] Redirect to blog after creating it
+- Integration guide
 
 ## Posts
 
@@ -39,3 +46,9 @@
 
 - [] Add documentation for integrating with Zenblog
 - [] Copypastable Zenblog Renderer component similar to shadcn
+
+## API Client
+
+- [x] Create API client
+- [x] Add method to fetch all posts
+- [x] Add method to fetch a single post by slug

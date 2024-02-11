@@ -19,7 +19,7 @@ export default function CreateBlog() {
 
   type FormData = {
     title: string;
-    description: string;
+    description?: string;
     emoji: string;
     slug: string;
   };
@@ -43,7 +43,7 @@ export default function CreateBlog() {
 
     const res = await createBlog.mutateAsync({
       title: data.title,
-      description: data.description,
+      description: data.description || "",
       emoji: data.emoji || DEFAULT_EMOJI,
     });
 
@@ -54,8 +54,6 @@ export default function CreateBlog() {
       alert("Error creating blog, please try again");
     }
   };
-
-  watch("title");
 
   function NextActionItem({
     icon,
@@ -155,11 +153,13 @@ export default function CreateBlog() {
               </div>
 
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">
+                  Description{" "}
+                  <span className="text-xs text-zinc-400">(optional)</span>{" "}
+                </Label>
                 <Input
                   type="text"
                   id="description"
-                  required
                   {...register("description")}
                 />
               </div>

@@ -120,13 +120,14 @@ export default function BlogSettings() {
                   )}
                 ></Controller>
               </label>
-              <div>
+              <div className="flex-grow">
                 <Label className="flex-grow" htmlFor="title">
                   Title
                 </Label>
                 <Input
                   type="text"
                   id="title"
+                  className="flex w-full flex-grow"
                   required
                   {...register("title", {
                     value: blog.title,
@@ -152,18 +153,18 @@ export default function BlogSettings() {
           </form>
         </section>
 
-        <section className="section p-3">
+        {/* <section className="section p-3">
           <h2 className="text-lg font-medium">Invitations</h2>
           <p className="text-sm text-slate-500">
             Invite others to this blog so they can write and manage content.
           </p>
           <Invitations blog={blog} />
-        </section>
+        </section> */}
 
-        <section className="section p-3">
+        {/* <section className="section p-3">
           <h2 className="text-lg font-medium">Members</h2>
           <Members blog={blog} />
-        </section>
+        </section> */}
 
         <section className="section p-3">
           <h2 className="text-lg font-medium">Integration guide</h2>

@@ -10,6 +10,7 @@ import { useUser } from "@supabase/auth-helpers-react";
 import { LoggedInUser } from "@/components/LoggedInUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { StarIcon } from "lucide-react";
 
 const Home = () => {
   const user = useUser();
@@ -61,11 +62,12 @@ const Home = () => {
       <div className="bg-zinc-100">
         <div className="mx-auto flex max-w-3xl flex-col">
           <nav className="flex items-center justify-between p-3">
-            <div className="flex-grow">
+            <div className="flex-grow cursor-default">
               <ZendoLogo />
             </div>
 
             <div className="flex flex-grow items-center justify-end gap-4 font-medium text-zinc-600">
+              <Link href="/blog">Blog</Link>
               <LoggedInUser>
                 <Link
                   className="rounded-full px-3 py-1.5 hover:text-zinc-800"
@@ -114,16 +116,20 @@ const Home = () => {
 
           <main className="px-4 font-sans">
             <div className="mx-auto mt-12">
-              <div className="">
+              <div className="mx-1">
                 <Link
-                  className=" inline-flex items-center gap-1 p-2 font-mono text-sm text-zinc-400 underline hover:text-amber-500"
+                  className="highlight-zinc-700 group inline-flex items-center gap-1 rounded-full border border-zinc-800 bg-gradient-to-b from-zinc-900 to-zinc-600 px-3 py-1 text-xs text-zinc-100 transition-all hover:text-amber-300"
                   target="_blank"
                   href="https://github.com/jordienr/zenblog"
                 >
+                  <StarIcon
+                    size="15"
+                    className="mr-1 text-zinc-300 group-hover:text-amber-200"
+                  />
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-2 bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-800 bg-clip-text text-3xl font-medium tracking-tight text-transparent md:text-5xl">
+              <h1 className="mt-4 bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-800 bg-clip-text text-5xl font-medium tracking-tight text-transparent md:text-5xl">
                 Add a blog to your <br /> website{" "}
                 <span className="bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent">
                   in 2 minutes

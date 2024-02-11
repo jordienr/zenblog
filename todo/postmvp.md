@@ -9,16 +9,26 @@
 - [] Authors
 - [] Analytics
 
-## SEO
+## Hosted blogs
+
+- [] Let zenblog host your blog for you
+- [] Custom domain support
+- [] Hosted blog themes
+- [] Hosted blog analytics
+
+## Self hosting
+
+- [] Add documentation for self hosting
+- [] Self hosting license
+
+## Editor Themes
+
+- [] Pick your editor theme, serif, sans-serif, monospace.
+
+## SEO?
 
 - [] List what SEO metadata is needed for posts
 - [] Add SEO metadata to blogs?
-
-## API Client
-
-- [x] Create API client
-- [x] Add method to fetch all posts
-- [x] Add method to fetch a single post
 
 ## Invitations
 
