@@ -195,9 +195,13 @@ const cms = createClient({
             This will also delete all posts in the blog.
           </p>
           <div className="actions">
-            <button onClick={onDeleteBlogClick} className="btn btn-red mt-4">
+            <Button
+              onClick={onDeleteBlogClick}
+              variant={"destructive"}
+              className="mt-4"
+            >
               Delete blog
-            </button>
+            </Button>
           </div>
         </section>
       </div>

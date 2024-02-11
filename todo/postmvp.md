@@ -8,6 +8,10 @@
 - [] Excerpts
 - [] Authors
 - [] Analytics
+- [] Pin blogs to the top of the list
+- [] Redesign settings page to be similar to Plausible
+- [] Use a generic on createClient to pass the custom metadata
+- [] Add files to custom metadata
 
 ## Hosted blogs
 

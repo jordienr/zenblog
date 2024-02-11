@@ -6,6 +6,7 @@
 - [] Pricing page
 - [] FAQ on homepage
 - [] Update README
+- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, etc.
 
 ## Bugs & Improvements
 
