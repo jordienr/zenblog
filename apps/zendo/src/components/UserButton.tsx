@@ -4,9 +4,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import Link from "next/link";
+import { Button } from "./ui/button";
+import { User2 } from "lucide-react";
 
 type Props = {};
 
@@ -21,8 +24,18 @@ const UserButton = (props: Props) => {
             {user?.email?.slice(0, 1).toUpperCase()}
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="mr-4">
-          <DropdownMenuItem>{user?.email}</DropdownMenuItem>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem className="hover:bg-transparent">
+            <div className="flex flex-col">
+              <span className="text-xs text-zinc-400">Signed in as</span>
+              <span className="font-medium">{user?.email}</span>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/account">Account settings</Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/sign-out">Sign out</Link>
           </DropdownMenuItem>
