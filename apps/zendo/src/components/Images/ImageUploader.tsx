@@ -55,7 +55,7 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
 
     if (error) {
       console.error(error);
-      alert(error);
+      alert(error.message);
       return;
     }
 

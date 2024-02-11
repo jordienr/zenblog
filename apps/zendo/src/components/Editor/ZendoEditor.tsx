@@ -329,8 +329,8 @@ export const ZendoEditor = (props: Props) => {
             placeholder="A great title"
             {...register("title")}
             style={{ resize: "none" }}
-            className="mt-1 w-full max-w-2xl rounded-xl border border-transparent bg-transparent p-2
-            text-4xl font-medium text-zinc-800 outline-none transition-all focus-within:border-zinc-300 hover:bg-white focus:shadow-sm"
+            className="mt-1 w-full max-w-2xl rounded-xl bg-transparent p-2
+            text-4xl font-medium text-zinc-800 outline-none"
           />
         </div>
         <div className="group">
