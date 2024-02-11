@@ -5,6 +5,7 @@
 - [] License
 - [] Pricing page
 - [] FAQ on homepage
+- [] Update README
 
 ## Bugs & Improvements
 
