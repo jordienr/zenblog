@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 import { useState } from "react";
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import AppChecks from "@/components/AppChecks";
 
 // Fonts
 const inter = Inter({
@@ -47,10 +48,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         <PlausibleProvider domain="zendo.blog">
           <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
-              <>
+              <AppChecks>
                 <Component key={pathname} {...pageProps} />
                 <Toaster />
-              </>
+              </AppChecks>
             </Hydrate>
 
             {/* <ReactQueryDevtools initialIsOpen={false} /> */}

@@ -5,15 +5,11 @@ import { env } from "@/env.mjs";
 const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-console.log("SUPABASE URL -> -> ", supabaseUrl);
-
 if (!supabaseKey) {
   throw new Error("Missing supabaseKey");
 }
 
-export function getClientClient() {
-  console.log("SUPABASE URL -> -> ", supabaseUrl);
-
+export function getSupabaseClient() {
   if (!supabaseKey) {
     throw new Error("Missing supabaseKey");
   }

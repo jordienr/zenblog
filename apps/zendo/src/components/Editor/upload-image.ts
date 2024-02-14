@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet, EditorView } from "@tiptap/pm/view";
-import { getClientClient } from "../../lib/supabase";
+import { getSupabaseClient } from "../../lib/supabase";
 
 const uploadKey = new PluginKey("upload-image");
 
@@ -134,7 +134,7 @@ export function startImageUpload(
   });
 }
 
-const supa = getClientClient();
+const supa = getSupabaseClient();
 
 export const handleImageUpload = async (file: File, blogId: string) => {
   console.log("Uploading image to Supabase storage...");

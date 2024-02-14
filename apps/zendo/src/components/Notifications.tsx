@@ -9,12 +9,12 @@ import { Button } from "./ui/button";
 import { IoNotificationsCircle } from "react-icons/io5";
 import { Bell, Loader } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getClientClient } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 
 type Props = {};
 
 function useNotifications() {
-  const sb = getClientClient();
+  const sb = getSupabaseClient();
 
   return useQuery({
     queryKey: ["notifications"],

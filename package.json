@@ -9,7 +9,9 @@
     "supa:start": "npx supabase start",
     "supa:stop": "npx supabase stop",
     "supa:open": "open http://localhost:54323",
-    "qs": "git add . && git commit -m \"quick save\" && git push"
+    "qs": "git add . && git commit -m \"quick save\" && git push",
+    "stripe:webhook": "stripe listen --forward-to localhost:3000/api/webhooks/stripe",
+    "stripe:event": "stripe trigger payment_intent.succeeded"
   },
   "devDependencies": {
     "@turbo/gen": "^1.9.7",

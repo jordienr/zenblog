@@ -80,7 +80,7 @@ export default function BlogPosts() {
     const { blog, posts } = data;
     return (
       <AppLayout>
-        <div className="mx-auto max-w-5xl p-4">
+        <div className="mx-auto mt-8 max-w-5xl p-4">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold">
               <span className="mr-2 text-2xl">{blog.emoji}</span>
@@ -160,9 +160,7 @@ export default function BlogPosts() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => {
-                          
-                        }}>
+                        <DropdownMenuItem onClick={() => {}}>
                           <Trash size="16" />
                           <span className="ml-2">Delete</span>
                         </DropdownMenuItem>

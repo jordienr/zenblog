@@ -13,6 +13,12 @@
 - [] Make layout work on mobile
 - [] Make inputs not zoom in on mobile
 
+## Teams
+
+- [] When a user logs in, a team is created for them.
+- [] Billing is per team.
+- [] Blogs are owned by a team.
+
 ## Pricing
 
 - [] Add pricing page
@@ -66,3 +72,5 @@
 - [x] Create API client
 - [x] Add method to fetch all posts
 - [x] Add method to fetch a single post by slug
+- [] Pagination
+- [] Filtering by category?

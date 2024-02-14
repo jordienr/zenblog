@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FaTwitter } from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { getClientClient } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import ZendoLogo from "@/components/ZendoLogo";
 import { useUser } from "@supabase/auth-helpers-react";
@@ -11,12 +11,13 @@ import { LoggedInUser } from "@/components/LoggedInUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StarIcon } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const Home = () => {
   const user = useUser();
 
   useEffect(() => {
-    const client = getClientClient();
+    const client = getSupabaseClient();
     client.auth.getSession().then((res) => {
       console.log("sess", res);
     });
@@ -40,7 +41,7 @@ const Home = () => {
   const onSubmit = handleSubmit(async (data) => {
     const formData = formSchema.parse(data);
 
-    const sb = getClientClient();
+    const sb = getSupabaseClient();
 
     await sb.from("homepage_signup").insert(formData);
 
@@ -184,29 +185,19 @@ const Home = () => {
           </main>
 
           <div className="mx-4 mt-12 flex max-w-xl flex-col gap-4 py-6 font-mono text-zinc-800">
-            <h2 className="text-lg font-medium"># features </h2>
+            <h2 className="text-lg font-medium"># what you get</h2>
             <ul className="flex flex-col gap-3">
               <li>- Open source.</li>
-              <li>- Type safe content.</li>
-              <li>- No GraphQL.</li>
-              <li>- API.</li>
-              <li>- A *great* editing experience.</li>
+              <li>- Type safe content with the TS client.</li>
+              <li>- Great editing experience.</li>
+              <li>- Works with any stack.</li>
               <li>- Easy to extend.</li>
               <li>- Gets you up and running in 2 minutes.</li>
               <li>- Have as many blogs as you want.</li>
-              <li>- Invite friends to contribute to your blog.</li>
-              <li>- Analytics.</li>
             </ul>
           </div>
         </div>
-        <footer>
-          <div className="mt-24 bg-gradient-to-b from-transparent to-white p-24 text-center font-mono text-zinc-800">
-            <div className="mx-auto max-w-3xl">
-              thanks for checking out zen
-              <span className="text-orange-500">blog</span>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

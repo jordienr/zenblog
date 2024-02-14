@@ -30,20 +30,29 @@ function createClient({ blogId, _url, debug }) {
     const log = createDebugger(debug || false);
     log("createClient ", config);
     async function _fetch(path, opts) {
-        const URL = `${config.api}/${blogId}/${path}`;
-        log("fetching ", URL, opts);
-        const res = await fetch(URL, opts);
-        const json = await res.json();
-        log("res", {
-            status: res.status,
-            statusText: res.statusText,
-            ok: res.ok,
-            json,
-        });
-        if (!res.ok) {
-            throwError("Error fetching data from API", res);
+        try {
+            const URL = `${config.api}/${blogId}/${path}`;
+            log("fetching ", URL, opts);
+            const res = await fetch(URL, opts);
+            const json = await res.json();
+            if (res.headers.get("zenblog-subscription-status") === "inactive") {
+                throwError("Zenblog subscription is inactive. Go to https://zenblog.com to subscribe.");
+            }
+            log("res", {
+                status: res.status,
+                statusText: res.statusText,
+                ok: res.ok,
+                json,
+            });
+            if (!res.ok) {
+                throwError("Error fetching data from API", res);
+            }
+            return json;
         }
-        return json;
+        catch (error) {
+            console.error("[Zenblog Error] ", error);
+            throw error;
+        }
     }
     if (!blogId) {
         throwError("blogId is required");
