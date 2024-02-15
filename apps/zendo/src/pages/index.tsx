@@ -64,7 +64,7 @@ const Home = () => {
             </div>
 
             <div className="flex flex-grow items-center justify-end gap-4 font-medium text-zinc-600">
-              <Link href="/blog">Blog</Link>
+              {/* <Link href="/blog">Blog</Link> */}
               <LoggedInUser>
                 <Link
                   className="rounded-full px-3 py-1.5 hover:text-zinc-800"
