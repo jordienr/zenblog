@@ -8,13 +8,14 @@ export default async function handler(
   try {
     const db = getClientClient();
     const blogId = req.query.blogId as string;
+    const slug = req.query.slug as string;
     const { data, error } = await db
       .from("posts")
       .select(
         "slug, title, content, cover_image, created_at, updated_at, metadata"
       )
       .eq("blog_id", blogId)
-      .eq("slug", req.query.slug)
+      .eq("slug", slug)
       .single();
 
     if (error) {
