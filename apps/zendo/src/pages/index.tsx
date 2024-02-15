@@ -83,7 +83,7 @@ const Home = () => {
                 <FaTwitter size="18" />
               </Link>
 
-              {!user && (
+              {/* {!user && (
                 <Button asChild>
                   <Link
                     href="/sign-in"
@@ -94,7 +94,7 @@ const Home = () => {
                     Sign in
                   </Link>
                 </Button>
-              )}
+              )} */}
 
               {user && (
                 <div className="flex">
