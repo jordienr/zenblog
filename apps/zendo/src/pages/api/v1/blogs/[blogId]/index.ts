@@ -10,6 +10,10 @@ export default async function handler(
 
   const blogId = req.query.blogId as string;
 
+  if (!user?.id) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
   if (req.method === "PATCH") {
     const data = PatchBlog.safeParse(JSON.parse(req.body));
 
@@ -23,7 +27,7 @@ export default async function handler(
       .from("blogs")
       .update({ title, emoji, description })
       .eq("id", blogId)
-      .eq("user_id", user?.id)
+      .eq("user_id", user.id)
       .select()
       .single();
 

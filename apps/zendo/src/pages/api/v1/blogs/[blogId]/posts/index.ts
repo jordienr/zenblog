@@ -25,7 +25,7 @@ export default async function handler(
 ) {
   const { db } = await getServerClient(req, res);
   // const { userId } = getAuth(req);
-  const blogId = req.query.blogId;
+  const blogId = req.query.blogId as string;
 
   if (!db) return res.status(401).json({ error: "Unauthorized" });
 
