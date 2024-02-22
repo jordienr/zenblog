@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function ResetPasswordConfirmation() {
   const [loading, setLoading] = useState(false);
-  const supabase = useSupabaseClient();
+  const supabase = getSupabaseBrowserClient();
   const router = useRouter();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {

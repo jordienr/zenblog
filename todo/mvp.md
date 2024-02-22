@@ -6,31 +6,21 @@
 - [] FAQ on homepage
 - [] Update README
 - [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, etc.
+- [] email provider
+- [] supabase spend cap
 
 ## Bugs & Improvements
 
-- [] First time a user logs in, they should be prompted to add a password and reload the session.
+- [x] Fix email redirect when navigating to protected routes
+- [] Force email confirmation
 - [] Make layout work on mobile
 - [] Make inputs not zoom in on mobile
-
-## Teams
-
-- [] When a user logs in, a team is created for them.
-- [] Billing is per team.
-- [] Blogs are owned by a team.
 
 ## Pricing
 
 - [] Add pricing page
-- [] Make pricing work
-
-### Pro plan
-
-- $50/year (2 months free) or $5/month
-- 1 editor
-- Unlimited blogs
-- Unlimited posts
-- Unlimited categories
+- [x] Sync products between Stripe and Supabase
+- [x] Sync subscriptions between Stripe and Supabase
 
 ## Blogs
 

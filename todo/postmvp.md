@@ -2,6 +2,12 @@
 
 ## Ideas
 
+- [] Allow to fetch list of posts with content.
+
+```typescript
+const posts = await client.posts.list({ withContent: true, limit: 10 });
+```
+
 - [] Allow users to add default metadata for posts in a blog.
 - [] Add PolyScale cache to Supabase for faster queries?
 - [] Featured Images
@@ -12,6 +18,12 @@
 - [] Redesign settings page to be similar to Plausible
 - [] Use a generic on createClient to pass the custom metadata
 - [] Add files to custom metadata
+
+## Teams
+
+- [] When a user logs in, a team is created for them.
+- [] Billing is per team.
+- [] Blogs are owned by a team.
 
 ## Hosted blogs
 

@@ -35,6 +35,7 @@ import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import EditorSettings from "./EditorSettings";
 import TiptapLink from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import { useSubscriptionQuery } from "@/queries/subscription";
 
 const formSchema = z.object({
   title: z.string(),
@@ -52,6 +53,7 @@ type EditorContent = {
   slug: string;
   cover_image?: string;
   published: boolean;
+  metadata?: any;
 };
 
 type Props = {
@@ -64,7 +66,7 @@ type Props = {
     published: boolean;
     cover_image?: string;
     content?: any;
-    metadata?: Record<string, any>;
+    metadata?: any;
   };
 };
 
@@ -80,6 +82,12 @@ export const ZendoEditor = (props: Props) => {
     });
   const router = useRouter();
   const blogId = (router.query.blogId as string) || "demo";
+  const subscription = useSubscriptionQuery();
+
+  const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
+
+  const isSubscribed = subscription.data?.status === "active";
+
   const [coverImgUrl, setCoverImgUrl] = React.useState<string | undefined>(
     props.post?.cover_image || ""
   );
@@ -136,6 +144,10 @@ export const ZendoEditor = (props: Props) => {
   });
 
   const formSubmit = handleSubmit(async (data) => {
+    if (!isSubscribed) {
+      alert("You need an active subscription to publish more posts.");
+      return;
+    }
     const content = editor?.getJSON() || {};
     const slugHasChanged = data.slug !== props.post?.slug;
 
@@ -145,6 +157,7 @@ export const ZendoEditor = (props: Props) => {
       slug: data.slug,
       cover_image: data.cover_image || "",
       published: data.published,
+      metadata,
     });
 
     if (slugHasChanged) {
@@ -158,7 +171,25 @@ export const ZendoEditor = (props: Props) => {
   }
 
   return (
-    <div className="bg-zinc-50 pb-40">
+    <div className="bg-zinc-50 pb-24">
+      {!isSubscribed && (
+        <>
+          <div className="absolute inset-0 z-40 flex items-center justify-center overflow-hidden bg-zinc-100/80">
+            <div className="max-w-xs rounded-lg border bg-white p-3 shadow-sm">
+              <span className="text-lg">🙏</span>
+              <h2 className="text-lg font-medium">
+                You need an active subscription to publish more posts.
+              </h2>
+              <Link
+                className="mt-4 inline-block py-2 text-orange-500 underline"
+                href="/account"
+              >
+                Manage your subscription
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
       <form
         onSubmit={formSubmit}
         className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-zinc-50 px-3 py-1.5 text-zinc-800"
@@ -259,8 +290,9 @@ export const ZendoEditor = (props: Props) => {
             </SheetTrigger>
             <SheetContent>
               <EditorSettings
-                onSave={() => {
-                  // TO DO - save settings
+                metadata={metadata}
+                onChange={(data) => {
+                  setMetadata(data.metadata);
                 }}
               ></EditorSettings>
             </SheetContent>
@@ -271,7 +303,7 @@ export const ZendoEditor = (props: Props) => {
           </Button>
         </div>
       </form>
-      <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2 pb-40">
+      <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2 pb-6">
         <div className="relative mt-2 flex items-center justify-center bg-zinc-100">
           {coverImgUrl && (
             <button
@@ -334,14 +366,14 @@ export const ZendoEditor = (props: Props) => {
           />
         </div>
         <div className="group">
-          <div className="sticky top-10 z-30">
+          <div className="sticky top-12 z-30">
             <EditorMenu editor={editor} />
           </div>
           <div
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-h2:font-semibold -mt-2 min-h-[700px] cursor-text rounded-lg py-1.5 font-light leading-10 tracking-tight transition-all"
+            className="prose prose-p:text-lg prose-h2:font-semibold -mt-2 min-h-[700px] cursor-text rounded-lg py-1.5 font-light leading-10 tracking-normal transition-all"
           >
             <EditorContent editor={editor} />
           </div>

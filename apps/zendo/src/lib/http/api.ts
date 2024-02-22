@@ -215,7 +215,6 @@ export function createAPIClient() {
         const body = new FormData();
         body.append("file", file);
 
-        console.log("APIC: ", body);
         return _fetch(
           `/upload`,
           { method: "POST", body: JSON.stringify(body) },

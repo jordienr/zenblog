@@ -3,29 +3,19 @@ import Link from "next/link";
 import { FaTwitter } from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { getSupabaseClient } from "@/lib/supabase";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ZendoLogo from "@/components/ZendoLogo";
-import { useUser } from "@supabase/auth-helpers-react";
 import { LoggedInUser } from "@/components/LoggedInUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StarIcon } from "lucide-react";
 import Footer from "@/components/Footer";
+import { useUser } from "@/utils/supabase/browser";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { SubscribeSection } from "./account";
 
 const Home = () => {
   const user = useUser();
-
-  useEffect(() => {
-    const client = getSupabaseClient();
-    client.auth.getSession().then((res) => {
-      console.log("sess", res);
-    });
-
-    client.auth.getUser().then((res) => {
-      console.log("user", res);
-    });
-  }, []);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -41,7 +31,7 @@ const Home = () => {
   const onSubmit = handleSubmit(async (data) => {
     const formData = formSchema.parse(data);
 
-    const sb = getSupabaseClient();
+    const sb = getSupabaseBrowserClient();
 
     await sb.from("homepage_signup").insert(formData);
 
@@ -65,7 +55,7 @@ const Home = () => {
             </div>
 
             <div className="flex flex-grow items-center justify-end gap-4 font-medium text-zinc-600">
-              <Link href="/blog">Blog</Link>
+              {/* <Link href="/blog">Blog</Link> */}
               <LoggedInUser>
                 <Link
                   className="rounded-full px-3 py-1.5 hover:text-zinc-800"
@@ -85,16 +75,18 @@ const Home = () => {
               </Link>
 
               {!user && (
-                <Button asChild>
-                  <Link
-                    href="/sign-in"
-                    className="btn btn-primary inline-block"
-                    title="Sign in"
-                    aria-label="Sign in"
-                  >
-                    Sign in
-                  </Link>
-                </Button>
+                <div className="space-x-1.5">
+                  <Button asChild variant={"outline"}>
+                    <Link href="/sign-in" title="Sign in" aria-label="Sign in">
+                      Log in
+                    </Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/sign-up" title="Sign up" aria-label="Sign up">
+                      Sign up
+                    </Link>
+                  </Button>
+                </div>
               )}
 
               {user && (
@@ -133,15 +125,28 @@ const Home = () => {
                   in 2 minutes
                 </span>
               </h1>
-              <p className="mt-2 text-lg font-light text-zinc-500">
-                Open source, headless, blogging CMS.
-              </p>
+              <div className="mt-4 text-lg font-light text-zinc-500">
+                <ul className="space-y-3">
+                  <li>Open source.</li>
+                  <li>Headless, works with any stack.</li>
+                  <li>Type safe content.</li>
+                  <li>Great editing experience.</li>
+                  <li>Easy to extend.</li>
+                  <li>Gets you up and running in 2 minutes.</li>
+                </ul>
+              </div>
             </div>
+            <hr className="my-12" />
             {!hasSubmitted && (
               <form
-                className="mt-6 flex max-w-sm flex-col gap-2"
+                className="mt-6 flex max-w-sm flex-col gap-2 pb-12"
                 onSubmit={onSubmit}
               >
+                <h2>
+                  <span className="font-serif text-2xl font-extralight italic text-zinc-800">
+                    Be the first to try it.
+                  </span>
+                </h2>
                 <div className="flex gap-2 [&>*]:w-full">
                   <label htmlFor="name">
                     <Input
@@ -182,20 +187,13 @@ const Home = () => {
                 </p>
               </div>
             )}
-          </main>
 
-          <div className="mx-4 mt-12 flex max-w-xl flex-col gap-4 py-6 font-mono text-zinc-800">
-            <h2 className="text-lg font-medium"># what you get</h2>
-            <ul className="flex flex-col gap-3">
-              <li>- Open source.</li>
-              <li>- Type safe content with the TS client.</li>
-              <li>- Great editing experience.</li>
-              <li>- Works with any stack.</li>
-              <li>- Easy to extend.</li>
-              <li>- Gets you up and running in 2 minutes.</li>
-              <li>- Have as many blogs as you want.</li>
-            </ul>
-          </div>
+            <hr className="my-12" />
+
+            <section className="pb-8">
+              <SubscribeSection />
+            </section>
+          </main>
         </div>
         <Footer />
       </div>

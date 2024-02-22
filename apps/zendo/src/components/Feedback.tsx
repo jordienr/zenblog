@@ -8,12 +8,12 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 type Props = {};
 
 const Feedback = (props: Props) => {
-  const sb = useSupabaseClient();
+  const sb = getSupabaseBrowserClient();
 
   return (
     <div>

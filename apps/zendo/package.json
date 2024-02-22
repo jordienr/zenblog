@@ -7,7 +7,8 @@
     "dev": "NODE_OPTIONS='--inspect' next dev -p 3000",
     "lint": "next lint",
     "start": "next start",
-    "supabase:typegen": "npx supabase gen types typescript --project-id ppfseefimhneysnokffx --schema public > src/types/supabase.ts"
+    "supabase:typegen": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts",
+    "stripe:sync": "tsx ./src/scripts/stripe-sync.ts"
   },
   "dependencies": {
     "@builder.io/react-hydration-overlay": "^0.0.8",
@@ -26,9 +27,8 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@stripe/react-stripe-js": "^2.4.0",
     "@stripe/stripe-js": "^2.4.0",
-    "@supabase/auth-helpers-nextjs": "^0.8.1",
-    "@supabase/auth-helpers-react": "^0.3.1",
-    "@supabase/supabase-js": "^2.21.0",
+    "@supabase/ssr": "^0.1.0",
+    "@supabase/supabase-js": "^2.39.6",
     "@t3-oss/env-nextjs": "^0.2.1",
     "@tailwindcss/typography": "^0.5.9",
     "@tanstack/react-query": "^4.28.0",
@@ -51,6 +51,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
+    "dotenv": "^16.4.4",
     "formidable": "^3.5.1",
     "formik": "^2.2.9",
     "framer-motion": "^10.12.12",

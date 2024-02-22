@@ -1,5 +1,4 @@
 import { createAdminClient } from "@/lib/server/supabase";
-import { getSupabaseClient } from "@/lib/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

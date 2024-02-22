@@ -13,7 +13,8 @@ export const getPostBySlugRes = z.object({
   updated_at: z.string(),
   blog_id: z.string(),
   user_id: z.string(),
-  cover_image: z.string().nullable(),
+  cover_image: z.string().optional(),
+  metadata: z.any().optional(),
 });
 
 export const getPostsRes = z.object({
@@ -47,4 +48,5 @@ export const PatchPost = z.object({
   content: z.any(),
   cover_image: z.string().nullable(),
   published: z.boolean(),
+  metadata: z.any().nullable(),
 });

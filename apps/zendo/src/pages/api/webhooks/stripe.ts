@@ -1,56 +1,73 @@
-import { env } from "@/env.mjs";
 import { NextApiHandler } from "next";
 import { createStripeClient } from "@/lib/server/stripe";
 import getRawBody from "raw-body";
 import { createAdminClient } from "@/lib/server/supabase";
 import Stripe from "stripe";
 
-const stripe = createStripeClient();
+console.log("----");
+console.log("----");
+console.log("----");
+console.log("----");
+console.log("----");
+console.log("----");
+console.log("----");
+console.log("----");
 
-async function updateSubscription(event: Stripe.Event) {
+const stripe = createStripeClient();
+const supabase = createAdminClient();
+
+async function upsertSubscription(event: Stripe.Event) {
   if (
-    event.type !== "customer.subscription.updated" &&
-    event.type !== "customer.subscription.deleted"
+    event.type === "customer.subscription.created" ||
+    event.type === "customer.subscription.updated" ||
+    event.type === "customer.subscription.deleted"
+  ) {
+    const cusId = event.data.object.customer;
+
+    if (typeof cusId !== "string" || !cusId) {
+      console.error("Invalid customer id");
+      throw new Error("Invalid customer id");
+    }
+
+    const customer = await stripe.customers.retrieve(cusId);
+
+    const userId = customer.deleted ? null : customer.metadata.userId;
+
+    if (!userId) {
+      console.error("Invalid user id");
+      throw new Error("Invalid user id");
+    }
+
+    const res = await supabase.from("subscriptions").upsert(
+      {
+        stripe_subscription_id: event.data.object.id,
+        user_id: userId,
+        status: event.data.object.status,
+        subscription: event.data.object as any,
+      },
+      {
+        onConflict: "user_id",
+      }
+    );
+
+    console.log(res);
+  }
+}
+
+async function upsertProduct(event: Stripe.Event) {
+  if (
+    event.type !== "product.created" &&
+    event.type !== "product.updated" &&
+    event.type !== "product.deleted"
   ) {
     throw new Error("Invalid event type");
   }
 
-  const cusId = event.data.object.customer;
-
-  if (typeof cusId !== "string" || !cusId) {
-    throw new Error("Invalid customer id");
-  }
-
-  const customer = await stripe.customers.retrieve(cusId);
-
-  const userId = customer.deleted ? null : customer.metadata.userId;
-
-  if (!userId) {
-    throw new Error("Invalid user id");
-  }
-
-  // Update customer in database
-  const supabase = createAdminClient();
-
-  console.log(
-    "🟢 UPDATING SUBSCRIPTION STATUS: ",
-    event.data.object.cancellation_details,
-    userId
-  );
-
-  await supabase.from("subscriptions").upsert({
-    user_id: userId,
-    status: event.data.object.status,
-    event: event,
-  });
-}
-
-async function upsertProduct(event: Stripe.Event) {
-  if (event.type !== "product.created") {
-    throw new Error("Invalid event type");
-  }
-
   const product = event.data.object;
+
+  if (!product.active) {
+    return;
+  }
 
   if (typeof product.id !== "string" || !product.id) {
     throw new Error("Invalid product id");
@@ -59,12 +76,27 @@ async function upsertProduct(event: Stripe.Event) {
   // Update product in database
   const supabase = createAdminClient();
 
-  console.log("🟢 CREATING PRODUCT: ", product.id);
-
   await supabase.from("products").upsert({
-    id: product.id,
-    name: product.name,
-    active: product.active,
+    stripe_product_id: product.id,
+    product: product as any,
+  });
+}
+
+async function upserCustomer(event: Stripe.Event) {
+  if (event.type !== "customer.created") {
+    throw new Error("Invalid event type");
+  }
+
+  const customer = event.data.object;
+
+  if (typeof customer.id !== "string" || !customer.id) {
+    throw new Error("Invalid customer id");
+  }
+
+  // Update customer in database
+  await supabase.from("customers").upsert({
+    id: customer.id,
+    email: customer.email,
   });
 }
 
@@ -75,6 +107,10 @@ async function upsertPrice(event: Stripe.Event) {
 
   const price = event.data.object;
 
+  if (!price.active) {
+    return;
+  }
+
   if (typeof price.id !== "string" || !price.id) {
     throw new Error("Invalid price id");
   }
@@ -82,14 +118,9 @@ async function upsertPrice(event: Stripe.Event) {
   // Update price in database
   const supabase = createAdminClient();
 
-  console.log("🟢 CREATING PRICE: ", price.id);
-
   await supabase.from("prices").upsert({
-    id: price.id,
-    product_id: price.product,
-    currency: price.currency,
-    unit_amount: price.unit_amount,
-    active: price.active,
+    stripe_price_id: price.id,
+    price: price as any,
   });
 }
 
@@ -126,23 +157,35 @@ const handler: NextApiHandler = async (req, res) => {
       return;
     }
 
-    if (event.type === "customer.subscription.updated") {
-      console.log("🟢 UPDATED");
-      await updateSubscription(event);
-      res.status(200).send("success");
-    } else if (event.type === "customer.subscription.deleted") {
-      console.log("🟢 DELETED");
-      await updateSubscription(event);
-      res.status(200).send("success");
-    } else if (event.type === "product.created") {
-      console.log("🟢 PRODUCT CREATED");
+    type EventHandler = (event: Stripe.Event) => Promise<void>;
+    type EventKey = Stripe.Event["type"];
+    type EventMap = {
+      [key in EventKey]?: EventHandler;
+    };
 
-      res.status(200).send("success");
-    } else {
-      return res
-        .status(200)
-        .send(`Unhandled event type: ${event.type} ${event.id}`);
+    const eventMap: EventMap = {
+      "customer.subscription.created": upsertSubscription,
+      "customer.subscription.updated": upsertSubscription,
+      "customer.subscription.deleted": upsertSubscription,
+      "product.created": upsertProduct,
+      "product.updated": upsertProduct,
+      "product.deleted": upsertProduct,
+      "price.created": upsertPrice,
+      "price.updated": upsertPrice,
+      "price.deleted": upsertPrice,
+    };
+
+    const handler = eventMap[event.type];
+
+    if (!handler) {
+      // If there isnt a handler just return 200, we dont need to handle this event
+      res.status(200).send("OK");
+      return;
     }
+
+    console.log("🟢 Stripe: ", event.type);
+    await handler(event);
+    res.status(200).send("OK");
   } catch (error: any) {
     console.error(error.message);
     res.status(500).json({ error: "Error updating subscription" });

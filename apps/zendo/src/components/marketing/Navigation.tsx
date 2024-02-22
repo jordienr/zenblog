@@ -2,10 +2,9 @@
 import React from "react";
 import ZendoLogo from "../ZendoLogo";
 import Link from "next/link";
-import { LoggedInUser } from "../LoggedInUser";
 import { FaTwitter } from "react-icons/fa";
-import { useUser } from "@supabase/auth-helpers-react";
 import { Button } from "../ui/button";
+import { useUser } from "@/utils/supabase/browser";
 
 type Props = {};
 

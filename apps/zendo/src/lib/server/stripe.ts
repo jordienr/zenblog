@@ -22,8 +22,6 @@ export async function createOrRetrieveCustomer({
     query: "metadata['userId']:'" + userId + "'",
   });
 
-  console.log(customers.data);
-
   if (customers.data.length > 0) {
     const customer = customers.data[0];
 

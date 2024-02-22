@@ -4,12 +4,13 @@ import {
   createOrRetrieveCustomer,
   createStripeClient,
 } from "@/lib/server/stripe";
-import { STRIPE_CONSTANTS } from "@/lib/server/stripe.constants";
+import { BASE_URL } from "@/lib/config";
 
 const handler: NextApiHandler = async (req, res) => {
   try {
     const stripe = createStripeClient();
     const { user } = await getServerClient(req, res);
+    const price_id = req.body.price_id;
 
     if (!user) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -17,6 +18,10 @@ const handler: NextApiHandler = async (req, res) => {
 
     if (!user.email) {
       return res.status(400).json({ error: "User email not found" });
+    }
+
+    if (!price_id) {
+      return res.status(400).json({ error: "Product id not found" });
     }
 
     const customer = await createOrRetrieveCustomer({
@@ -28,14 +33,14 @@ const handler: NextApiHandler = async (req, res) => {
       customer: customer.id,
       line_items: [
         {
-          price: STRIPE_CONSTANTS.products.proPlan.yearlyPriceId,
+          price: price_id,
           quantity: 1,
         },
       ],
       mode: "subscription",
       allow_promotion_codes: true,
-      success_url: `http://localhost:3000/account?success=true`,
-      cancel_url: `http://localhost:3000/account?canceled=true`,
+      success_url: `${BASE_URL}/account?success=true`,
+      cancel_url: `${BASE_URL}/account?canceled=true`,
     });
 
     if (!session.url) {

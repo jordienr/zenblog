@@ -4,12 +4,12 @@ import {
   createOrRetrieveCustomer,
   createStripeClient,
 } from "@/lib/server/stripe";
-import { STRIPE_CONSTANTS } from "@/lib/server/stripe.constants";
+import Stripe from "stripe";
 
 const handler: NextApiHandler = async (req, res) => {
   try {
     const stripe = createStripeClient();
-    const { user } = await getServerClient(req, res);
+    const { user, db } = await getServerClient(req, res);
 
     if (!user) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -23,6 +23,26 @@ const handler: NextApiHandler = async (req, res) => {
       userId: user.id,
       email: user.email,
     });
+
+    const products = await db.from("products").select("*");
+    const prices = await db.from("prices").select("*");
+
+    if (!products.data || !prices.data) {
+      return res
+        .status(500)
+        .json({ error: "Error fetching products and prices" });
+    }
+
+    const subscriptionUpdateConfig = products.data?.map((product) => ({
+      product: product.stripe_product_id,
+      prices: prices.data
+        ?.filter(
+          (price) =>
+            (price.price as unknown as Stripe.Price).product ===
+            product.stripe_product_id
+        )
+        .map((price) => price.stripe_price_id),
+    }));
 
     const configuration = await stripe.billingPortal.configurations.create({
       features: {
@@ -56,16 +76,11 @@ const handler: NextApiHandler = async (req, res) => {
         subscription_update: {
           enabled: true,
           proration_behavior: "create_prorations",
-          default_allowed_updates: ["price"],
-          products: [
-            {
-              product: STRIPE_CONSTANTS.products.proPlan.productId,
-              prices: [
-                STRIPE_CONSTANTS.products.proPlan.monthlyPriceId,
-                STRIPE_CONSTANTS.products.proPlan.yearlyPriceId,
-              ],
-            },
-          ],
+          default_allowed_updates: ["price", "promotion_code"],
+          products: subscriptionUpdateConfig.map((config) => ({
+            product: config.product!,
+            prices: config.prices,
+          })),
         },
       },
       business_profile: {

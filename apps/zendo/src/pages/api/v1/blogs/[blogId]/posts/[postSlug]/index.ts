@@ -11,23 +11,34 @@ export default async function handler(
   const { db, user } = await getServerClient(req, res);
   const blogId = req.query.blogId as string;
   const postSlug = req.query.postSlug as string;
+  const userId = user?.id;
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
   if (req.method === "PATCH") {
     const data = PatchPost.safeParse(JSON.parse(req.body));
-
-    console.log("----> data", data);
 
     if (!data.success) {
       return res.status(400).json({ error: data.error.message });
     }
 
-    const { title, slug, content, published, cover_image } = data.data;
+    const { title, slug, content, published, cover_image, metadata } =
+      data.data;
 
     const updated_at = new Date().toISOString();
 
     const { data: post, error } = await db
       .from("posts")
-      .update({ title, content, slug, published, cover_image, updated_at })
+      .update({
+        title,
+        content,
+        slug,
+        published,
+        cover_image,
+        updated_at,
+        metadata,
+      })
       .eq("blog_id", blogId)
       .eq("user_id", user?.id)
       .eq("slug", postSlug)

@@ -1,5 +1,9 @@
 import { Database } from "@/types/supabase";
-import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
+import {
+  createServerClient,
+  type CookieOptions,
+  serialize,
+} from "@supabase/ssr";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export async function getServerClient(
@@ -7,15 +11,28 @@ export async function getServerClient(
   res: NextApiResponse
 ) {
   try {
-    const supabaseServerClient = createPagesServerClient<Database>({
-      req,
-      res,
-    });
+    const supabase = createServerClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return req.cookies[name];
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            res.appendHeader("Set-Cookie", serialize(name, value, options));
+          },
+          remove(name: string, options: CookieOptions) {
+            res.appendHeader("Set-Cookie", serialize(name, "", options));
+          },
+        },
+      }
+    );
 
-    const userRes = await supabaseServerClient.auth.getUser();
+    const userRes = await supabase.auth.getUser();
     return {
       user: userRes?.data.user,
-      db: supabaseServerClient,
+      db: supabase,
     };
   } catch (error) {
     console.error(error);

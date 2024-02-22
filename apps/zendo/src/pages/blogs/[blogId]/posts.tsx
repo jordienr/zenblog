@@ -1,10 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import { useRouter } from "next/router";
 import { IoSettingsSharp } from "react-icons/io5";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Trash } from "lucide-react";
@@ -14,6 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -33,11 +34,26 @@ export function StatePill({ published }: { published: boolean }) {
 export default function BlogPosts() {
   const router = useRouter();
   const blogId = router.query.blogId as string;
+  const queryClient = useQueryClient();
 
   const api = createAPIClient();
   const { isLoading, data, error } = useQuery(["posts", blogId], () =>
     api.posts.getAll(blogId)
   );
+
+  const supabase = getSupabaseBrowserClient();
+
+  const deletePostMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      await supabase.from("posts").update({ deleted: true }).eq("id", postId);
+    },
+    onMutate: async (postId: string) => {
+      await queryClient.cancelQueries(["posts", blogId]);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["posts", blogId]);
+    },
+  });
 
   function getFormattedPosts() {
     if (!data || !data.posts) return [];
@@ -60,14 +76,6 @@ export default function BlogPosts() {
     return sortedPosts;
   }
 
-  if (isLoading) {
-    return (
-      <AppLayout>
-        <Spinner />
-      </AppLayout>
-    );
-  }
-
   if (error) {
     return (
       <AppLayout>
@@ -79,7 +87,7 @@ export default function BlogPosts() {
   if (data) {
     const { blog, posts } = data;
     return (
-      <AppLayout>
+      <AppLayout loading={isLoading}>
         <div className="mx-auto mt-8 max-w-5xl p-4">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold">
@@ -128,7 +136,7 @@ export default function BlogPosts() {
               return (
                 <Link
                   href={`/blogs/${blogId}/post/${post.slug}`}
-                  className="flex items-center gap-4 rounded-sm p-3 hover:bg-slate-100/60"
+                  className="flex items-center gap-4 rounded-sm p-3 hover:bg-zinc-100/60"
                   key={post.slug}
                 >
                   {post.cover_image && (
@@ -160,7 +168,23 @@ export default function BlogPosts() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => {}}>
+                        <DropdownMenuItem
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            const confirmed = window.confirm(
+                              "Are you sure you want to delete this post?"
+                            );
+                            if (!confirmed) return;
+                            try {
+                              toast.success("Post deleted");
+                              await deletePostMutation.mutateAsync(post.id);
+                            } catch (error) {
+                              toast.error("Failed to delete post");
+                              console.error(error);
+                            }
+                          }}
+                        >
                           <Trash size="16" />
                           <span className="ml-2">Delete</span>
                         </DropdownMenuItem>

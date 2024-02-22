@@ -1,5 +1,5 @@
 import AppLayout from "@/layouts/AppLayout";
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import { PatchBlog } from "@/lib/models/blogs/Blogs";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
@@ -188,11 +188,14 @@ const cms = createClient({
           </h3>
         </section>
 
-        <section className="section border border-red-300 bg-gradient-to-b from-white to-red-50 p-3 text-red-600">
-          <h2 className="mb-4 text-lg font-medium">🚨 Danger zone</h2>
-          <p className="text-sm">
-            This action cannot be undone. This will permanently delete the blog.
-            This will also delete all posts in the blog.
+        <section className="section border border-red-500 bg-white p-3 ">
+          <h2 className="mb-4 text-lg font-medium text-red-600">
+            🚨 Danger zone
+          </h2>
+          <p className="space-y-4">
+            <div>This action cannot be undone.</div>
+            <div>This will permanently delete the blog.</div>
+            <div>This will also delete all posts in the blog.</div>
           </p>
           <div className="actions">
             <Button

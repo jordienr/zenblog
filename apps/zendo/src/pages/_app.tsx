@@ -8,12 +8,10 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "sonner";
 import { useState } from "react";
-import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import AppChecks from "@/components/AppChecks";
+import AppChecks from "@/components/LoggedInUserChecks";
+import { UserProvider } from "@/utils/supabase/browser";
 
 // Fonts
 const inter = Inter({
@@ -33,31 +31,19 @@ const ibmPlexMono = IBM_Plex_Mono({
 function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
   const [queryClient] = useState(() => new QueryClient());
-  const [supabaseClient] = useState(() =>
-    createPagesBrowserClient({
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    })
-  );
 
   return (
     <div className={`${ibmPlexMono.variable} ${inter.variable}`}>
-      <SessionContextProvider
-        supabaseClient={supabaseClient}
-        initialSession={pageProps.initialSession}
-      >
+      <UserProvider>
         <PlausibleProvider domain="zendo.blog">
           <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
-              <AppChecks>
-                <Component key={pathname} {...pageProps} />
-                <Toaster />
-              </AppChecks>
+              <Component key={pathname} {...pageProps} />
+              <Toaster />
             </Hydrate>
-
-            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
           </QueryClientProvider>
         </PlausibleProvider>
-      </SessionContextProvider>
+      </UserProvider>
     </div>
   );
 }

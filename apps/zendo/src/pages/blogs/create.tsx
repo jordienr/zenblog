@@ -84,7 +84,7 @@ export default function CreateBlog() {
   if (!isSubscribed) {
     return (
       <AppLayout>
-        <div className="section mx-8 my-12 py-12">
+        <div className="section mx-8 mx-auto my-12 max-w-xl py-12">
           <div className="text-center text-4xl">🚫</div>
           <h2 className="mt-2">
             <span className="block text-center text-3xl font-semibold">

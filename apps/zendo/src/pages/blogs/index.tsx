@@ -1,6 +1,6 @@
 import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
 import { IoSettingsSharp, IoAdd } from "react-icons/io5";
@@ -11,16 +11,8 @@ import { useEffect } from "react";
 import { Plus } from "lucide-react";
 
 export default function Dashboard() {
-  const api = createAPIClient();
   const { data, error, isLoading } = useBlogsQuery();
   const router = useRouter();
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (data?.length === 0) {
-      router.push("/blogs/create");
-    }
-  }, [router, data, isLoading]);
 
   return (
     <AppLayout>
@@ -64,7 +56,7 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center gap-4">
                       <div>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-3xl transition-all group-hover:scale-105">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-3xl transition-all group-hover:scale-110">
                           {blog.emoji}
                         </div>
                       </div>
