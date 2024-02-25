@@ -10,9 +10,28 @@ export default function CreatePost() {
 
   return (
     <ZendoEditor
+      tags={[]}
       onSave={async (content) => {
         try {
-          await supa.from("posts").insert({ ...content, blog_id: blogId });
+          const { data, error } = await supa
+            .from("posts")
+            .insert({ ...content, blog_id: blogId })
+            .select("id")
+            .single();
+
+          if (error) {
+            throw error;
+          }
+
+          console.log(content.tags);
+
+          if (content.tags) {
+            content.tags.forEach((tag_id) => {
+              supa
+                .from("post_tags")
+                .insert({ post_id: data.id, tag_id, blog_id: blogId });
+            });
+          }
           toast.success("Post saved!");
         } catch (error) {
           toast.error("Failed to save post");

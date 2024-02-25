@@ -43,14 +43,13 @@
 - [x] Edit post
 - [] Delete post
 
-## Categories
+## Tags
 
-- [] Create category
-- [] Edit category
-- [] Delete category
-- [] View category
-- [] View all categories
-- [] Add categories to posts
+- [] Create tag
+- [] Delete tag
+- [] View tag
+- [] View all tags
+- [] Add tags to posts
 
 ## Docs
 

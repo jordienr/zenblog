@@ -3,6 +3,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Code, Info, Plus, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import CategorySelect from "./TagSelect";
 
 type MetadataItem = {
   key: string;
@@ -10,12 +11,13 @@ type MetadataItem = {
 };
 type Props = {
   metadata?: MetadataItem[];
+  selectedTags: string[];
   onChange: ({
     metadata,
-    categories,
+    tags,
   }: {
     metadata: MetadataItem[];
-    categories: string[];
+    tags: string[];
   }) => void;
 };
 
@@ -25,6 +27,9 @@ const EditorSettings = (props: Props) => {
     : [{ key: "", value: "" }];
 
   const [metadata, setMetadata] = useState<MetadataItem[]>(defaultMetadata);
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    props.selectedTags || []
+  );
 
   function addMetadata() {
     setMetadata([...metadata, { key: "", value: "" }]);
@@ -43,7 +48,12 @@ const EditorSettings = (props: Props) => {
 
     newMetadata[index]![type] = event.target.value;
     setMetadata(newMetadata);
-    props.onChange({ metadata: newMetadata, categories: [] });
+    props.onChange({ tags: selectedTags, metadata: newMetadata });
+  };
+
+  const handleCategoryChange = (tags: string[]) => {
+    setSelectedTags(tags);
+    props.onChange({ metadata, tags });
   };
 
   return (
@@ -116,7 +126,10 @@ const EditorSettings = (props: Props) => {
                       const newMetadata = [...metadata];
                       newMetadata.splice(index, 1);
                       setMetadata(newMetadata);
-                      props.onChange({ metadata: newMetadata, categories: [] });
+                      props.onChange({
+                        tags: selectedTags,
+                        metadata: newMetadata,
+                      });
                     }}
                   >
                     <Trash size={16} />
@@ -137,9 +150,11 @@ const EditorSettings = (props: Props) => {
             Add metadata
           </Button>
         </div>
-
-        <div>
-          <h2>Categories</h2>
+        <div className="mt-4">
+          <CategorySelect
+            selectedTags={selectedTags}
+            onChange={handleCategoryChange}
+          />
         </div>
       </section>
     </div>

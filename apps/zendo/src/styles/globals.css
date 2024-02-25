@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.base-toast {
+  @apply rounded-full bg-zinc-800 text-zinc-50;
+}
+
 .actions {
   @apply flex items-center justify-end gap-2 md:flex-row;
 }

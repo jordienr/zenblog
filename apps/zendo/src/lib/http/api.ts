@@ -38,18 +38,6 @@ export function createAPIClient() {
     return result.data;
   }
 
-  async function getBlogs() {
-    const res = await _fetch("/blogs", { method: "GET" }, z.array(Blog));
-
-    return res;
-  }
-
-  async function getBlog(slug: string) {
-    const res = await _fetch(`/blogs/${slug}`, { method: "GET" }, GetBlogRes);
-
-    return res;
-  }
-
   async function deleteBlog(slug: string) {
     const res = await _fetch(
       `/blogs/${slug}`,
@@ -150,8 +138,6 @@ export function createAPIClient() {
         ),
     },
     blogs: {
-      get: getBlog,
-      getAll: getBlogs,
       update: patchBlog,
       delete: deleteBlog,
       create: createBlog,

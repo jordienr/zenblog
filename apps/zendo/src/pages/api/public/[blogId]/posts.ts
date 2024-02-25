@@ -6,22 +6,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("----DEBUG----");
-    console.log("🪵 req.query.blogId", req.query.blogId);
-
     const db = createAdminClient();
-    const blogId = req.query.blogId as string;
+    const blogId = req.query.blogId || "";
 
     const blogPromise = db
       .from("blogs")

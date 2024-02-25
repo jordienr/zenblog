@@ -9,6 +9,43 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      blog_tags: {
+        Row: {
+          blog_id: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_tags_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       blogs: {
         Row: {
           created_at: string
@@ -38,40 +75,6 @@ export interface Database {
           user_id?: string
         }
         Relationships: []
-      }
-      categories: {
-        Row: {
-          blog_id: string
-          created_at: string
-          id: string
-          name: string
-          slug: string
-          updated_at: string
-        }
-        Insert: {
-          blog_id: string
-          created_at?: string
-          id?: string
-          name: string
-          slug: string
-          updated_at?: string
-        }
-        Update: {
-          blog_id?: string
-          created_at?: string
-          id?: string
-          name?: string
-          slug?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "categories_blog_id_fkey"
-            columns: ["blog_id"]
-            referencedRelation: "blogs"
-            referencedColumns: ["id"]
-          }
-        ]
       }
       feedback: {
         Row: {
@@ -146,36 +149,51 @@ export interface Database {
           }
         ]
       }
-      post_categories: {
+      post_tags: {
         Row: {
-          category_id: string
+          blog_id: string
           created_at: string
           id: number
           post_id: string
+          tag_id: string
         }
         Insert: {
-          category_id: string
+          blog_id: string
           created_at?: string
           id?: number
           post_id: string
+          tag_id: string
         }
         Update: {
-          category_id?: string
+          blog_id?: string
           created_at?: string
           id?: number
           post_id?: string
+          tag_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "post_categories_category_id_fkey"
-            columns: ["category_id"]
-            referencedRelation: "categories"
+            foreignKeyName: "post_tags_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "post_categories_post_id_fkey"
+            foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
             referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            referencedRelation: "posts_with_tags"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            referencedRelation: "blog_tags"
             referencedColumns: ["id"]
           }
         ]
@@ -186,7 +204,8 @@ export interface Database {
           content: Json
           cover_image: string | null
           created_at: string
-          deleted: boolean | null
+          deleted: boolean
+          deprecated_user_id: string
           id: string
           metadata: Json[] | null
           published: boolean
@@ -200,7 +219,8 @@ export interface Database {
           content?: Json
           cover_image?: string | null
           created_at?: string
-          deleted?: boolean | null
+          deleted?: boolean
+          deprecated_user_id?: string
           id?: string
           metadata?: Json[] | null
           published?: boolean
@@ -214,7 +234,8 @@ export interface Database {
           content?: Json
           cover_image?: string | null
           created_at?: string
-          deleted?: boolean | null
+          deleted?: boolean
+          deprecated_user_id?: string
           id?: string
           metadata?: Json[] | null
           published?: boolean
@@ -228,6 +249,18 @@ export interface Database {
             foreignKeyName: "posts_blog_id_fkey"
             columns: ["blog_id"]
             referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]
@@ -350,6 +383,44 @@ export interface Database {
       }
     }
     Views: {
+      posts_with_tags: {
+        Row: {
+          blog_id: string | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          deprecated_user_id: string | null
+          metadata: Json[] | null
+          post_id: string | null
+          published: boolean | null
+          slug: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       users: {
         Row: {
           aud: string | null

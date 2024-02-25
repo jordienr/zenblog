@@ -12,6 +12,7 @@ import { CodeBlock } from "@/components/CodeBlock";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useBlogQuery } from "@/queries/blogs";
 
 export default function BlogSettings() {
   type FormData = {
@@ -37,7 +38,7 @@ export default function BlogSettings() {
     data: blog,
     error: blogError,
     refetch: refetchBlog,
-  } = useQuery(["blog", blogId], () => api.blogs.get(blogId));
+  } = useBlogQuery(blogId);
 
   const updateBlog = useMutation({
     mutationFn: (blogData: PatchBlog) => api.blogs.update(blogId, blogData),
@@ -140,7 +141,6 @@ export default function BlogSettings() {
               <Input
                 type="text"
                 id="description"
-                required
                 {...register("description", {
                   value: blog.description || "",
                 })}

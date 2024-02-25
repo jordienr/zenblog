@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import { useUser } from "@/utils/supabase/browser";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { SubscribeSection } from "./account";
+import { HiStar } from "react-icons/hi";
 
 const Home = () => {
   const user = useUser();
@@ -112,9 +113,13 @@ const Home = () => {
                   target="_blank"
                   href="https://github.com/jordienr/zenblog"
                 >
-                  <StarIcon
+                  {/* <StarIcon
                     size="15"
                     className="mr-1 text-zinc-300 group-hover:text-amber-200"
+                  /> */}
+                  <HiStar
+                    size="15"
+                    className="text-zinc-300 group-hover:text-amber-200"
                   />
                   Star us on GitHub
                 </Link>
@@ -139,11 +144,11 @@ const Home = () => {
             <hr className="my-12" />
             {!hasSubmitted && (
               <form
-                className="mt-6 flex max-w-sm flex-col gap-2 pb-12"
+                className="mt-6 flex max-w-sm flex-col gap-2 py-2"
                 onSubmit={onSubmit}
               >
                 <h2>
-                  <span className="font-serif text-2xl font-extralight italic text-zinc-800">
+                  <span className="text-xl font-medium text-zinc-800">
                     Be the first to try it.
                   </span>
                 </h2>

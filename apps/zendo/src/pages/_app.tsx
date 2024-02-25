@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { useState } from "react";
-import AppChecks from "@/components/LoggedInUserChecks";
 import { UserProvider } from "@/utils/supabase/browser";
 
 // Fonts
@@ -29,7 +28,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 // Main Component
 function MyApp({ Component, pageProps }: AppProps) {
-  const { pathname } = useRouter();
+  const { pathname, isReady } = useRouter();
   const [queryClient] = useState(() => new QueryClient());
 
   return (
@@ -39,7 +38,19 @@ function MyApp({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <Component key={pathname} {...pageProps} />
-              <Toaster />
+              <Toaster
+                position="bottom-center"
+                toastOptions={{
+                  style: {
+                    background: "red",
+                    borderRadius: "100px",
+                    backgroundColor: "#333333",
+                    color: "white",
+                    padding: "10px 12px",
+                    border: "none",
+                  },
+                }}
+              />
             </Hydrate>
           </QueryClientProvider>
         </PlausibleProvider>

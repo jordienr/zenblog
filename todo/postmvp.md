@@ -19,6 +19,9 @@ const posts = await client.posts.list({ withContent: true, limit: 10 });
 - [] Use a generic on createClient to pass the custom metadata
 - [] Add files to custom metadata
 
+- [] Allow "undo" for destructive actions - [] Delete post - [] Delete blog
+- Allow users to see their trash and restore items from the trash.
+
 ## Teams
 
 - [] When a user logs in, a team is created for them.
