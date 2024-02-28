@@ -130,15 +130,17 @@ const Home = () => {
                   in 2 minutes
                 </span>
               </h1>
-              <div className="mt-4 text-lg font-light text-zinc-500">
-                <ul className="space-y-3">
-                  <li>Open source.</li>
-                  <li>Headless, works with any stack.</li>
-                  <li>Type safe content.</li>
-                  <li>Great editing experience.</li>
-                  <li>Easy to extend.</li>
-                  <li>Gets you up and running in 2 minutes.</li>
-                </ul>
+              <div className="text-lg font-light text-zinc-500">
+                <div className="mt-4">
+                  <ul className="space-y-3">
+                    <li>Open source.</li>
+                    <li>Headless, works with any stack.</li>
+                    <li>Type safe content.</li>
+                    <li>Great editing experience.</li>
+                    <li>Easy to extend.</li>
+                    <li>Gets you up and running in 2 minutes.</li>
+                  </ul>
+                </div>
               </div>
             </div>
             <hr className="my-12" />
