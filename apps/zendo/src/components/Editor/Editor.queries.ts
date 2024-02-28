@@ -1,5 +1,10 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 type UseTags = {
   blogId: string;

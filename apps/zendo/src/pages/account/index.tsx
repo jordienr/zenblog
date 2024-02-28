@@ -104,8 +104,8 @@ export const SubscribeSection = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-medium">Pick a subscription</h2>
-      <p className="text-zinc-500">You can cancel anytime</p>
+      <h2 className="text-xl font-medium">Pricing</h2>
+      <p className="font-mono text-sm text-zinc-500">Cancel anytime</p>
 
       <Tabs
         className="mt-4"

@@ -8,6 +8,8 @@
 const posts = await client.posts.list({ withContent: true, limit: 10 });
 ```
 
+- [] Allow draft/publish from post list.
+- [] Allow copy slug from post list.
 - [] Allow users to add default metadata for posts in a blog.
 - [] Add PolyScale cache to Supabase for faster queries?
 - [] Featured Images
@@ -18,9 +20,10 @@ const posts = await client.posts.list({ withContent: true, limit: 10 });
 - [] Redesign settings page to be similar to Plausible
 - [] Use a generic on createClient to pass the custom metadata
 - [] Add files to custom metadata
-
 - [] Allow "undo" for destructive actions - [] Delete post - [] Delete blog
 - Allow users to see their trash and restore items from the trash.
+- [] Make layout work on mobile
+- [] Make inputs not zoom in on mobile
 
 ## Teams
 

@@ -12,13 +12,12 @@
 ## Bugs & Improvements
 
 - [x] Fix email redirect when navigating to protected routes
-- [] Force email confirmation
-- [] Make layout work on mobile
-- [] Make inputs not zoom in on mobile
+- [x] Force email confirmation
 
 ## Pricing
 
 - [] Add pricing page
+- [] Grace period for expired subscriptions
 - [x] Sync products between Stripe and Supabase
 - [x] Sync subscriptions between Stripe and Supabase
 
@@ -41,15 +40,15 @@
 - [x] Create post
 - [x] View post
 - [x] Edit post
-- [] Delete post
+- [x] Delete post
 
 ## Tags
 
-- [] Create tag
+- [x] Create tag
 - [] Delete tag
-- [] View tag
-- [] View all tags
-- [] Add tags to posts
+- [] Update tag
+- [x] View all tags
+- [x] Add tags to posts
 
 ## Docs
 
@@ -62,4 +61,4 @@
 - [x] Add method to fetch all posts
 - [x] Add method to fetch a single post by slug
 - [] Pagination
-- [] Filtering by category?
+- [] Filtering by tag?

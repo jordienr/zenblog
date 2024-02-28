@@ -6,7 +6,7 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Trash } from "lucide-react";
+import { MoreVertical, PenLine, PlusIcon, TagIcon, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,8 @@ import { useBlogTags } from "@/components/Editor/Editor.queries";
 import { usePostsQuery } from "@/queries/posts";
 import { useBlogQuery } from "@/queries/blogs";
 import { formatDate } from "@/lib/utils";
+import { PiGear, PiPencilLine, PiTag, PiTrash } from "react-icons/pi";
+import Spinner from "@/components/Spinner";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -92,7 +94,7 @@ export default function BlogPosts() {
                     aria-label="Settings"
                   >
                     <div className="sr-only">Settings</div>
-                    <IoSettingsSharp size="24" />
+                    <PiGear size="24" />
                   </Link>
                 </Button>
 
@@ -101,6 +103,7 @@ export default function BlogPosts() {
                     href={`/blogs/${blog.id}/create`}
                     className="btn btn-secondary max-w-[120px]"
                   >
+                    <PiPencilLine size="16" />
                     New post
                   </Link>
                 </Button>
@@ -111,7 +114,7 @@ export default function BlogPosts() {
                 {posts.length === 0 && (
                   <div className="p-12 py-32 text-center">
                     <div className="text-2xl">✏️</div>
-                    <div className="text-lg text-slate-500">
+                    <div className="text-lg text-zinc-500">
                       Nothing here yet
                     </div>
                     <Button asChild>
@@ -128,7 +131,7 @@ export default function BlogPosts() {
                   return (
                     <Link
                       href={`/blogs/${blogId}/post/${post.slug}`}
-                      className="flex items-center gap-4 rounded-sm p-3 hover:bg-zinc-100/60"
+                      className="flex items-center gap-4 rounded-sm p-3 hover:bg-zinc-100/50"
                       key={post.slug}
                     >
                       {post.cover_image && (
@@ -140,23 +143,28 @@ export default function BlogPosts() {
                           />
                         </div>
                       )}
-                      <div>
-                        <h2 className="text-lg font-medium">{post.title}</h2>
-                      </div>
-                      <StatePill published={post.published || false} />
-                      {post.tags && post.tags.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          {post.tags?.map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-md bg-zinc-100 px-2 py-1 text-xs font-semibold text-zinc-600"
-                            >
-                              {tag}
-                            </span>
-                          ))}
+                      <div className="flex flex-col gap-0.5">
+                        <div>
+                          <StatePill published={post.published || false} />
                         </div>
-                      )}
-                      <div className="ml-auto flex items-center gap-2 text-xs text-slate-500">
+                        <h2 className="ml-1 text-lg font-medium">
+                          {post.title}
+                        </h2>
+                      </div>
+
+                      <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            {post.tags?.map((tag) => (
+                              <span
+                                key={tag}
+                                className="rounded-md bg-zinc-100 px-2 py-1 font-mono text-xs font-semibold text-zinc-600"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <span>{formatDate(post.created_at || "")}</span>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -203,22 +211,86 @@ export default function BlogPosts() {
               </div>
             </TabsContent>
             <TabsContent value="media">
-              {images.data?.map((img) => {
-                return (
-                  <div key={img.id}>
-                    <img src={img.url} alt={img.name} />
+              {images.isLoading && (
+                <>
+                  <div className="flex-center p-12">
+                    <Spinner />
                   </div>
-                );
-              })}
+                </>
+              )}
+              <div className="rounded-xl border bg-white py-2 shadow-sm">
+                {images.data?.length === 0 && (
+                  <>
+                    <div className="p-12 py-32 text-center">
+                      <div className="text-2xl">📷</div>
+                      <div className="text-lg text-zinc-500">
+                        No images uploaded yet
+                      </div>
+                    </div>
+                  </>
+                )}
+                <div className="flex flex-col gap-2">
+                  {images.data?.map((img) => {
+                    return (
+                      <div key={img.id} className="flex gap-4 px-4">
+                        <img
+                          className="h-24 w-32 rounded-md object-cover"
+                          src={img.url}
+                          alt={img.name}
+                          height={24}
+                          width={80}
+                        />
+                        <div>
+                          <h3 className="font-mono">{img.name}</h3>
+                          <p className="mt-1 font-mono text-xs tracking-tighter text-zinc-400">
+                            {img.url}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </TabsContent>
             <TabsContent value="tags">
-              {blogTags.data?.map((tag) => {
-                return (
-                  <div key={tag.id}>
-                    <h2>{tag.name}</h2>
-                  </div>
-                );
-              })}
+              <div className="rounded-xl border bg-white py-2 shadow-sm">
+                {blogTags.data?.map((tag) => {
+                  return (
+                    <div
+                      key={tag.id}
+                      className="flex items-center gap-1.5 px-4 py-2 font-mono"
+                    >
+                      <div className="rounded-md text-zinc-400">
+                        <PiTag size="16" />
+                      </div>
+                      <h2>{tag.name}</h2>
+                      <p className="text-sm text-zinc-500">/{tag.slug}</p>
+                      <div>
+                        <Button asChild size="icon" variant={"ghost"}>
+                          <Link
+                            href={`/blogs/${blogId}/tags/${tag.id}`}
+                            className="btn btn-icon"
+                            title="Edit tag"
+                            aria-label="Edit tag"
+                          >
+                            <PiPencilLine size="16" />
+                          </Link>
+                        </Button>
+                        <Button asChild size="icon" variant={"ghost"}>
+                          <Link
+                            href={`/blogs/${blogId}/tags/${tag.id}`}
+                            className="btn btn-icon"
+                            title="Delete tag"
+                            aria-label="Delete tag"
+                          >
+                            <PiTrash size="16" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </TabsContent>
           </Tabs>
         </div>

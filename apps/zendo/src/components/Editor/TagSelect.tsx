@@ -38,9 +38,13 @@ const TagSelect = (props: Props) => {
           <h2 className="">Tags</h2>
           <Dialog>
             <DialogTrigger asChild>
-              <Button size="icon" variant={"ghost"} title="Create tag">
-                <div className="sr-only">Create tag</div>
+              <Button
+                className="text-slate-500"
+                variant={"ghost"}
+                title="Create tag"
+              >
                 <Plus />
+                <div>Create tag</div>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-xs">
@@ -85,7 +89,6 @@ const TagSelect = (props: Props) => {
             </DialogContent>
           </Dialog>
         </div>
-        <pre>{JSON.stringify(selectedTags)}</pre>
         {tags.isLoading ? (
           <></>
         ) : (

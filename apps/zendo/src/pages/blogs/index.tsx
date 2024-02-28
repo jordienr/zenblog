@@ -47,7 +47,7 @@ export default function Dashboard() {
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border bg-gradient-to-b from-white to-zinc-50 shadow-sm transition-all hover:border-orange-400"
+                  className="group rounded-xl border border-b-2 bg-white shadow-sm transition-all hover:border-orange-400"
                   key={blog.id}
                 >
                   <Link
@@ -62,7 +62,7 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <h3 className="text-lg font-medium">{blog.title}</h3>
-                        <p className="text-gray-600">{blog.description}</p>
+                        <p className="text-zinc-500">{blog.description}</p>
                       </div>
                     </div>
                     <div className="actions mt-4">

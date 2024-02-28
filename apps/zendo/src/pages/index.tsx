@@ -48,7 +48,7 @@ const Home = () => {
         <meta name="description" content="Open source blogging cms" />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="bg-zinc-100">
+      <div className="bg-zinc-50">
         <div className="mx-auto flex max-w-3xl flex-col">
           <nav className="flex items-center justify-between p-3">
             <div className="flex-grow cursor-default">
@@ -82,11 +82,11 @@ const Home = () => {
                       Log in
                     </Link>
                   </Button>
-                  <Button asChild>
+                  {/* <Button asChild>
                     <Link href="/sign-up" title="Sign up" aria-label="Sign up">
                       Sign up
                     </Link>
-                  </Button>
+                  </Button> */}
                 </div>
               )}
 
@@ -144,7 +144,7 @@ const Home = () => {
             <hr className="my-12" />
             {!hasSubmitted && (
               <form
-                className="mt-6 flex max-w-sm flex-col gap-2 py-2"
+                className="mt-6 flex max-w-sm flex-col gap-2 py-2 pb-12"
                 onSubmit={onSubmit}
               >
                 <h2>
@@ -193,11 +193,11 @@ const Home = () => {
               </div>
             )}
 
-            <hr className="my-12" />
+            {/* <hr className="my-12" /> */}
 
-            <section className="pb-8">
+            {/* <section className="pb-8">
               <SubscribeSection />
-            </section>
+            </section> */}
           </main>
         </div>
         <Footer />

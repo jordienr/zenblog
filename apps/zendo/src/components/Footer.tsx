@@ -15,14 +15,14 @@ const Footer = (props: Props) => {
     //   label: "Blog",
     //   href: "/blog",
     // },
-    {
-      label: "Docs",
-      href: "/docs/getting-started",
-    },
-    {
-      label: "Pricing",
-      href: "/pricing",
-    },
+    // {
+    //   label: "Docs",
+    //   href: "/docs/getting-started",
+    // },
+    // {
+    //   label: "Pricing",
+    //   href: "/pricing",
+    // },
   ];
 
   return (

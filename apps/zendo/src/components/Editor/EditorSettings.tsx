@@ -67,9 +67,9 @@ const EditorSettings = (props: Props) => {
             <div>Value</div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="ml-auto" variant={"outline"} size={"sm"}>
+                <Button className="ml-auto" variant={"ghost"}>
                   <Code size={16} />
-                  Preview
+                  <div>Preview</div>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
