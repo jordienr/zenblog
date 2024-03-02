@@ -1,0 +1,511 @@
+drop policy "delete_categories_policy" on "public"."categories";
+
+drop policy "insert_categories_policy" on "public"."categories";
+
+drop policy "select_categories_policy" on "public"."categories";
+
+drop policy "update_categories_policy" on "public"."categories";
+
+drop policy "Allow AUTHED users to query ALL their POSTS" on "public"."posts";
+
+drop policy "Enable delete for users based on user_id" on "public"."posts";
+
+drop policy "Enable insert for authenticated users only" on "public"."posts";
+
+drop policy "Enable read access for all users if published" on "public"."posts";
+
+drop policy "Enable update for users based on user_id" on "public"."posts";
+
+revoke delete on table "public"."admin_users" from "anon";
+
+revoke insert on table "public"."admin_users" from "anon";
+
+revoke references on table "public"."admin_users" from "anon";
+
+revoke select on table "public"."admin_users" from "anon";
+
+revoke trigger on table "public"."admin_users" from "anon";
+
+revoke truncate on table "public"."admin_users" from "anon";
+
+revoke update on table "public"."admin_users" from "anon";
+
+revoke delete on table "public"."admin_users" from "authenticated";
+
+revoke insert on table "public"."admin_users" from "authenticated";
+
+revoke references on table "public"."admin_users" from "authenticated";
+
+revoke select on table "public"."admin_users" from "authenticated";
+
+revoke trigger on table "public"."admin_users" from "authenticated";
+
+revoke truncate on table "public"."admin_users" from "authenticated";
+
+revoke update on table "public"."admin_users" from "authenticated";
+
+revoke delete on table "public"."admin_users" from "service_role";
+
+revoke insert on table "public"."admin_users" from "service_role";
+
+revoke references on table "public"."admin_users" from "service_role";
+
+revoke select on table "public"."admin_users" from "service_role";
+
+revoke trigger on table "public"."admin_users" from "service_role";
+
+revoke truncate on table "public"."admin_users" from "service_role";
+
+revoke update on table "public"."admin_users" from "service_role";
+
+revoke delete on table "public"."categories" from "anon";
+
+revoke insert on table "public"."categories" from "anon";
+
+revoke references on table "public"."categories" from "anon";
+
+revoke select on table "public"."categories" from "anon";
+
+revoke trigger on table "public"."categories" from "anon";
+
+revoke truncate on table "public"."categories" from "anon";
+
+revoke update on table "public"."categories" from "anon";
+
+revoke delete on table "public"."categories" from "authenticated";
+
+revoke insert on table "public"."categories" from "authenticated";
+
+revoke references on table "public"."categories" from "authenticated";
+
+revoke select on table "public"."categories" from "authenticated";
+
+revoke trigger on table "public"."categories" from "authenticated";
+
+revoke truncate on table "public"."categories" from "authenticated";
+
+revoke update on table "public"."categories" from "authenticated";
+
+revoke delete on table "public"."categories" from "service_role";
+
+revoke insert on table "public"."categories" from "service_role";
+
+revoke references on table "public"."categories" from "service_role";
+
+revoke select on table "public"."categories" from "service_role";
+
+revoke trigger on table "public"."categories" from "service_role";
+
+revoke truncate on table "public"."categories" from "service_role";
+
+revoke update on table "public"."categories" from "service_role";
+
+alter table "public"."admin_users" drop constraint "admin_users_user_id_fkey";
+
+alter table "public"."categories" drop constraint "categories_blog_id_fkey";
+
+alter table "public"."categories" drop constraint "categories_blog_id_slug_key";
+
+alter table "public"."posts" drop constraint "unique_slug_per_user_post_constraint";
+
+alter table "public"."admin_users" drop constraint "admin_users_pkey";
+
+alter table "public"."categories" drop constraint "categories_pkey";
+
+alter table "public"."products" drop constraint "products_pkey";
+
+alter table "public"."subscriptions" drop constraint "subscriptions_pkey";
+
+drop index if exists "public"."admin_users_pkey";
+
+drop index if exists "public"."categories_blog_id_slug_key";
+
+drop index if exists "public"."categories_pkey";
+
+drop index if exists "public"."products_pkey";
+
+drop index if exists "public"."subscriptions_pkey";
+
+drop index if exists "public"."unique_slug_per_user_post_constraint";
+
+drop table "public"."admin_users";
+
+drop table "public"."categories";
+
+create table "public"."blog_tags" (
+    "id" uuid not null default gen_random_uuid(),
+    "blog_id" uuid not null,
+    "name" text not null,
+    "slug" text not null,
+    "created_at" timestamp with time zone not null default now(),
+    "updated_at" timestamp with time zone not null default now(),
+    "description" text
+);
+
+
+alter table "public"."blog_tags" enable row level security;
+
+create table "public"."post_tags" (
+    "id" bigint generated by default as identity not null,
+    "created_at" timestamp with time zone not null default now(),
+    "post_id" uuid not null,
+    "tag_id" uuid not null,
+    "blog_id" uuid not null
+);
+
+
+alter table "public"."post_tags" enable row level security;
+
+create table "public"."prices" (
+    "id" bigint generated by default as identity not null,
+    "created_at" timestamp with time zone not null default now(),
+    "price" jsonb not null,
+    "stripe_price_id" text not null
+);
+
+
+alter table "public"."prices" enable row level security;
+
+alter table "public"."posts" add column "deleted" boolean not null default false;
+
+alter table "public"."posts" add column "deprecated_user_id" text default 'default'::text;
+
+alter table "public"."posts" alter column "user_id" set default auth.uid();
+
+alter table "public"."posts" alter column "user_id" set data type uuid using "user_id"::uuid;
+
+alter table "public"."products" alter column "stripe_product_id" set not null;
+
+alter table "public"."subscriptions" add column "stripe_subscription_id" text not null;
+
+alter table "public"."subscriptions" add column "subscription" jsonb not null;
+
+CREATE UNIQUE INDEX post_categories_pkey ON public.post_tags USING btree (id);
+
+CREATE UNIQUE INDEX prices_pkey ON public.prices USING btree (id, stripe_price_id);
+
+CREATE UNIQUE INDEX prices_stripe_price_id_key ON public.prices USING btree (stripe_price_id);
+
+CREATE UNIQUE INDEX products_stripe_product_id_key ON public.products USING btree (stripe_product_id);
+
+CREATE UNIQUE INDEX subscriptions_stripe_subscription_id_key ON public.subscriptions USING btree (stripe_subscription_id);
+
+CREATE UNIQUE INDEX unique_post_tag_blog_combination ON public.post_tags USING btree (post_id, tag_id, blog_id);
+
+CREATE UNIQUE INDEX categories_blog_id_slug_key ON public.blog_tags USING btree (blog_id, slug);
+
+CREATE UNIQUE INDEX categories_pkey ON public.blog_tags USING btree (id);
+
+CREATE UNIQUE INDEX products_pkey ON public.products USING btree (id, stripe_product_id);
+
+CREATE UNIQUE INDEX subscriptions_pkey ON public.subscriptions USING btree (stripe_subscription_id);
+
+CREATE UNIQUE INDEX unique_slug_per_user_post_constraint ON public.posts USING btree (slug, deprecated_user_id, blog_id);
+
+alter table "public"."blog_tags" add constraint "categories_pkey" PRIMARY KEY using index "categories_pkey";
+
+alter table "public"."post_tags" add constraint "post_categories_pkey" PRIMARY KEY using index "post_categories_pkey";
+
+alter table "public"."prices" add constraint "prices_pkey" PRIMARY KEY using index "prices_pkey";
+
+alter table "public"."products" add constraint "products_pkey" PRIMARY KEY using index "products_pkey";
+
+alter table "public"."subscriptions" add constraint "subscriptions_pkey" PRIMARY KEY using index "subscriptions_pkey";
+
+alter table "public"."blog_tags" add constraint "blog_tags_blog_id_fkey" FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE not valid;
+
+alter table "public"."blog_tags" validate constraint "blog_tags_blog_id_fkey";
+
+alter table "public"."blog_tags" add constraint "categories_blog_id_slug_key" UNIQUE using index "categories_blog_id_slug_key";
+
+alter table "public"."post_tags" add constraint "post_tags_blog_id_fkey" FOREIGN KEY (blog_id) REFERENCES blogs(id) not valid;
+
+alter table "public"."post_tags" validate constraint "post_tags_blog_id_fkey";
+
+alter table "public"."post_tags" add constraint "post_tags_post_id_fkey" FOREIGN KEY (post_id) REFERENCES posts(id) not valid;
+
+alter table "public"."post_tags" validate constraint "post_tags_post_id_fkey";
+
+alter table "public"."post_tags" add constraint "post_tags_tag_id_fkey" FOREIGN KEY (tag_id) REFERENCES blog_tags(id) not valid;
+
+alter table "public"."post_tags" validate constraint "post_tags_tag_id_fkey";
+
+alter table "public"."post_tags" add constraint "unique_post_tag_blog_combination" UNIQUE using index "unique_post_tag_blog_combination";
+
+alter table "public"."prices" add constraint "prices_stripe_price_id_key" UNIQUE using index "prices_stripe_price_id_key";
+
+alter table "public"."products" add constraint "products_stripe_product_id_key" UNIQUE using index "products_stripe_product_id_key";
+
+alter table "public"."subscriptions" add constraint "subscriptions_stripe_subscription_id_key" UNIQUE using index "subscriptions_stripe_subscription_id_key";
+
+alter table "public"."posts" add constraint "unique_slug_per_user_post_constraint" UNIQUE using index "unique_slug_per_user_post_constraint";
+
+create or replace view "public"."posts_with_tags" as  SELECT p.created_at,
+    p.deprecated_user_id,
+    p.blog_id,
+    p.title,
+    p.published,
+    p.content,
+    p.updated_at,
+    p.slug,
+    p.id AS post_id,
+    p.cover_image,
+    p.metadata,
+    p.deleted,
+    p.user_id,
+    COALESCE(array_agg(bt.name) FILTER (WHERE (bt.id IS NOT NULL)), '{}'::text[]) AS tags
+   FROM ((posts p
+     LEFT JOIN post_tags pt ON ((p.id = pt.post_id)))
+     LEFT JOIN blog_tags bt ON ((pt.tag_id = bt.id)))
+  GROUP BY p.created_at, p.deprecated_user_id, p.blog_id, p.title, p.published, p.content, p.updated_at, p.slug, p.id, p.cover_image, p.metadata, p.deleted, p.user_id
+  ORDER BY p.created_at DESC;
+
+
+grant delete on table "public"."blog_tags" to "anon";
+
+grant insert on table "public"."blog_tags" to "anon";
+
+grant references on table "public"."blog_tags" to "anon";
+
+grant select on table "public"."blog_tags" to "anon";
+
+grant trigger on table "public"."blog_tags" to "anon";
+
+grant truncate on table "public"."blog_tags" to "anon";
+
+grant update on table "public"."blog_tags" to "anon";
+
+grant delete on table "public"."blog_tags" to "authenticated";
+
+grant insert on table "public"."blog_tags" to "authenticated";
+
+grant references on table "public"."blog_tags" to "authenticated";
+
+grant select on table "public"."blog_tags" to "authenticated";
+
+grant trigger on table "public"."blog_tags" to "authenticated";
+
+grant truncate on table "public"."blog_tags" to "authenticated";
+
+grant update on table "public"."blog_tags" to "authenticated";
+
+grant delete on table "public"."blog_tags" to "service_role";
+
+grant insert on table "public"."blog_tags" to "service_role";
+
+grant references on table "public"."blog_tags" to "service_role";
+
+grant select on table "public"."blog_tags" to "service_role";
+
+grant trigger on table "public"."blog_tags" to "service_role";
+
+grant truncate on table "public"."blog_tags" to "service_role";
+
+grant update on table "public"."blog_tags" to "service_role";
+
+grant delete on table "public"."post_tags" to "anon";
+
+grant insert on table "public"."post_tags" to "anon";
+
+grant references on table "public"."post_tags" to "anon";
+
+grant select on table "public"."post_tags" to "anon";
+
+grant trigger on table "public"."post_tags" to "anon";
+
+grant truncate on table "public"."post_tags" to "anon";
+
+grant update on table "public"."post_tags" to "anon";
+
+grant delete on table "public"."post_tags" to "authenticated";
+
+grant insert on table "public"."post_tags" to "authenticated";
+
+grant references on table "public"."post_tags" to "authenticated";
+
+grant select on table "public"."post_tags" to "authenticated";
+
+grant trigger on table "public"."post_tags" to "authenticated";
+
+grant truncate on table "public"."post_tags" to "authenticated";
+
+grant update on table "public"."post_tags" to "authenticated";
+
+grant delete on table "public"."post_tags" to "service_role";
+
+grant insert on table "public"."post_tags" to "service_role";
+
+grant references on table "public"."post_tags" to "service_role";
+
+grant select on table "public"."post_tags" to "service_role";
+
+grant trigger on table "public"."post_tags" to "service_role";
+
+grant truncate on table "public"."post_tags" to "service_role";
+
+grant update on table "public"."post_tags" to "service_role";
+
+grant delete on table "public"."prices" to "anon";
+
+grant insert on table "public"."prices" to "anon";
+
+grant references on table "public"."prices" to "anon";
+
+grant select on table "public"."prices" to "anon";
+
+grant trigger on table "public"."prices" to "anon";
+
+grant truncate on table "public"."prices" to "anon";
+
+grant update on table "public"."prices" to "anon";
+
+grant delete on table "public"."prices" to "authenticated";
+
+grant insert on table "public"."prices" to "authenticated";
+
+grant references on table "public"."prices" to "authenticated";
+
+grant select on table "public"."prices" to "authenticated";
+
+grant trigger on table "public"."prices" to "authenticated";
+
+grant truncate on table "public"."prices" to "authenticated";
+
+grant update on table "public"."prices" to "authenticated";
+
+grant delete on table "public"."prices" to "service_role";
+
+grant insert on table "public"."prices" to "service_role";
+
+grant references on table "public"."prices" to "service_role";
+
+grant select on table "public"."prices" to "service_role";
+
+grant trigger on table "public"."prices" to "service_role";
+
+grant truncate on table "public"."prices" to "service_role";
+
+grant update on table "public"."prices" to "service_role";
+
+create policy "delete_categories_policy"
+on "public"."blog_tags"
+as permissive
+for delete
+to public
+using ((EXISTS ( SELECT 1
+   FROM blogs
+  WHERE ((blogs.id = blog_tags.blog_id) AND (blogs.user_id = CURRENT_USER)))));
+
+
+create policy "insert_categories_policy"
+on "public"."blog_tags"
+as permissive
+for insert
+to public
+with check ((EXISTS ( SELECT 1
+   FROM blogs
+  WHERE ((blogs.id = blog_tags.blog_id) AND (blogs.user_id = (auth.uid())::text)))));
+
+
+create policy "select_categories_policy"
+on "public"."blog_tags"
+as permissive
+for select
+to public
+using (true);
+
+
+create policy "update_categories_policy"
+on "public"."blog_tags"
+as permissive
+for update
+to public
+using ((EXISTS ( SELECT 1
+   FROM blogs
+  WHERE ((blogs.id = blog_tags.blog_id) AND (blogs.user_id = CURRENT_USER)))));
+
+
+create policy "Enable insert for authenticated users only"
+on "public"."post_tags"
+as permissive
+for insert
+to authenticated
+with check ((EXISTS ( SELECT 1
+   FROM blogs
+  WHERE ((blogs.id = post_tags.blog_id) AND (blogs.user_id = (auth.uid())::text)))));
+
+
+create policy "Enable read access for all users"
+on "public"."post_tags"
+as permissive
+for select
+to public
+using (true);
+
+
+create policy "delete_policy"
+on "public"."post_tags"
+as permissive
+for delete
+to authenticated
+using ((EXISTS ( SELECT 1
+   FROM blogs
+  WHERE ((blogs.id = post_tags.blog_id) AND (blogs.user_id = (auth.uid())::text)))));
+
+
+create policy "update_post_tags"
+on "public"."post_tags"
+as permissive
+for update
+to authenticated
+using ((EXISTS ( SELECT 1
+   FROM blogs
+  WHERE ((blogs.id = post_tags.blog_id) AND (blogs.user_id = (auth.uid())::text)))))
+with check (true);
+
+
+create policy "insert_posts"
+on "public"."posts"
+as permissive
+for insert
+to authenticated
+with check ((EXISTS ( SELECT 1
+   FROM blogs
+  WHERE ((blogs.id = posts.blog_id) AND (blogs.user_id = (auth.uid())::text)))));
+
+
+create policy "read_posts"
+on "public"."posts"
+as permissive
+for select
+to anon
+using (((published = true) AND (deleted = false)));
+
+
+create policy "update_posts"
+on "public"."posts"
+as permissive
+for update
+to authenticated
+using ((EXISTS ( SELECT 1
+   FROM blogs
+  WHERE ((blogs.id = posts.blog_id) AND (blogs.user_id = (auth.uid())::text)))));
+
+
+create policy "Enable read access for all users"
+on "public"."prices"
+as permissive
+for select
+to public
+using (true);
+
+
+create policy "Enable read access for all users"
+on "public"."products"
+as permissive
+for select
+to public
+using (true);
+
+
+

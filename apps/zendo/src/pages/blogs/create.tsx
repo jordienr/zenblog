@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useIsSubscribed, useSubscriptionQuery } from "@/queries/subscription";
 import Link from "next/link";
+import { StopCircle } from "lucide-react";
+import { BsShieldX } from "react-icons/bs";
 
 export default function CreateBlog() {
   const DEFAULT_EMOJI = "📝";
@@ -84,8 +86,10 @@ export default function CreateBlog() {
   if (!isSubscribed) {
     return (
       <AppLayout>
-        <div className="section mx-8 mx-auto my-12 max-w-xl py-12">
-          <div className="text-center text-4xl">🚫</div>
+        <div className="section mx-auto my-12 max-w-xl py-12">
+          <div className="text-center text-4xl">
+            <BsShieldX className="mx-auto text-red-500" size="48" />
+          </div>
           <h2 className="mt-2">
             <span className="block text-center text-3xl font-semibold">
               You are not subscribed to a plan
@@ -94,9 +98,6 @@ export default function CreateBlog() {
           <div className="text-center">
             <p className="text-xl text-zinc-500">
               Please subscribe to a plan to create more blogs.
-            </p>
-            <p className="text-xs text-zinc-400">
-              I have to pay my Vercel and Supabase bills!!
             </p>
           </div>
           <div className="mt-8 text-center">
