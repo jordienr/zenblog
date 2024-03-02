@@ -24,6 +24,7 @@ const posts = await client.posts.list({ withContent: true, limit: 10 });
 - Allow users to see their trash and restore items from the trash.
 - [] Make layout work on mobile
 - [] Make inputs not zoom in on mobile
+- [] Grace period for expired subscriptions
 
 ## Teams
 
@@ -35,8 +36,13 @@ const posts = await client.posts.list({ withContent: true, limit: 10 });
 
 - [] Let zenblog host your blog for you
 - [] Custom domain support
+  - vercel: (https://github.com/orgs/vercel/discussions/31)
+  - cloudflare: https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/domain-support/create-custom-hostnames/
 - [] Hosted blog themes
-- [] Hosted blog analytics
+
+# Analytics
+
+- [] Add analytics to blogs
 
 ## Self hosting
 

@@ -43,7 +43,7 @@ export default function Dashboard() {
               </Button>
             </div>
           )}
-          <ul className="mx-2 grid grid-cols-1 gap-2 md:grid-cols-2">
+          <ul className="mx-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {data?.map((blog) => {
               return (
                 <li
