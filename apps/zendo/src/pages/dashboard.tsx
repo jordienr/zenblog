@@ -3,19 +3,14 @@ import { createAPIClient } from "@/lib/http/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useBlogsQuery } from "@/queries/blogs";
 
 export default function Dashboard() {
   const router = useRouter();
   const api = createAPIClient();
 
   const [selectedBlog, setSelectedBlog] = useState<string | null>(null);
-  const blogs = useQuery(["blogs"], () => api.blogs.getAll(), {
-    onSuccess: (data) => {
-      if (data.length === 0) {
-        router.push("/blogs/create");
-      }
-    },
-  });
+  const blogs = useBlogsQuery();
 
   const posts = useQuery(
     ["posts", selectedBlog],
