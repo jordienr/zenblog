@@ -61,7 +61,7 @@ type EditorContent = {
 };
 
 type Props = {
-  onSave: (data: EditorContent) => void;
+  onSave: (data: EditorContent) => Promise<void>;
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
   tags: string[];
@@ -154,17 +154,19 @@ export const ZendoEditor = (props: Props) => {
       toast.error("Title and slug are required");
       return;
     }
-
-    props.onSave({
-      content,
-      title: data.title,
-      slug: data.slug,
-      cover_image: data.cover_image || "",
-      published: data.published,
-      metadata,
-      tags,
-    });
-
+    try {
+      await props.onSave({
+        content,
+        title: data.title,
+        slug: data.slug,
+        cover_image: data.cover_image || "",
+        published: data.published,
+        metadata,
+        tags,
+      });
+    } catch (error) {
+      return;
+    }
     if (slugHasChanged) {
       router.push(`/blogs/${blogId}/post/${data.slug}`);
     }

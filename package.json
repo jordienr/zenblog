@@ -5,6 +5,7 @@
     "build": "turbo run build",
     "build:web": "turbo run build --filter=website",
     "dev": "turbo run dev",
+    "start": "concurrently --names \"APP,STRIPE\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev\" \"npm run stripe:webhook\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:typegen": "npx supabase gen types typescript --local --schema public > apps/zendo/src/types/supabase.ts",
     "db:start": "npx supabase start",
@@ -15,10 +16,11 @@
     "qs": "git add . && git commit -m \"quick save\" && git push",
     "stripe:webhook": "stripe listen --forward-to localhost:3000/api/webhooks/stripe",
     "stripe:event": "stripe trigger payment_intent.succeeded",
-    "stripe:sync": "turbo run stripe:sync --filter=website"
+    "stripe:sync": "tsx ./scripts/stripe-sync.ts"
   },
   "devDependencies": {
     "@turbo/gen": "^1.9.7",
+    "concurrently": "^8.2.2",
     "eslint": "^7.32.0",
     "prettier": "^2.5.1",
     "turbo": "^1.10.5"

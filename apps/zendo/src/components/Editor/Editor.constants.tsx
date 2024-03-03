@@ -139,7 +139,7 @@ export const TOP_MENU_BUTTONS = [
   Separator,
   LINK_BTN,
   LIST_BTN,
-  NUMBERED_LIST_BTN,
+  // NUMBERED_LIST_BTN,
 ];
 
 export const BUBBLE_MENU_BUTTONS = [
@@ -151,7 +151,7 @@ export const BUBBLE_MENU_BUTTONS = [
   Separator,
   LINK_BTN,
   LIST_BTN,
-  NUMBERED_LIST_BTN,
+  // NUMBERED_LIST_BTN,
 ];
 
 export const MENU_TYPE_BUTTONS = [

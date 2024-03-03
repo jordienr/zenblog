@@ -29,7 +29,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "../ui/tooltip";
-import { NEW_LINE_BUTTONS, TOP_MENU_BUTTONS } from "./Editor.constants";
+import { TOP_MENU_BUTTONS } from "./Editor.constants";
 
 function EditorMenuButton({
   children,
@@ -43,7 +43,7 @@ function EditorMenuButton({
 } & React.ComponentPropsWithoutRef<"button">) {
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={200}>
+      <Tooltip delayDuration={250}>
         <TooltipTrigger asChild>
           <Button
             tabIndex={-1}
@@ -135,6 +135,7 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
       command: () => editor?.chain().focus().toggleOrderedList().run(),
       active: editor?.isActive("orderedList"),
     },
+    Separator, // Without this, it crashes on hover of last item, don't know why.
   ];
 
   const menuTypeItems = [

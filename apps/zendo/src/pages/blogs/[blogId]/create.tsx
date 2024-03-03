@@ -12,18 +12,17 @@ export default function CreatePost() {
     <ZendoEditor
       tags={[]}
       onSave={async (content) => {
+        const { tags, ...post } = content;
         try {
           const { data, error } = await supa
             .from("posts")
-            .insert({ ...content, blog_id: blogId })
+            .insert({ ...post, blog_id: blogId })
             .select("id")
             .single();
 
           if (error) {
             throw error;
           }
-
-          console.log(content.tags);
 
           if (content.tags) {
             content.tags.forEach((tag_id) => {
@@ -36,6 +35,7 @@ export default function CreatePost() {
         } catch (error) {
           toast.error("Failed to save post");
           console.error(error);
+          throw error;
         }
       }}
     />

@@ -7,8 +7,7 @@
     "dev": "NODE_OPTIONS='--inspect' next dev -p 3000",
     "lint": "next lint",
     "start": "next start",
-    "supabase:typegen": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts",
-    "stripe:sync": "tsx ./src/scripts/stripe-sync.ts"
+    "supabase:typegen": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts"
   },
   "dependencies": {
     "@builder.io/react-hydration-overlay": "^0.0.8",

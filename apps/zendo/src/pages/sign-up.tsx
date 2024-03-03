@@ -61,13 +61,7 @@ export default function SignIn() {
           Please, <span className="underline">check your email</span> 📧 to
           confirm your account.
         </p>
-        <div className="">
-          <p className="text-sm">You can close this tab.</p>
-        </div>
-        <div className="text-zinc-200">
-          <p className="text-xs">or not, i don&apos;t care.</p>
-          <p className="text-xs">it&apos;s your computer.</p>
-        </div>
+        <p className="">You can close this tab.</p>
       </div>
     );
   }
