@@ -4,13 +4,14 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiAdjustments, HiChevronDown, HiCog, HiPlus } from "react-icons/hi";
 import { useQuery } from "@tanstack/react-query";
+import { useBlogsQuery } from "@/queries/blogs";
 
 export function BlogSelector() {
   const router = useRouter();
 
   const currentBlogId = router.query.blogId;
   const api = createAPIClient();
-
+  const blogs = useBlogsQuery();
   const [showSelector, setShowSelector] = useState(false);
 
   const getCurrentBlog = () => {
@@ -22,10 +23,6 @@ export function BlogSelector() {
       return null;
     }
   };
-
-  const blogs = useQuery(["blogs"], () => {
-    return api.blogs.getAll();
-  });
 
   return (
     <div className="relative text-sm">
