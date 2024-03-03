@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import { useRouter } from "next/router";
 import { PropsWithChildren, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -13,11 +13,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { BlogImage } from "@/lib/types/BlogImage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+export type BlogImage = {
+  id: string;
+  name: string;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export function ImagePicker({
   children,

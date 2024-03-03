@@ -1,4 +1,4 @@
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import { useQuery } from "@tanstack/react-query";
 
 const api = createAPIClient();

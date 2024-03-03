@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet, EditorView } from "@tiptap/pm/view";
-import { getClientClient } from "../../lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 const uploadKey = new PluginKey("upload-image");
 
@@ -10,7 +10,6 @@ const UploadImagesPlugin = () =>
     key: uploadKey,
     state: {
       init() {
-        console.log("init");
         return DecorationSet.empty;
       },
       apply(tr, set) {
@@ -59,7 +58,6 @@ function findPlaceholder(state: EditorState, id: {}) {
   const decos = uploadKey.getState(state);
   const found = decos.find(null, null, (spec: any) => spec.id == id);
   const pos = found.length ? found[0].from : null;
-  console.log(pos);
   return pos;
 }
 
@@ -134,7 +132,7 @@ export function startImageUpload(
   });
 }
 
-const supa = getClientClient();
+const supa = getSupabaseBrowserClient();
 
 export const handleImageUpload = async (file: File, blogId: string) => {
   console.log("Uploading image to Supabase storage...");

@@ -1,10 +1,12 @@
-import { useUser } from "@supabase/auth-helpers-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { useUser } from "@/utils/supabase/browser";
 import { PropsWithChildren } from "react";
 
 export function LoggedInUser({ children }: PropsWithChildren) {
+  const sb = getSupabaseBrowserClient();
   const user = useUser();
 
-  if (!user?.id) {
+  if (!user) {
     return null;
   }
 

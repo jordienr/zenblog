@@ -35,6 +35,10 @@ import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import EditorSettings from "./EditorSettings";
 import TiptapLink from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import { useSubscriptionQuery } from "@/queries/subscription";
+import { toast } from "sonner";
+import { Database } from "@/types/supabase";
+import { useBlogTags } from "./Editor.queries";
 
 const formSchema = z.object({
   title: z.string(),
@@ -52,20 +56,15 @@ type EditorContent = {
   slug: string;
   cover_image?: string;
   published: boolean;
+  metadata?: any;
+  tags?: string[];
 };
 
 type Props = {
-  onSave: (content: EditorContent) => void;
+  onSave: (data: EditorContent) => Promise<void>;
   readOnly?: boolean;
-  post?: {
-    id: string;
-    title: string;
-    slug: string;
-    published: boolean;
-    cover_image?: string;
-    content?: any;
-    metadata?: Record<string, any>;
-  };
+  post?: Database["public"]["Tables"]["posts"]["Row"];
+  tags: string[];
 };
 
 export const ZendoEditor = (props: Props) => {
@@ -80,6 +79,14 @@ export const ZendoEditor = (props: Props) => {
     });
   const router = useRouter();
   const blogId = (router.query.blogId as string) || "demo";
+  const subscription = useSubscriptionQuery();
+  const blogTags = useBlogTags({ blogId });
+
+  const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
+  const [tags, setTags] = React.useState(props.tags || []);
+
+  const isSubscribed = subscription.data?.status === "active";
+
   const [coverImgUrl, setCoverImgUrl] = React.useState<string | undefined>(
     props.post?.cover_image || ""
   );
@@ -91,14 +98,13 @@ export const ZendoEditor = (props: Props) => {
   const blogQuery = useBlogQuery(blogId);
 
   const title = watch("title");
-  const published = watch("published");
 
   useEffect(() => {
     setValue("slug", generateSlug(title || ""));
   }, [title, setValue]);
 
   const editor = useEditor({
-    content: props.post?.content || "",
+    content: (props.post?.content as any) || "",
     editorProps: {
       editable: () => !props.readOnly || false,
       handlePaste: (view, event) => {
@@ -136,17 +142,31 @@ export const ZendoEditor = (props: Props) => {
   });
 
   const formSubmit = handleSubmit(async (data) => {
+    if (!isSubscribed) {
+      alert("You need an active subscription to publish more posts.");
+      return;
+    }
     const content = editor?.getJSON() || {};
     const slugHasChanged = data.slug !== props.post?.slug;
+    const { title, slug } = data;
 
-    props.onSave({
-      content,
-      title: data.title,
-      slug: data.slug,
-      cover_image: data.cover_image || "",
-      published: data.published,
-    });
-
+    if (!title || !slug) {
+      toast.error("Title and slug are required");
+      return;
+    }
+    try {
+      await props.onSave({
+        content,
+        title: data.title,
+        slug: data.slug,
+        cover_image: data.cover_image || "",
+        published: data.published,
+        metadata,
+        tags,
+      });
+    } catch (error) {
+      return;
+    }
     if (slugHasChanged) {
       router.push(`/blogs/${blogId}/post/${data.slug}`);
     }
@@ -158,7 +178,25 @@ export const ZendoEditor = (props: Props) => {
   }
 
   return (
-    <div className="bg-zinc-50 pb-40">
+    <div className="bg-zinc-50 pb-24">
+      {!isSubscribed && !subscription.isLoading && (
+        <>
+          <div className="absolute inset-0 z-40 flex items-center justify-center overflow-hidden bg-zinc-100/80">
+            <div className="max-w-xs rounded-lg border bg-white p-3 shadow-sm">
+              <span className="text-lg">🙏</span>
+              <h2 className="text-lg font-medium">
+                You need an active subscription to publish more posts.
+              </h2>
+              <Link
+                className="mt-4 inline-block py-2 text-orange-500 underline"
+                href="/account"
+              >
+                Manage your subscription
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
       <form
         onSubmit={formSubmit}
         className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-zinc-50 px-3 py-1.5 text-zinc-800"
@@ -221,8 +259,8 @@ export const ZendoEditor = (props: Props) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="-mt-1 max-w-[240px]">
-                {postsQuery.data?.posts?.map((post) => (
-                  <DropdownMenuItem key={post.id} asChild>
+                {postsQuery.data?.map((post) => (
+                  <DropdownMenuItem key={post.post_id} asChild>
                     <Link
                       href={`/blogs/${blogId}/post/${post.slug}`}
                       className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
@@ -259,8 +297,11 @@ export const ZendoEditor = (props: Props) => {
             </SheetTrigger>
             <SheetContent>
               <EditorSettings
-                onSave={() => {
-                  // TO DO - save settings
+                metadata={metadata as any}
+                selectedTags={tags}
+                onChange={(data) => {
+                  setMetadata(data.metadata);
+                  setTags(data.tags);
                 }}
               ></EditorSettings>
             </SheetContent>
@@ -271,7 +312,7 @@ export const ZendoEditor = (props: Props) => {
           </Button>
         </div>
       </form>
-      <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2 pb-40">
+      <div className="mx-auto mt-2 flex w-full max-w-2xl flex-col px-2 pb-6">
         <div className="relative mt-2 flex items-center justify-center bg-zinc-100">
           {coverImgUrl && (
             <button
@@ -297,6 +338,7 @@ export const ZendoEditor = (props: Props) => {
                 slug
               </span>
               <input
+                required
                 placeholder="a-great-title"
                 type="text"
                 {...register("slug")}
@@ -332,16 +374,30 @@ export const ZendoEditor = (props: Props) => {
             className="mt-1 w-full max-w-2xl rounded-xl bg-transparent p-2
             text-4xl font-medium text-zinc-800 outline-none"
           />
+          <div>
+            {tags.length > 0 && (
+              <div className="flex gap-1">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-md border bg-zinc-100 px-2 py-1 font-mono text-xs font-medium"
+                  >
+                    {blogTags.data?.find((t) => t.id === tag)?.name}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className="group">
-          <div className="sticky top-10 z-30">
+          <div className="sticky top-12 z-30">
             <EditorMenu editor={editor} />
           </div>
           <div
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-h2:font-semibold -mt-2 min-h-[700px] cursor-text rounded-lg py-1.5 font-light leading-10 tracking-tight transition-all"
+            className="prose prose-p:text-lg prose-h2:font-semibold -mt-2 min-h-[700px] cursor-text rounded-lg py-1.5 font-light leading-10 tracking-normal transition-all"
           >
             <EditorContent editor={editor} />
           </div>

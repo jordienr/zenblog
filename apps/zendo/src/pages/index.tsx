@@ -3,28 +3,20 @@ import Link from "next/link";
 import { FaTwitter } from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { getClientClient } from "@/lib/supabase";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ZendoLogo from "@/components/ZendoLogo";
-import { useUser } from "@supabase/auth-helpers-react";
 import { LoggedInUser } from "@/components/LoggedInUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StarIcon } from "lucide-react";
+import Footer from "@/components/Footer";
+import { useUser } from "@/utils/supabase/browser";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { SubscribeSection } from "./account";
+import { HiStar } from "react-icons/hi";
 
 const Home = () => {
   const user = useUser();
-
-  useEffect(() => {
-    const client = getClientClient();
-    client.auth.getSession().then((res) => {
-      console.log("sess", res);
-    });
-
-    client.auth.getUser().then((res) => {
-      console.log("user", res);
-    });
-  }, []);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -40,7 +32,7 @@ const Home = () => {
   const onSubmit = handleSubmit(async (data) => {
     const formData = formSchema.parse(data);
 
-    const sb = getClientClient();
+    const sb = getSupabaseBrowserClient();
 
     await sb.from("homepage_signup").insert(formData);
 
@@ -56,7 +48,7 @@ const Home = () => {
         <meta name="description" content="Open source blogging cms" />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="bg-zinc-100">
+      <div className="bg-zinc-50">
         <div className="mx-auto flex max-w-3xl flex-col">
           <nav className="flex items-center justify-between p-3">
             <div className="flex-grow cursor-default">
@@ -119,9 +111,13 @@ const Home = () => {
                   target="_blank"
                   href="https://github.com/jordienr/zenblog"
                 >
-                  <StarIcon
+                  {/* <StarIcon
                     size="15"
                     className="mr-1 text-zinc-300 group-hover:text-amber-200"
+                  /> */}
+                  <HiStar
+                    size="15"
+                    className="text-zinc-300 group-hover:text-amber-200"
                   />
                   Star us on GitHub
                 </Link>
@@ -132,15 +128,30 @@ const Home = () => {
                   in 2 minutes
                 </span>
               </h1>
-              <p className="mt-2 text-lg font-light text-zinc-500">
-                Open source, headless, blogging CMS.
-              </p>
+              <div className="text-lg font-light text-zinc-500">
+                <div className="mt-4">
+                  <ul className="space-y-3">
+                    <li>Open source.</li>
+                    <li>Headless, works with any stack.</li>
+                    <li>Type safe content.</li>
+                    <li>Great editing experience.</li>
+                    <li>Easy to extend.</li>
+                    <li>Gets you up and running in 2 minutes.</li>
+                  </ul>
+                </div>
+              </div>
             </div>
+            <hr className="my-12" />
             {!hasSubmitted && (
               <form
-                className="mt-6 flex max-w-sm flex-col gap-2"
+                className="mt-6 flex max-w-sm flex-col gap-2 py-2 pb-12"
                 onSubmit={onSubmit}
               >
+                <h2>
+                  <span className="text-xl font-medium text-zinc-800">
+                    Be the first to try it.
+                  </span>
+                </h2>
                 <div className="flex gap-2 [&>*]:w-full">
                   <label htmlFor="name">
                     <Input
@@ -181,32 +192,15 @@ const Home = () => {
                 </p>
               </div>
             )}
-          </main>
 
-          <div className="mx-4 mt-12 flex max-w-xl flex-col gap-4 py-6 font-mono text-zinc-800">
-            <h2 className="text-lg font-medium"># features </h2>
-            <ul className="flex flex-col gap-3">
-              <li>- Open source.</li>
-              <li>- Type safe content.</li>
-              <li>- No GraphQL.</li>
-              <li>- API.</li>
-              <li>- A *great* editing experience.</li>
-              <li>- Easy to extend.</li>
-              <li>- Gets you up and running in 2 minutes.</li>
-              <li>- Have as many blogs as you want.</li>
-              <li>- Invite friends to contribute to your blog.</li>
-              <li>- Analytics.</li>
-            </ul>
-          </div>
+            {/* <hr className="my-12" /> */}
+
+            {/* <section className="pb-8">
+              <SubscribeSection />
+            </section> */}
+          </main>
         </div>
-        <footer>
-          <div className="mt-24 bg-gradient-to-b from-transparent to-white p-24 text-center font-mono text-zinc-800">
-            <div className="mx-auto max-w-3xl">
-              thanks for checking out zen
-              <span className="text-orange-500">blog</span>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

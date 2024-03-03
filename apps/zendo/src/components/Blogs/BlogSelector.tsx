@@ -1,4 +1,4 @@
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";

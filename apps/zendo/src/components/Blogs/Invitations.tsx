@@ -1,4 +1,4 @@
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import { Blog } from "@/lib/models/blogs/Blogs";
 import { useBlogQuery } from "@/queries/blogs";
 import {

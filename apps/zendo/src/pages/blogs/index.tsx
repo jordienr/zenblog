@@ -1,6 +1,6 @@
 import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
 import { IoSettingsSharp, IoAdd } from "react-icons/io5";
@@ -11,16 +11,8 @@ import { useEffect } from "react";
 import { Plus } from "lucide-react";
 
 export default function Dashboard() {
-  const api = createAPIClient();
   const { data, error, isLoading } = useBlogsQuery();
   const router = useRouter();
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (data?.length === 0) {
-      router.push("/blogs/create");
-    }
-  }, [router, data, isLoading]);
 
   return (
     <AppLayout>
@@ -51,11 +43,11 @@ export default function Dashboard() {
               </Button>
             </div>
           )}
-          <ul className="mx-2 grid grid-cols-1 gap-2 md:grid-cols-2">
+          <ul className="mx-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border bg-gradient-to-b from-white to-zinc-50 shadow-sm transition-all hover:border-orange-400"
+                  className="group rounded-xl border border-b-2 bg-white shadow-sm transition-all hover:border-orange-400"
                   key={blog.id}
                 >
                   <Link
@@ -64,13 +56,13 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center gap-4">
                       <div>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-3xl transition-all group-hover:scale-105">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-3xl transition-all group-hover:scale-110">
                           {blog.emoji}
                         </div>
                       </div>
                       <div>
                         <h3 className="text-lg font-medium">{blog.title}</h3>
-                        <p className="text-gray-600">{blog.description}</p>
+                        <p className="text-zinc-500">{blog.description}</p>
                       </div>
                     </div>
                     <div className="actions mt-4">

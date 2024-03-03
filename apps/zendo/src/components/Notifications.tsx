@@ -6,15 +6,14 @@ import {
   DropdownMenuItem,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { IoNotificationsCircle } from "react-icons/io5";
 import { Bell, Loader } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getClientClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 type Props = {};
 
 function useNotifications() {
-  const sb = getClientClient();
+  const sb = getSupabaseBrowserClient();
 
   return useQuery({
     queryKey: ["notifications"],

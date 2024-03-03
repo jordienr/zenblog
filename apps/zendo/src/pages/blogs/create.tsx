@@ -10,10 +10,16 @@ import Confetti from "react-confetti";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useIsSubscribed, useSubscriptionQuery } from "@/queries/subscription";
+import Link from "next/link";
+import { StopCircle } from "lucide-react";
+import { BsShieldX } from "react-icons/bs";
 
 export default function CreateBlog() {
   const DEFAULT_EMOJI = "📝";
   const { width, height } = useWindowSize();
+
+  const isSubscribed = useIsSubscribed();
 
   type FormData = {
     title: string;
@@ -23,7 +29,7 @@ export default function CreateBlog() {
   };
   const { register, handleSubmit, watch, setValue, control } =
     useForm<FormData>();
-  // const { getToken } = useAuth();
+
   const router = useRouter();
   const watchTitle = watch("title");
 
@@ -74,6 +80,33 @@ export default function CreateBlog() {
           {children}
         </span>
       </button>
+    );
+  }
+
+  if (!isSubscribed) {
+    return (
+      <AppLayout>
+        <div className="section mx-auto my-12 max-w-xl py-12">
+          <div className="text-center text-4xl">
+            <BsShieldX className="mx-auto text-red-500" size="48" />
+          </div>
+          <h2 className="mt-2">
+            <span className="block text-center text-3xl font-semibold">
+              You are not subscribed to a plan
+            </span>
+          </h2>
+          <div className="text-center">
+            <p className="text-xl text-zinc-500">
+              Please subscribe to a plan to create more blogs.
+            </p>
+          </div>
+          <div className="mt-8 text-center">
+            <Button asChild>
+              <Link href="/account">Subscribe to a plan</Link>
+            </Button>
+          </div>
+        </div>
+      </AppLayout>
     );
   }
 

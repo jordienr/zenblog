@@ -2,10 +2,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import imageCompression from "browser-image-compression";
 import { Loader } from "lucide-react";
 import { Input } from "../ui/input";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 type Props = {
   blogId: string;
@@ -17,7 +17,7 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
   const [imageInfo, setImageInfo] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  const supa = useSupabaseClient();
+  const supa = getSupabaseBrowserClient();
 
   useEffect(() => {
     // on mount, listen for paste events

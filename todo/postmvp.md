@@ -2,6 +2,14 @@
 
 ## Ideas
 
+- [] Allow to fetch list of posts with content.
+
+```typescript
+const posts = await client.posts.list({ withContent: true, limit: 10 });
+```
+
+- [] Allow draft/publish from post list.
+- [] Allow copy slug from post list.
 - [] Allow users to add default metadata for posts in a blog.
 - [] Add PolyScale cache to Supabase for faster queries?
 - [] Featured Images
@@ -12,13 +20,29 @@
 - [] Redesign settings page to be similar to Plausible
 - [] Use a generic on createClient to pass the custom metadata
 - [] Add files to custom metadata
+- [] Allow "undo" for destructive actions - [] Delete post - [] Delete blog
+- Allow users to see their trash and restore items from the trash.
+- [] Make layout work on mobile
+- [] Make inputs not zoom in on mobile
+- [] Grace period for expired subscriptions
+
+## Teams
+
+- [] When a user logs in, a team is created for them.
+- [] Billing is per team.
+- [] Blogs are owned by a team.
 
 ## Hosted blogs
 
 - [] Let zenblog host your blog for you
 - [] Custom domain support
+  - vercel: (https://github.com/orgs/vercel/discussions/31)
+  - cloudflare: https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/domain-support/create-custom-hostnames/
 - [] Hosted blog themes
-- [] Hosted blog analytics
+
+# Analytics
+
+- [] Add analytics to blogs
 
 ## Self hosting
 

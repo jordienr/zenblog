@@ -1,8 +1,8 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { useEffect } from "react";
 
 export default function SignOut() {
-  const supa = useSupabaseClient();
+  const supa = getSupabaseBrowserClient();
 
   useEffect(() => {
     supa.auth.signOut().then((res) => {
@@ -12,5 +12,5 @@ export default function SignOut() {
     });
   }, [supa]);
 
-  return <>Signing out...</>;
+  return <></>;
 }

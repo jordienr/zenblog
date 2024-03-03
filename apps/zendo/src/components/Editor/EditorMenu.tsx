@@ -1,4 +1,4 @@
-import { Editor } from "@tiptap/react";
+import { BubbleMenu, Editor, FloatingMenu } from "@tiptap/react";
 import {
   BoldIcon,
   CodeIcon,
@@ -29,6 +29,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "../ui/tooltip";
+import { TOP_MENU_BUTTONS } from "./Editor.constants";
 
 function EditorMenuButton({
   children,
@@ -42,7 +43,7 @@ function EditorMenuButton({
 } & React.ComponentPropsWithoutRef<"button">) {
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={200}>
+      <Tooltip delayDuration={250}>
         <TooltipTrigger asChild>
           <Button
             tabIndex={-1}
@@ -123,17 +124,18 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
       active: editor?.isActive("link"),
     },
     {
-      tooltip: "List",
+      tooltip: "Bullet list",
       icon: <ListIcon size={SIZE} />,
       command: () => editor?.chain().focus().toggleBulletList().run(),
       active: editor?.isActive("bulletList"),
     },
     {
-      tooltip: "Numbered List",
+      tooltip: "Numbered list",
       icon: <PiListNumbers size={SIZE} />,
       command: () => editor?.chain().focus().toggleOrderedList().run(),
       active: editor?.isActive("orderedList"),
     },
+    Separator, // Without this, it crashes on hover of last item, don't know why.
   ];
 
   const menuTypeItems = [
@@ -210,6 +212,48 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
           {icon}
         </EditorMenuButton>
       ))}
+
+      {editor && (
+        <BubbleMenu
+          className="flex items-center gap-0.5 rounded-xl bg-zinc-800 p-1.5 text-xs text-white shadow-md"
+          tippyOptions={{ duration: 100 }}
+          editor={editor}
+        >
+          {TOP_MENU_BUTTONS.map(({ icon, command, id }, i) => (
+            <button
+              className={cn("rounded-md p-1 text-xs text-white", {
+                "hover:bg-zinc-600": !editor.isActive(id),
+                "bg-zinc-600": editor.isActive(id),
+              })}
+              key={i + "menu-btn"}
+              onClick={() => command(editor)}
+            >
+              {icon}
+            </button>
+          ))}
+        </BubbleMenu>
+      )}
+
+      {/* {editor && (
+        <FloatingMenu
+          className="rounded-md bg-zinc-50 p-0.5"
+          tippyOptions={{ duration: 100 }}
+          editor={editor}
+        >
+          {NEW_LINE_BUTTONS.map((item) => {
+            const { icon, label, command } = item;
+            return (
+              <button
+                key={label}
+                onClick={() => command(editor)}
+                className="rounded-md p-0.5 text-xs text-zinc-400 "
+              >
+                {icon}
+              </button>
+            );
+          })}
+        </FloatingMenu>
+      )} */}
     </div>
   );
 }

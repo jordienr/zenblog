@@ -1,5 +1,5 @@
 import { BlogSelector } from "@/components/Blogs/BlogSelector";
-import { createAPIClient } from "@/lib/app/api";
+import { createAPIClient } from "@/lib/http/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";

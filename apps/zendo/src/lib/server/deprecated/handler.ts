@@ -1,5 +1,5 @@
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
-import { getClientClient } from "../../supabase";
 
 export async function getApiClientDB(
   req: NextApiRequest,
@@ -7,7 +7,7 @@ export async function getApiClientDB(
 ) {
   const key = req.headers["znd-api-key"];
 
-  const db = getClientClient();
+  const db = getSupabaseBrowserClient();
 
   const { data, error } = await db
     .from("api_keys")

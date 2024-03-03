@@ -1,4 +1,3 @@
-import { create } from "zustand";
 import { Blog, DeleteBlogRes, PatchBlog } from "@/lib/models/blogs/Blogs";
 import { z } from "zod";
 import { getPostBySlugRes, getPostsRes } from "../models/posts/Posts";
@@ -37,18 +36,6 @@ export function createAPIClient() {
     }
 
     return result.data;
-  }
-
-  async function getBlogs() {
-    const res = await _fetch("/blogs", { method: "GET" }, z.array(Blog));
-
-    return res;
-  }
-
-  async function getBlog(slug: string) {
-    const res = await _fetch(`/blogs/${slug}`, { method: "GET" }, GetBlogRes);
-
-    return res;
   }
 
   async function deleteBlog(slug: string) {
@@ -151,8 +138,6 @@ export function createAPIClient() {
         ),
     },
     blogs: {
-      get: getBlog,
-      getAll: getBlogs,
       update: patchBlog,
       delete: deleteBlog,
       create: createBlog,
@@ -216,7 +201,6 @@ export function createAPIClient() {
         const body = new FormData();
         body.append("file", file);
 
-        console.log("APIC: ", body);
         return _fetch(
           `/upload`,
           { method: "POST", body: JSON.stringify(body) },
