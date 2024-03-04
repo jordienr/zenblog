@@ -6,7 +6,6 @@ import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { EmojiPicker } from "@/components/EmojiPicker";
-import { Invitations } from "@/components/Blogs/Invitations";
 import { Members } from "@/components/Blogs/Members";
 import { CodeBlock } from "@/components/CodeBlock";
 import { Input } from "@/components/ui/input";
@@ -152,19 +151,6 @@ export default function BlogSettings() {
             </div>
           </form>
         </section>
-
-        {/* <section className="section p-3">
-          <h2 className="text-lg font-medium">Invitations</h2>
-          <p className="text-sm text-slate-500">
-            Invite others to this blog so they can write and manage content.
-          </p>
-          <Invitations blog={blog} />
-        </section> */}
-
-        {/* <section className="section p-3">
-          <h2 className="text-lg font-medium">Members</h2>
-          <Members blog={blog} />
-        </section> */}
 
         <section className="section p-3">
           <h2 className="text-lg font-medium">Integration guide</h2>

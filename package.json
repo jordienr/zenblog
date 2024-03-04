@@ -12,6 +12,7 @@
     "db:stop": "npx supabase stop",
     "db:open": "open http://localhost:54323",
     "db:pull": "npx supabase db pull",
+    "db:diff": "npx supabase db diff -f RENAME_ME",
     "db:local:diff": "npx supabase db diff",
     "qs": "git add . && git commit -m \"quick save\" && git push",
     "stripe:webhook": "stripe listen --forward-to localhost:3000/api/webhooks/stripe",

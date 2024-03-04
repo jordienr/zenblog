@@ -35,11 +35,16 @@ export default function Dashboard() {
             </div>
           )}
           {data?.length === 0 && (
-            <div className="flex flex-col items-center justify-center text-center">
-              <PiPencilLine size="48" className="text-orange-500" />
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="rounded-xl border bg-white p-2 shadow-sm">
+                <PiPencilLine size="48" className="text-orange-500" />
+              </div>
               <h2 className="mt-4 text-2xl">Start by creating a blog</h2>
               <Button asChild className="mt-6">
-                <Link href="/blogs/create">Create blog</Link>
+                <Link href="/blogs/create">
+                  <Plus />
+                  Create blog
+                </Link>
               </Button>
             </div>
           )}

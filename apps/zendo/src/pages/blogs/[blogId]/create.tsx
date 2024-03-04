@@ -10,7 +10,7 @@ export default function CreatePost() {
 
   return (
     <ZendoEditor
-      tags={[]}
+      tags={[]} // initial tags, none when creating a new post.
       onSave={async (content) => {
         const { tags, ...post } = content;
         try {
@@ -25,17 +25,22 @@ export default function CreatePost() {
           }
 
           if (content.tags) {
-            content.tags.forEach((tag_id) => {
-              supa
-                .from("post_tags")
-                .insert({ post_id: data.id, tag_id, blog_id: blogId });
-            });
+            const newTags = content.tags.map((tag: string) => ({
+              tag_id: tag,
+              blog_id: blogId,
+              post_id: data.id,
+            }));
+
+            await supa.from("post_tags").insert(newTags);
           }
           toast.success("Post saved!");
-        } catch (error) {
-          toast.error("Failed to save post");
+        } catch (error: any) {
           console.error(error);
-          throw error;
+          if (error?.code === "23505") {
+            toast.error("A post with that slug already exists");
+            return;
+          }
+          toast.error("Failed to save post");
         }
       }}
     />

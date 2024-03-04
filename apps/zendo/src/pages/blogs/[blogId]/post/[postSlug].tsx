@@ -6,6 +6,7 @@ import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 import { toast } from "sonner";
 import { useBlogTags } from "@/components/Editor/Editor.queries";
 import { usePostQuery, useUpdatePostTagsMutation } from "@/queries/posts";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 export default function Post() {
   const api = createAPIClient();
@@ -15,26 +16,11 @@ export default function Post() {
   const blogId = router.query.blogId as string;
   const postSlug = router.query.postSlug as string;
 
+  const sb = getSupabaseBrowserClient();
+
   const { data: post, isLoading } = usePostQuery(postSlug);
 
   const tags = useBlogTags({ blogId });
-
-  const updatePost = useMutation({
-    mutationFn: (
-      data: Partial<{
-        title: string;
-        published: boolean;
-        slug: string;
-        cover_image?: string;
-        content?: any;
-        metadata?: any;
-      }>
-    ) => api.posts.update(blogId, postSlug, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["posts", blogId, postSlug]);
-    },
-  });
-  const updatePostTags = useUpdatePostTagsMutation({ blog_id: blogId });
 
   if (isLoading || tags.isLoading) {
     return (
@@ -56,17 +42,40 @@ export default function Post() {
     <div className="flex min-h-screen w-full flex-col">
       <ZendoEditor
         onSave={async (data) => {
+          const { tags, ...newData } = data;
           try {
             // TO DO: move this to an rfc
-            await updatePost.mutateAsync(data);
-            await updatePostTags.mutateAsync({
-              postId: post.id,
-              tags: data.tags || [],
-            });
+            const { data: res, error } = await sb
+              .from("posts")
+              .update(newData)
+              .eq("slug", postSlug)
+              .select()
+              .single();
+
+            if (error) {
+              throw error;
+            }
+
+            const newTags = data?.tags?.map((tag: string) => ({
+              tag_id: tag,
+              blog_id: blogId,
+              post_id: post.id,
+            }));
+
+            if (newTags) {
+              await sb.from("post_tags").upsert(newTags);
+            }
+
+            queryClient.invalidateQueries(["posts", blogId, postSlug]);
+
             toast.success("Post saved!");
-          } catch (error) {
-            toast.error("Failed to save post");
+          } catch (error: any) {
             console.error(error);
+            if (error?.code === "23505") {
+              toast.error("A post with that slug already exists");
+              return;
+            }
+            toast.error("Failed to save post");
           }
         }}
         post={post}

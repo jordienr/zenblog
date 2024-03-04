@@ -17,13 +17,8 @@ function useNotifications() {
 
   return useQuery({
     queryKey: ["notifications"],
-    queryFn: async () => {
-      const res = await sb.from("invitations").select("*");
-
-      if (res.error) {
-        throw res.error;
-      }
-      return res.data;
+    queryFn: () => {
+      return [];
     },
   });
 }
@@ -59,11 +54,7 @@ const Notifications = (props: Props) => {
             </div>
           ) : (
             notifications.map((notifications) => {
-              return (
-                <DropdownMenuItem key={notifications.id}>
-                  Invitation
-                </DropdownMenuItem>
-              );
+              return <DropdownMenuItem key={notifications}></DropdownMenuItem>;
             })
           )}
         </DropdownMenuContent>

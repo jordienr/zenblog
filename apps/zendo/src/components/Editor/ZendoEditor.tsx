@@ -50,7 +50,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-type EditorContent = {
+type OnSaveData = {
   content?: any;
   title: string;
   slug: string;
@@ -61,7 +61,7 @@ type EditorContent = {
 };
 
 type Props = {
-  onSave: (data: EditorContent) => Promise<void>;
+  onSave: (data: OnSaveData) => Promise<void>;
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
   tags: string[];
@@ -98,10 +98,6 @@ export const ZendoEditor = (props: Props) => {
   const blogQuery = useBlogQuery(blogId);
 
   const title = watch("title");
-
-  useEffect(() => {
-    setValue("slug", generateSlug(title || ""));
-  }, [title, setValue]);
 
   const editor = useEditor({
     content: (props.post?.content as any) || "",
@@ -147,29 +143,22 @@ export const ZendoEditor = (props: Props) => {
       return;
     }
     const content = editor?.getJSON() || {};
-    const slugHasChanged = data.slug !== props.post?.slug;
     const { title, slug } = data;
 
     if (!title || !slug) {
       toast.error("Title and slug are required");
       return;
     }
-    try {
-      await props.onSave({
-        content,
-        title: data.title,
-        slug: data.slug,
-        cover_image: data.cover_image || "",
-        published: data.published,
-        metadata,
-        tags,
-      });
-    } catch (error) {
-      return;
-    }
-    if (slugHasChanged) {
-      router.push(`/blogs/${blogId}/post/${data.slug}`);
-    }
+
+    props.onSave({
+      content,
+      title: data.title,
+      slug: data.slug,
+      cover_image: data.cover_image || "",
+      published: data.published,
+      metadata,
+      tags,
+    });
   });
 
   function onCoverImageSelect(image: string) {

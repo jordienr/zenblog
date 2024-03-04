@@ -27,8 +27,11 @@ export const useBlogsQuery = () =>
   useQuery(
     keys.blogs(),
     async () => {
-      const res = await sb.from("blogs").select("*");
-      return res.data;
+      const { data, error } = await sb.from("blogs").select("*");
+      if (error) {
+        throw error;
+      }
+      return data;
     },
     {
       staleTime: 1000 * 60 * 5, // 5 minutes
@@ -38,10 +41,17 @@ export const useBlogsQuery = () =>
 
 export const useCreateBlogMutation = () => {
   const queryClient = useQueryClient();
+  const supa = getSupabaseBrowserClient();
 
-  return useMutation(api.blogs.create, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(keys.blogs());
+  return useMutation(
+    async (newBlog: { title: string; description: string; emoji: string }) => {
+      const res = await supa.from("blogs").insert(newBlog).select().single();
+      return res.data;
     },
-  });
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(keys.blogs());
+      },
+    }
+  );
 };

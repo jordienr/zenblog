@@ -66,7 +66,6 @@ export const useUpdatePostTagsMutation = ({ blog_id }: { blog_id: string }) => {
         throw deleteError;
       }
 
-      // then, upsert the new tags
       const { data, error } = await sb.from("post_tags").upsert(
         tags.map((tag) => ({
           post_id: postId,
@@ -75,7 +74,6 @@ export const useUpdatePostTagsMutation = ({ blog_id }: { blog_id: string }) => {
         })),
         { onConflict: "post_id, tag_id, blog_id" }
       );
-      console.log(data);
 
       if (error) {
         console.error(error);
