@@ -6,7 +6,7 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, PenLine, PlusIcon, TagIcon, Trash } from "lucide-react";
+import { MoreVertical, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,7 @@ import { useBlogQuery } from "@/queries/blogs";
 import { formatDate } from "@/lib/utils";
 import { PiGear, PiPencilLine, PiTag, PiTrash } from "react-icons/pi";
 import Spinner from "@/components/Spinner";
+import { useState } from "react";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -42,6 +43,7 @@ export function StatePill({ published }: { published: boolean }) {
 export default function BlogPosts() {
   const router = useRouter();
   const blogId = router.query.blogId as string;
+  const [tab, setTab] = useState("posts");
 
   const api = createAPIClient();
   const { data: blog, isLoading: blogLoading } = useBlogQuery(blogId);
@@ -78,12 +80,16 @@ export default function BlogPosts() {
             </h1>
           </div>
 
-          <Tabs defaultValue={"posts"}>
+          <Tabs value={tab} onValueChange={setTab}>
             <div className="flex items-center justify-between">
               <TabsList>
                 <TabsTrigger value="posts">Posts</TabsTrigger>
-                <TabsTrigger value="media">Media</TabsTrigger>
-                <TabsTrigger value="tags">Tags</TabsTrigger>
+                <TabsTrigger onClick={() => {}} value="media">
+                  Media
+                </TabsTrigger>
+                <TabsTrigger onClick={() => {}} value="tags">
+                  Tags
+                </TabsTrigger>
               </TabsList>
               <div className="flex items-center gap-2">
                 <Button asChild size="icon" variant={"ghost"}>
