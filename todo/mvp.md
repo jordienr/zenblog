@@ -5,10 +5,15 @@
 - [x] License
 - [] FAQ on homepage
 - [] Update README
-- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, etc.
+- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, etc.
 - [] email provider
 - [x] supabase spend cap
 - [x] Cloudflare ddos protection
+
+## Free tier
+
+- [] limit to 1 blog
+- [] 1 user
 
 ## Bugs & Improvements
 
@@ -23,6 +28,7 @@
 
 ## Blogs
 
+- Integration guide
 - [x] Create blog
 - [x] Edit blog
 - [x] Delete blog
@@ -31,11 +37,11 @@
 - [x] Make description optional
 - [x] Add emoji picker to Create Blog
 - [x] Redirect to blog after creating it
-- Integration guide
 
 ## Posts
 
 - [] See "published at" and "updated at" dates in post list
+- [] change published date in post settings
 - [x] View all posts
 - [x] Create post
 - [x] View post

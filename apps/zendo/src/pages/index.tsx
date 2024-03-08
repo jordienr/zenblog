@@ -50,7 +50,7 @@ const Home = () => {
       </Head>
       <div className="bg-zinc-50">
         <div className="mx-auto flex max-w-3xl flex-col">
-          <nav className="flex items-center justify-between p-3">
+          <nav className="flex items-center justify-between p-5">
             <div className="flex-grow cursor-default">
               <ZendoLogo />
             </div>
@@ -68,7 +68,7 @@ const Home = () => {
               <Link
                 target="_blank"
                 href="https://twitter.com/zenbloghq"
-                className="flex items-center justify-center rounded-full p-2 text-lg text-blue-500 transition-all hover:bg-blue-100"
+                className="flex items-center justify-center rounded-full p-2 text-lg  transition-all hover:text-black"
                 title="Follow us on Twitter"
                 aria-label="Follow us on Twitter"
               >
@@ -105,43 +105,36 @@ const Home = () => {
 
           <main className="px-4 font-sans">
             <div className="mx-auto mt-12">
-              <div className="mx-1">
+              <div className="">
                 <Link
-                  className="highlight-zinc-700 group inline-flex items-center gap-1 rounded-full border border-zinc-800 bg-gradient-to-b from-zinc-900 to-zinc-600 px-3 py-1 text-xs text-zinc-100 transition-all hover:text-amber-300"
+                  className="group inline-flex items-center gap-1 rounded-lg   bg-zinc-200/70 px-3 py-1 font-mono text-xs font-medium text-zinc-700 transition-all "
                   target="_blank"
-                  href="https://github.com/jordienr/zenblog"
+                  href="https://git.new/zenblog"
                 >
-                  {/* <StarIcon
-                    size="15"
-                    className="mr-1 text-zinc-300 group-hover:text-amber-200"
-                  /> */}
-                  <HiStar
-                    size="15"
-                    className="text-zinc-300 group-hover:text-amber-200"
-                  />
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-4 bg-gradient-to-b from-zinc-800 via-zinc-500 to-zinc-800 bg-clip-text text-5xl font-medium tracking-tight text-transparent md:text-5xl">
-                Add a blog to your <br /> website{" "}
-                <span className="bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent">
-                  in 2 minutes
-                </span>
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+                think, write & publish.
               </h1>
-              <div className="text-lg font-light text-zinc-500">
-                <div className="mt-4">
-                  <ul className="space-y-3">
-                    <li>Open source.</li>
-                    <li>Headless, works with any stack.</li>
-                    <li>Type safe content.</li>
-                    <li>Great editing experience.</li>
-                    <li>Easy to extend.</li>
-                    <li>Gets you up and running in 2 minutes.</li>
-                  </ul>
-                </div>
+              <div className="text-lg font-light leading-8 text-zinc-600">
+                <p className="mt-8 max-w-sm">
+                  Zenblog is a headless CMS for blogging. It was built with
+                  developers and writers in mind. It allows you to fetch your
+                  content easily and is fully typesafe. The UI is minimal and
+                  clean. It&apos;s open source. Hosts images for you.
+                </p>
+
+                <h2 className="mt-8 font-medium text-black">Why?</h2>
+                <p className="mt-4 max-w-sm">
+                  I wanted the developer experience of Supabase, where you
+                  create a database and connect to it with a fully typed client
+                  in minutes. But I also wanted the writing experience of tools
+                  like Substack or Medium.
+                </p>
               </div>
             </div>
-            <hr className="my-12" />
+            <hr className="my-11" />
             {!hasSubmitted && (
               <form
                 className="mt-6 flex max-w-sm flex-col gap-2 py-2 pb-12"

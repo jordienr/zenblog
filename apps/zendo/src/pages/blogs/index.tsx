@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { PiPencilLine } from "react-icons/pi";
 import { useEffect } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 
 export default function Dashboard() {
   const { data, error, isLoading } = useBlogsQuery();
@@ -21,8 +21,8 @@ export default function Dashboard() {
           <div className="flex items-center justify-between p-3">
             <h1 className="text-xl font-semibold">My blogs</h1>
             <div>
-              <Button asChild>
-                <Link className="btn" href="/blogs/create">
+              <Button variant="outline" asChild>
+                <Link href="/blogs/create">
                   <Plus />
                   Create blog
                 </Link>
@@ -52,7 +52,7 @@ export default function Dashboard() {
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border border-b-2 bg-white shadow-sm transition-all hover:border-orange-400"
+                  className="group rounded-xl border border-b-2 bg-white transition-all"
                   key={blog.id}
                 >
                   <Link
@@ -82,7 +82,7 @@ export default function Dashboard() {
                         title="Settings"
                         aria-label="Settings"
                       >
-                        <IoSettingsSharp size="24" />
+                        <Settings size="24" />
                       </Button>
                       <Button
                         variant={"secondary"}

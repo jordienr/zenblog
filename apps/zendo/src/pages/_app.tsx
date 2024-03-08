@@ -34,7 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div className={`${ibmPlexMono.variable} ${inter.variable}`}>
       <UserProvider>
-        <PlausibleProvider domain="zendo.blog">
+        <PlausibleProvider domain="zenblog.com">
           <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <Component key={pathname} {...pageProps} />

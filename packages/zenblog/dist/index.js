@@ -18,7 +18,7 @@ function getConfig(url) {
         };
     }
     return {
-        api: "https://zenblog.com/api/public",
+        api: "https://www.zenblog.com/api/public",
     };
 }
 function throwError(msg, ...args) {
@@ -32,12 +32,15 @@ function createClient({ blogId, _url, debug }) {
     async function _fetch(path, opts) {
         try {
             const URL = `${config.api}/${blogId}/${path}`;
+            console.log("URL", URL);
             log("fetching ", URL, opts);
             const res = await fetch(URL, opts);
             const json = await res.json();
-            if (res.headers.get("zenblog-subscription-status") === "inactive") {
-                throwError("Zenblog subscription is inactive. Go to https://zenblog.com to subscribe.");
-            }
+            // if (res.headers.get("zenblog-subscription-status") === "inactive") {
+            //   throwError(
+            //     "Zenblog subscription is inactive. Go to https://zenblog.com to subscribe."
+            //   );
+            // }
             log("res", {
                 status: res.status,
                 statusText: res.statusText,
@@ -68,16 +71,7 @@ function createClient({ blogId, _url, debug }) {
                     cache: opts?.cache || "default",
                 });
                 log("posts.getAll", posts);
-                const normalizedPosts = posts.map((post) => {
-                    return {
-                        slug: post.slug,
-                        title: post.title,
-                        created_at: post.created_at,
-                        updated_at: post.updated_at,
-                        cover_image: post.cover_image,
-                    };
-                });
-                return normalizedPosts; // to do: validate
+                return posts; // to do: validate
             },
             getBySlug: async function (slug, opts) {
                 const post = await _fetch(`post/${slug}`, {

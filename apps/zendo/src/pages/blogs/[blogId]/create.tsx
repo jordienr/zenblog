@@ -10,6 +10,7 @@ export default function CreatePost() {
 
   return (
     <ZendoEditor
+      autoCompleteSlug={true}
       tags={[]} // initial tags, none when creating a new post.
       onSave={async (content) => {
         const { tags, ...post } = content;

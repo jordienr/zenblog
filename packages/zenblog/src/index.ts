@@ -17,7 +17,7 @@ function getConfig(url?: string): { api: string } {
     };
   }
   return {
-    api: "https://zenblog.com/api/public",
+    api: "https://www.zenblog.com/api/public",
   };
 }
 
@@ -45,7 +45,7 @@ export type CreateClientOpts = {
   debug?: boolean;
 };
 
-export function createClient({ blogId, _url, debug }: CreateClientOpts) {
+export function createClient<T>({ blogId, _url, debug }: CreateClientOpts) {
   const config = getConfig(_url);
   const log = createDebugger(debug || false);
   log("createClient ", config);
@@ -53,16 +53,17 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
   async function _fetch(path: string, opts: RequestInit) {
     try {
       const URL = `${config.api}/${blogId}/${path}`;
+      console.log("URL", URL);
 
       log("fetching ", URL, opts);
       const res = await fetch(URL, opts);
       const json = await res.json();
 
-      if (res.headers.get("zenblog-subscription-status") === "inactive") {
-        throwError(
-          "Zenblog subscription is inactive. Go to https://zenblog.com to subscribe."
-        );
-      }
+      // if (res.headers.get("zenblog-subscription-status") === "inactive") {
+      //   throwError(
+      //     "Zenblog subscription is inactive. Go to https://zenblog.com to subscribe."
+      //   );
+      // }
       log("res", {
         status: res.status,
         statusText: res.statusText,
@@ -100,17 +101,8 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
         });
         log("posts.getAll", posts);
 
-        const normalizedPosts = posts.map((post: any) => {
-          return {
-            slug: post.slug,
-            title: post.title,
-            created_at: post.created_at,
-            updated_at: post.updated_at,
-            cover_image: post.cover_image,
-          };
-        });
-
-        return normalizedPosts as Post[]; // to do: validate
+        type PostWithT = Post & T;
+        return posts as PostWithT[]; // to do: validate
       },
       getBySlug: async function (
         slug: string,
@@ -126,7 +118,7 @@ export function createClient({ blogId, _url, debug }: CreateClientOpts) {
 
         log("posts.getBySlug", post);
 
-        return post as PostWithContent; // to do: validate
+        return post as PostWithContent & T; // to do: validate
       },
     },
   };

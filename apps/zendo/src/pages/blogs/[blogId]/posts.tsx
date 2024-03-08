@@ -6,7 +6,7 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Trash } from "lucide-react";
+import { MoreVertical, Plus, Settings, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -100,7 +100,7 @@ export default function BlogPosts() {
                     aria-label="Settings"
                   >
                     <div className="sr-only">Settings</div>
-                    <PiGear size="24" />
+                    <Settings size="24" />
                   </Link>
                 </Button>
 
@@ -109,7 +109,7 @@ export default function BlogPosts() {
                     href={`/blogs/${blog.id}/create`}
                     className="btn btn-secondary max-w-[120px]"
                   >
-                    <PiPencilLine size="16" />
+                    <Plus size="16" />
                     New post
                   </Link>
                 </Button>

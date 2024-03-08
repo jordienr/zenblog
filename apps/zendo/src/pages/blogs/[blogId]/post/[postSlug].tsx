@@ -66,7 +66,13 @@ export default function Post() {
               await sb.from("post_tags").upsert(newTags);
             }
 
-            queryClient.invalidateQueries(["posts", blogId, postSlug]);
+            queryClient.invalidateQueries([
+              "posts",
+              "post",
+              blogId,
+              postSlug,
+              "tags",
+            ]);
 
             toast.success("Post saved!");
           } catch (error: any) {

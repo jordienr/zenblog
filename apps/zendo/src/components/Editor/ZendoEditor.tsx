@@ -65,6 +65,7 @@ type Props = {
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
   tags: string[];
+  autoCompleteSlug?: boolean;
 };
 
 export const ZendoEditor = (props: Props) => {
@@ -98,6 +99,12 @@ export const ZendoEditor = (props: Props) => {
   const blogQuery = useBlogQuery(blogId);
 
   const title = watch("title");
+
+  useEffect(() => {
+    if (props.autoCompleteSlug) {
+      setValue("slug", generateSlug(title));
+    }
+  }, [title, props.autoCompleteSlug, setValue]);
 
   const editor = useEditor({
     content: (props.post?.content as any) || "",

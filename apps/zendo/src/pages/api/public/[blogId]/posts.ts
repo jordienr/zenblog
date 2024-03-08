@@ -8,65 +8,31 @@ export default async function handler(
   try {
     const db = createAdminClient();
     const blogId = req.query.blogId || "";
+    const withContent = req.query.withContent || false;
 
-    const blogPromise = db
-      .from("blogs")
-      .select("user_id")
-      .eq("id", blogId)
-      .single();
+    if (!blogId) {
+      return res.status(400).json({ error: "NO BLOG ID PROVIDED" });
+    }
 
-    const postsPromise = db
-      .from("posts")
-      .select("slug, title, cover_image, created_at, updated_at")
+    const { data, error } = await db
+      .from("posts_with_blog_and_subscription_status")
+      .select(
+        `title, ${
+          withContent ? "content, " : ""
+        } cover_image, metadata,updated_at,slug,tags`
+      )
       .eq("blog_id", blogId)
-      .eq("published", true);
+      .eq("published", true)
+      .eq("deleted", false)
+      .eq("subscription_status", "active")
+      .order("created_at", { ascending: false });
 
-    const [blogResult, postsResult] = await Promise.all([
-      blogPromise,
-      postsPromise,
-    ]);
-
-    const { data: blog, error: blogError } = blogResult;
-    const { data: posts, error: postsError } = postsResult;
-
-    if (blogError) {
-      console.error(blogError);
-      return res.status(500).json({ error: "ERROR FETCHING BLOG", blogError });
-    }
-    if (postsError) {
-      console.error(postsError);
-      return res
-        .status(500)
-        .json({ error: "ERROR FETCHING POSTS", postsError });
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: "ERROR FETCHING BLOG" });
     }
 
-    const ownerId = blog?.user_id;
-
-    if (!ownerId) {
-      return res.status(500).json({ error: "OWNER ID NOT FOUND" });
-    }
-
-    const { data: subscription, error: subscriptionError } = await db
-      .from("subscriptions")
-      .select("status")
-      .eq("user_id", ownerId)
-      .single();
-
-    if (subscriptionError) {
-      console.error(subscriptionError);
-      return res
-        .status(500)
-        .json({ error: "ERROR FETCHING SUBSCRIPTION", subscriptionError });
-    }
-
-    if (subscription?.status !== "active") {
-      // If the subscription is not active, return no posts
-      res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
-      res.setHeader("zenblog-subscription-status", "inactive");
-      return res.status(200).json([]);
-    }
-
-    return res.status(200).json(posts);
+    return res.status(200).json(data);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "ERROR TRYING TO RETURN POSTS" });

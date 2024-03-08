@@ -14,7 +14,7 @@ export type CreateClientOpts = {
     _url?: string;
     debug?: boolean;
 };
-export declare function createClient({ blogId, _url, debug }: CreateClientOpts): {
+export declare function createClient<T>({ blogId, _url, debug }: CreateClientOpts): {
     posts: {
         getAll: (opts?: {
             cache?: RequestInit["cache"];

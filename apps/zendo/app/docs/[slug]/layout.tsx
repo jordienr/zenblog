@@ -8,6 +8,7 @@ import React, { PropsWithChildren } from "react";
 
 type Props = {};
 
+export const dynamic = "force-dynamic";
 const layout = async ({
   children,
   params,
@@ -17,6 +18,10 @@ const layout = async ({
   };
 }>) => {
   const posts = await docs.posts.getAll();
+
+  // const sortedPosts = posts.sort((a, b) => {
+  //   return a.metadata - b.metadata.order;
+  // });
 
   return (
     <div className="mx-auto flex max-h-screen max-w-6xl">
@@ -36,6 +41,7 @@ const layout = async ({
               key={post.slug}
               href={"/docs/" + post.slug}
             >
+              <pre>{JSON.stringify(post)}</pre>
               <ArrowRight
                 className="mr-1 inline-block text-inherit opacity-60"
                 size={16}
