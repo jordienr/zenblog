@@ -8,7 +8,7 @@ import React, { PropsWithChildren } from "react";
 
 type Props = {};
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 const layout = async ({
   children,
   params,
@@ -18,10 +18,6 @@ const layout = async ({
   };
 }>) => {
   const posts = await docs.posts.getAll();
-
-  // const sortedPosts = posts.sort((a, b) => {
-  //   return a.metadata - b.metadata.order;
-  // });
 
   return (
     <div className="mx-auto flex max-h-screen max-w-6xl">

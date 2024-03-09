@@ -116,7 +116,7 @@ export default function BlogPosts() {
               </div>
             </div>
             <TabsContent value="posts">
-              <div className="mt-2 rounded-xl border bg-white py-2 shadow-sm">
+              <div className="mt-2 rounded-xl border border-b-2 bg-white py-2">
                 {posts.length === 0 && (
                   <div className="p-12 py-32 text-center">
                     <div className="text-2xl">✏️</div>

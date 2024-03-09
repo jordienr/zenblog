@@ -13,17 +13,6 @@ module.exports = {
     "./src/**/*.{ts,tsx}",
   ],
   theme: {
-    // fontWeight: {
-    //   thin: '100',
-    //   extralight: '200',
-    //   light: '300',
-    //   normal: '400',
-    //   medium: '500',
-    //   thicc: '600',
-    //   thiccc: '700',
-    //   thicccc: '800',
-    //   thiccccc: '900',
-    // },
     border: {
       DEFAULT: "0.3px solid var(--border-color)",
       1: "1px",

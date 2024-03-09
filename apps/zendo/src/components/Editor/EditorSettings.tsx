@@ -12,12 +12,15 @@ type MetadataItem = {
 type Props = {
   metadata?: MetadataItem[];
   selectedTags: string[];
+  published_at?: string;
   onChange: ({
     metadata,
     tags,
+    published_at,
   }: {
     metadata: MetadataItem[];
     tags: string[];
+    published_at?: string;
   }) => void;
 };
 
@@ -57,9 +60,23 @@ const EditorSettings = (props: Props) => {
   };
 
   return (
-    <div className="prose-sm prose-h2:font-bold prose-h2:text-sm">
+    <div className="prose prose-h2:font-medium prose-h2:text-sm prose-h2:font-mono">
+      <section className="mt-2">
+        <h2 className="mt-2 border-b pb-2">Published date</h2>
+        <Input
+          type="date"
+          name="published_at"
+          onChange={(e) => {
+            props.onChange({
+              tags: selectedTags,
+              metadata,
+              published_at: e.target.value,
+            });
+          }}
+        />
+      </section>
       <section>
-        <h2 className="m-0 border-b pb-2">Custom metadata</h2>
+        <h2 className="m-0 mt-8 border-b pb-2">Custom metadata</h2>
 
         <div className="text-sm font-medium text-slate-700">
           <div className="flex items-center py-2 text-xs text-slate-500 *:p-1">
