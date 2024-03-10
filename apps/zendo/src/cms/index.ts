@@ -1,8 +1,9 @@
 import { createClient } from "zenblog";
 
+const blogId = process.env.ZENBLOG_BLOG_ID || "";
 export const getBlogClient = () => {
   const blog = createClient({
-    blogId: "fc966b9f-419c-4c40-a941-c1122cac8875",
+    blogId: blogId,
     _url: process.env.NEXT_PUBLIC_API_URL + "/public",
     debug: true,
   });
@@ -10,6 +11,7 @@ export const getBlogClient = () => {
   return blog;
 };
 
+const docsId = process.env.ZENBLOG_DOCS_ID || "";
 export const docs = createClient<{ metadata: { order: number } }>({
-  blogId: "12cc7bb4-4ea8-452d-a17d-5a15b148ae33",
+  blogId: docsId,
 });
