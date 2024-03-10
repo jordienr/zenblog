@@ -3,7 +3,7 @@ import { createClient } from "zenblog";
 export const getBlogClient = () => {
   const blog = createClient({
     blogId: "fc966b9f-419c-4c40-a941-c1122cac8875",
-    _url: "http://localhost:3000/api/public",
+    _url: process.env.NEXT_PUBLIC_API_URL + "/public",
     debug: true,
   });
 

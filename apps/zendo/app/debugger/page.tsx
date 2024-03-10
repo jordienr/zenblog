@@ -6,7 +6,7 @@ type Props = {};
 const index = async (props: Props) => {
   const cms = createClient({
     blogId: "673a21e5-145f-4c7f-815d-5627ac681f8e",
-    _url: "http://localhost:3000/api/public",
+    _url: `${process.env.NEXT_PUBLIC_API_URL}/public`,
   });
 
   const posts = await cms.posts.getAll();

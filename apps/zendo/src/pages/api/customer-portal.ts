@@ -91,7 +91,7 @@ const handler: NextApiHandler = async (req, res) => {
     const session = await stripe.billingPortal.sessions.create({
       customer: customer.id,
       configuration: configuration.id,
-      return_url: "http://localhost:3000/account",
+      return_url: process.env.NEXT_PUBLIC_API_URL + "/account",
     });
     res.status(200).json({ session: session.url });
   } catch (error) {
