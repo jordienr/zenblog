@@ -29,6 +29,11 @@
 ## Blogs
 
 - Integration guide
+
+  - [] instruct users to keep the blog id private.
+  - [] allow users to rotate the blog id?
+  - [] Recommend users to cache content
+
 - [x] Create blog
 - [x] Edit blog
 - [x] Delete blog
