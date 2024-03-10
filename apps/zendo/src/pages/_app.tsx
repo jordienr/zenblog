@@ -43,7 +43,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 toastOptions={{
                   style: {
                     background: "red",
-                    borderRadius: "100px",
+                    borderRadius: "12px",
                     backgroundColor: "#333333",
                     color: "white",
                     padding: "10px 12px",

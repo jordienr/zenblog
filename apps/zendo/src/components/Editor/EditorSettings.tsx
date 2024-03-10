@@ -60,9 +60,9 @@ const EditorSettings = (props: Props) => {
   };
 
   return (
-    <div className="prose prose-h2:font-medium prose-h2:text-sm prose-h2:font-mono">
+    <div className="[&_h2]:font-mono [&_h2]:text-sm">
       <section className="mt-2">
-        <h2 className="mt-2 border-b pb-2">Published date</h2>
+        <h2 className="mt-2 pb-2 font-mono">Published date</h2>
         <Input
           type="date"
           name="published_at"
@@ -76,7 +76,7 @@ const EditorSettings = (props: Props) => {
         />
       </section>
       <section>
-        <h2 className="m-0 mt-8 border-b pb-2">Custom metadata</h2>
+        <h2 className="m-0 mt-8 border-b pb-2 font-mono">Custom metadata</h2>
 
         <div className="text-sm font-medium text-slate-700">
           <div className="flex items-center py-2 text-xs text-slate-500 *:p-1">
@@ -100,8 +100,8 @@ const EditorSettings = (props: Props) => {
                     post from your website.
                   </p>
                 </div>
-                <pre className="rounded-lg border p-2 text-zinc-600">
-                  <code>{JSON.stringify(metadata, null, 2)}</code>
+                <pre className="rounded-lg border p-2 font-mono text-zinc-600">
+                  {JSON.stringify(metadata, null, 2)}
                 </pre>
               </DialogContent>
             </Dialog>

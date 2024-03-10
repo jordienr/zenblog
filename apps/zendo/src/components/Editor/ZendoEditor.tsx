@@ -372,11 +372,14 @@ export const ZendoEditor = (props: Props) => {
           />
           <div>
             {tags.length > 0 && (
-              <div className="flex gap-1">
+              <div className="flex items-center gap-1">
+                <span className="mx-1 font-mono text-xs font-medium text-zinc-500">
+                  Tags
+                </span>
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-md border bg-zinc-100 px-2 py-1 font-mono text-xs font-medium"
+                    className="rounded-full border bg-zinc-100 px-2 py-1 font-mono text-xs font-medium"
                   >
                     {blogTags.data?.find((t) => t.id === tag)?.name}
                   </span>

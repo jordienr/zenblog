@@ -34,8 +34,8 @@ const TagSelect = (props: Props) => {
   return (
     <div>
       <div>
-        <div className="flex items-center justify-between border-b">
-          <h2 className="mb-0 pb-2">Tags</h2>
+        <div className="flex items-center justify-between border-b pb-2">
+          <h2 className="mb-0 font-mono">Tags</h2>
           <Dialog>
             <DialogTrigger asChild>
               <Button
