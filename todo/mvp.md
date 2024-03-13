@@ -2,8 +2,9 @@
 
 ## General
 
+- [] bug when adding a second tag to a post
 - [x] License
-- [] FAQ on homepage
+- [] FAQ on homepage?
 - [] Update README
 - [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, etc.
 - [] email provider
@@ -45,6 +46,7 @@
 
 ## Posts
 
+- [] When uploading an image, it would be nice if you could rename it before uploading.
 - [] See "published at" and "updated at" dates in post list
 - [] change published date in post settings
 - [x] View all posts

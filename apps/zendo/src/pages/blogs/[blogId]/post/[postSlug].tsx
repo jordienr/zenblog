@@ -5,11 +5,10 @@ import Spinner from "@/components/Spinner";
 import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 import { toast } from "sonner";
 import { useBlogTags } from "@/components/Editor/Editor.queries";
-import { usePostQuery, useUpdatePostTagsMutation } from "@/queries/posts";
+import { usePostQuery } from "@/queries/posts";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 export default function Post() {
-  const api = createAPIClient();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -18,11 +17,11 @@ export default function Post() {
 
   const sb = getSupabaseBrowserClient();
 
-  const { data: post, isLoading } = usePostQuery(postSlug);
+  const { data: post, isLoading, isRefetching } = usePostQuery(postSlug);
 
   const tags = useBlogTags({ blogId });
 
-  if (isLoading || tags.isLoading) {
+  if (isLoading || tags.isLoading || isRefetching) {
     return (
       <div className="flex-center p-12">
         <Spinner />
@@ -63,7 +62,9 @@ export default function Post() {
             }));
 
             if (newTags) {
-              await sb.from("post_tags").upsert(newTags);
+              await sb.from("post_tags").upsert(newTags, {
+                onConflict: "tag_id, post_id, blog_id",
+              });
             }
 
             queryClient.invalidateQueries([
@@ -73,6 +74,8 @@ export default function Post() {
               postSlug,
               "tags",
             ]);
+
+            queryClient.refetchQueries(["posts", "post", blogId, postSlug]);
 
             toast.success("Post saved!");
           } catch (error: any) {

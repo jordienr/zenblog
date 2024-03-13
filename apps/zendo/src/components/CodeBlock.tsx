@@ -20,11 +20,11 @@ export const CodeBlock = ({
   });
 
   return (
-    <div className="rounded-lg bg-slate-900 font-mono text-white">
-      <div className="flex items-center justify-between px-2">
-        <h2 className="text-xs text-slate-300">{title || language}</h2>
-        <button onClick={copy} className="p-2 text-slate-300">
-          {isCopied ? <Check size="18" /> : <Clipboard size="18" />}
+    <div className="rounded-lg bg-zinc-900 font-mono text-white">
+      <div className="flex items-center justify-between pl-2">
+        <h2 className="text-xs text-zinc-300">{title || language}</h2>
+        <button onClick={copy} className="p-2 text-zinc-400">
+          {isCopied ? <Check size="15" /> : <Clipboard size="15" />}
         </button>
       </div>
       <SyntaxHighlighter
