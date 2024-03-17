@@ -168,6 +168,19 @@ export const ZendoEditor = (props: Props) => {
     });
   });
 
+  const [hasChanges, setHasChanges] = React.useState(false);
+
+  useEffect(() => {
+    const propsTagsStr = props.tags?.join(",");
+    const tagsStr = tags.join(",");
+    setHasChanges(propsTagsStr !== tagsStr);
+
+    editor?.on("transaction", (ctx) => {
+      const hasChanged = ctx.transaction.docChanged;
+      setHasChanges(hasChanged);
+    });
+  }, [editor, props.tags, tags, props.post?.content]);
+
   function onCoverImageSelect(image: string) {
     setCoverImgUrl(image);
     setValue("cover_image", image);
@@ -302,7 +315,7 @@ export const ZendoEditor = (props: Props) => {
               ></EditorSettings>
             </SheetContent>
           </Sheet>
-          <Button type="submit">
+          <Button type="submit" variant={hasChanges ? "default" : "outline"}>
             <SaveIcon size={16} />
             Save
           </Button>
