@@ -30,6 +30,7 @@ export default function Post() {
   }
 
   if (!post) {
+    router.push(`/blogs/${blogId}/posts`);
     return (
       <div className="flex-center p-12">
         <h1>Post not found</h1>
@@ -78,6 +79,8 @@ export default function Post() {
             queryClient.refetchQueries(["posts", "post", blogId, postSlug]);
 
             toast.success("Post saved!");
+            // Redirect in case the slug changed
+            router.push(`/blogs/${blogId}/post/${data.slug}`);
           } catch (error: any) {
             console.error(error);
             if (error?.code === "23505") {

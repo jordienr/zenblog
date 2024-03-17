@@ -128,7 +128,7 @@ export default function BlogPosts() {
                         href={`/blogs/${blog.id}/create`}
                         className="btn btn-primary mx-auto mt-4 max-w-xs"
                       >
-                        Create your first post
+                        Publish your first post
                       </Link>
                     </Button>
                   </div>
@@ -137,7 +137,7 @@ export default function BlogPosts() {
                   return (
                     <Link
                       href={`/blogs/${blogId}/post/${post.slug}`}
-                      className="flex items-center gap-4 rounded-sm p-3 hover:bg-zinc-100/50"
+                      className="flex items-center gap-4 rounded-sm p-3 ring-orange-300 transition-all  hover:ring-1"
                       key={post.slug}
                     >
                       {post.cover_image && (

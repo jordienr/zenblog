@@ -148,11 +148,8 @@ export default function CreateBlog() {
           </div>
         )}
         {!createBlog.isSuccess && (
-          <div className="rounded-xl border bg-white p-4 shadow-sm">
-            <div className="text-center text-3xl">🚀</div>
-            <h1 className="mt-1 text-center text-2xl font-semibold">
-              Create a blog
-            </h1>
+          <div className="section p-4">
+            <h1 className="mb-4 mt-1 text-xl font-semibold">Create a blog</h1>
             <form
               className="flex flex-col gap-4"
               onSubmit={handleSubmit(onSubmit)}

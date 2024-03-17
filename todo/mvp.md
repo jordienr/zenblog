@@ -2,7 +2,7 @@
 
 ## General
 
-- [] bug when adding a second tag to a post
+- [x] bug when adding a second tag to a post
 - [x] License
 - [] FAQ on homepage?
 - [] Update README
@@ -23,7 +23,7 @@
 
 ## Pricing
 
-- [] Add pricing page
+- [] Add pricing page?
 - [x] Sync products between Stripe and Supabase
 - [x] Sync subscriptions between Stripe and Supabase
 

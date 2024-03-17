@@ -5,7 +5,8 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { Plus } from "lucide-react";
+import { Plus, Wand } from "lucide-react";
+import { generateSlug } from "@/lib/utils/slugs";
 
 type Props = {
   selectedTags: string[];
@@ -17,6 +18,9 @@ const TagSelect = (props: Props) => {
   const blogId = router.query.blogId as string;
   const tags = useBlogTags({ blogId });
   const createTag = useCreateBlogTag();
+
+  const [title, setTitle] = React.useState("");
+  const [slug, setSlug] = React.useState("");
 
   const [selectedTags, setSelectedTags] = React.useState<string[]>(
     props.selectedTags || []
@@ -33,7 +37,7 @@ const TagSelect = (props: Props) => {
 
   return (
     <div>
-      <div>
+      <div className="">
         <div className="flex items-center justify-between border-b pb-2">
           <h2 className="mb-0 font-mono">Tags</h2>
           <Dialog>
@@ -76,14 +80,29 @@ const TagSelect = (props: Props) => {
                   type="text"
                   placeholder="Name"
                   required
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    setSlug(generateSlug(e.target.value));
+                  }}
                 />
-                <Input
-                  autoComplete="off"
-                  name="slug"
-                  type="text"
-                  placeholder="Slug"
-                  required
-                />
+                <div className="flex items-center gap-1">
+                  <Input
+                    autoComplete="off"
+                    name="slug"
+                    type="text"
+                    className="font-mono"
+                    placeholder="Slug"
+                    required
+                    value={slug}
+                    onChange={(e) => {
+                      // if the user writes a space, we should replace it with a dash
+                      const value = e.target.value.replace(/\s/g, "-");
+                      setSlug(value);
+                    }}
+                  />
+                </div>
+
                 <Button type="submit">Create Tag</Button>
               </form>
             </DialogContent>
@@ -95,7 +114,7 @@ const TagSelect = (props: Props) => {
           <div className="mt-2 grid grid-cols-3 gap-2">
             {tags.data?.map((tag) => (
               <label
-                className="inline-flex items-center gap-1 rounded-md p-1 hover:bg-zinc-100"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-transparent px-2 py-1 transition-all hover:bg-zinc-100 has-[:checked]:border-orange-300 has-[:checked]:bg-orange-50"
                 key={tag.id}
               >
                 <input

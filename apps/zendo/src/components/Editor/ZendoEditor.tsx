@@ -64,7 +64,7 @@ type Props = {
   onSave: (data: OnSaveData) => Promise<void>;
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
-  tags: string[];
+  tags?: string[];
   autoCompleteSlug?: boolean;
 };
 

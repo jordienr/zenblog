@@ -60,7 +60,7 @@ const EditorSettings = (props: Props) => {
   };
 
   return (
-    <div className="[&_h2]:font-mono [&_h2]:text-sm">
+    <div className="[&_h2]:font-mono [&_h2]:text-sm [&_h2]:font-medium">
       <section className="mt-2">
         <h2 className="mt-2 pb-2 font-mono">Published date</h2>
         <Input

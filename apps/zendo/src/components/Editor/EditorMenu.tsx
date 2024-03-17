@@ -174,7 +174,7 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
   return (
     <div
       tabIndex={-1}
-      className="inline-flex rounded-xl border border-zinc-200 bg-white p-1 shadow-sm"
+      className="inline-flex rounded-xl border border-b-2 border-zinc-200 bg-white p-1"
     >
       <DropdownMenu>
         <DropdownMenuTrigger tabIndex={-1} asChild>

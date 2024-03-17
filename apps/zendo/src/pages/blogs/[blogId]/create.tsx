@@ -18,7 +18,7 @@ export default function CreatePost() {
           const { data, error } = await supa
             .from("posts")
             .insert({ ...post, blog_id: blogId })
-            .select("id")
+            .select("slug, id")
             .single();
 
           if (error) {
@@ -35,6 +35,7 @@ export default function CreatePost() {
             await supa.from("post_tags").insert(newTags);
           }
           toast.success("Post saved!");
+          router.push(`/blogs/${blogId}/post/${data.slug}`);
         } catch (error: any) {
           console.error(error);
           if (error?.code === "23505") {

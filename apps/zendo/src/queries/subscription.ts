@@ -25,16 +25,16 @@ export function useSubscriptionQuery() {
     },
     {
       initialData: {
-        status: "inactive",
+        status: "active",
       },
     }
   );
 }
 
 export function useIsSubscribed() {
-  const { isLoading, data } = useSubscriptionQuery();
+  const { isFetching, data } = useSubscriptionQuery();
 
-  if (isLoading) {
+  if (isFetching) {
     return true; // Assume subscribed to avoid flicker
   }
 

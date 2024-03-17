@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+input[type="checkbox"] {
+  accent-color: theme("colors.orange.600");
+}
+
 .base-toast {
   @apply rounded-full bg-zinc-800 text-zinc-50;
 }
@@ -34,7 +38,7 @@
 }
 
 .section {
-  @apply rounded-xl border-[0.3px] bg-white shadow-sm;
+  @apply rounded-xl border border-b-2 bg-white;
 }
 
 .section-title {
