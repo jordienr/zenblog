@@ -174,7 +174,7 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
   return (
     <div
       tabIndex={-1}
-      className="inline-flex rounded-xl border border-b-2 border-zinc-200 bg-white p-1"
+      className="border-zinc-2 inline-flex max-w-full overflow-x-auto rounded-xl border border-b-2 bg-white p-0.5"
     >
       <DropdownMenu>
         <DropdownMenuTrigger tabIndex={-1} asChild>
@@ -219,18 +219,21 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
           tippyOptions={{ duration: 100 }}
           editor={editor}
         >
-          {TOP_MENU_BUTTONS.map(({ icon, command, id }, i) => (
-            <button
-              className={cn("rounded-md p-1 text-xs text-white", {
-                "hover:bg-zinc-600": !editor.isActive(id),
-                "bg-zinc-600": editor.isActive(id),
-              })}
-              key={i + "menu-btn"}
-              onClick={() => command(editor)}
-            >
-              {icon}
-            </button>
-          ))}
+          {TOP_MENU_BUTTONS.map(
+            ({ icon, command, id }, i) =>
+              id !== "separator" && (
+                <button
+                  className={cn("rounded-md p-1 text-xs text-white", {
+                    "hover:bg-zinc-600": !editor.isActive(id),
+                    "bg-zinc-600": editor.isActive(id),
+                  })}
+                  key={i + "menu-btn"}
+                  onClick={() => command(editor)}
+                >
+                  {icon}
+                </button>
+              )
+          )}
         </BubbleMenu>
       )}
 

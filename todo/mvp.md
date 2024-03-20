@@ -10,6 +10,11 @@
 - [] email provider
 - [x] supabase spend cap
 - [x] Cloudflare ddos protection
+- [x] cmd + enter to save post
+
+## QOL
+
+- Save posts/create in localstorage so its not lost when you reload the page goddammit
 
 ## Free tier
 

@@ -173,13 +173,48 @@ export const ZendoEditor = (props: Props) => {
   useEffect(() => {
     const propsTagsStr = props.tags?.join(",");
     const tagsStr = tags.join(",");
+
     setHasChanges(propsTagsStr !== tagsStr);
+    setHasChanges(props.post?.title !== getValues("title"));
+    setHasChanges(props.post?.metadata !== metadata);
+    setHasChanges(props.post?.cover_image !== getValues("cover_image"));
+    setHasChanges(props.post?.published !== getValues("published"));
+    setHasChanges(props.post?.slug !== getValues("slug"));
 
     editor?.on("transaction", (ctx) => {
       const hasChanged = ctx.transaction.docChanged;
       setHasChanges(hasChanged);
     });
-  }, [editor, props.tags, tags, props.post?.content]);
+  }, [
+    editor,
+    props.tags,
+    tags,
+    props.post?.content,
+    props.post?.title,
+    props.post?.metadata,
+    props.post?.cover_image,
+    props.post?.published,
+    props.post?.slug,
+    getValues,
+    metadata,
+  ]);
+
+  useEffect(() => {
+    // on cmd + enter or cmd + s save the post
+    const handleSave = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        formSubmit();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        formSubmit();
+      }
+    };
+    document.addEventListener("keydown", handleSave);
+    return () => {
+      document.removeEventListener("keydown", handleSave);
+    };
+  });
 
   function onCoverImageSelect(image: string) {
     setCoverImgUrl(image);
@@ -210,7 +245,7 @@ export const ZendoEditor = (props: Props) => {
         onSubmit={formSubmit}
         className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-zinc-50 px-3 py-1.5 text-zinc-800"
       >
-        <div className="flex items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-zinc-800">
+        <div className="hidden items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-zinc-800 md:flex">
           {blogsQuery.isLoading ? null : (
             <DropdownMenu>
               <div className="flex items-center">
