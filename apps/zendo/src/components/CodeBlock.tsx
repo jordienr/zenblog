@@ -31,7 +31,7 @@ export const CodeBlock = ({
         customStyle={{
           padding: "1rem",
           borderRadius: "0.5rem",
-          backgroundColor: "#0f172a",
+          backgroundColor: "rgb(24,24,27)",
           fontSize: "0.82rem",
         }}
         language={language}

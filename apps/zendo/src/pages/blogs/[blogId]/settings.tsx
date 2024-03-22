@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useBlogQuery } from "@/queries/blogs";
+import { CopyCell } from "@/components/copy-cell";
+import { AlertCircle, Info } from "lucide-react";
 
 export default function BlogSettings() {
   type FormData = {
@@ -152,33 +154,64 @@ export default function BlogSettings() {
           </form>
         </section>
 
-        <section className="section p-3">
+        <section className="section p-3 [&_h3]:mb-3 [&_h3]:mt-8">
           <h2 className="text-lg font-medium">Integration guide</h2>
-          <h3 className="mb-4 mt-8">1. Install the zendo API client</h3>
+          <h3>First, install the zendo client</h3>
           <CodeBlock language="bash">{`npm install zenblog`}</CodeBlock>
 
-          <h3 className="mb-4 mt-8">2. Create a client</h3>
+          <h3>Next, store your blog id as an environment variable</h3>
 
-          <CodeBlock title="/pages/blog.tsx">
-            {`
-import { createClient } from "zenblog";
+          <CodeBlock language="properties" title=".env">
+            {`BLOG_ID=${blog.id}`}
+          </CodeBlock>
+
+          <p className="mt-2 flex items-center gap-2 rounded-md border border-yellow-300 bg-yellow-100 px-3 py-2 text-yellow-700">
+            <Info size={16} className="" />
+            Avoid making your blog id public. You should store it in a secure
+            way.
+          </p>
+
+          <h3>Now, create a client with your blog id</h3>
+
+          <CodeBlock title="/lib/cms.ts">
+            {`import { createClient } from "zenblog";
 
 const cms = createClient({
-  blogId: "${blog.id}",
-});
-            `}
+  blogId: process.env.BLOG_ID,
+});`}
           </CodeBlock>
 
           <h3>
-            3. Use the client to fetch posts and render them on your website
+            Use the client to fetch posts and render them on your website.
           </h3>
+          <CodeBlock title="/app/blog/page.tsx">
+            {`import { cms } from "../lib/cms";
+import Link from "next/link";
+
+const posts = await cms.posts.getAll();
+
+return <div>
+  {posts.map((post) => 
+    <Link 
+      href={"/blog/" + post.slug} 
+      key={post.slug}
+      >
+        {post.title}
+      </Link>
+    )}
+</div>`}
+          </CodeBlock>
+
+          <h3>That&apos;s it! 👏 Your blog page is ready.</h3>
+          <p>Next, you should learn how to render the posts content.</p>
         </section>
 
-        <section className="section border border-red-500 bg-white p-3 ">
-          <h2 className="mb-4 text-lg font-medium text-red-600">
-            🚨 Danger zone
+        <section className="section mt-24 border border-red-500 !bg-red-50/30 p-3">
+          <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
+            <AlertCircle size={24} className="text-red-600" />
+            Danger zone
           </h2>
-          <p className="space-y-4">
+          <p className="text-red-600">
             <div>This action cannot be undone.</div>
             <div>This will permanently delete the blog.</div>
             <div>This will also delete all posts in the blog.</div>

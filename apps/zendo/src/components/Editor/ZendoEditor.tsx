@@ -211,8 +211,25 @@ export const ZendoEditor = (props: Props) => {
       }
     };
     document.addEventListener("keydown", handleSave);
+
+    // prevent users from leaving if they have unsaved changes
+    window.onbeforeunload = function (e) {
+      if (hasChanges) {
+        const confirm = window.confirm(
+          "You have unsaved changes, are you sure you want to leave?"
+        );
+
+        if (confirm) {
+          return;
+        } else {
+          e.preventDefault();
+        }
+      }
+    };
+
     return () => {
       document.removeEventListener("keydown", handleSave);
+      window.onbeforeunload = null;
     };
   });
 
