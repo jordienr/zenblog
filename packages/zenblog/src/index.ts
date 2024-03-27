@@ -33,6 +33,7 @@ export type Post = {
   cover_image?: string;
   created_at: string;
   updated_at: string;
+  published_at: string;
 };
 
 export type PostWithContent = Post & {

@@ -8,12 +8,17 @@ import ZendoLogo from "@/components/ZendoLogo";
 import { LoggedInUser } from "@/components/LoggedInUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { StarIcon } from "lucide-react";
 import Footer from "@/components/Footer";
 import { useUser } from "@/utils/supabase/browser";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { SubscribeSection } from "./account";
-import { HiStar } from "react-icons/hi";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Image from "next/image";
 
 const Home = () => {
   const user = useUser();
@@ -125,13 +130,36 @@ const Home = () => {
                   clean. It&apos;s open source. Hosts images for you.
                 </p>
 
-                <h2 className="mt-8 font-medium text-black">Why?</h2>
-                <p className="mt-4 max-w-sm">
-                  I wanted the developer experience of Supabase, where you
-                  create a database and connect to it with a fully typed client
-                  in minutes. But I also wanted the writing experience of tools
-                  like Substack or Medium.
-                </p>
+                <Carousel className="mt-12">
+                  <CarouselContent className="[&_img]:rounded-lg">
+                    <CarouselItem>
+                      <Image
+                        src="/static/ui-1.png"
+                        alt="zenblog"
+                        width={800}
+                        height={400}
+                      />
+                    </CarouselItem>
+                    <CarouselItem>
+                      <Image
+                        src="/static/ui-2.png"
+                        alt="zenblog"
+                        width={800}
+                        height={400}
+                      />
+                    </CarouselItem>
+                    <CarouselItem>
+                      <Image
+                        src="/static/ui-3.png"
+                        alt="zenblog"
+                        width={800}
+                        height={400}
+                      />
+                    </CarouselItem>
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
               </div>
             </div>
             <hr className="my-11" />

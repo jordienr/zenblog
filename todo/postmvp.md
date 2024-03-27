@@ -32,6 +32,11 @@ const posts = await client.posts.list({ withContent: true, limit: 10 });
 - [] Billing is per team.
 - [] Blogs are owned by a team.
 
+## Blog themes
+
+- [] Ask theme devs if they mind me porting their themes to Zenblog (with proper attribution)
+- [] https://andersnoren.se/
+
 ## Hosted blogs
 
 - [] Let zenblog host your blog for you

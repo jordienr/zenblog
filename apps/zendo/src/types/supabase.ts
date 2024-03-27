@@ -74,7 +74,20 @@ export interface Database {
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "blogs_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blogs_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       feedback: {
         Row: {
@@ -118,37 +131,6 @@ export interface Database {
         }
         Relationships: []
       }
-      invitations: {
-        Row: {
-          blog_id: string
-          created_at: string
-          email: string
-          id: string
-          name: string
-        }
-        Insert: {
-          blog_id: string
-          created_at?: string
-          email: string
-          id?: string
-          name: string
-        }
-        Update: {
-          blog_id?: string
-          created_at?: string
-          email?: string
-          id?: string
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "invitations_blog_id_fkey"
-            columns: ["blog_id"]
-            referencedRelation: "blogs"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       post_tags: {
         Row: {
           blog_id: string
@@ -187,7 +169,19 @@ export interface Database {
           {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
+            referencedRelation: "posts_with_blog_and_subscription_status"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
             referencedRelation: "posts_with_tags"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            referencedRelation: "posts_with_tags_v2"
             referencedColumns: ["post_id"]
           },
           {
@@ -205,10 +199,10 @@ export interface Database {
           cover_image: string | null
           created_at: string
           deleted: boolean
-          deprecated_user_id: string
           id: string
           metadata: Json[] | null
           published: boolean
+          published_at: string | null
           slug: string
           title: string
           updated_at: string
@@ -220,10 +214,10 @@ export interface Database {
           cover_image?: string | null
           created_at?: string
           deleted?: boolean
-          deprecated_user_id?: string
           id?: string
           metadata?: Json[] | null
           published?: boolean
+          published_at?: string | null
           slug: string
           title: string
           updated_at?: string
@@ -235,10 +229,10 @@ export interface Database {
           cover_image?: string | null
           created_at?: string
           deleted?: boolean
-          deprecated_user_id?: string
           id?: string
           metadata?: Json[] | null
           published?: boolean
+          published_at?: string | null
           slug?: string
           title?: string
           updated_at?: string
@@ -252,13 +246,13 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "posts_user_id_fkey"
+            foreignKeyName: "public_posts_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "posts_user_id_fkey"
+            foreignKeyName: "public_posts_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -383,22 +377,21 @@ export interface Database {
       }
     }
     Views: {
-      posts_with_tags: {
+      posts_with_blog_and_subscription_status: {
         Row: {
           blog_id: string | null
           content: Json | null
           cover_image: string | null
           created_at: string | null
           deleted: boolean | null
-          deprecated_user_id: string | null
           metadata: Json[] | null
           post_id: string | null
           published: boolean | null
           slug: string | null
+          subscription_status: string | null
           tags: string[] | null
           title: string | null
           updated_at: string | null
-          user_id: string | null
         }
         Relationships: [
           {
@@ -406,17 +399,54 @@ export interface Database {
             columns: ["blog_id"]
             referencedRelation: "blogs"
             referencedColumns: ["id"]
-          },
+          }
+        ]
+      }
+      posts_with_tags: {
+        Row: {
+          blog_id: string | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          metadata: Json[] | null
+          post_id: string | null
+          published: boolean | null
+          slug: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "posts_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
             referencedColumns: ["id"]
-          },
+          }
+        ]
+      }
+      posts_with_tags_v2: {
+        Row: {
+          blog_id: string | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          metadata: Json[] | null
+          post_id: string | null
+          published: boolean | null
+          published_at: string | null
+          slug: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "posts_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
             referencedColumns: ["id"]
           }
         ]
@@ -545,6 +575,13 @@ export interface Database {
           title: string
         }
         Returns: string
+      }
+      is_blog_owner: {
+        Args: {
+          blog_id: string
+          given_user_id: string
+        }
+        Returns: boolean
       }
       requesting_user_id: {
         Args: Record<PropertyKey, never>

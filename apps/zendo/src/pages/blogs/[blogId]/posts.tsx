@@ -171,7 +171,7 @@ export default function BlogPosts() {
                             ))}
                           </div>
                         )}
-                        <span>{formatDate(post.created_at || "")}</span>
+                        <span>{formatDate(post.published_at || "")}</span>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button

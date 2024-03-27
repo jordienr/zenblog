@@ -12,7 +12,7 @@ export const usePostsQuery = () => {
     enabled: !!blogId,
     queryFn: async () => {
       const { data, error } = await sb
-        .from("posts_with_tags")
+        .from("posts_with_tags_v2")
         .select("*")
         .eq("blog_id", blogId)
         .eq("deleted", false)

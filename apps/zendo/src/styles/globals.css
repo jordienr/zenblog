@@ -76,3 +76,14 @@ textarea:active {
   height: 0;
   pointer-events: none;
 }
+
+.react-datetime-picker__wrapper {
+  @apply h-9 rounded-lg border !border-gray-200 px-1.5 shadow-sm focus-within:border-orange-300;
+}
+.react-datetime-picker__inputGroup__divider {
+  @apply text-gray-300;
+}
+
+.react-datetime-picker__inputGroup__input {
+  @apply !px-1.5 focus:outline-none;
+}

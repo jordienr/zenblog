@@ -4,12 +4,18 @@ import { Button } from "../ui/button";
 import { Code, Info, Plus, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import CategorySelect from "./TagSelect";
+import { toast } from "sonner";
+import DateTimePicker from "react-datetime-picker";
+import "react-datetime-picker/dist/DateTimePicker.css";
+import "react-calendar/dist/Calendar.css";
+import "react-clock/dist/Clock.css";
 
 type MetadataItem = {
   key: string;
   value: string;
 };
 type Props = {
+  title: string;
   metadata?: MetadataItem[];
   selectedTags: string[];
   published_at?: string;
@@ -33,6 +39,20 @@ const EditorSettings = (props: Props) => {
   const [selectedTags, setSelectedTags] = useState<string[]>(
     props.selectedTags || []
   );
+  const today = new Date().toISOString().split("T")[0] || "";
+  const [publishedAt, setPublishedAt] = useState<string>(
+    props.published_at || today
+  );
+
+  function formatPublishedDate() {
+    try {
+      const date = new Date(publishedAt).toISOString().split(".")[0];
+      return date;
+    } catch (error) {
+      // do nothing
+    }
+  }
+  const publishedAtValue = formatPublishedDate();
 
   function addMetadata() {
     setMetadata([...metadata, { key: "", value: "" }]);
@@ -63,17 +83,35 @@ const EditorSettings = (props: Props) => {
     <div className="[&_h2]:font-mono [&_h2]:text-sm [&_h2]:font-medium">
       <section className="mt-2">
         <h2 className="mt-2 pb-2 font-mono">Published date</h2>
-        <Input
-          type="date"
+        <DateTimePicker
+          autoFocus={false}
+          calendarIcon={null}
+          clearIcon={null}
+          shouldOpenWidgets={() => false}
+          value={new Date(publishedAt)}
+          onChange={(date) => {
+            if (!date) return;
+            setPublishedAt(date.toISOString());
+            props.onChange({
+              tags: selectedTags,
+              metadata,
+              published_at: date.toISOString(),
+            });
+          }}
+        />
+        {/* <Input
+          type="datetime-local"
           name="published_at"
+          value={publishedAtValue}
           onChange={(e) => {
+            setPublishedAt(e.target.value);
             props.onChange({
               tags: selectedTags,
               metadata,
               published_at: e.target.value,
             });
           }}
-        />
+        /> */}
       </section>
       <section>
         <h2 className="m-0 mt-8 border-b pb-2 font-mono">Custom metadata</h2>
@@ -173,6 +211,20 @@ const EditorSettings = (props: Props) => {
             onChange={handleCategoryChange}
           />
         </div>
+      </section>
+
+      <section className="mt-8">
+        <h2>Open graph image</h2>
+        <img
+          className="mt-4 max-w-full rounded-md border"
+          src={`/api/og?title=${props.title}`}
+          alt=""
+          width={600}
+          height={300}
+        />
+        <p className="mt-2 rounded-md border bg-zinc-100 p-1 font-mono text-xs text-zinc-700">
+          {process.env.NEXT_PUBLIC_BASE_URL}/api/og?title={props.title}
+        </p>
       </section>
     </div>
   );

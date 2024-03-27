@@ -12,6 +12,6 @@ export const getBlogClient = () => {
 };
 
 const docsId = process.env.ZENBLOG_DOCS_ID || "";
-export const docs = createClient<{ metadata: { order: number } }>({
+export const docs = createClient({
   blogId: docsId,
 });

@@ -1,7 +1,9 @@
 # MVP
 
-## General
+## Backlog
 
+- [] Removing tags doesnt work
+- [] Published_date
 - [] FAQ on homepage?
 - [] Update README
 - [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, etc.

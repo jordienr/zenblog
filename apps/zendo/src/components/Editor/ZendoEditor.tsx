@@ -58,6 +58,7 @@ type OnSaveData = {
   published: boolean;
   metadata?: any;
   tags?: string[];
+  published_at?: string;
 };
 
 type Props = {
@@ -85,6 +86,9 @@ export const ZendoEditor = (props: Props) => {
 
   const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
   const [tags, setTags] = React.useState(props.tags || []);
+  const [publishedAt, setPublishedAt] = React.useState<string | undefined>(
+    props.post?.published_at || ""
+  );
 
   const isSubscribed = subscription.data?.status === "active";
 
@@ -163,6 +167,7 @@ export const ZendoEditor = (props: Props) => {
       slug: data.slug,
       cover_image: data.cover_image || "",
       published: data.published,
+      published_at: publishedAt,
       metadata,
       tags,
     });
@@ -280,7 +285,10 @@ export const ZendoEditor = (props: Props) => {
                   </Button>
                 </DropdownMenuTrigger>
               </div>
-              <DropdownMenuContent className="-mt-1 max-w-[240px]">
+              <DropdownMenuContent
+                align="start"
+                className="-mt-1 max-w-[240px]"
+              >
                 {blogsQuery.data?.map((blog) => (
                   <DropdownMenuItem key={blog.id} asChild>
                     <Link
@@ -319,7 +327,10 @@ export const ZendoEditor = (props: Props) => {
                   </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="-mt-1 max-w-[240px]">
+              <DropdownMenuContent
+                align="start"
+                className="-mt-1 max-w-[240px]"
+              >
                 {postsQuery.data?.map((post) => (
                   <DropdownMenuItem key={post.post_id} asChild>
                     <Link
@@ -358,11 +369,14 @@ export const ZendoEditor = (props: Props) => {
             </SheetTrigger>
             <SheetContent>
               <EditorSettings
+                title={title}
                 metadata={metadata as any}
                 selectedTags={tags}
+                published_at={publishedAt}
                 onChange={(data) => {
                   setMetadata(data.metadata);
                   setTags(data.tags);
+                  setPublishedAt(data.published_at);
                 }}
               ></EditorSettings>
             </SheetContent>

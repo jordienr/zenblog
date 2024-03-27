@@ -37,7 +37,6 @@ const layout = async ({
               key={post.slug}
               href={"/docs/" + post.slug}
             >
-              <pre>{JSON.stringify(post)}</pre>
               <ArrowRight
                 className="mr-1 inline-block text-inherit opacity-60"
                 size={16}

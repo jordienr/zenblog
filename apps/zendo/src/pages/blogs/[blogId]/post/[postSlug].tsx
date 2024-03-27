@@ -63,9 +63,18 @@ export default function Post() {
             }));
 
             if (newTags) {
-              await sb.from("post_tags").upsert(newTags, {
-                onConflict: "tag_id, post_id, blog_id",
-              });
+              const currentTagIds = data?.tags;
+              await Promise.all([
+                sb
+                  .from("post_tags")
+                  .delete()
+                  .match({ post_id: post.id, blog_id: blogId })
+                  .not("tag_id", "in", currentTagIds),
+
+                sb.from("post_tags").upsert(newTags, {
+                  onConflict: "tag_id, post_id, blog_id",
+                }),
+              ]);
             }
 
             queryClient.invalidateQueries([
