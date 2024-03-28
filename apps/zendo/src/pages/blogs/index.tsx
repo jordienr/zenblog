@@ -61,7 +61,7 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center gap-4">
                       <div>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-3xl transition-all group-hover:scale-110">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-zinc-50 text-3xl transition-all group-hover:scale-110">
                           {blog.emoji}
                         </div>
                       </div>

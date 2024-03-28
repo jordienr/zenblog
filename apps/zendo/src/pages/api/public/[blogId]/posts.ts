@@ -15,17 +15,17 @@ export default async function handler(
     }
 
     const { data, error } = await db
-      .from("posts_with_blog_and_subscription_status")
+      .from("posts_with_blog_and_subscription_status_v2")
       .select(
         `title, ${
           withContent ? "content, " : ""
-        } cover_image, metadata,updated_at,slug,tags`
+        } cover_image, metadata,updated_at,slug,tags,published_at`
       )
       .eq("blog_id", blogId)
       .eq("published", true)
       .eq("deleted", false)
       .eq("subscription_status", "active")
-      .order("created_at", { ascending: false });
+      .order("published_at", { ascending: false });
 
     if (error) {
       console.error(error);

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -9,6 +10,8 @@ import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
+import Image from "next/image";
+import { CopyCell } from "../copy-cell";
 
 type MetadataItem = {
   key: string;
@@ -19,6 +22,8 @@ type Props = {
   metadata?: MetadataItem[];
   selectedTags: string[];
   published_at?: string;
+  blogEmoji?: string;
+  blogTitle?: string;
   onChange: ({
     metadata,
     tags,
@@ -78,6 +83,8 @@ const EditorSettings = (props: Props) => {
     setSelectedTags(tags);
     props.onChange({ metadata, tags });
   };
+
+  const ogImageUrl = `/api/og?title=${props.title}&emoji=${props.blogEmoji}&url=${props.blogTitle}`;
 
   return (
     <div className="[&_h2]:font-mono [&_h2]:text-sm [&_h2]:font-medium">
@@ -215,16 +222,27 @@ const EditorSettings = (props: Props) => {
 
       <section className="mt-8">
         <h2>Open graph image</h2>
-        <img
+        <Image
           className="mt-4 max-w-full rounded-md border"
-          src={`/api/og?title=${props.title}`}
+          src={ogImageUrl}
           alt=""
           width={600}
           height={300}
         />
-        <p className="mt-2 rounded-md border bg-zinc-100 p-1 font-mono text-xs text-zinc-700">
-          {process.env.NEXT_PUBLIC_BASE_URL}/api/og?title={props.title}
-        </p>
+        <div className="mt-2 flex justify-end">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                process.env.NEXT_PUBLIC_BASE_URL + ogImageUrl
+              );
+              toast("Copied image URL to clipboard");
+            }}
+          >
+            Copy image URL
+          </Button>
+          {/* <CopyCell text={process.env.NEXT_PUBLIC_BASE_URL + ogImageUrl} /> */}
+        </div>
       </section>
     </div>
   );

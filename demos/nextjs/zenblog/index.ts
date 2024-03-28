@@ -1,8 +1,15 @@
 import { createClient } from "zenblog";
 
 export const getBlog = () => {
+  const blogId = process.env.ZENBLOG_DEMO_BLOG_ID;
+  console.log("BLOG ID_______", blogId);
+
+  if (!blogId) {
+    throw new Error("No blog ID provided");
+  }
+
   const blog = createClient({
-    blogId: "53a970ef-cc74-40ac-ac53-c322cd4848cb",
+    blogId,
     debug: true,
     _url: process.env.NEXT_PUBLIC_API_URL + "/public",
   });

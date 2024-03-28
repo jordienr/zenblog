@@ -372,6 +372,8 @@ export const ZendoEditor = (props: Props) => {
                 title={title}
                 metadata={metadata as any}
                 selectedTags={tags}
+                blogEmoji={blogQuery.data?.emoji}
+                blogTitle={blogQuery.data?.title}
                 published_at={publishedAt}
                 onChange={(data) => {
                   setMetadata(data.metadata);

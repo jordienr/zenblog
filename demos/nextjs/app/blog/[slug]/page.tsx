@@ -14,13 +14,16 @@ export default async function Home({
 
   return (
     <main className="">
-      <img
-        className="mx-auto max-w-4xl border"
-        src={post.cover_image}
-        alt={post.title}
-      />
+      {post.cover_image && (
+        <img
+          className="mx-auto max-w-4xl border"
+          src={post.cover_image}
+          alt={post.title}
+        />
+      )}
       <div className="prose mx-auto max-w-xl p-4">
         <h1 className="">{post.title}</h1>
+        <pre>{JSON.stringify(post.content)}</pre>
       </div>
     </main>
   );

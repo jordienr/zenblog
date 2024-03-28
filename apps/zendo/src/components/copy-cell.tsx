@@ -11,7 +11,7 @@ export const CopyCell = (props: Props) => {
 
   return (
     <div className="flex items-center justify-between rounded-md border bg-zinc-100 px-2 py-1 font-mono text-sm text-zinc-600">
-      <div className="px-2">{props.text}</div>
+      <div className="truncate px-2">{props.text}</div>
       <Button
         onClick={() => {
           navigator.clipboard.writeText(props.text);

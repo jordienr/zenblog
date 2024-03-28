@@ -8,7 +8,11 @@ export default async function Home() {
 
   const formatDate = (date: string) => {
     const d = new Date(date);
-    return d.toLocaleDateString();
+    return d.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   return (
@@ -19,7 +23,9 @@ export default async function Home() {
           href={`/blog/${post.slug}`}
           key={post.slug}
         >
-          <span className="text-slate-400">{formatDate(post.created_at)}</span>
+          <span className="text-slate-400">
+            {formatDate(post.published_at)}
+          </span>
           <span>{post.title}</span>
         </Link>
       ))}

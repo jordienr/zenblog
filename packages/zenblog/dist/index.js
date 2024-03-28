@@ -2,7 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createClient = void 0;
 function logError(...args) {
-    console.error("[🍊] ", ...args);
+    console.error("[zenblog error] ", ...args);
+}
+function throwError(msg, ...args) {
+    logError(msg, ...args);
+    throw new Error("[zenblog error] " + msg);
 }
 function createDebugger(debug) {
     return (...args) => {
@@ -20,10 +24,6 @@ function getConfig(url) {
     return {
         api: "https://www.zenblog.com/api/public",
     };
-}
-function throwError(msg, ...args) {
-    logError(msg, ...args);
-    throw new Error("[🚨] " + msg);
 }
 function createClient({ blogId, _url, debug }) {
     const config = getConfig(_url);

@@ -29,7 +29,16 @@ const ibmPlexMono = IBM_Plex_Mono({
 // Main Component
 function MyApp({ Component, pageProps }: AppProps) {
   const { pathname, isReady } = useRouter();
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+          },
+        },
+      })
+  );
 
   return (
     <div className={`${ibmPlexMono.variable} ${inter.variable}`}>

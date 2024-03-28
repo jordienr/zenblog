@@ -1,5 +1,10 @@
 function logError(...args: any[]) {
-  console.error("[🍊] ", ...args);
+  console.error("[zenblog error] ", ...args);
+}
+
+function throwError(msg: string, ...args: any[]) {
+  logError(msg, ...args);
+  throw new Error("[zenblog error] " + msg);
 }
 
 function createDebugger(debug: boolean) {
@@ -19,11 +24,6 @@ function getConfig(url?: string): { api: string } {
   return {
     api: "https://www.zenblog.com/api/public",
   };
-}
-
-function throwError(msg: string, ...args: any[]) {
-  logError(msg, ...args);
-  throw new Error("[🚨] " + msg);
 }
 
 export type Post = {
