@@ -8,17 +8,24 @@ import {
 } from "./ui/dropdown-menu";
 import Link from "next/link";
 import { useUser } from "@/utils/supabase/browser";
+import { useIsSubscribed, useSubscriptionQuery } from "@/queries/subscription";
+import { cn } from "@/lib/utils";
 
 type Props = {};
 
 const UserButton = (props: Props) => {
   const user = useUser();
+  const isSubbed = useIsSubscribed();
 
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger className="rounded-full">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 font-bold text-white">
+        <DropdownMenuTrigger className="flex items-center gap-2 rounded-full">
+          <div
+            className={cn(
+              "flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800 font-bold text-white"
+            )}
+          >
             {user?.email?.slice(0, 1).toUpperCase()}
           </div>
         </DropdownMenuTrigger>

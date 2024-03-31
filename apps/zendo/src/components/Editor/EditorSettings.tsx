@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Code, Info, Plus, Trash } from "lucide-react";
@@ -12,6 +12,13 @@ import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
 import Image from "next/image";
 import { CopyCell } from "../copy-cell";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type MetadataItem = {
   key: string;
@@ -45,19 +52,55 @@ const EditorSettings = (props: Props) => {
     props.selectedTags || []
   );
   const today = new Date().toISOString().split("T")[0] || "";
-  const [publishedAt, setPublishedAt] = useState<string>(
-    props.published_at || today
-  );
 
-  function formatPublishedDate() {
+  function formatDate(date: string) {
     try {
-      const date = new Date(publishedAt).toISOString().split(".")[0];
-      return date;
+      return new Date(date).toISOString().split(".")[0];
     } catch (error) {
+      toast.error("Invalid date");
       // do nothing
     }
   }
-  const publishedAtValue = formatPublishedDate();
+
+  const [publishedAt, setPublishedAt] = useState<{
+    day: number;
+    month: number;
+    year: number;
+    hour: number;
+    minute: number;
+  }>({
+    day: new Date(props.published_at || today).getDate(),
+    month: new Date(props.published_at || today).getMonth(),
+    year: new Date(props.published_at || today).getFullYear(),
+    hour: new Date(props.published_at || today).getHours(),
+    minute: new Date(props.published_at || today).getMinutes(),
+  });
+
+  function publishedAtToDate() {
+    return new Date(
+      publishedAt.year,
+      publishedAt.month,
+      publishedAt.day,
+      publishedAt.hour,
+      publishedAt.minute
+    ).toISOString();
+  }
+
+  useEffect(() => {
+    try {
+      const date = publishedAtToDate();
+
+      props.onChange({
+        tags: selectedTags,
+        metadata,
+        published_at: date,
+      });
+    } catch (error) {
+      toast.error("Invalid date");
+    }
+  }, [publishedAt]);
+
+  const publishedAtValue = formatDate(publishedAtToDate());
 
   function addMetadata() {
     setMetadata([...metadata, { key: "", value: "" }]);
@@ -90,22 +133,107 @@ const EditorSettings = (props: Props) => {
     <div className="[&_h2]:font-mono [&_h2]:text-sm [&_h2]:font-medium">
       <section className="mt-2">
         <h2 className="mt-2 pb-2 font-mono">Published date</h2>
-        <DateTimePicker
-          autoFocus={false}
-          calendarIcon={null}
-          clearIcon={null}
-          shouldOpenWidgets={() => false}
-          value={new Date(publishedAt)}
-          onChange={(date) => {
-            if (!date) return;
-            setPublishedAt(date.toISOString());
-            props.onChange({
-              tags: selectedTags,
-              metadata,
-              published_at: date.toISOString(),
-            });
-          }}
-        />
+        <div className="flex gap-4">
+          <div>
+            <label className="text-xs text-zinc-500" htmlFor="date">
+              Date
+            </label>
+            <div className="flex gap-1">
+              <Input
+                type="number"
+                name="day"
+                placeholder="Day"
+                className="w-14 rounded-r-sm"
+                min="1"
+                max="31"
+                value={publishedAt.day}
+                onChange={(e) => {
+                  setPublishedAt({
+                    ...publishedAt,
+                    day: parseInt(e.target.value),
+                  });
+                }}
+              />
+              <Select
+                value={publishedAt.month.toString()}
+                onValueChange={(e) => {
+                  setPublishedAt({
+                    ...publishedAt,
+                    month: parseInt(e),
+                  });
+                }}
+              >
+                <SelectTrigger className="w-[120px] rounded-sm">
+                  <SelectValue placeholder="Month" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">January</SelectItem>
+                  <SelectItem value="1">February</SelectItem>
+                  <SelectItem value="2">March</SelectItem>
+                  <SelectItem value="3">April</SelectItem>
+                  <SelectItem value="4">May</SelectItem>
+                  <SelectItem value="5">June</SelectItem>
+                  <SelectItem value="6">July</SelectItem>
+                  <SelectItem value="7">August</SelectItem>
+                  <SelectItem value="8">September</SelectItem>
+                  <SelectItem value="9">October</SelectItem>
+                  <SelectItem value="10">November</SelectItem>
+                  <SelectItem value="11">December</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                type="number"
+                name="year"
+                placeholder="Year"
+                className="w-20 rounded-l-sm"
+                value={publishedAt.year}
+                onChange={(e) => {
+                  setPublishedAt({
+                    ...publishedAt,
+                    year: parseInt(e.target.value),
+                  });
+                }}
+              />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs text-zinc-500" htmlFor="time">
+              Time
+            </label>
+            <div className="flex gap-1">
+              <Input
+                type="number"
+                name="hour"
+                placeholder="Hour"
+                className="w-14 rounded-r-sm"
+                min="0"
+                max="23"
+                value={publishedAt.hour}
+                onChange={(e) => {
+                  setPublishedAt({
+                    ...publishedAt,
+                    hour: parseInt(e.target.value),
+                  });
+                }}
+              />
+              <Input
+                type="number"
+                name="minute"
+                placeholder="Minute"
+                className="w-14 rounded-l-sm"
+                min="0"
+                max="59"
+                value={publishedAt.minute}
+                onChange={(e) => {
+                  setPublishedAt({
+                    ...publishedAt,
+                    minute: parseInt(e.target.value),
+                  });
+                }}
+              />
+            </div>
+          </div>
+        </div>
         {/* <Input
           type="datetime-local"
           name="published_at"

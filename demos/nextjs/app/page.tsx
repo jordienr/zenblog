@@ -16,17 +16,21 @@ export default async function Home() {
   };
 
   return (
-    <main className="flex min-h-[500px] flex-col gap-4 p-8">
+    <main className="flex min-h-[500px] flex-col gap-1 p-6">
       {posts.map((post) => (
         <Link
-          className="flex items-center gap-4"
+          className="max-w-xs rounded-md p-2 opacity-70 transition-all hover:bg-zinc-50 hover:opacity-100"
           href={`/blog/${post.slug}`}
           key={post.slug}
         >
-          <span className="text-slate-400">
+          <div className="mr-4 text-xs text-slate-400">
             {formatDate(post.published_at)}
-          </span>
-          <span>{post.title}</span>
+          </div>
+          <div>{post.title}</div>
+          {/* <img
+            src={`http://localhost:3000/api/og?title=${post.title}&emoji=✍️&url=Blog`}
+            alt=""
+          /> */}
         </Link>
       ))}
     </main>

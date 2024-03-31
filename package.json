@@ -28,7 +28,8 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "demos/*"
   ],
   "dependencies": {
     "@supabase/ssr": "^0.1.0",

@@ -1,3 +1,4 @@
+import { IsDevMode } from "@/components/is-dev-mode";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsTrigger, TabsList } from "@/components/ui/tabs";
 import AppLayout from "@/layouts/AppLayout";
@@ -106,6 +107,18 @@ export const SubscribeSection = () => {
     <div>
       <h2 className="text-xl font-medium">Pricing</h2>
       <p className="font-mono text-sm text-zinc-500">Cancel anytime</p>
+
+      <IsDevMode>
+        <pre>
+          Run this to sync stripe with the local database:
+          <br />
+          `npm run stripe:webhook` // listen for stripe events
+          <br />
+          `npm run stripe:sync` // sync stripe products and prices
+          <br />
+          Then refresh the page and subscribe to a plan
+        </pre>
+      </IsDevMode>
 
       <Tabs
         className="mt-4"

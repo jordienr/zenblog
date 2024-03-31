@@ -167,7 +167,7 @@ export const ZendoEditor = (props: Props) => {
       slug: data.slug,
       cover_image: data.cover_image || "",
       published: data.published,
-      published_at: publishedAt,
+      published_at: publishedAt || new Date().toISOString(),
       metadata,
       tags,
     });

@@ -14,7 +14,7 @@ export function useSubscriptionQuery() {
         .select("*")
         .limit(1);
 
-      if (error) {
+      if (error || !data[0]) {
         console.error(error);
         return {
           status: "inactive",

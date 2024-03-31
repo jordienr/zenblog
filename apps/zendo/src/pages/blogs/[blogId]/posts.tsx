@@ -74,7 +74,7 @@ export default function BlogPosts() {
       <AppLayout loading={isLoading}>
         <div className="mx-auto mt-4 max-w-5xl p-4">
           <div className="flex items-center justify-between">
-            <h1 className="mb-2 text-xl font-semibold">
+            <h1 className="mb-2 text-xl">
               <span className="mr-2 text-2xl">{blog.emoji}</span>
               {blog.title}
             </h1>
@@ -153,7 +153,7 @@ export default function BlogPosts() {
                         <div>
                           <StatePill published={post.published || false} />
                         </div>
-                        <h2 className="ml-1 text-lg font-medium">
+                        <h2 className="ml-1 text-lg font-normal">
                           {post.title}
                         </h2>
                       </div>

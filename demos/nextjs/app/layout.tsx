@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 
-const ibmPlexMono = IBM_Plex_Mono({
-  weight: ["500", "600"],
+const inter = Inter({
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
 
@@ -20,8 +20,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${ibmPlexMono.className} font-mono`}>
-        <nav className="px-8 py-24">
+      <body className={`${inter.className}`}>
+        <nav className="p-8">
           <Link href="/">Zenblog + NextJS</Link>
         </nav>
         {children}
