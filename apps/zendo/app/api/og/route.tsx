@@ -13,9 +13,6 @@ export async function GET(req: NextRequest) {
   const urlColor = searchParams.get("urlColor") || "#f97316";
   const bgColor = searchParams.get("bgColor") || "#fafafa";
 
-  const fontDataInterBold = await fetch(
-    new URL("../../../assets/Inter-Bold.ttf", import.meta.url)
-  ).then((res) => res.arrayBuffer());
   const fontDataInterRegular = await fetch(
     new URL("../../../assets/Inter-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
@@ -52,7 +49,6 @@ export async function GET(req: NextRequest) {
           <div
             style={{
               fontSize: 80,
-              fontWeight: 700,
               marginBottom: 20,
               color: "#27272a",
               letterSpacing: -1.5,
@@ -79,12 +75,6 @@ export async function GET(req: NextRequest) {
       width: 1200,
       height: 630,
       fonts: [
-        {
-          data: fontDataInterBold,
-          name: "Inter",
-          style: "normal",
-          weight: 700,
-        },
         {
           data: fontDataInterRegular,
           name: "Inter",
