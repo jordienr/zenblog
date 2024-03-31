@@ -37,7 +37,7 @@ export type Post = {
 };
 
 export type PostWithContent = Post & {
-  content: string;
+  content: any;
 };
 
 export type CreateClientOpts = {
@@ -60,11 +60,11 @@ export function createClient<T>({ blogId, _url, debug }: CreateClientOpts) {
       const res = await fetch(URL, opts);
       const json = await res.json();
 
-      // if (res.headers.get("zenblog-subscription-status") === "inactive") {
-      //   throwError(
-      //     "Zenblog subscription is inactive. Go to https://zenblog.com to subscribe."
-      //   );
-      // }
+      if (res.headers.get("zenblog-subscription-status") === "inactive") {
+        throwError(
+          "Zenblog subscription is inactive. Go to https://zenblog.com to subscribe."
+        );
+      }
       log("res", {
         status: res.status,
         statusText: res.statusText,

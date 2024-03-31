@@ -19,7 +19,7 @@ export default async function handler(
     const postPromise = db
       .from("posts")
       .select(
-        "slug, title, content, cover_image, created_at, updated_at, metadata"
+        "slug, title, content, cover_image, published_at, created_at, updated_at, metadata"
       )
       .eq("blog_id", blogId)
       .eq("published", true)
