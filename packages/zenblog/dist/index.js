@@ -36,11 +36,9 @@ function createClient({ blogId, _url, debug }) {
             log("fetching ", URL, opts);
             const res = await fetch(URL, opts);
             const json = await res.json();
-            // if (res.headers.get("zenblog-subscription-status") === "inactive") {
-            //   throwError(
-            //     "Zenblog subscription is inactive. Go to https://zenblog.com to subscribe."
-            //   );
-            // }
+            if (res.headers.get("zenblog-subscription-status") === "inactive") {
+                throwError("Zenblog subscription is inactive. Go to https://zenblog.com to subscribe.");
+            }
             log("res", {
                 status: res.status,
                 statusText: res.statusText,

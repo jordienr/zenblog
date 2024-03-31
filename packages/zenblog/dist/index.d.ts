@@ -8,7 +8,7 @@ export type Post = {
     published_at: string;
 };
 export type PostWithContent = Post & {
-    content: string;
+    content: any;
 };
 export type CreateClientOpts = {
     blogId: string;
