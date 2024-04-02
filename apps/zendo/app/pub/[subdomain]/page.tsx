@@ -11,7 +11,8 @@ async function HostedBlog({
   const posts = await supa
     .from("public_posts_v1")
     .select("title, slug, published_at")
-    .eq("blog_slug", subdomain);
+    .eq("blog_slug", subdomain)
+    .eq("published", true);
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
