@@ -24,7 +24,7 @@ async function HostedBlog({
 
   return (
     <div className="mx-auto max-w-xl px-2 py-8">
-      <h2 className="mb-4 p-2">Blog</h2>
+      <h2 className="mb-4 p-2 font-medium">Blog</h2>
       {posts.data?.map((post) => (
         <Link
           className="group grid grid-cols-6 border-b border-transparent p-2 transition-all hover:border-slate-300"
