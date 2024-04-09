@@ -8,6 +8,12 @@ async function HostedBlog({
   params: { subdomain: string };
 }) {
   const supa = createClient();
+  const { data: blog } = await supa
+    .from("blogs")
+    .select("title, emoji")
+    .eq("slug", subdomain)
+    .single();
+
   const posts = await supa
     .from("public_posts_v1")
     .select("title, slug, published_at")
@@ -24,7 +30,11 @@ async function HostedBlog({
 
   return (
     <div className="mx-auto max-w-xl px-2 py-8">
-      <h2 className="mb-4 p-2 font-medium">Blog</h2>
+      <h2 className="mb-4 flex items-center gap-2 p-2 font-medium">
+        <span className="text-xl">{blog?.emoji}</span>
+        <span>{blog?.title}</span>
+      </h2>
+
       {posts.data?.map((post) => (
         <Link
           className="group grid grid-cols-6 border-b border-transparent p-2 transition-all hover:border-slate-300"

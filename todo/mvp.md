@@ -55,3 +55,4 @@
 
 - Prevent users from leaving the page when they have unsaved changes
 - Save posts/create in localstorage so its not lost when you reload the page goddammit
+- Apple pay
