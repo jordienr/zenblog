@@ -108,13 +108,13 @@ export default function Post() {
         tags={post.post_tags.map((tag) => String(tag.tag_id)) || []}
       />
 
-      <Dialog open={showPubDialog} onOpenChange={setShowPubDialog}>
+      {/* <Dialog open={showPubDialog} onOpenChange={setShowPubDialog}>
         <DialogContent>
           <div className="flex items-center gap-4">
             Congratulations! Your post is now live.
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }
