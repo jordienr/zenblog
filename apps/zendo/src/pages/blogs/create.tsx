@@ -49,9 +49,8 @@ export default function CreateBlog() {
       title: data.title,
       description: data.description || "",
       emoji: data.emoji || DEFAULT_EMOJI,
+      slug: data.slug,
     });
-
-    console.log(res);
 
     if (createBlog.isError) {
       console.error(createBlog.error);
@@ -165,7 +164,6 @@ export default function CreateBlog() {
                       <EmojiPicker onEmojiChange={onChange} emoji={value} />
                     )}
                   ></Controller>
-                  {/* <input type="text" id="emoji" required {...register("emoji")} /> */}
                 </Label>
                 <div className="w-full">
                   <Label className="flex-grow" htmlFor="title">
@@ -177,6 +175,12 @@ export default function CreateBlog() {
                     required
                     {...register("title")}
                   />
+                </div>
+                <div className="w-full">
+                  <Label className="flex-grow" htmlFor="title">
+                    Slug
+                  </Label>
+                  <Input type="text" id="slug" required {...register("slug")} />
                 </div>
               </div>
 

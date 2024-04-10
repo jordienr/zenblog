@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import { useBlogTags } from "@/components/Editor/Editor.queries";
 import { usePostQuery } from "@/queries/posts";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { BsShieldX } from "react-icons/bs";
+import { useState } from "react";
 
 export default function Post() {
   const router = useRouter();
@@ -14,6 +17,8 @@ export default function Post() {
 
   const blogId = router.query.blogId as string;
   const postSlug = router.query.postSlug as string;
+  const hasPubQuery = router.query.pub as string;
+  const [showPubDialog, setShowPubDialog] = useState(hasPubQuery);
 
   const sb = getSupabaseBrowserClient();
 
@@ -39,7 +44,7 @@ export default function Post() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="">
       <ZendoEditor
         onSave={async (data) => {
           const { tags, ...newData } = data;
@@ -102,6 +107,14 @@ export default function Post() {
         post={post}
         tags={post.post_tags.map((tag) => String(tag.tag_id)) || []}
       />
+
+      <Dialog open={showPubDialog} onOpenChange={setShowPubDialog}>
+        <DialogContent>
+          <div className="flex items-center gap-4">
+            Congratulations! Your post is now live.
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

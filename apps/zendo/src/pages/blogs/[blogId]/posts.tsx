@@ -3,7 +3,7 @@ import AppLayout from "@/layouts/AppLayout";
 import { createAPIClient } from "@/lib/http/api";
 import { useRouter } from "next/router";
 import { IoSettingsSharp } from "react-icons/io5";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Plus, Settings, Trash } from "lucide-react";
@@ -45,7 +45,6 @@ export default function BlogPosts() {
   const blogId = router.query.blogId as string;
   const [tab, setTab] = useState("posts");
 
-  const api = createAPIClient();
   const { data: blog, isLoading: blogLoading } = useBlogQuery(blogId);
   const { data: posts, isLoading: postsLoading } = usePostsQuery();
 
@@ -55,17 +54,21 @@ export default function BlogPosts() {
   const blogTags = useBlogTags({ blogId });
 
   const supabase = getSupabaseBrowserClient();
+  const queryClient = useQueryClient();
 
   const deletePostMutation = useMutation({
     mutationFn: async (postId: string) => {
-      console.log("deleting post", postId);
       const { data, error } = await supabase
         .from("posts")
-        .update({ deleted: true })
+        .delete()
         .eq("id", postId);
+
       if (error) {
         throw error;
       }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["posts"]);
     },
   });
 

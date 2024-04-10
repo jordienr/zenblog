@@ -13,7 +13,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useBlogQuery } from "@/queries/blogs";
 import { CopyCell } from "@/components/copy-cell";
-import { AlertCircle, Info } from "lucide-react";
+import { AlertCircle, ExternalLink, Info } from "lucide-react";
+import Link from "next/link";
+import { CgArrowTopRight } from "react-icons/cg";
 
 export default function BlogSettings() {
   type FormData = {
@@ -57,6 +59,15 @@ export default function BlogSettings() {
       alert("Error updating blog, please try again");
     }
   });
+
+  function getHostedBlogUrl() {
+    const url = new URL(process.env.NEXT_PUBLIC_BASE_URL || "");
+    // add blog slug as subdomain
+    url.hostname = `${blog?.slug}.${url.hostname}`;
+    return url;
+  }
+
+  const hostedBlogUrl = getHostedBlogUrl();
 
   const queryClient = useQueryClient();
   const { mutateAsync: deleteBlogMutation } = useMutation({
@@ -110,6 +121,16 @@ export default function BlogSettings() {
             {blog.emoji} {blog.title}
           </h1>
           <p className="text-sm text-slate-600">{blog.description}</p>
+          <hr className="my-4" />
+
+          <Link
+            className="flex items-center gap-1 font-mono text-sm tracking-tighter text-slate-500"
+            href={hostedBlogUrl.toString()}
+          >
+            <ExternalLink size={16} />
+            {hostedBlogUrl.hostname}
+          </Link>
+
           <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-2">
             <div className="flex items-end gap-4">
               <label htmlFor="emoji" title="Emoji">

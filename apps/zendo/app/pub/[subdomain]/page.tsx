@@ -35,6 +35,15 @@ async function HostedBlog({
         <span>{blog?.title}</span>
       </h2>
 
+      {posts.data?.length === 0 && (
+        <>
+          <div className="">
+            <h2 className="font-medium">No posts yet</h2>
+            <p className="text-slate-500">Check back later, see you soon!</p>
+          </div>
+        </>
+      )}
+
       {posts.data?.map((post) => (
         <Link
           className="group grid grid-cols-6 border-b border-transparent p-2 transition-all hover:border-slate-300"

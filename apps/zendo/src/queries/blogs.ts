@@ -15,7 +15,11 @@ export const useBlogQuery = (blogId: string) =>
   useQuery(
     keys.blog(blogId),
     async () => {
-      const res = await sb.from("blogs").select("*").eq("id", blogId).single();
+      const res = await sb
+        .from("blogs")
+        .select("id, title, emoji, description, created_at, slug")
+        .eq("id", blogId)
+        .single();
       return res.data;
     },
     {
@@ -44,7 +48,12 @@ export const useCreateBlogMutation = () => {
   const supa = getSupabaseBrowserClient();
 
   return useMutation(
-    async (newBlog: { title: string; description: string; emoji: string }) => {
+    async (newBlog: {
+      title: string;
+      description: string;
+      emoji: string;
+      slug: string;
+    }) => {
       const res = await supa.from("blogs").insert(newBlog).select().single();
       return res.data;
     },
