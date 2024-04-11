@@ -19,6 +19,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const Home = () => {
   const user = useUser();
@@ -108,7 +109,7 @@ const Home = () => {
             </div>
           </nav>
 
-          <main className="px-4 font-sans">
+          <main className="px-4 pb-24 font-sans">
             <div className="mx-auto mt-12">
               <div className="">
                 <Link
@@ -129,8 +130,65 @@ const Home = () => {
                   content easily and is fully typesafe. The UI is minimal and
                   clean. It&apos;s open source. Hosts images for you.
                 </p>
+                <Dialog>
+                  <DialogTrigger className="mt-4 h-9 rounded-full bg-black px-4 text-sm font-medium text-white shadow-lg ring-black transition-all hover:-translate-y-[2px] hover:shadow-xl ">
+                    Request access
+                  </DialogTrigger>
+                  <DialogContent className="max-w-sm">
+                    {!hasSubmitted && (
+                      <form
+                        className="mt-6 flex max-w-sm flex-col gap-2 py-2 pb-12"
+                        onSubmit={onSubmit}
+                      >
+                        <h2>
+                          <span className="text-xl font-medium text-zinc-800">
+                            Be the first to try it.
+                          </span>
+                        </h2>
+                        <div className="flex gap-2 [&>*]:w-full">
+                          <label htmlFor="name">
+                            <Input
+                              type="text"
+                              id="name"
+                              placeholder="Name"
+                              aria-label="Name"
+                              title="Name"
+                              {...register("name", { required: true })}
+                            />
+                          </label>
+                          <label htmlFor="email">
+                            <Input
+                              {...register("email", { required: true })}
+                              type="email"
+                              id="email"
+                              aria-label="Email"
+                              placeholder="Email"
+                              title="Email"
+                            />
+                          </label>
+                        </div>
+                        <div className="">
+                          <Button className="w-full" type="submit">
+                            Request invite!
+                          </Button>
+                        </div>
+                      </form>
+                    )}
+                    {hasSubmitted && (
+                      <div className="mx-auto mt-6 flex max-w-xs flex-col gap-4 rounded-xl py-4 text-center">
+                        <span className="-mb-2 text-3xl">🎉</span>
+                        <p className="text-lg font-semibold">
+                          Thank you for signing up!
+                        </p>
+                        <p className="-mt-4 text-gray-600">
+                          We will let you know when we launch.
+                        </p>
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
 
-                <Carousel className="mt-12">
+                <Carousel className="mt-12 max-w-full">
                   <CarouselContent className="[&_img]:rounded-lg">
                     <CarouselItem>
                       <Image
@@ -157,68 +215,11 @@ const Home = () => {
                       />
                     </CarouselItem>
                   </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
+                  <CarouselPrevious className="hidden md:flex" />
+                  <CarouselNext className="hidden md:flex" />
                 </Carousel>
               </div>
             </div>
-            <hr className="my-11" />
-            {!hasSubmitted && (
-              <form
-                className="mt-6 flex max-w-sm flex-col gap-2 py-2 pb-12"
-                onSubmit={onSubmit}
-              >
-                <h2>
-                  <span className="text-xl font-medium text-zinc-800">
-                    Be the first to try it.
-                  </span>
-                </h2>
-                <div className="flex gap-2 [&>*]:w-full">
-                  <label htmlFor="name">
-                    <Input
-                      type="text"
-                      id="name"
-                      placeholder="Name"
-                      aria-label="Name"
-                      title="Name"
-                      {...register("name", { required: true })}
-                    />
-                  </label>
-                  <label htmlFor="email">
-                    <Input
-                      {...register("email", { required: true })}
-                      type="email"
-                      id="email"
-                      aria-label="Email"
-                      placeholder="Email"
-                      title="Email"
-                    />
-                  </label>
-                </div>
-                <div className="">
-                  <Button className="w-full" type="submit">
-                    Request invite!
-                  </Button>
-                </div>
-              </form>
-            )}
-            {hasSubmitted && (
-              <div className="mx-auto mt-6 flex max-w-xs flex-col gap-4 rounded-xl py-4 text-center">
-                <span className="-mb-2 text-3xl">🎉</span>
-                <p className="text-lg font-semibold">
-                  Thank you for signing up!
-                </p>
-                <p className="-mt-4 text-gray-600">
-                  We will let you know when we launch.
-                </p>
-              </div>
-            )}
-
-            {/* <hr className="my-12" /> */}
-
-            {/* <section className="pb-8">
-              <SubscribeSection />
-            </section> */}
           </main>
         </div>
         <Footer />
