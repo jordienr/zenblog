@@ -1,25 +1,27 @@
 <p align="center">
-   <img src="https://img.shields.io/github/stars/jordienr/zenblog?logo=github&style=for-the-badge&color=yellow" alt="Github Stars"></a>
+  <a href="https://github.com/jordienr/zenblog/stargazers>
+    <img src="https://img.shields.io/github/stars/jordienr/zenblog?logo=github&style=for-the-badge&color=yellow" alt="Github Stars"></a>
+  </a>
 </p>
 <p align="center" style="margin-top: 12px">
-  <a href="https://zenblog.com">
-   Zenblog
-  </a>
 
   <h1 align="center"><tt>Zenblog</tt></h1>
   <h2 align="center">Simple, open source blogging</h2>
 
 <p align="center">
-    <a href="https://zenblog.com"><strong>To our Website »</strong></a>
-    <br />
-    <br />
-    <a href="https://twitter.com/zenbloghq">Zenblog twitter</a>
+    <a href="https://zenblog.com"><strong>Website</strong></a> » 
+    <a href="https://twitter.com/zenbloghq">
+    <strong>Twitter</strong>
+    </a>
   </p>
 </p>
 
+  <img src="./apps/zendo/public/static/ui-1.png">
+  <img src="./apps/zendo/public/static/ui-2.png">
+
 ---
 
-## :construction: Current Status
+## 🏗️ Current Status
 
 `Zenblog` is currently under heavy development. The initial public release is expected in 2024
 
@@ -33,8 +35,8 @@ Zenblog is an open source, headless CMS for blogging. It's designed to be as sim
 
 - As many blogs as you want
 - Collaboration 🤼
+- Fetch content from your website easily with the SDK
 - Image hosting
-- SEO optimization
 - Analytics
 - RSS feeds
 - Webhooks
