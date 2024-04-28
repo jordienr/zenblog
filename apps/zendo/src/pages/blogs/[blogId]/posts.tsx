@@ -263,6 +263,14 @@ export default function BlogPosts() {
             </TabsContent>
             <TabsContent value="tags">
               <div className="rounded-xl border bg-white py-2 shadow-sm">
+                {blogTags.data?.length === 0 && (
+                  <div className="p-12 py-32 text-center">
+                    <div className="text-2xl">🏷️</div>
+                    <div className="text-lg text-zinc-500">
+                      Nothing here yet
+                    </div>
+                  </div>
+                )}
                 {blogTags.data?.map((tag) => {
                   return (
                     <div

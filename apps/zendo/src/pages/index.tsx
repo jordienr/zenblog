@@ -120,7 +120,7 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+              <h1 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
                 think, write & publish.
               </h1>
               <div className="text-lg font-light leading-8 text-zinc-600">
@@ -131,10 +131,10 @@ const Home = () => {
                   clean. It&apos;s open source. Hosts images for you.
                 </p>
                 <Dialog>
-                  <DialogTrigger className="mt-4 h-9 rounded-full bg-black px-4 text-sm font-medium text-white shadow-lg ring-black transition-all hover:-translate-y-[2px] hover:shadow-xl ">
+                  <DialogTrigger className="mt-4 h-9 rounded-xl bg-black px-5 text-sm font-medium text-white shadow-lg ring-black transition-all hover:-translate-y-[2px] hover:shadow-xl ">
                     Request access
                   </DialogTrigger>
-                  <DialogContent className="max-w-sm">
+                  <DialogContent className="max-w-sm px-8">
                     {!hasSubmitted && (
                       <form
                         className="mt-6 flex max-w-sm flex-col gap-2 py-2 pb-12"
@@ -145,7 +145,7 @@ const Home = () => {
                             Be the first to try it.
                           </span>
                         </h2>
-                        <div className="flex gap-2 [&>*]:w-full">
+                        <div className="flex flex-col gap-2 [&>*]:w-full">
                           <label htmlFor="name">
                             <Input
                               type="text"

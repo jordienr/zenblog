@@ -63,6 +63,10 @@ export default function BlogSettings() {
   function getHostedBlogUrl() {
     const url = new URL(process.env.NEXT_PUBLIC_BASE_URL || "");
     // add blog slug as subdomain
+    // remove www
+    if (url.hostname.startsWith("www.")) {
+      url.hostname = url.hostname.slice(4);
+    }
     url.hostname = `${blog?.slug}.${url.hostname}`;
     return url;
   }
@@ -124,6 +128,7 @@ export default function BlogSettings() {
           <hr className="my-4" />
 
           <Link
+            target="_blank"
             className="flex items-center gap-1 font-mono text-sm tracking-tighter text-slate-500"
             href={hostedBlogUrl.toString()}
           >
