@@ -13,7 +13,7 @@ type Props = {
   onChange: (tags: string[]) => void;
 };
 
-const TagSelect = (props: Props) => {
+export const TagManagement = (props: Props) => {
   const router = useRouter();
   const blogId = router.query.blogId as string;
   const tags = useBlogTags({ blogId });
@@ -141,5 +141,3 @@ const TagSelect = (props: Props) => {
     </div>
   );
 };
-
-export default TagSelect;

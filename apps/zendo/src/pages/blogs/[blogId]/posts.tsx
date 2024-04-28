@@ -1,12 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
 import AppLayout from "@/layouts/AppLayout";
-import { createAPIClient } from "@/lib/http/api";
 import { useRouter } from "next/router";
-import { IoSettingsSharp } from "react-icons/io5";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Plus, Settings, Trash } from "lucide-react";
+import {
+  Edit,
+  MoreVertical,
+  Pen,
+  Pencil,
+  Plus,
+  Settings,
+  Trash,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +27,13 @@ import { useBlogTags } from "@/components/Editor/Editor.queries";
 import { usePostsQuery } from "@/queries/posts";
 import { useBlogQuery } from "@/queries/blogs";
 import { formatDate } from "@/lib/utils";
-import { PiGear, PiPencilLine, PiTag, PiTrash } from "react-icons/pi";
+import { PiPencilLine, PiTag, PiTrash } from "react-icons/pi";
 import Spinner from "@/components/Spinner";
 import { useState } from "react";
+import { CreateTagDialog } from "@/components/Tags/CreateTagDialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useDeleteTagMutation, useUpdateTagMutation } from "@/queries/tags";
+import { UpdateTagDialog } from "@/components/Tags/UpdateTagDialog";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -71,6 +81,9 @@ export default function BlogPosts() {
       queryClient.invalidateQueries(["posts"]);
     },
   });
+
+  const deleteTagMutation = useDeleteTagMutation();
+  const updateTagMutation = useUpdateTagMutation();
 
   if (blog && posts) {
     return (
@@ -262,7 +275,7 @@ export default function BlogPosts() {
               </div>
             </TabsContent>
             <TabsContent value="tags">
-              <div className="rounded-xl border bg-white py-2 shadow-sm">
+              <div className="flex justify-between rounded-xl border bg-white px-2 py-2 shadow-sm">
                 {blogTags.data?.length === 0 && (
                   <div className="p-12 py-32 text-center">
                     <div className="text-2xl">🏷️</div>
@@ -271,42 +284,70 @@ export default function BlogPosts() {
                     </div>
                   </div>
                 )}
-                {blogTags.data?.map((tag) => {
-                  return (
-                    <div
-                      key={tag.id}
-                      className="flex items-center gap-1.5 px-4 py-2 font-mono"
-                    >
-                      <div className="rounded-md text-zinc-400">
-                        <PiTag size="16" />
-                      </div>
-                      <h2>{tag.name}</h2>
-                      <p className="text-sm text-zinc-500">/{tag.slug}</p>
-                      <div>
-                        <Button asChild size="icon" variant={"ghost"}>
-                          <Link
-                            href={`/blogs/${blogId}/tags/${tag.id}`}
-                            className="btn btn-icon"
-                            title="Edit tag"
-                            aria-label="Edit tag"
-                          >
-                            <PiPencilLine size="16" />
-                          </Link>
-                        </Button>
-                        <Button asChild size="icon" variant={"ghost"}>
-                          <Link
-                            href={`/blogs/${blogId}/tags/${tag.id}`}
-                            className="btn btn-icon"
+                <div className="grid divide-y">
+                  {blogTags.data?.map((tag) => {
+                    return (
+                      <div
+                        key={tag.id}
+                        className="flex gap-2 px-4 py-2 font-mono"
+                      >
+                        <div className="rounded-md p-2 text-zinc-400">
+                          <PiTag size="16" />
+                        </div>
+                        <div className="flex flex-col">
+                          <h2>{tag.name}</h2>
+                          <p className="text-sm text-zinc-500">{tag.slug}</p>
+                        </div>
+                        <div>
+                          <UpdateTagDialog
+                            tag={tag}
+                            onSubmit={async (newTag) => {
+                              const res = await updateTagMutation.mutateAsync({
+                                ...newTag,
+                                id: tag.id,
+                              });
+                              if (res.error) {
+                                toast.error("Failed to update tag");
+                                return;
+                              }
+                              toast.success("Tag updated");
+                            }}
+                            trigger={
+                              <Button size="icon" variant={"ghost"}>
+                                <Pencil size="16" />
+                              </Button>
+                            }
+                          />
+                          <ConfirmDialog
                             title="Delete tag"
-                            aria-label="Delete tag"
-                          >
-                            <PiTrash size="16" />
-                          </Link>
-                        </Button>
+                            description="Are you sure you want to delete this tag? This action cannot be undone."
+                            trigger={
+                              <Button size="icon" variant={"ghost"}>
+                                <>
+                                  <div className="sr-only">delete tag</div>
+                                  <PiTrash size="16" />
+                                </>
+                              </Button>
+                            }
+                            onConfirm={async () => {
+                              const res = await deleteTagMutation.mutateAsync(
+                                tag.id
+                              );
+                              if (res.error) {
+                                toast.error("Failed to delete tag");
+                                return;
+                              }
+                              toast.success("Tag deleted");
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+                <div className="flex justify-end">
+                  <CreateTagDialog blogId={blogId} />
+                </div>
               </div>
             </TabsContent>
           </Tabs>

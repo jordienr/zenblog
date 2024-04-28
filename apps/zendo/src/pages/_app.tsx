@@ -8,7 +8,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 import { useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
 
@@ -50,13 +50,24 @@ function MyApp({ Component, pageProps }: AppProps) {
               <Toaster
                 position="bottom-center"
                 toastOptions={{
-                  style: {
-                    background: "red",
-                    borderRadius: "12px",
-                    backgroundColor: "#333333",
-                    color: "white",
-                    padding: "10px 12px",
-                    border: "none",
+                  // style: {
+                  //   background: "red",
+                  //   borderRadius: "12px",
+                  //   backgroundColor: "#333333",
+                  //   color: "white",
+                  //   padding: "10px 12px",
+                  //   border: "none",
+                  // },
+                  unstyled: true,
+                  classNames: {
+                    toast:
+                      "px-3 py-1.5 rounded-xl text-white flex gap-1 items-center",
+                    title: "font-medium",
+                    icon: "flex items-center justify-center",
+                    error: "bg-red-500",
+                    success: "bg-green-500",
+                    info: "bg-blue-500",
+                    warning: "bg-yellow-500",
                   },
                 }}
               />

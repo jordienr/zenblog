@@ -4,7 +4,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Code, Info, Plus, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import CategorySelect from "./TagSelect";
+import { TagManagement } from "./TagManagement";
 import { toast } from "sonner";
 import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
@@ -341,7 +341,7 @@ const EditorSettings = (props: Props) => {
           </Button>
         </div>
         <div className="mt-4">
-          <CategorySelect
+          <TagManagement
             selectedTags={selectedTags}
             onChange={handleCategoryChange}
           />
