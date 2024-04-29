@@ -8,6 +8,7 @@ import {
   ChevronRight,
   List,
   CornerUpLeft,
+  Tag,
 } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -39,6 +40,7 @@ import { useSubscriptionQuery } from "@/queries/subscription";
 import { toast } from "sonner";
 import { Database } from "@/types/supabase";
 import { useBlogTags } from "./Editor.queries";
+import { TagPicker } from "../Tags/TagPicker";
 
 const formSchema = z.object({
   title: z.string(),
@@ -65,7 +67,7 @@ type Props = {
   onSave: (data: OnSaveData) => Promise<void>;
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
-  tags?: string[];
+  tags?: { id: string; name: string; slug: string }[];
   autoCompleteSlug?: boolean;
 };
 
@@ -451,12 +453,28 @@ export const ZendoEditor = (props: Props) => {
             className="mt-1 w-full max-w-2xl rounded-xl bg-transparent p-2
             text-4xl font-medium text-zinc-800 outline-none"
           />
-          <div>
+          <div className="flex gap-0.5">
+            {tags.length === 0 && (
+              <TagPicker
+                allTags={blogTags.data || []}
+                selectedTags={tags}
+                onChange={(newTags) => {
+                  setTags(newTags);
+                }}
+              >
+                <button
+                  className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-zinc-500 transition-all hover:bg-zinc-100"
+                  onClick={() => {
+                    console.log("tags");
+                  }}
+                >
+                  <Tag size="14" className="text-zinc-500" />
+                  Add tags
+                </button>
+              </TagPicker>
+            )}
             {tags.length > 0 && (
               <div className="flex items-center gap-1">
-                <span className="mx-1 font-mono text-xs font-medium text-zinc-500">
-                  Tags
-                </span>
                 {tags.map((tag) => (
                   <span
                     key={tag}

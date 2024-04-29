@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { CheckCircle, CheckIcon } from "lucide-react";
 
 export type BlogImage = {
   id: string;
@@ -72,7 +73,7 @@ export function ImagePicker({
             </TabsList>
             <TabsContent value="images">
               <div className="relative">
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-4 gap-3">
                   {data?.length === 0 ? (
                     <div className="col-span-2 py-24">
                       <p className="text-center text-sm text-gray-500">
@@ -87,44 +88,44 @@ export function ImagePicker({
                       type="button"
                       key={image.id}
                       className={cn(
-                        "flex items-center gap-2 rounded-md border border-transparent p-2 transition-all hover:border-slate-200 hover:bg-slate-50",
-                        {
-                          "border-orange-300 bg-orange-100 hover:border-orange-300 hover:bg-orange-100":
-                            selectedImage?.id === image.id,
-                        }
+                        "group flex flex-col gap-1 rounded-xl text-left transition-all hover:opacity-90"
                       )}
                       onClick={() => {
                         setSelectedImage(image);
                       }}
                     >
-                      <div>
+                      <div className="relative w-full">
                         <img
-                          className="h-12 w-12 rounded-md object-cover"
+                          className="h-32 w-full rounded-xl object-cover shadow-sm"
                           width="48"
                           height="48"
                           src={image.url}
                         />
-                      </div>
-                      <div className="flex flex-col text-left">
-                        <span className="text-sm">{image.name}</span>
-                        <div className="flex items-center gap-2">
-                          {/* <Button onClick={() => onSelectClick(image)}>
-                            Select
-                          </Button> */}
-                          {/* <Button
-                          size={"sm"}
-                          className="h-8"
-                          type="button"
-                          variant={"outline"}
-                          onClick={() => {
-                            navigator.clipboard.writeText(image.url);
-                            toast.success("Copied to clipboard");
-                          }}
+                        <div
+                          className={cn(
+                            "absolute right-1.5 top-1.5 h-6 w-6 rounded-full border border-zinc-200 bg-zinc-100/50 opacity-0 bg-blend-darken transition-all group-hover:opacity-100",
+                            "flex items-center justify-center",
+                            {
+                              "border-orange-600 bg-orange-600 text-orange-100 opacity-100":
+                                selectedImage?.id === image.id,
+                            }
+                          )}
                         >
-                          <HiOutlineClipboard />
-                          Copy URL
-                        </Button> */}
+                          {selectedImage?.id === image.id && (
+                            <CheckIcon size={12} />
+                          )}
                         </div>
+                      </div>
+                      <div
+                        className={cn(
+                          "line-clamp-1 font-mono text-xs tracking-tight text-zinc-500 transition-all group-hover:text-zinc-900",
+                          {
+                            "text-orange-500 group-hover:text-orange-500":
+                              selectedImage?.id === image.id,
+                          }
+                        )}
+                      >
+                        {image.name}
                       </div>
                     </button>
                   ))}
