@@ -16,7 +16,7 @@ type Props = {
 };
 export function UpdateTagDialog({ onSubmit, tag, open, onOpenChange }: Props) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="md:max-w-sm">
         <h2 className="font-medium">Edit tag</h2>
         <form

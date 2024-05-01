@@ -372,7 +372,9 @@ export default function BlogPosts() {
               <div className="rounded-xl border bg-white px-2 py-2 shadow-sm">
                 <div className="flex justify-between">
                   <h2 className="px-3 py-1 text-lg font-medium tracking-tight">
-                    {tags.data?.length} tags
+                    {tags.data?.length > 0
+                      ? `${tags.data?.length} tags`
+                      : "Tags"}
                   </h2>
                   <CreateTagDialog blogId={blogId} />
                 </div>
@@ -384,13 +386,17 @@ export default function BlogPosts() {
                     </div>
                   </div>
                 )}
+
                 <div className="grid divide-y">
-                  <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
-                    <div>Tag</div>
-                    <div>Slug</div>
-                    <div>Posts with tag</div>
-                    <div></div>
-                  </div>
+                  {tags.data?.length > 0 && (
+                    <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
+                      <div>Tag</div>
+                      <div>Slug</div>
+                      <div>Posts with tag</div>
+                      <div></div>
+                    </div>
+                  )}
+
                   {tags.data?.map((tag) => {
                     return (
                       <div
@@ -411,7 +417,7 @@ export default function BlogPosts() {
                         <div className="font-mono">{tag.post_count}</div>
 
                         <div className="flex items-center justify-end">
-                          <DropdownMenu>
+                          <DropdownMenu modal={false}>
                             <DropdownMenuTrigger>
                               <Button size="icon" variant={"ghost"}>
                                 <MoreVertical size="16" />

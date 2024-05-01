@@ -12,6 +12,7 @@ import { HiOutlineInformationCircle } from "react-icons/hi";
 import { useUser } from "@/utils/supabase/browser";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 type Props = {
   children?: React.ReactNode;

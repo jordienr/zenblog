@@ -61,13 +61,13 @@ function MyApp({ Component, pageProps }: AppProps) {
                   unstyled: true,
                   classNames: {
                     toast:
-                      "px-3 py-1.5 rounded-xl text-white flex gap-1 items-center",
+                      "px-3 py-1.5 rounded-xl text-white flex gap-1 items-center justify-center",
                     title: "font-medium",
                     icon: "flex items-center justify-center",
                     error: "bg-red-500",
-                    success: "bg-green-500",
+                    success: "bg-zinc-800",
                     info: "bg-blue-500",
-                    warning: "bg-yellow-500",
+                    warning: "bg-yellow-600",
                   },
                 }}
               />

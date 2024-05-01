@@ -32,6 +32,7 @@
     "demos/*"
   ],
   "dependencies": {
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@supabase/ssr": "^0.1.0",
     "@types/inquirer": "^9.0.3",
     "next": "^14.1.0",
