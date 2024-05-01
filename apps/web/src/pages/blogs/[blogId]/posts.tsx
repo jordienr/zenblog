@@ -37,7 +37,11 @@ import Spinner from "@/components/Spinner";
 import { useState } from "react";
 import { CreateTagDialog } from "@/components/Tags/CreateTagDialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { useDeleteTagMutation, useUpdateTagMutation } from "@/queries/tags";
+import {
+  useDeleteTagMutation,
+  useTagsWithUsageQuery,
+  useUpdateTagMutation,
+} from "@/queries/tags";
 import { UpdateTagDialog } from "@/components/Tags/UpdateTagDialog";
 import { Image, ImageSelector } from "@/components/Images/ImagePicker";
 import { useRouterTabs } from "@/hooks/useRouterTabs";
@@ -64,6 +68,9 @@ export default function BlogPosts() {
   const blogId = router.query.blogId as string;
   const { tabValue, onTabChange } = useRouterTabs("tab");
   const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [updateTagDialogOpen, setUpdateTagDialogOpen] = useState(false);
+  const [deleteTagDialogOpen, setDeleteTagDialogOpen] = useState(false);
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
 
   const { data: blog, isLoading: blogLoading } = useBlogQuery(blogId);
   const { data: posts, isLoading: postsLoading } = usePostsQuery();
@@ -74,7 +81,7 @@ export default function BlogPosts() {
   const deleteMedia = useDeleteMediaMutation();
   const [selectedImages, setSelectedImages] = useState<Image[]>([]);
 
-  const blogTags = useBlogTags({ blogId });
+  const tags = useTagsWithUsageQuery({ blogId });
 
   const supabase = getSupabaseBrowserClient();
   const queryClient = useQueryClient();
@@ -110,7 +117,7 @@ export default function BlogPosts() {
           </div>
 
           <Tabs
-            value={tabValue}
+            value={tabValue || "posts"}
             onValueChange={(tabVal) => {
               onTabChange(tabVal);
             }}
@@ -267,42 +274,48 @@ export default function BlogPosts() {
                   </h2>
                   <div className="flex gap-2">
                     {selectedImages.length > 0 && (
-                      <ConfirmDialog
-                        title="Are you sure you want to delete these files?"
-                        description="Blog posts that reference these files will be affected. This action cannot be undone."
-                        onConfirm={async () => {
-                          const paths = selectedImages.map(
-                            (img) => `${blogId}/${img.name}`
-                          );
-                          const { error, data } = await deleteMedia.mutateAsync(
-                            paths
-                          );
+                      <>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setConfirmDeleteDialogOpen(true);
+                          }}
+                        >
+                          <TrashIcon size="16" />
+                          Delete {selectedImages.length}{" "}
+                          {selectedImages.length > 1 ? "files" : "file"}
+                        </Button>
+                        <ConfirmDialog
+                          open={confirmDeleteDialogOpen}
+                          onOpenChange={setConfirmDeleteDialogOpen}
+                          title="Are you sure you want to delete these files?"
+                          description="Blog posts that reference these files will be affected. This action cannot be undone."
+                          onConfirm={async () => {
+                            const paths = selectedImages.map(
+                              (img) => `${blogId}/${img.name}`
+                            );
+                            const { error, data } =
+                              await deleteMedia.mutateAsync(paths);
 
-                          if (error) {
-                            toast.error("Failed to delete images");
-                            return;
+                            if (error) {
+                              toast.error("Failed to delete images");
+                              return;
+                            }
+                            toast.success("Images deleted");
+                            setSelectedImages([]);
+                          }}
+                          dialogBody={
+                            <div>
+                              <h2 className="font-medium">Files to delete:</h2>
+                              <ul className="font-mono text-red-500">
+                                {selectedImages.map((img) => (
+                                  <li key={img.name}>{img.name}</li>
+                                ))}
+                              </ul>
+                            </div>
                           }
-                          toast.success("Images deleted");
-                          setSelectedImages([]);
-                        }}
-                        dialogBody={
-                          <div>
-                            <h2 className="font-medium">Files to delete:</h2>
-                            <ul className="font-mono text-red-500">
-                              {selectedImages.map((img) => (
-                                <li key={img.id}>{img.name}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        }
-                        trigger={
-                          <Button variant="outline">
-                            <TrashIcon size="16" />
-                            Delete {selectedImages.length}{" "}
-                            {selectedImages.length > 1 ? "files" : "file"}
-                          </Button>
-                        }
-                      />
+                        />
+                      </>
                     )}
                     <Dialog
                       open={showUploadDialog}
@@ -359,11 +372,11 @@ export default function BlogPosts() {
               <div className="rounded-xl border bg-white px-2 py-2 shadow-sm">
                 <div className="flex justify-between">
                   <h2 className="px-3 py-1 text-lg font-medium tracking-tight">
-                    {blogTags.data?.length} tags
+                    {tags.data?.length} tags
                   </h2>
                   <CreateTagDialog blogId={blogId} />
                 </div>
-                {blogTags.data?.length === 0 && (
+                {tags.data?.length === 0 && (
                   <div className="p-12 py-32 text-center">
                     <div className="text-2xl">🏷️</div>
                     <div className="text-lg text-zinc-500">
@@ -372,62 +385,92 @@ export default function BlogPosts() {
                   </div>
                 )}
                 <div className="grid divide-y">
-                  {blogTags.data?.map((tag) => {
+                  <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
+                    <div>Tag</div>
+                    <div>Slug</div>
+                    <div>Posts with tag</div>
+                    <div></div>
+                  </div>
+                  {tags.data?.map((tag) => {
                     return (
                       <div
                         key={tag.id}
-                        className="flex gap-2 px-4 py-2 font-mono"
+                        className="grid grid-cols-4 items-center px-2 py-1.5 hover:bg-zinc-50"
                       >
-                        <div className="rounded-md p-2 text-zinc-400">
-                          <PiTag size="16" />
+                        <div className="flex items-center gap-2">
+                          <PiTag className="text-orange-500" size="16" />
+                          <span className="font-medium">{tag.tag_name}</span>
                         </div>
+
                         <div className="flex flex-col">
-                          <h2>{tag.name}</h2>
-                          <p className="text-sm text-zinc-500">{tag.slug}</p>
+                          <p className="font-mono text-sm text-zinc-500">
+                            {tag.slug}
+                          </p>
                         </div>
-                        <div>
-                          <UpdateTagDialog
-                            tag={tag}
-                            onSubmit={async (newTag) => {
-                              const res = await updateTagMutation.mutateAsync({
-                                ...newTag,
-                                id: tag.id,
-                              });
-                              if (res.error) {
-                                toast.error("Failed to update tag");
-                                return;
-                              }
-                              toast.success("Tag updated");
-                            }}
-                            trigger={
+
+                        <div className="font-mono">{tag.post_count}</div>
+
+                        <div className="flex items-center justify-end">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger>
                               <Button size="icon" variant={"ghost"}>
-                                <Pencil size="16" />
+                                <MoreVertical size="16" />
                               </Button>
-                            }
-                          />
-                          <ConfirmDialog
-                            title="Delete tag"
-                            description="Are you sure you want to delete this tag? This action cannot be undone."
-                            trigger={
-                              <Button size="icon" variant={"ghost"}>
-                                <>
-                                  <div className="sr-only">delete tag</div>
-                                  <PiTrash size="16" />
-                                </>
-                              </Button>
-                            }
-                            onConfirm={async () => {
-                              const res = await deleteTagMutation.mutateAsync(
-                                tag.id
-                              );
-                              if (res.error) {
-                                toast.error("Failed to delete tag");
-                                return;
-                              }
-                              toast.success("Tag deleted");
-                            }}
-                          />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setUpdateTagDialogOpen(true);
+                                }}
+                              >
+                                <Pen size="16" className="mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setDeleteTagDialogOpen(true);
+                                }}
+                              >
+                                <Trash size="16" className="mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
+                        <UpdateTagDialog
+                          tag={tag}
+                          onSubmit={async (newTag) => {
+                            const res = await updateTagMutation.mutateAsync({
+                              name: newTag.tag_name,
+                              slug: newTag.slug,
+                              id: tag.id,
+                            });
+                            if (res.error) {
+                              toast.error("Failed to update tag");
+                              return;
+                            }
+                            toast.success("Tag updated");
+                          }}
+                          open={updateTagDialogOpen}
+                          onOpenChange={setUpdateTagDialogOpen}
+                        />
+                        <ConfirmDialog
+                          title="Delete tag"
+                          description="Are you sure you want to delete this tag? This action cannot be undone."
+                          open={deleteTagDialogOpen}
+                          onOpenChange={setDeleteTagDialogOpen}
+                          onConfirm={async () => {
+                            const res = await deleteTagMutation.mutateAsync(
+                              tag.tag_id
+                            );
+                            if (res.error) {
+                              toast.error("Failed to delete tag");
+                              return;
+                            }
+                            setDeleteTagDialogOpen(false);
+                            toast.success("Tag deleted");
+                          }}
+                        />
                       </div>
                     );
                   })}

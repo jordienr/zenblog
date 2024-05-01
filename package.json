@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "build:web": "turbo run build --filter=website",
+    "build:web": "turbo run build --filter=web",
     "dev": "turbo run dev",
     "start": "concurrently --names \"APP,STRIPE\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev\" \"npm run stripe:webhook\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

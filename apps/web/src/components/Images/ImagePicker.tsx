@@ -201,7 +201,7 @@ export function ImageSelector({
 
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="relative grid grid-cols-2 gap-3 md:grid-cols-4">
         {images.map((img) => (
           <ImageItem
             key={img.id}
@@ -273,7 +273,7 @@ export function ImageItem({ image, selected, onClick }: ImageItem) {
               <span className="line-clamp-1 text-left">{image.name}</span>
             </div>
           </TooltipTrigger>
-          <TooltipContent className="z-50">
+          <TooltipContent className="">
             <ul className="">
               <li>{image.name}</li>
               <li>

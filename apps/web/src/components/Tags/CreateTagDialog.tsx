@@ -25,16 +25,12 @@ export function CreateTagDialog({ blogId }: PropsWithChildren<Props>) {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button
-            className="text-slate-500"
-            variant={"secondary"}
-            title="Create tag"
-          >
+          <Button variant={"outline"} title="Create tag">
             <Plus />
             <div>Create tag</div>
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-xs">
+        <DialogContent className="md:max-w-xs">
           <h2 className="font-medium">Create tag</h2>
           <form
             className="mt-2 flex flex-col gap-2"

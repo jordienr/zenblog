@@ -1,10 +1,27 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const tagKeys = {
   tags: () => ["tags"],
   tag: (tagId: string) => ["tag", tagId],
 };
+
+export function useTagsWithUsageQuery({ blogId }: { blogId: string }) {
+  const supa = getSupabaseBrowserClient();
+
+  return useQuery({
+    queryKey: tagKeys.tags(),
+    enabled: !!blogId,
+    queryFn: async () => {
+      const { data } = await supa
+        .from("tag_usage_count_v1")
+        .select("*")
+        .eq("blog_id", blogId);
+
+      return data;
+    },
+  });
+}
 
 export function useDeleteTagMutation() {
   const queryClient = useQueryClient();
