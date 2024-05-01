@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import imageCompression from "browser-image-compression";
-import { Loader } from "lucide-react";
+import { ImageIcon, Loader } from "lucide-react";
 import { Input } from "../ui/input";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { cn } from "@/lib/utils";
+import { nanoid } from "nanoid";
 
 type Props = {
   blogId: string;
@@ -46,9 +48,21 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
   }, []);
 
   async function uploadImageToBlogAndGetURL(file: File) {
+    const randomId = nanoid(8);
+
+    let ogNameWithoutExt = file.name.split(".").slice(0, -1).join(".");
+
+    if (ogNameWithoutExt.length > 48) {
+      ogNameWithoutExt = ogNameWithoutExt.slice(0, 48);
+    }
+
+    const fileExtension = file.name.split(".").pop();
+
+    const newName = `${ogNameWithoutExt}-${randomId}.${fileExtension}`;
+
     const { data, error } = await supa.storage
       .from("images")
-      .upload(`${blogId}/${file.name}`, file, {
+      .upload(`${blogId}/${newName}`, file, {
         cacheControl: "3600",
         upsert: false,
       });
@@ -105,7 +119,6 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
   }
 
   const uploadToClient = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Upload to client");
     if (e.target.files && e.target.files[0]) {
       const imageFile = e.target.files[0];
 
@@ -114,16 +127,8 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
         maxWidthOrHeight: 1920,
         useWebWorker: true,
       };
-      console.log("originalFile instanceof Blob", imageFile instanceof Blob); // true
-      console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
       const compressedFile = await imageCompression(imageFile, options);
-      console.log(
-        "compressedFile instanceof Blob",
-        compressedFile instanceof Blob
-      ); // true
-      console.log(
-        `compressedFile size ${compressedFile.size / 1024 / 1024} MB`
-      ); // smaller than maxSizeMB
 
       setImage(compressedFile);
       const imageInfo = await getImageInfo(compressedFile);
@@ -134,35 +139,63 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
   };
 
   return (
-    <div className="w-full">
+    <div
+      className={cn("", {
+        "w-full": image,
+        "w-[360px]": !image,
+      })}
+    >
+      <h2 className="mb-2 flex gap-1.5 font-medium">
+        <ImageIcon className="text-orange-500" size="22" /> Upload media
+      </h2>
       <form onSubmit={onSubmit}>
-        <div className="bg-grid-slate-200 flex min-h-[300px] flex-col items-center justify-center overflow-auto rounded-xl border bg-slate-100 p-4">
-          {loading && (
-            <div className="flex-x-center flex-y-center p-8">
-              <Loader className="animate-spin" />
-            </div>
-          )}
-          {image && (
-            <img
-              className="max-h-80 border bg-white shadow-sm"
-              src={createObjectURL || ""}
-            />
-          )}
-          {imageInfo && (
-            <>
-              <span className=" text-slate-500">{`${imageInfo.height}x${imageInfo.width}px`}</span>
-              <span className=" text-slate-500">{imageInfo.size}</span>
-            </>
-          )}
-        </div>
+        {image && (
+          <div className="bg-grid-slate-100 flex min-h-[300px] flex-col items-center justify-center overflow-auto rounded-lg border bg-slate-50 p-2">
+            {loading && (
+              <div className="flex-x-center flex-y-center p-8">
+                <Loader className="animate-spin" />
+              </div>
+            )}
+            {image && (
+              <img
+                className="max-h-80 border bg-white shadow-sm"
+                src={createObjectURL || ""}
+              />
+            )}
+            {imageInfo && (
+              <div className="flex w-full justify-between">
+                <div className="flex items-center gap-2 text-xs">
+                  <span className=" text-slate-500">{`${imageInfo.height}x${imageInfo.width}px`}</span>
+                  <span className=" text-slate-500">{imageInfo.size}</span>
+                </div>
+                <div>
+                  <Button
+                    variant={"ghost"}
+                    className="text-red-500"
+                    onClick={() => {
+                      setImage(null);
+                      setCreateObjectURL(null);
+                      setImageInfo(null);
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
-        <Input
-          className="mt-4"
-          type="file"
-          name="file"
-          onChange={uploadToClient}
-          multiple
-        />
+        {!image && (
+          <Input
+            className="mt-2"
+            type="file"
+            name="file"
+            onChange={uploadToClient}
+            multiple
+          />
+        )}
+
         <div className="actions mt-4">
           <div className="mr-auto text-center text-sm text-slate-400">
             Cmd + V to paste an image

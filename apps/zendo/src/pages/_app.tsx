@@ -8,7 +8,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 import { useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
 
@@ -41,7 +41,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 
   return (
-    <div className={`${ibmPlexMono.variable} ${inter.variable}`}>
+    <div className={`${ibmPlexMono.variable} ${inter.variable} font-sans`}>
       <UserProvider>
         <PlausibleProvider domain="zenblog.com">
           <QueryClientProvider client={queryClient}>

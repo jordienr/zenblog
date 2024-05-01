@@ -12,6 +12,8 @@ import {
   Plus,
   Settings,
   Trash,
+  TrashIcon,
+  Upload,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -22,18 +24,25 @@ import {
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useImages } from "@/components/Images/Images.queries";
+import {
+  useDeleteMediaMutation,
+  useMediaQuery,
+} from "@/components/Images/Images.queries";
 import { useBlogTags } from "@/components/Editor/Editor.queries";
 import { usePostsQuery } from "@/queries/posts";
 import { useBlogQuery } from "@/queries/blogs";
 import { formatDate } from "@/lib/utils";
-import { PiPencilLine, PiTag, PiTrash } from "react-icons/pi";
+import { PiTag, PiTrash } from "react-icons/pi";
 import Spinner from "@/components/Spinner";
 import { useState } from "react";
 import { CreateTagDialog } from "@/components/Tags/CreateTagDialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useDeleteTagMutation, useUpdateTagMutation } from "@/queries/tags";
 import { UpdateTagDialog } from "@/components/Tags/UpdateTagDialog";
+import { Image, ImageSelector } from "@/components/Images/ImagePicker";
+import { useRouterTabs } from "@/hooks/useRouterTabs";
+import { ImageUploader } from "@/components/Images/ImageUploader";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -53,14 +62,18 @@ export function StatePill({ published }: { published: boolean }) {
 export default function BlogPosts() {
   const router = useRouter();
   const blogId = router.query.blogId as string;
-  const [tab, setTab] = useState("posts");
+  const { tabValue, onTabChange } = useRouterTabs("tab");
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
 
   const { data: blog, isLoading: blogLoading } = useBlogQuery(blogId);
   const { data: posts, isLoading: postsLoading } = usePostsQuery();
 
   const isLoading = blogLoading || postsLoading;
 
-  const images = useImages(blogId);
+  const media = useMediaQuery(blogId);
+  const deleteMedia = useDeleteMediaMutation();
+  const [selectedImages, setSelectedImages] = useState<Image[]>([]);
+
   const blogTags = useBlogTags({ blogId });
 
   const supabase = getSupabaseBrowserClient();
@@ -96,7 +109,12 @@ export default function BlogPosts() {
             </h1>
           </div>
 
-          <Tabs value={tab} onValueChange={setTab}>
+          <Tabs
+            value={tabValue}
+            onValueChange={(tabVal) => {
+              onTabChange(tabVal);
+            }}
+          >
             <div className="flex items-center justify-between">
               <TabsList>
                 <TabsTrigger value="posts">Posts</TabsTrigger>
@@ -233,7 +251,7 @@ export default function BlogPosts() {
               </div>
             </TabsContent>
             <TabsContent value="media">
-              {images.isLoading && (
+              {media.isLoading && (
                 <>
                   <div className="flex-center p-12">
                     <Spinner />
@@ -241,7 +259,80 @@ export default function BlogPosts() {
                 </>
               )}
               <div className="rounded-xl border bg-white py-2 shadow-sm">
-                {images.data?.length === 0 && (
+                <div className="flex justify-between pr-3">
+                  <h2 className="px-3 py-1 text-lg font-medium tracking-tight">
+                    {selectedImages.length > 0
+                      ? `${selectedImages.length} files selected`
+                      : "Media"}
+                  </h2>
+                  <div className="flex gap-2">
+                    {selectedImages.length > 0 && (
+                      <ConfirmDialog
+                        title="Are you sure you want to delete these files?"
+                        description="Blog posts that reference these files will be affected. This action cannot be undone."
+                        onConfirm={async () => {
+                          const paths = selectedImages.map(
+                            (img) => `${blogId}/${img.name}`
+                          );
+                          const { error, data } = await deleteMedia.mutateAsync(
+                            paths
+                          );
+
+                          if (error) {
+                            toast.error("Failed to delete images");
+                            return;
+                          }
+                          toast.success("Images deleted");
+                          setSelectedImages([]);
+                        }}
+                        dialogBody={
+                          <div>
+                            <h2 className="font-medium">Files to delete:</h2>
+                            <ul className="font-mono text-red-500">
+                              {selectedImages.map((img) => (
+                                <li key={img.id}>{img.name}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        }
+                        trigger={
+                          <Button variant="outline">
+                            <TrashIcon size="16" />
+                            Delete {selectedImages.length}{" "}
+                            {selectedImages.length > 1 ? "files" : "file"}
+                          </Button>
+                        }
+                      />
+                    )}
+                    <Dialog
+                      open={showUploadDialog}
+                      onOpenChange={setShowUploadDialog}
+                    >
+                      <DialogTrigger asChild>
+                        <Button variant="outline">
+                          <Upload size="16" />
+                          Upload
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="md:max-w-sm">
+                        <ImageUploader
+                          blogId={blogId}
+                          onSuccessfulUpload={() => {
+                            setShowUploadDialog(false);
+                            media.refetch();
+                          }}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </div>
+                {media.isLoading ||
+                  (media.isRefetching && (
+                    <div className="flex-center p-12">
+                      <Spinner />
+                    </div>
+                  ))}
+                {media.data?.length === 0 ? (
                   <>
                     <div className="p-12 py-32 text-center">
                       <div className="text-2xl">📷</div>
@@ -250,32 +341,28 @@ export default function BlogPosts() {
                       </div>
                     </div>
                   </>
+                ) : (
+                  <div className="flex flex-col gap-2 px-2">
+                    <ImageSelector
+                      images={media.data || []}
+                      onChange={(imgs) => {
+                        setSelectedImages(imgs);
+                      }}
+                      selected={selectedImages}
+                      type="multiple"
+                    />
+                  </div>
                 )}
-                <div className="flex flex-col gap-2">
-                  {images.data?.map((img) => {
-                    return (
-                      <div key={img.id} className="flex gap-4 px-4">
-                        <img
-                          className="h-24 w-32 rounded-md object-cover"
-                          src={img.url}
-                          alt={img.name}
-                          height={24}
-                          width={80}
-                        />
-                        <div>
-                          <h3 className="font-mono">{img.name}</h3>
-                          <p className="mt-1 font-mono text-xs tracking-tighter text-zinc-400">
-                            {img.url}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
             </TabsContent>
             <TabsContent value="tags">
-              <div className="flex justify-between rounded-xl border bg-white px-2 py-2 shadow-sm">
+              <div className="rounded-xl border bg-white px-2 py-2 shadow-sm">
+                <div className="flex justify-between">
+                  <h2 className="px-3 py-1 text-lg font-medium tracking-tight">
+                    {blogTags.data?.length} tags
+                  </h2>
+                  <CreateTagDialog blogId={blogId} />
+                </div>
                 {blogTags.data?.length === 0 && (
                   <div className="p-12 py-32 text-center">
                     <div className="text-2xl">🏷️</div>
@@ -344,9 +431,6 @@ export default function BlogPosts() {
                       </div>
                     );
                   })}
-                </div>
-                <div className="flex justify-end">
-                  <CreateTagDialog blogId={blogId} />
                 </div>
               </div>
             </TabsContent>

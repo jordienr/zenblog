@@ -25,6 +25,8 @@ const posts = await client.posts.list({ withContent: true, limit: 10 });
 - [] Make layout work on mobile
 - [] Make inputs not zoom in on mobile
 - [] Grace period for expired subscriptions
+- [] Auto generate abstract with AI
+- [] Auto generate promotional tweet for a post with AI. With a short description of what the post is about.
 
 ## Teams
 

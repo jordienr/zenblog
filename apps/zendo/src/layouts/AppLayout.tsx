@@ -33,11 +33,11 @@ export default function AppLayout({ children, loading = false }: Props) {
     <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
       <AppChecks>
         <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl border-b bg-zinc-50">
-          <div className="mx-auto flex h-full items-center justify-between p-4">
+          <div className="mx-auto flex h-full items-center justify-between px-4">
             <div className="z-20  flex h-full items-center gap-2">
               <Link
                 href="/blogs"
-                className="rounded-md px-1 text-lg font-medium"
+                className="rounded-md px-1 py-4 text-lg font-medium"
               >
                 <ZendoLogo />
               </Link>
@@ -45,7 +45,7 @@ export default function AppLayout({ children, loading = false }: Props) {
             <div className="flex items-center gap-1">
               <Feedback />
               <Link
-                className="rounded-full px-3 py-1 text-sm font-medium text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+                className="rounded-full px-3 py-4 text-sm font-medium text-slate-600 hover:text-orange-600"
                 href="/docs/getting-started"
               >
                 Docs

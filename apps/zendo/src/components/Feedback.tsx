@@ -18,7 +18,7 @@ const Feedback = (props: Props) => {
   return (
     <div>
       <DropdownMenu>
-        <DropdownMenuTrigger className="rounded-full px-3 py-1 text-sm font-medium text-slate-600 hover:bg-orange-50 hover:text-orange-600">
+        <DropdownMenuTrigger className="rounded-full px-3 py-1 text-sm font-medium text-slate-600 hover:text-orange-600">
           Feedback
         </DropdownMenuTrigger>
         <DropdownMenuContent>

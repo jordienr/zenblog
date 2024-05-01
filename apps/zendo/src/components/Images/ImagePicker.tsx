@@ -3,7 +3,6 @@
 import { createAPIClient } from "@/lib/http/api";
 import { useRouter } from "next/router";
 import { PropsWithChildren, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { ImageUploader } from "./ImageUploader";
 import {
   Dialog,
@@ -16,15 +15,22 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { CheckCircle, CheckIcon } from "lucide-react";
+import { cn, formatDate } from "@/lib/utils";
+import { CheckIcon, InfoIcon } from "lucide-react";
+import { useMediaQuery } from "./Images.queries";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
-export type BlogImage = {
+export type Image = {
   id: string;
   name: string;
   url: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export function ImagePicker({
@@ -34,7 +40,7 @@ export function ImagePicker({
   open,
   onOpenChange,
 }: PropsWithChildren<{
-  onSelect: (image: BlogImage) => void;
+  onSelect: (image: Image) => void;
   onCancel: () => void;
   open: boolean;
   ref?: any;
@@ -43,16 +49,8 @@ export function ImagePicker({
   const api = createAPIClient();
   const router = useRouter();
   const { blogId } = router.query as any;
-  const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<BlogImage | null>(null);
-
-  const { data, refetch } = useQuery(["images"], () =>
-    api.images.getAll(blogId)
-  );
-
-  function onSelectClick(image: BlogImage) {
-    onSelect(image);
-  }
+  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
+  const media = useMediaQuery(blogId);
 
   const [tab, setTab] = useState("images");
 
@@ -74,7 +72,7 @@ export function ImagePicker({
             <TabsContent value="images">
               <div className="relative">
                 <div className="grid grid-cols-4 gap-3">
-                  {data?.length === 0 ? (
+                  {media.data?.length === 0 ? (
                     <div className="col-span-2 py-24">
                       <p className="text-center text-sm text-gray-500">
                         No images uploaded yet
@@ -83,7 +81,7 @@ export function ImagePicker({
                   ) : (
                     <></>
                   )}
-                  {data?.map((image) => (
+                  {media.data?.map((image) => (
                     <button
                       type="button"
                       key={image.id}
@@ -158,7 +156,7 @@ export function ImagePicker({
               <div>
                 <ImageUploader
                   onSuccessfulUpload={() => {
-                    refetch();
+                    media.refetch();
                     toast.success("Image uploaded");
                     setTab("images");
                   }}
@@ -170,5 +168,128 @@ export function ImagePicker({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+type ImageSelector = {
+  images: Image[];
+  onChange: (image: Image[]) => void;
+  selected: Image[];
+  type: "single" | "multiple";
+};
+export function ImageSelector({
+  images,
+  onChange,
+  selected,
+  type,
+}: ImageSelector) {
+  function isSelected(image: Image) {
+    return selected.find((img) => img.id === image.id) !== undefined;
+  }
+
+  function onItemClick(image: Image) {
+    if (type === "single") {
+      onChange([image]);
+    } else {
+      if (selected?.find((img) => img.id === image.id)) {
+        onChange(selected.filter((img) => img.id !== image.id));
+      } else {
+        onChange([...selected, image]);
+      }
+    }
+  }
+
+  return (
+    <TooltipProvider>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {images.map((img) => (
+          <ImageItem
+            key={img.id}
+            image={img}
+            selected={isSelected(img)}
+            onClick={onItemClick}
+          />
+        ))}
+      </div>
+    </TooltipProvider>
+  );
+}
+
+type ImageItem = {
+  image: Image;
+  selected: boolean;
+  onClick: (image: Image) => void;
+};
+export function ImageItem({ image, selected, onClick }: ImageItem) {
+  return (
+    <button
+      type="button"
+      key={image.id}
+      className={cn(
+        "group flex max-w-[240px] flex-col gap-0.5 rounded-xl text-left transition-all hover:opacity-90"
+      )}
+      onClick={() => {
+        onClick(image);
+      }}
+    >
+      <div className="relative w-full">
+        <img
+          className={cn(
+            "h-32 w-full rounded-xl border border-zinc-100 object-cover shadow-sm",
+            {
+              "bg-blend-hue": selected,
+            }
+          )}
+          width="48"
+          height="48"
+          src={image.url}
+        />
+
+        <div
+          className={cn(
+            "absolute right-1.5 top-1.5 h-6 w-6 rounded-full border border-zinc-200 bg-zinc-100/50 opacity-0 bg-blend-darken transition-all group-hover:opacity-100",
+            "flex items-center justify-center",
+            {
+              "border-orange-600 bg-orange-600 text-orange-100 opacity-100":
+                selected,
+            }
+          )}
+        >
+          {selected && <CheckIcon size={12} />}
+        </div>
+      </div>
+      <div
+        className={cn(
+          "line-clamp-1 flex items-center font-mono text-xs tracking-tight text-zinc-500 transition-all group-hover:text-zinc-900",
+          {
+            "text-orange-500 group-hover:text-orange-500": selected,
+          }
+        )}
+      >
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-1.5 p-1.5">
+              <InfoIcon className="text-zinc-400" size={10} />
+              <span className="line-clamp-1 text-left">{image.name}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent className="z-50">
+            <ul className="">
+              <li>{image.name}</li>
+              <li>
+                Created:{" "}
+                {formatDate(image.created_at, {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                })}
+              </li>
+            </ul>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </button>
   );
 }
