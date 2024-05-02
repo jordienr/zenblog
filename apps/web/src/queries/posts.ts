@@ -32,11 +32,31 @@ export const usePostQuery = (postSlug: string) => {
     queryFn: async () => {
       const { data, error } = await sb
         .from("posts")
-        .select("*, post_tags(*)")
+        .select("*")
         .eq("slug", postSlug)
         .single();
 
-      return data;
+      if (error) {
+        console.error(error);
+        throw error;
+      }
+
+      const { data: tagsData, error: tagsError } = await sb
+        .from("post_tags")
+        .select("*")
+        .eq("post_id", data.id);
+
+      if (tagsError) {
+        console.error(tagsError);
+        throw tagsError;
+      }
+
+      return {
+        data: {
+          ...data,
+          tags: tagsData,
+        },
+      };
     },
     enabled: !!postSlug,
   });

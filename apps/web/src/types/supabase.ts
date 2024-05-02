@@ -201,6 +201,12 @@ export interface Database {
             columns: ["tag_id"]
             referencedRelation: "blog_tags"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            referencedRelation: "tag_usage_count_v1"
+            referencedColumns: ["tag_id"]
           }
         ]
       }
@@ -510,6 +516,25 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      tag_usage_count_v1: {
+        Row: {
+          blog_id: string | null
+          created_at: string | null
+          post_count: number | null
+          slug: string | null
+          tag_id: string | null
+          tag_name: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_tags_blog_id_fkey"
             columns: ["blog_id"]
             referencedRelation: "blogs"
             referencedColumns: ["id"]

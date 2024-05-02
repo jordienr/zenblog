@@ -6,9 +6,9 @@ import { Label } from "../ui/label";
 
 type Props = {
   tag: {
-    tag_id: string;
-    tag_name: string;
-    slug: string;
+    tag_id: string | null;
+    tag_name: string | null;
+    slug: string | null;
   };
   onSubmit: (tag: { tag_name: string; slug: string }) => void;
   open: boolean;
@@ -41,9 +41,9 @@ export function UpdateTagDialog({ onSubmit, tag, open, onOpenChange }: Props) {
           }}
         >
           <Label>Name</Label>
-          <Input name="tag_name" required defaultValue={tag.tag_name} />
+          <Input name="tag_name" required defaultValue={tag.tag_name!} />
           <Label>Slug</Label>
-          <Input name="slug" required defaultValue={tag.slug} />
+          <Input name="slug" required defaultValue={tag.slug!} />
           <div className="flex items-center justify-end gap-2">
             <Button type="submit">Update</Button>
           </div>

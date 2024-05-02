@@ -8,9 +8,14 @@ import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Plus, Wand } from "lucide-react";
 import { generateSlug } from "@/lib/utils/slugs";
 
+type Tag = {
+  id: string;
+  name: string;
+  slug: string;
+};
 type Props = {
-  selectedTags: string[];
-  onChange: (tags: string[]) => void;
+  selectedTags: Tag[];
+  onChange: (tags: Tag[]) => void;
 };
 
 export const TagManagement = (props: Props) => {
@@ -22,11 +27,11 @@ export const TagManagement = (props: Props) => {
   const [title, setTitle] = React.useState("");
   const [slug, setSlug] = React.useState("");
 
-  const [selectedTags, setSelectedTags] = React.useState<string[]>(
+  const [selectedTags, setSelectedTags] = React.useState<Tag[]>(
     props.selectedTags || []
   );
 
-  const handleTagChange = (tags: string[]) => {
+  const handleTagChange = (tags: Tag[]) => {
     setSelectedTags(tags);
     props.onChange(tags);
   };
@@ -120,14 +125,14 @@ export const TagManagement = (props: Props) => {
                 <input
                   onChange={(e) => {
                     if (e.target.checked) {
-                      handleTagChange([...selectedTags, e.target.value]);
+                      handleTagChange([...selectedTags, tag]);
                     } else {
                       handleTagChange(
-                        selectedTags.filter((tag) => tag !== e.target.value)
+                        selectedTags.filter((t) => t.id !== tag.id)
                       );
                     }
                   }}
-                  checked={selectedTags.includes(tag.id)}
+                  checked={selectedTags.some((t) => t.id === tag.id)}
                   type="checkbox"
                   key={tag.id}
                   value={tag.id}

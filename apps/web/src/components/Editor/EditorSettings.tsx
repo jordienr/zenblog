@@ -6,12 +6,10 @@ import { Code, Info, Plus, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { TagManagement } from "./TagManagement";
 import { toast } from "sonner";
-import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
 import Image from "next/image";
-import { CopyCell } from "../copy-cell";
 import {
   Select,
   SelectContent,
@@ -20,6 +18,12 @@ import {
   SelectValue,
 } from "../ui/select";
 
+type Tag = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
 type MetadataItem = {
   key: string;
   value: string;
@@ -27,7 +31,7 @@ type MetadataItem = {
 type Props = {
   title: string;
   metadata?: MetadataItem[];
-  selectedTags: string[];
+  selectedTags: Tag[];
   published_at?: string;
   blogEmoji?: string;
   blogTitle?: string;
@@ -37,7 +41,7 @@ type Props = {
     published_at,
   }: {
     metadata: MetadataItem[];
-    tags: string[];
+    tags: Tag[];
     published_at?: string;
   }) => void;
 };
@@ -48,7 +52,7 @@ const EditorSettings = (props: Props) => {
     : [{ key: "", value: "" }];
 
   const [metadata, setMetadata] = useState<MetadataItem[]>(defaultMetadata);
-  const [selectedTags, setSelectedTags] = useState<string[]>(
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(
     props.selectedTags || []
   );
   const today = new Date().toISOString().split("T")[0] || "";
@@ -122,7 +126,7 @@ const EditorSettings = (props: Props) => {
     props.onChange({ tags: selectedTags, metadata: newMetadata });
   };
 
-  const handleCategoryChange = (tags: string[]) => {
+  const handleCategoryChange = (tags: Tag[]) => {
     setSelectedTags(tags);
     props.onChange({ metadata, tags });
   };

@@ -61,8 +61,8 @@ export default function Post() {
               throw error;
             }
 
-            const newTags = data?.tags?.map((tag: string) => ({
-              tag_id: tag,
+            const newTags = data?.tags?.map((tag) => ({
+              tag_id: tag.id,
               blog_id: blogId,
               post_id: post.id,
             }));
@@ -105,7 +105,7 @@ export default function Post() {
           }
         }}
         post={post}
-        tags={post.post_tags.map((tag) => String(tag.tag_id)) || []}
+        tags={post.post_tags || []}
       />
 
       {/* <Dialog open={showPubDialog} onOpenChange={setShowPubDialog}>

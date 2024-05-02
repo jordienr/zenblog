@@ -27,8 +27,8 @@ export default function CreatePost() {
             }
 
             if (content.tags) {
-              const newTags = content.tags.map((tag: string) => ({
-                tag_id: tag,
+              const newTags = content.tags.map((tag) => ({
+                tag_id: tag.id,
                 blog_id: blogId,
                 post_id: data.id,
               }));

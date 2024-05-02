@@ -372,9 +372,7 @@ export default function BlogPosts() {
               <div className="rounded-xl border bg-white px-2 py-2 shadow-sm">
                 <div className="flex justify-between">
                   <h2 className="px-3 py-1 text-lg font-medium tracking-tight">
-                    {tags.data?.length > 0
-                      ? `${tags.data?.length} tags`
-                      : "Tags"}
+                    {tags.data?.length ? `${tags.data?.length} tags` : "Tags"}
                   </h2>
                   <CreateTagDialog blogId={blogId} />
                 </div>
@@ -388,7 +386,7 @@ export default function BlogPosts() {
                 )}
 
                 <div className="grid divide-y">
-                  {tags.data?.length > 0 && (
+                  {tags.data?.length && (
                     <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
                       <div>Tag</div>
                       <div>Slug</div>
@@ -400,7 +398,7 @@ export default function BlogPosts() {
                   {tags.data?.map((tag) => {
                     return (
                       <div
-                        key={tag.id}
+                        key={tag.tag_id}
                         className="grid grid-cols-4 items-center px-2 py-1.5 hover:bg-zinc-50"
                       >
                         <div className="flex items-center gap-2">
@@ -449,7 +447,7 @@ export default function BlogPosts() {
                             const res = await updateTagMutation.mutateAsync({
                               name: newTag.tag_name,
                               slug: newTag.slug,
-                              id: tag.id,
+                              id: tag.tag_id!,
                             });
                             if (res.error) {
                               toast.error("Failed to update tag");
@@ -467,7 +465,7 @@ export default function BlogPosts() {
                           onOpenChange={setDeleteTagDialogOpen}
                           onConfirm={async () => {
                             const res = await deleteTagMutation.mutateAsync(
-                              tag.tag_id
+                              tag.tag_id!
                             );
                             if (res.error) {
                               toast.error("Failed to delete tag");
