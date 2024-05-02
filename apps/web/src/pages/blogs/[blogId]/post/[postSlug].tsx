@@ -10,6 +10,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { BsShieldX } from "react-icons/bs";
 import { useState } from "react";
+import { usePostTags } from "@/queries/tags";
 
 export default function Post() {
   const router = useRouter();
@@ -24,9 +25,15 @@ export default function Post() {
 
   const { data: post, isLoading, isRefetching } = usePostQuery(postSlug);
 
-  const tags = useBlogTags({ blogId });
+  const tagsQuery = usePostTags({ blogId, postId: post?.data?.id || "" });
 
-  if (isLoading || tags.isLoading || isRefetching) {
+  const tags = tagsQuery.data?.map((tagRes) => ({
+    name: tagRes.blog_tags!.name,
+    id: tagRes.blog_tags!.id,
+    slug: tagRes.blog_tags!.slug,
+  }));
+
+  if (isLoading || tagsQuery.isLoading || isRefetching) {
     return (
       <div className="flex-center p-12">
         <Spinner />
@@ -47,6 +54,7 @@ export default function Post() {
     <div className="">
       <ZendoEditor
         onSave={async (data) => {
+          console.log("Saved blog post", data);
           const { tags, ...newData } = data;
           try {
             // TO DO: move this to an rfc
@@ -68,18 +76,13 @@ export default function Post() {
             }));
 
             if (newTags) {
-              const currentTagIds = data?.tags;
-              await Promise.all([
-                sb
-                  .from("post_tags")
-                  .delete()
-                  .match({ post_id: post.data.id, blog_id: blogId })
-                  .not("tag_id", "in", currentTagIds),
-
-                sb.from("post_tags").upsert(newTags, {
-                  onConflict: "tag_id, post_id, blog_id",
-                }),
-              ]);
+              await sb
+                .from("post_tags")
+                .delete()
+                .match({ post_id: post.data.id, blog_id: blogId });
+              await sb.from("post_tags").upsert(newTags, {
+                onConflict: "tag_id, post_id, blog_id",
+              });
             }
 
             queryClient.invalidateQueries([
@@ -105,7 +108,7 @@ export default function Post() {
           }
         }}
         post={post.data}
-        tags={tags.data || []}
+        tags={tags || []}
       />
 
       {/* <Dialog open={showPubDialog} onOpenChange={setShowPubDialog}>

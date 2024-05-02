@@ -2,7 +2,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const tagKeys = {
-  tags: () => ["tags"],
+  tags: (keys: string[]) => ["tags", ...keys],
   tag: (tagId: string) => ["tag", tagId],
 };
 
@@ -10,7 +10,7 @@ export function useTagsWithUsageQuery({ blogId }: { blogId: string }) {
   const supa = getSupabaseBrowserClient();
 
   return useQuery({
-    queryKey: tagKeys.tags(),
+    queryKey: tagKeys.tags([blogId]),
     enabled: !!blogId,
     queryFn: async () => {
       const { data } = await supa
@@ -35,7 +35,7 @@ export function useDeleteTagMutation() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(tagKeys.tags());
+        queryClient.invalidateQueries(tagKeys.tags([""]));
       },
     }
   );
@@ -53,8 +53,31 @@ export function useUpdateTagMutation() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(tagKeys.tags());
+        queryClient.invalidateQueries(tagKeys.tags([""]));
       },
     }
   );
+}
+
+export function usePostTags({
+  postId,
+  blogId,
+}: {
+  postId: string;
+  blogId: string;
+}) {
+  const supa = getSupabaseBrowserClient();
+
+  return useQuery({
+    queryKey: tagKeys.tags([postId, blogId]),
+    enabled: !!postId,
+    queryFn: async () => {
+      const { data } = await supa
+        .from("post_tags")
+        .select("blog_tags(*)")
+        .eq("post_id", postId);
+
+      return data;
+    },
+  });
 }
