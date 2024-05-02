@@ -81,6 +81,7 @@ export default function Dashboard() {
                         }}
                         title="Settings"
                         aria-label="Settings"
+                        className="text-zinc-400 opacity-0 transition-all group-hover:opacity-100"
                       >
                         <Settings size="24" />
                       </Button>

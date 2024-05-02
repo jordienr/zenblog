@@ -39,14 +39,15 @@ export function ImagePicker({
   onCancel,
   open,
   onOpenChange,
+  showFooter = true,
 }: PropsWithChildren<{
   onSelect: (image: Image) => void;
   onCancel: () => void;
   open: boolean;
   ref?: any;
   onOpenChange: (value: boolean) => void;
+  showFooter?: boolean;
 }>) {
-  const api = createAPIClient();
   const router = useRouter();
   const { blogId } = router.query as any;
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
@@ -90,6 +91,7 @@ export function ImagePicker({
                       )}
                       onClick={() => {
                         setSelectedImage(image);
+                        onSelect(image);
                       }}
                     >
                       <div className="relative w-full">
@@ -128,28 +130,30 @@ export function ImagePicker({
                     </button>
                   ))}
                 </div>
-                <DialogFooter>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={onCancel}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        if (!selectedImage) {
-                          return;
-                        }
-                        onSelect(selectedImage);
-                      }}
-                    >
-                      Save
-                    </Button>
-                  </div>
-                </DialogFooter>
+                {showFooter && (
+                  <DialogFooter>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={onCancel}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          if (!selectedImage) {
+                            return;
+                          }
+                          onSelect(selectedImage);
+                        }}
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </DialogFooter>
+                )}
               </div>
             </TabsContent>
             <TabsContent value="upload">

@@ -372,7 +372,7 @@ export const ZendoEditor = (props: Props) => {
               type="checkbox"
               id="published"
               {...register("published")}
-              className="h-4 w-4 rounded-lg border-none bg-transparent p-2 text-zinc-800 outline-none transition-all hover:bg-zinc-50 focus-visible:bg-zinc-100"
+              className="h-4 w-4 rounded-lg border-none border-zinc-200 bg-transparent p-2 text-zinc-800 outline-none transition-all hover:bg-zinc-50 focus-visible:bg-zinc-100"
             />
             Publish
           </Label>
@@ -422,7 +422,7 @@ export const ZendoEditor = (props: Props) => {
           </div>
         )}
 
-        <div className="px-8 pb-2">
+        <div className="px-8 pb-2 pt-1.5">
           <div className="flex w-full items-end justify-between gap-4 transition-all">
             <label
               className="group flex w-full flex-col items-start justify-center gap-1"
@@ -436,7 +436,7 @@ export const ZendoEditor = (props: Props) => {
                 placeholder="a-great-title"
                 type="text"
                 {...register("slug")}
-                className="w-full rounded-lg border border-transparent bg-transparent p-1 font-mono text-sm text-zinc-700 outline-none transition-all hover:bg-white focus:bg-zinc-100"
+                className="w-full rounded-lg border border-transparent bg-transparent p-1 font-mono text-sm text-zinc-500 outline-none transition-all hover:bg-white focus:bg-zinc-100"
                 autoComplete="off"
               />
             </label>
@@ -448,6 +448,7 @@ export const ZendoEditor = (props: Props) => {
                 setShowImagePicker(false);
               }}
               onCancel={() => {}}
+              showFooter={false}
             >
               <Button
                 variant={"ghost"}
@@ -480,6 +481,7 @@ export const ZendoEditor = (props: Props) => {
                       {blogTags.data?.find((t) => t.id === tag.id)?.name}
                     </div>
                     <button
+                      tabIndex={-1}
                       onClick={() => {
                         setTags(tags.filter((t) => t.id !== tag.id));
                       }}
@@ -500,6 +502,7 @@ export const ZendoEditor = (props: Props) => {
               }}
             >
               <button
+                tabIndex={-1}
                 className={cn(
                   "flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-zinc-400 opacity-0 transition-all hover:text-zinc-700 group-hover:opacity-100",
                   {
@@ -514,7 +517,7 @@ export const ZendoEditor = (props: Props) => {
           </div>
         </div>
         <div className="group">
-          <div className="sticky top-10 z-10">
+          <div className="sticky top-10 z-10 border-b px-3">
             <EditorMenu editor={editor} />
           </div>
           <div

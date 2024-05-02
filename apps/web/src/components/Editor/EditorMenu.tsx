@@ -174,7 +174,7 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
   return (
     <div
       tabIndex={-1}
-      className="flex max-w-full overflow-x-auto border-b bg-white p-1.5"
+      className="flex max-w-full overflow-x-auto bg-white p-1.5"
     >
       <DropdownMenu>
         <DropdownMenuTrigger tabIndex={-1} asChild>

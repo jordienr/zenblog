@@ -21,7 +21,7 @@ export function TagPicker({
 }: PropsWithChildren<Props>) {
   return (
     <Dialog>
-      <DialogTrigger>{children}</DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <h2 className="font-medium">Select tags</h2>
         <div className="grid grid-cols-3 gap-2">

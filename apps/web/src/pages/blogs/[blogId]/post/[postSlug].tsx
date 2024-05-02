@@ -64,7 +64,7 @@ export default function Post() {
             const newTags = data?.tags?.map((tag) => ({
               tag_id: tag.id,
               blog_id: blogId,
-              post_id: post.id,
+              post_id: post.data.id,
             }));
 
             if (newTags) {
@@ -73,7 +73,7 @@ export default function Post() {
                 sb
                   .from("post_tags")
                   .delete()
-                  .match({ post_id: post.id, blog_id: blogId })
+                  .match({ post_id: post.data.id, blog_id: blogId })
                   .not("tag_id", "in", currentTagIds),
 
                 sb.from("post_tags").upsert(newTags, {
@@ -104,8 +104,8 @@ export default function Post() {
             toast.error("Failed to save post");
           }
         }}
-        post={post}
-        tags={post.post_tags || []}
+        post={post.data}
+        tags={tags.data || []}
       />
 
       {/* <Dialog open={showPubDialog} onOpenChange={setShowPubDialog}>
