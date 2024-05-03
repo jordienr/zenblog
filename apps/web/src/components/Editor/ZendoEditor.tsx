@@ -371,7 +371,7 @@ export const ZendoEditor = (props: Props) => {
             id="published"
             defaultChecked={published}
             onCheckedChange={(e) => {
-              setPublished(e);
+              setPublished(e as any);
             }}
             checked={published}
           />
