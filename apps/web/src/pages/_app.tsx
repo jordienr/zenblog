@@ -11,6 +11,7 @@ import {
 import { Toaster } from "sonner";
 import { useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
+import Head from "next/head";
 
 // Fonts
 const inter = Inter({

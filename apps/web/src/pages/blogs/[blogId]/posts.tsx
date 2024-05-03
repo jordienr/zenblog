@@ -457,11 +457,11 @@ function PostItem({
   return (
     <Link
       href={`/blogs/${blogId}/post/${post.slug}`}
-      className="flex items-center gap-4 rounded-sm p-3 ring-orange-300 transition-all hover:bg-zinc-50"
+      className="flex flex-col gap-4 rounded-sm border-b p-3 ring-orange-300 transition-all hover:bg-zinc-50 md:flex-row md:items-center"
       key={post.slug}
     >
       {post.cover_image && (
-        <div>
+        <div className="hidden md:block">
           <img
             src={post.cover_image}
             alt=""

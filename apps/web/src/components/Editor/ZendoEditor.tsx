@@ -283,7 +283,7 @@ export const ZendoEditor = (props: Props) => {
       )}
       <form
         onSubmit={formSubmit}
-        className="sticky top-0 z-20 flex w-full items-center justify-between bg-zinc-50 px-3 py-1.5 text-zinc-800"
+        className="sticky top-0 z-20 flex w-full items-center justify-end bg-zinc-50 px-3 py-1.5 text-zinc-800 md:justify-between"
       >
         <div className="hidden items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-zinc-800 md:flex">
           {blogsQuery.isLoading ? null : (

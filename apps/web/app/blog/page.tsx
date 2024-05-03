@@ -7,7 +7,7 @@ type Props = {};
 
 const Blog = async (props: Props) => {
   const blog = getBlogClient();
-  // const posts = await blog.posts.getAll();
+  // const posts = await blog.posts.list();
 
   return (
     <>
