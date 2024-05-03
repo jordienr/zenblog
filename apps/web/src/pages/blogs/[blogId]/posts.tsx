@@ -178,7 +178,7 @@ export default function BlogPosts() {
                   return (
                     <Link
                       href={`/blogs/${blogId}/post/${post.slug}`}
-                      className="flex items-center gap-4 rounded-sm p-3 ring-orange-300 transition-all  hover:ring-1"
+                      className="flex items-center gap-4 rounded-sm p-3 ring-orange-300 transition-all hover:bg-zinc-50"
                       key={post.slug}
                     >
                       {post.cover_image && (
