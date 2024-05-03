@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createClient = void 0;
+exports.createZenblogClient = void 0;
 function logError(...args) {
     console.error("[zenblog error] ", ...args);
 }
@@ -25,7 +25,7 @@ function getConfig(url) {
         api: "https://www.zenblog.com/api/public",
     };
 }
-function createClient({ blogId, _url, debug }) {
+function createZenblogClient({ blogId, _url, debug, }) {
     const config = getConfig(_url);
     const log = createDebugger(debug || false);
     log("createClient ", config);
@@ -60,7 +60,7 @@ function createClient({ blogId, _url, debug }) {
     }
     return {
         posts: {
-            getAll: async function (opts) {
+            list: async function (opts) {
                 const posts = await _fetch(`posts`, {
                     method: "GET",
                     headers: {
@@ -71,7 +71,7 @@ function createClient({ blogId, _url, debug }) {
                 log("posts.getAll", posts);
                 return posts; // to do: validate
             },
-            getBySlug: async function (slug, opts) {
+            get: async function (slug, opts) {
                 const post = await _fetch(`post/${slug}`, {
                     method: "GET",
                     headers: {
@@ -85,5 +85,5 @@ function createClient({ blogId, _url, debug }) {
         },
     };
 }
-exports.createClient = createClient;
+exports.createZenblogClient = createZenblogClient;
 //# sourceMappingURL=index.js.map

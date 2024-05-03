@@ -47,6 +47,7 @@ import { Image, ImageSelector } from "@/components/Images/ImagePicker";
 import { useRouterTabs } from "@/hooks/useRouterTabs";
 import { ImageUploader } from "@/components/Images/ImageUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { usePostViewsQuery } from "@/queries/analytics";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -86,6 +87,10 @@ export default function BlogPosts() {
   const supabase = getSupabaseBrowserClient();
   const queryClient = useQueryClient();
 
+  const postViews = usePostViewsQuery({
+    blog_id: blogId,
+  });
+
   const deletePostMutation = useMutation({
     mutationFn: async (postId: string) => {
       const { data, error } = await supabase
@@ -104,6 +109,11 @@ export default function BlogPosts() {
 
   const deleteTagMutation = useDeleteTagMutation();
   const updateTagMutation = useUpdateTagMutation();
+
+  function getPostViews(slug: string) {
+    const post = postViews.data?.find((p: any) => p.post_slug === slug);
+    return post?.["count()"] || 0;
+  }
 
   if (blog && posts) {
     return (
@@ -176,83 +186,12 @@ export default function BlogPosts() {
                 )}
                 {posts.map((post) => {
                   return (
-                    <Link
-                      href={`/blogs/${blogId}/post/${post.slug}`}
-                      className="flex items-center gap-4 rounded-sm p-3 ring-orange-300 transition-all hover:bg-zinc-50"
-                      key={post.slug}
-                    >
-                      {post.cover_image && (
-                        <div>
-                          <img
-                            src={post.cover_image}
-                            alt=""
-                            className="h-16 w-24 rounded-md object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="flex flex-col gap-0.5">
-                        <div>
-                          <StatePill published={post.published || false} />
-                        </div>
-                        <h2 className="ml-1 text-lg font-normal">
-                          {post.title}
-                        </h2>
-                      </div>
-
-                      <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="flex items-center gap-2">
-                            {post.tags?.map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded-md bg-zinc-100 px-2 py-1 font-mono text-xs font-semibold text-zinc-600"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <span>{formatDate(post.published_at || "")}</span>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant={"ghost"}
-                              size={"icon"}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                              }}
-                            >
-                              <MoreVertical size="16" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                const confirmed = window.confirm(
-                                  "Are you sure you want to delete this post?"
-                                );
-                                if (!confirmed) return;
-                                try {
-                                  await deletePostMutation.mutateAsync(
-                                    post.post_id || ""
-                                  );
-                                  toast.success("Post deleted");
-                                } catch (error) {
-                                  console.error(error);
-                                  toast.error("Failed to delete post");
-                                }
-                              }}
-                            >
-                              <Trash size="16" />
-                              <span className="ml-2">Delete</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </Link>
+                    <PostItem
+                      views={getPostViews(post.slug || "")}
+                      key={post.post_id}
+                      post={post}
+                      blogId={blogId}
+                    />
                   );
                 })}
               </div>
@@ -486,4 +425,95 @@ export default function BlogPosts() {
       </AppLayout>
     );
   }
+}
+
+function PostItem({
+  post,
+  blogId,
+  views,
+}: {
+  post: any;
+  blogId: string;
+  views: string;
+}) {
+  return (
+    <Link
+      href={`/blogs/${blogId}/post/${post.slug}`}
+      className="flex items-center gap-4 rounded-sm p-3 ring-orange-300 transition-all hover:bg-zinc-50"
+      key={post.slug}
+    >
+      {post.cover_image && (
+        <div>
+          <img
+            src={post.cover_image}
+            alt=""
+            className="h-16 w-24 rounded-md object-cover"
+          />
+        </div>
+      )}
+      <div className="flex flex-col gap-0.5">
+        <div>
+          <StatePill published={post.published || false} />
+        </div>
+        <h2 className="ml-1 text-lg font-normal">{post.title}</h2>
+        <span className="px-1 font-mono text-xs text-zinc-500">
+          {views ? `${views} views` : "0 views"}
+        </span>
+      </div>
+
+      <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex items-center gap-2">
+            {post.tags?.map((tag: any) => (
+              <span
+                key={tag}
+                className="rounded-md bg-zinc-100 px-2 py-1 font-mono text-xs font-semibold text-zinc-600"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+        <span>{formatDate(post.published_at || "")}</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+            >
+              <MoreVertical size="16" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={async (e) => {
+                // e.stopPropagation();
+                // e.preventDefault();
+                // const confirmed = window.confirm(
+                //   "Are you sure you want to delete this post?"
+                // );
+                // if (!confirmed) return;
+                // try {
+                //   await deletePostMutation.mutateAsync(
+                //     post.post_id || ""
+                //   );
+                //   toast.success("Post deleted");
+                // } catch (error) {
+                //   console.error(error);
+                //   toast.error("Failed to delete post");
+                // }
+              }}
+            >
+              <Trash size="16" />
+              <span className="ml-2">Delete</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </Link>
+  );
 }

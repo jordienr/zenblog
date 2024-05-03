@@ -46,7 +46,11 @@ export type CreateClientOpts = {
   debug?: boolean;
 };
 
-export function createClient<T>({ blogId, _url, debug }: CreateClientOpts) {
+export function createZenblogClient<T>({
+  blogId,
+  _url,
+  debug,
+}: CreateClientOpts) {
   const config = getConfig(_url);
   const log = createDebugger(debug || false);
   log("createClient ", config);
@@ -92,7 +96,7 @@ export function createClient<T>({ blogId, _url, debug }: CreateClientOpts) {
 
   return {
     posts: {
-      getAll: async function (opts?: ReqOpts): Promise<Post[]> {
+      list: async function (opts?: ReqOpts): Promise<Post[]> {
         const posts = await _fetch(`posts`, {
           method: "GET",
           headers: {
@@ -105,7 +109,7 @@ export function createClient<T>({ blogId, _url, debug }: CreateClientOpts) {
         type PostWithT = Post & T;
         return posts as PostWithT[]; // to do: validate
       },
-      getBySlug: async function (
+      get: async function (
         slug: string,
         opts?: ReqOpts
       ): Promise<PostWithContent> {

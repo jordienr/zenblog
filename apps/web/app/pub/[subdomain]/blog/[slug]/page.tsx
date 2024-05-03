@@ -1,9 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
+import { sendViewEvent } from "@/analytics";
 import { ContentRenderer } from "@/cms/ContentRenderer";
 import { createClient } from "app/supa";
 import React from "react";
-
-type Props = {};
 
 const Post = async ({
   params: { slug, subdomain },
@@ -11,6 +10,19 @@ const Post = async ({
   params: { slug: string; subdomain: string };
 }) => {
   const supa = createClient();
+
+  supa
+    .from("blogs")
+    .select("id")
+    .eq("slug", subdomain)
+    .single()
+    .then((blogRes) => {
+      sendViewEvent({
+        blog_id: blogRes.data?.id,
+        post_slug: slug,
+      });
+    });
+
   const { data: post } = await supa
     .from("public_posts_v1")
     .select("title, content, cover_image")

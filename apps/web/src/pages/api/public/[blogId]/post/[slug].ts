@@ -49,9 +49,7 @@ export default async function handler(
 
     sendViewEvent({
       blog_id: blogId,
-      post_id: post?.id || "",
       post_slug: post?.slug || "",
-      post_title: post?.title || "",
     });
 
     if (subscription?.status !== "active") {

@@ -15,12 +15,12 @@ export type CreateClientOpts = {
     _url?: string;
     debug?: boolean;
 };
-export declare function createClient<T>({ blogId, _url, debug }: CreateClientOpts): {
+export declare function createZenblogClient<T>({ blogId, _url, debug, }: CreateClientOpts): {
     posts: {
-        getAll: (opts?: {
+        list: (opts?: {
             cache?: RequestInit["cache"];
         } | undefined) => Promise<Post[]>;
-        getBySlug: (slug: string, opts?: {
+        get: (slug: string, opts?: {
             cache?: RequestInit["cache"];
         } | undefined) => Promise<PostWithContent>;
     };
