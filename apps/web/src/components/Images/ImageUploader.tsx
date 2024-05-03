@@ -12,8 +12,13 @@ import { nanoid } from "nanoid";
 type Props = {
   blogId: string;
   onSuccessfulUpload?: () => void;
+  className?: string;
 };
-export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
+export const ImageUploader = ({
+  blogId,
+  onSuccessfulUpload,
+  className,
+}: Props) => {
   const [image, setImage] = useState(null as File | null);
   const [createObjectURL, setCreateObjectURL] = useState<string | null>(null);
   const [imageInfo, setImageInfo] = useState<any>(null);
@@ -140,10 +145,14 @@ export const ImageUploader = ({ blogId, onSuccessfulUpload }: Props) => {
 
   return (
     <div
-      className={cn("", {
-        "w-full": image,
-        "w-[360px]": !image,
-      })}
+      className={cn(
+        "",
+        {
+          "w-full": image,
+          "w-[360px]": !image,
+        },
+        className
+      )}
     >
       <h2 className="mb-2 flex gap-1.5 font-medium">
         <ImageIcon className="text-orange-500" size="22" /> Upload media

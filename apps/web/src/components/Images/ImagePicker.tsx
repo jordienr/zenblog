@@ -157,16 +157,15 @@ export function ImagePicker({
               </div>
             </TabsContent>
             <TabsContent value="upload">
-              <div>
-                <ImageUploader
-                  onSuccessfulUpload={() => {
-                    media.refetch();
-                    toast.success("Image uploaded");
-                    setTab("images");
-                  }}
-                  blogId={blogId}
-                />
-              </div>
+              <ImageUploader
+                className="w-full max-w-full"
+                onSuccessfulUpload={() => {
+                  media.refetch();
+                  toast.success("Image uploaded");
+                  setTab("images");
+                }}
+                blogId={blogId}
+              />
             </TabsContent>
           </Tabs>
         </div>

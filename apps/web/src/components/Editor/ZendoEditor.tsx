@@ -47,7 +47,6 @@ import { Checkbox } from "../ui/checkbox";
 
 const formSchema = z.object({
   title: z.string(),
-  published: z.boolean(),
   slug: z.string(),
   cover_image: z.string().nullable(),
   content: z.any(),
@@ -84,7 +83,6 @@ export const ZendoEditor = (props: Props) => {
       defaultValues: {
         title: props.post?.title || "",
         slug: props.post?.slug || "",
-        published: props.post?.published || false,
         cover_image: props.post?.cover_image || "",
       },
     });
@@ -92,6 +90,9 @@ export const ZendoEditor = (props: Props) => {
   const blogId = (router.query.blogId as string) || "demo";
   const subscription = useSubscriptionQuery();
   const blogTags = useBlogTags({ blogId });
+  const [published, setPublished] = React.useState(
+    props.post?.published || false
+  );
 
   const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
   const [tags, setTags] = React.useState(props.tags || []);
@@ -182,7 +183,7 @@ export const ZendoEditor = (props: Props) => {
       title: data.title,
       slug: data.slug,
       cover_image: data.cover_image || "",
-      published: data.published,
+      published,
       published_at: publishedAt || new Date().toISOString(),
       metadata,
       tags,
@@ -199,7 +200,7 @@ export const ZendoEditor = (props: Props) => {
     setHasChanges(props.post?.title !== getValues("title"));
     setHasChanges(props.post?.metadata !== metadata);
     setHasChanges(props.post?.cover_image !== getValues("cover_image"));
-    setHasChanges(props.post?.published !== getValues("published"));
+    setHasChanges(props.post?.published !== published);
     setHasChanges(props.post?.slug !== getValues("slug"));
 
     editor?.on("transaction", (ctx) => {
@@ -218,6 +219,7 @@ export const ZendoEditor = (props: Props) => {
     props.post?.slug,
     getValues,
     metadata,
+    published,
   ]);
 
   useEffect(() => {
@@ -365,7 +367,14 @@ export const ZendoEditor = (props: Props) => {
           )}
         </div>
         <div className="actions">
-          <Checkbox id="published" {...register("published")} />
+          <Checkbox
+            id="published"
+            defaultChecked={published}
+            onCheckedChange={(e) => {
+              setPublished(e);
+            }}
+            checked={published}
+          />
           <Label
             className="flex cursor-pointer items-center py-1.5 text-xs  font-medium text-zinc-600 transition-all hover:text-zinc-800"
             htmlFor="published"

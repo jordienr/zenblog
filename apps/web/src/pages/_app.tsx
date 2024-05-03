@@ -50,24 +50,12 @@ function MyApp({ Component, pageProps }: AppProps) {
               <Toaster
                 position="bottom-center"
                 toastOptions={{
-                  // style: {
-                  //   background: "red",
-                  //   borderRadius: "12px",
-                  //   backgroundColor: "#333333",
-                  //   color: "white",
-                  //   padding: "10px 12px",
-                  //   border: "none",
-                  // },
-                  unstyled: true,
-                  classNames: {
-                    toast:
-                      "px-3 py-1.5 rounded-xl text-white flex gap-1 items-center justify-center",
-                    title: "font-medium",
-                    icon: "flex items-center justify-center",
-                    error: "bg-red-500",
-                    success: "bg-zinc-800",
-                    info: "bg-blue-500",
-                    warning: "bg-yellow-600",
+                  style: {
+                    borderRadius: "12px",
+                    backgroundColor: "#333333",
+                    color: "white",
+                    padding: "10px 12px",
+                    border: "none",
                   },
                 }}
               />
