@@ -1,3 +1,4 @@
+import { sendViewEvent } from "@/analytics";
 import { createAdminClient } from "@/lib/server/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -19,7 +20,7 @@ export default async function handler(
     const postPromise = db
       .from("posts")
       .select(
-        "slug, title, content, cover_image, published_at, created_at, updated_at, metadata"
+        "id, slug, title, content, cover_image, published_at, created_at, updated_at, metadata"
       )
       .eq("blog_id", blogId)
       .eq("published", true)
@@ -45,6 +46,13 @@ export default async function handler(
       .select("status")
       .eq("user_id", ownerId)
       .single();
+
+    sendViewEvent({
+      blog_id: blogId,
+      post_id: post?.id || "",
+      post_slug: post?.slug || "",
+      post_title: post?.title || "",
+    });
 
     if (subscription?.status !== "active") {
       return res.status(401).json({ error: "UNAUTHORIZED" });
