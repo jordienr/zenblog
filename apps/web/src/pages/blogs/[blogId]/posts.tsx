@@ -48,6 +48,7 @@ import { useRouterTabs } from "@/hooks/useRouterTabs";
 import { ImageUploader } from "@/components/Images/ImageUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { usePostViewsQuery } from "@/queries/analytics";
+import { on } from "events";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -191,6 +192,21 @@ export default function BlogPosts() {
                       key={post.post_id}
                       post={post}
                       blogId={blogId}
+                      onDeleteClick={async () => {
+                        const confirmed = window.confirm(
+                          "Are you sure you want to delete this post?"
+                        );
+                        if (!confirmed) return;
+                        try {
+                          await deletePostMutation.mutateAsync(
+                            post.post_id || ""
+                          );
+                          toast.success("Post deleted");
+                        } catch (error) {
+                          console.error(error);
+                          toast.error("Failed to delete post");
+                        }
+                      }}
                     />
                   );
                 })}
@@ -431,10 +447,12 @@ function PostItem({
   post,
   blogId,
   views,
+  onDeleteClick,
 }: {
   post: any;
   blogId: string;
   views: string;
+  onDeleteClick: () => void;
 }) {
   return (
     <Link
@@ -491,21 +509,9 @@ function PostItem({
           <DropdownMenuContent>
             <DropdownMenuItem
               onClick={async (e) => {
-                // e.stopPropagation();
-                // e.preventDefault();
-                // const confirmed = window.confirm(
-                //   "Are you sure you want to delete this post?"
-                // );
-                // if (!confirmed) return;
-                // try {
-                //   await deletePostMutation.mutateAsync(
-                //     post.post_id || ""
-                //   );
-                //   toast.success("Post deleted");
-                // } catch (error) {
-                //   console.error(error);
-                //   toast.error("Failed to delete post");
-                // }
+                e.stopPropagation();
+                e.preventDefault();
+                onDeleteClick();
               }}
             >
               <Trash size="16" />
