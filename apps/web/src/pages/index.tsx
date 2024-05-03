@@ -134,10 +134,10 @@ const Home = () => {
                   <DialogTrigger className="mt-4 h-9 rounded-xl bg-black px-5 text-sm font-medium text-white shadow-lg ring-black transition-all hover:-translate-y-[2px] hover:shadow-xl ">
                     Request access
                   </DialogTrigger>
-                  <DialogContent className="max-w-sm px-8">
+                  <DialogContent className="px-8 md:max-w-sm">
                     {!hasSubmitted && (
                       <form
-                        className="mt-6 flex max-w-sm flex-col gap-2 py-2 pb-12"
+                        className="mt-6 flex flex-col gap-2 py-2 pb-12"
                         onSubmit={onSubmit}
                       >
                         <h2>

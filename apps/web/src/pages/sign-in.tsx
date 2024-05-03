@@ -71,7 +71,7 @@ export default function SignIn() {
   }
 
   return (
-    <div className="mx-auto my-32 flex max-w-sm flex-col gap-4">
+    <div className="mx-auto my-32 flex max-w-sm flex-col gap-4 px-4">
       <div>
         <Link className="text-zinc-400" href="/">
           <CornerUpLeft size={18} />
