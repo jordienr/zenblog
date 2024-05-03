@@ -24,11 +24,11 @@ const ReactComponents = (props: Props) => {
         <CodeBlock title="pages/blog.tsx" language="tsx">
           {`
   import { PostList } from "zenblog/ui";
-  import { createClient } from "zenblog/client";
+  import { createZenblogClient } from "zenblog/client";
 
   const Blog = () => {
 
-    const client = createClient({
+    const client = createZenblogClient({
       blogId: env.ZENDO_BLOG_ID,
     })
 

@@ -200,9 +200,9 @@ export default function BlogSettings() {
           <h3>Now, create a client with your blog id</h3>
 
           <CodeBlock title="/lib/cms.ts">
-            {`import { createClient } from "zenblog";
+            {`import { createZenblogClient } from "zenblog";
 
-const cms = createClient({
+const cms = createZenblogClient({
   blogId: process.env.BLOG_ID,
 });`}
           </CodeBlock>

@@ -16,7 +16,7 @@
 ## Usage example
 
 ```typescript
-import { createClient } from "@zendo/blog";
+import { createZenblogClient } from "@zendo/blog";
 
 const cms = createClient({
   apiKey: "YOUR_BLOG_API_KEY",
