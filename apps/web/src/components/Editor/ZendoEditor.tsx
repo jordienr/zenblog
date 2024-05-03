@@ -43,6 +43,7 @@ import { Database } from "@/types/supabase";
 import { useBlogTags } from "./Editor.queries";
 import { TagPicker } from "../Tags/TagPicker";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "../ui/checkbox";
 
 const formSchema = z.object({
   title: z.string(),
@@ -364,16 +365,17 @@ export const ZendoEditor = (props: Props) => {
           )}
         </div>
         <div className="actions">
+          <Checkbox id="published" {...register("published")} />
           <Label
-            className="mr-2 flex items-center gap-2 text-sm font-semibold"
+            className="flex cursor-pointer items-center py-1.5 text-xs  font-medium text-zinc-600 transition-all hover:text-zinc-800"
             htmlFor="published"
           >
-            <input
+            {/* <input
               type="checkbox"
               id="published"
               {...register("published")}
               className="h-4 w-4 rounded-lg border-none border-zinc-200 bg-transparent p-2 text-zinc-800 outline-none transition-all hover:bg-zinc-50 focus-visible:bg-zinc-100"
-            />
+            /> */}
             Publish
           </Label>
           <Sheet>
