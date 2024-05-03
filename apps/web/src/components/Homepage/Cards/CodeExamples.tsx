@@ -20,7 +20,7 @@ const CodeExamples = (props: Props) => {
     blogId: env.ZENDO_BLOG_ID,
   });
   
-  const posts = await cms.posts.getAll();
+  const posts = await cms.posts.list();
   `}
         </CodeBlock>
       </div>

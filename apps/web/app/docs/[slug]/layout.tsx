@@ -17,7 +17,7 @@ const layout = async ({
     slug: string;
   };
 }>) => {
-  const posts = await docs.posts.getAll();
+  const posts = await docs.posts.list();
 
   return (
     <div className="mx-auto flex max-h-screen max-w-6xl">

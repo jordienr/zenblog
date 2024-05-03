@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { getBlogClient } from "@/cms";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React from "react";
 
 type Props = {};
 

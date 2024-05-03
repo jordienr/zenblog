@@ -214,7 +214,7 @@ const cms = createZenblogClient({
             {`import { cms } from "../lib/cms";
 import Link from "next/link";
 
-const posts = await cms.posts.getAll();
+const posts = await cms.posts.list();
 
 return <div>
   {posts.map((post) => 

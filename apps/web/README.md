@@ -22,8 +22,8 @@ const cms = createClient({
   apiKey: "YOUR_BLOG_API_KEY",
 });
 
-const posts = await cms.getAll();
-const post = await cms.getBySlug("blog-slug");
+const posts = await cms.list();
+const post = await cms.get("blog-slug");
 ```
 
 ```typescript
