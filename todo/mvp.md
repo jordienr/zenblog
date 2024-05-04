@@ -8,7 +8,7 @@
 - [x] Update README
 - [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, etc.
 - [] email provider
-- [] Integration guide tab
+- [x] Integration guide tab
 - [] Slash commands in editor (like notion or craft)
 - [] Improve tag picker
 
@@ -19,9 +19,11 @@
 ## Blogs
 
 - Integration guide
-  - [] instruct users to keep the blog id private.
-  - [] allow users to rotate the blog id?
+  - [x] instruct users to keep the id private.
+  - [] create a different column for the connection string
+  - [] allow users to rotate the connection string
   - [] Recommend users to cache content
+  - [] create tinybird endpoint to get all views for a blog
 
 ## Posts
 

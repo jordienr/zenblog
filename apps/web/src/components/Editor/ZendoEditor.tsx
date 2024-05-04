@@ -511,6 +511,7 @@ export const ZendoEditor = (props: Props) => {
               onChange={(newTags) => {
                 setTags(newTags);
               }}
+              blogId={blogId}
             >
               <button
                 tabIndex={-1}

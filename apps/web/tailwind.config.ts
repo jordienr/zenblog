@@ -36,7 +36,7 @@ module.exports = {
       },
       fontFamily: {
         default: ["var(--font-inter)"],
-        mono: ["var(--font-ibm-plex-mono)"],
+        mono: ["var(--font-ibm-plex-mono)", "monospace"],
       },
       colors: {
         slate: {
