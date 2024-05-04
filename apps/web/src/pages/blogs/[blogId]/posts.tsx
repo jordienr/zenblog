@@ -162,20 +162,23 @@ export default function BlogPosts() {
                     <Settings size="24" />
                   </Link>
                 </Button>
-
-                <Button asChild>
-                  <Link
-                    href={`/blogs/${blog.id}/create`}
-                    className="btn btn-secondary max-w-[120px]"
-                  >
-                    <Plus size="16" />
-                    New post
-                  </Link>
-                </Button>
               </div>
             </div>
             <TabsContent value="posts">
-              <div className="mt-2 rounded-xl border border-b-2 bg-white py-2">
+              <TabSection
+                title={`${posts.length} Posts`}
+                actions={
+                  <Button asChild>
+                    <Link
+                      href={`/blogs/${blog.id}/create`}
+                      className="btn btn-secondary max-w-[120px]"
+                    >
+                      <Plus size="16" />
+                      New post
+                    </Link>
+                  </Button>
+                }
+              >
                 {posts.length === 0 && (
                   <div className="p-12 py-32 text-center">
                     <div className="text-2xl">✏️</div>
@@ -217,23 +220,16 @@ export default function BlogPosts() {
                     />
                   );
                 })}
-              </div>
+              </TabSection>
             </TabsContent>
             <TabsContent value="media">
-              {media.isLoading && (
-                <>
-                  <div className="flex-center p-12">
-                    <Spinner />
-                  </div>
-                </>
-              )}
-              <div className="rounded-xl border bg-white py-2 shadow-sm">
-                <div className="flex justify-between pr-3">
-                  <h2 className="px-3 py-1 text-lg font-medium tracking-tight">
-                    {selectedImages.length > 0
-                      ? `${selectedImages.length} files selected`
-                      : "Media"}
-                  </h2>
+              <TabSection
+                title={
+                  selectedImages.length > 0
+                    ? `${selectedImages.length} files selected`
+                    : "Media"
+                }
+                actions={
                   <div className="flex gap-2">
                     {selectedImages.length > 0 && (
                       <>
@@ -300,153 +296,163 @@ export default function BlogPosts() {
                       </DialogContent>
                     </Dialog>
                   </div>
-                </div>
-                {media.isLoading ||
-                  (media.isRefetching && (
-                    <div className="flex-center p-12">
-                      <Spinner />
-                    </div>
-                  ))}
-                {media.data?.length === 0 ? (
-                  <>
-                    <div className="p-12 py-32 text-center">
-                      <div className="text-2xl">📷</div>
-                      <div className="text-lg text-zinc-500">
-                        No images uploaded yet
+                }
+              >
+                <>
+                  {media.isLoading && (
+                    <>
+                      <div className="flex-center p-12">
+                        <Spinner />
                       </div>
+                    </>
+                  )}
+
+                  {media.isLoading ||
+                    (media.isRefetching && (
+                      <div className="flex-center p-12">
+                        <Spinner />
+                      </div>
+                    ))}
+                  {media.data?.length === 0 ? (
+                    <>
+                      <div className="p-12 py-32 text-center">
+                        <div className="text-2xl">📷</div>
+                        <div className="text-lg text-zinc-500">
+                          No images uploaded yet
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="mt-3 flex flex-col gap-2 px-3">
+                      <ImageSelector
+                        images={media.data || []}
+                        onChange={(imgs) => {
+                          setSelectedImages(imgs);
+                        }}
+                        selected={selectedImages}
+                        type="multiple"
+                      />
                     </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col gap-2 px-2">
-                    <ImageSelector
-                      images={media.data || []}
-                      onChange={(imgs) => {
-                        setSelectedImages(imgs);
-                      }}
-                      selected={selectedImages}
-                      type="multiple"
-                    />
-                  </div>
-                )}
-              </div>
+                  )}
+                </>
+              </TabSection>
             </TabsContent>
             <TabsContent value="tags">
-              <div className="rounded-xl border bg-white px-2 py-2 shadow-sm">
-                {tags.isLoading && (
-                  <div className="p-12">
-                    <Spinner />
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <h2 className="px-3 py-1 text-lg font-medium tracking-tight">
-                    {tags.data?.length ? `${tags.data?.length} tags` : "Tags"}
-                  </h2>
-                  <CreateTagDialog blogId={blogId} />
-                </div>
-                {tags.data?.length === 0 && (
-                  <div className="p-12 py-32 text-center">
-                    <div className="text-2xl">🏷️</div>
-                    <div className="text-lg text-zinc-500">
-                      Nothing here yet
+              <TabSection
+                title={tags.data?.length ? `${tags.data?.length} tags` : "Tags"}
+                actions={<CreateTagDialog blogId={blogId} />}
+              >
+                <>
+                  {tags.isLoading && (
+                    <div className="p-12">
+                      <Spinner />
                     </div>
-                  </div>
-                )}
-
-                <div className="grid divide-y">
-                  {tags.data?.length && (
-                    <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
-                      <div>Tag</div>
-                      <div>Slug</div>
-                      <div>Posts with tag</div>
-                      <div></div>
+                  )}
+                  {tags.data?.length === 0 && (
+                    <div className="p-12 py-32 text-center">
+                      <div className="text-2xl">🏷️</div>
+                      <div className="text-lg text-zinc-500">
+                        Nothing here yet
+                      </div>
                     </div>
                   )}
 
-                  {tags.data?.map((tag) => {
-                    return (
-                      <div
-                        key={tag.tag_id}
-                        className="grid grid-cols-4 items-center px-2 py-1.5 hover:bg-zinc-50"
-                      >
-                        <div className="flex items-center gap-2">
-                          <PiTag className="text-orange-500" size="16" />
-                          <span className="font-medium">{tag.tag_name}</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                          <p className="font-mono text-sm text-zinc-500">
-                            {tag.slug}
-                          </p>
-                        </div>
-
-                        <div className="font-mono">{tag.post_count}</div>
-
-                        <div className="flex items-center justify-end">
-                          <DropdownMenu modal={false}>
-                            <DropdownMenuTrigger>
-                              <Button size="icon" variant={"ghost"}>
-                                <MoreVertical size="16" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setUpdateTagDialogOpen(true);
-                                }}
-                              >
-                                <Pen size="16" className="mr-2" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setDeleteTagDialogOpen(true);
-                                }}
-                              >
-                                <Trash size="16" className="mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                        <UpdateTagDialog
-                          tag={tag}
-                          onSubmit={async (newTag) => {
-                            const res = await updateTagMutation.mutateAsync({
-                              name: newTag.tag_name,
-                              slug: newTag.slug,
-                              id: tag.tag_id!,
-                            });
-                            if (res.error) {
-                              toast.error("Failed to update tag");
-                              return;
-                            }
-                            toast.success("Tag updated");
-                          }}
-                          open={updateTagDialogOpen}
-                          onOpenChange={setUpdateTagDialogOpen}
-                        />
-                        <ConfirmDialog
-                          title="Delete tag"
-                          description="Are you sure you want to delete this tag? This action cannot be undone."
-                          open={deleteTagDialogOpen}
-                          onOpenChange={setDeleteTagDialogOpen}
-                          onConfirm={async () => {
-                            const res = await deleteTagMutation.mutateAsync(
-                              tag.tag_id!
-                            );
-                            if (res.error) {
-                              toast.error("Failed to delete tag");
-                              return;
-                            }
-                            setDeleteTagDialogOpen(false);
-                            toast.success("Tag deleted");
-                          }}
-                        />
+                  <div className="grid divide-y">
+                    {tags.data?.length && (
+                      <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
+                        <div>Tag</div>
+                        <div>Slug</div>
+                        <div>Posts with tag</div>
+                        <div></div>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
+                    )}
+
+                    {tags.data?.map((tag) => {
+                      return (
+                        <div
+                          key={tag.tag_id}
+                          className="grid grid-cols-4 items-center px-2 py-1.5 hover:bg-zinc-50"
+                        >
+                          <div className="flex items-center gap-2">
+                            <PiTag className="text-orange-500" size="16" />
+                            <span className="font-medium">{tag.tag_name}</span>
+                          </div>
+
+                          <div className="flex flex-col">
+                            <p className="font-mono text-sm text-zinc-500">
+                              {tag.slug}
+                            </p>
+                          </div>
+
+                          <div className="font-mono">{tag.post_count}</div>
+
+                          <div className="flex items-center justify-end">
+                            <DropdownMenu modal={false}>
+                              <DropdownMenuTrigger>
+                                <Button size="icon" variant={"ghost"}>
+                                  <MoreVertical size="16" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setUpdateTagDialogOpen(true);
+                                  }}
+                                >
+                                  <Pen size="16" className="mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setDeleteTagDialogOpen(true);
+                                  }}
+                                >
+                                  <Trash size="16" className="mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                          <UpdateTagDialog
+                            tag={tag}
+                            onSubmit={async (newTag) => {
+                              const res = await updateTagMutation.mutateAsync({
+                                name: newTag.tag_name,
+                                slug: newTag.slug,
+                                id: tag.tag_id!,
+                              });
+                              if (res.error) {
+                                toast.error("Failed to update tag");
+                                return;
+                              }
+                              toast.success("Tag updated");
+                            }}
+                            open={updateTagDialogOpen}
+                            onOpenChange={setUpdateTagDialogOpen}
+                          />
+                          <ConfirmDialog
+                            title="Delete tag"
+                            description="Are you sure you want to delete this tag? This action cannot be undone."
+                            open={deleteTagDialogOpen}
+                            onOpenChange={setDeleteTagDialogOpen}
+                            onConfirm={async () => {
+                              const res = await deleteTagMutation.mutateAsync(
+                                tag.tag_id!
+                              );
+                              if (res.error) {
+                                toast.error("Failed to delete tag");
+                                return;
+                              }
+                              setDeleteTagDialogOpen(false);
+                              toast.success("Tag deleted");
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              </TabSection>
             </TabsContent>
           </Tabs>
         </div>
@@ -469,7 +475,7 @@ function PostItem({
   return (
     <Link
       href={`/blogs/${blogId}/post/${post.slug}`}
-      className="flex flex-col gap-4 rounded-sm border-b p-3 ring-orange-300 transition-all hover:bg-zinc-50 md:flex-row md:items-center"
+      className="flex flex-col gap-4 rounded-sm border-b px-3 py-1.5 ring-orange-300 transition-all hover:bg-zinc-50 md:flex-row md:items-center"
       key={post.slug}
     >
       <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
@@ -538,5 +544,25 @@ function PostItem({
         </DropdownMenu>
       </div>
     </Link>
+  );
+}
+
+function TabSection({
+  title,
+  children,
+  actions,
+}: {
+  title: string;
+  children: React.ReactNode;
+  actions?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border bg-white py-2 shadow-sm">
+      <div className="flex justify-between border-b px-3 py-1 pb-3">
+        <h2 className="text-lg font-medium">{title}</h2>
+        {actions}
+      </div>
+      {children}
+    </div>
   );
 }
