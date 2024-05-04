@@ -2,12 +2,15 @@
 
 ## Backlog
 
-- [] Removing tags doesnt work
-- [] Published_date
+- [x] Removing tags doesnt work
+- [x] Published_date
 - [] FAQ on homepage?
-- [] Update README
+- [x] Update README
 - [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, etc.
 - [] email provider
+- [] Integration guide tab
+- [] Slash commands in editor (like notion or craft)
+- [] Improve tag picker
 
 ## Pricing
 
@@ -29,12 +32,12 @@
 
 ## Tags
 
-- [] Delete tag
-- [] Update tag
+- [x] Delete tag
+- [x] Update tag
 
 ## Media
 
-- [] CRUD media from media tab in blog view
+- [x] CRUD media from media tab in blog view
 
 ## Docs
 
@@ -55,4 +58,5 @@
 
 - Prevent users from leaving the page when they have unsaved changes
 - Save posts/create in localstorage so its not lost when you reload the page goddammit
-- Apple pay
+- Apple pay?
+- Stripe link?

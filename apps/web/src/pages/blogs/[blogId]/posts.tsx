@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
+  CodeIcon,
   ImageOff,
   MoreVertical,
   Pen,
@@ -47,6 +48,7 @@ import { ImageUploader } from "@/components/Images/ImageUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { usePostViewsQuery } from "@/queries/analytics";
 import { on } from "events";
+import { IntegrationGuide } from "@/components/integration-guide";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -150,16 +152,26 @@ export default function BlogPosts() {
                   Tags
                 </TabsTrigger>
               </TabsList>
-              <div className="flex items-center gap-2">
-                <Button asChild size="icon" variant={"ghost"}>
+              <div className="flex items-center">
+                <Dialog>
+                  <DialogTrigger>
+                    <Button variant="ghost">
+                      <CodeIcon />
+                      Integration
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <IntegrationGuide blogId={blogId} />
+                  </DialogContent>
+                </Dialog>
+                <Button asChild variant={"ghost"}>
                   <Link
                     href={`/blogs/${blog.id}/settings`}
-                    className="btn btn-icon"
                     title="Settings"
                     aria-label="Settings"
                   >
-                    <div className="sr-only">Settings</div>
                     <Settings size="24" />
+                    Settings
                   </Link>
                 </Button>
               </div>
