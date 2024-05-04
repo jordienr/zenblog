@@ -51,7 +51,9 @@ export function ImagePicker({
   const router = useRouter();
   const { blogId } = router.query as any;
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
-  const media = useMediaQuery(blogId);
+  const media = useMediaQuery(blogId, {
+    enabled: open,
+  });
 
   const [tab, setTab] = useState("images");
 

@@ -5,10 +5,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
-  Edit,
+  ImageOff,
   MoreVertical,
   Pen,
-  Pencil,
   Plus,
   Settings,
   Trash,
@@ -28,11 +27,10 @@ import {
   useDeleteMediaMutation,
   useMediaQuery,
 } from "@/components/Images/Images.queries";
-import { useBlogTags } from "@/components/Editor/Editor.queries";
 import { usePostsQuery } from "@/queries/posts";
 import { useBlogQuery } from "@/queries/blogs";
 import { formatDate } from "@/lib/utils";
-import { PiTag, PiTrash } from "react-icons/pi";
+import { PiTag } from "react-icons/pi";
 import Spinner from "@/components/Spinner";
 import { useState } from "react";
 import { CreateTagDialog } from "@/components/Tags/CreateTagDialog";
@@ -474,15 +472,20 @@ function PostItem({
       className="flex flex-col gap-4 rounded-sm border-b p-3 ring-orange-300 transition-all hover:bg-zinc-50 md:flex-row md:items-center"
       key={post.slug}
     >
-      {post.cover_image && (
-        <div className="hidden md:block">
+      <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
+        {post.cover_image ? (
           <img
             src={post.cover_image}
-            alt=""
-            className="h-16 w-24 rounded-md object-cover"
+            alt="Cover image"
+            className="h-16 w-24 rounded-md bg-zinc-100 object-cover "
           />
-        </div>
-      )}
+        ) : (
+          <div className="flex-center h-full">
+            <ImageOff size="20" className="text-zinc-400" />
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-col gap-0.5">
         <div>
           <StatePill published={post.published || false} />
