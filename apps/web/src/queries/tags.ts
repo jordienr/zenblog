@@ -6,12 +6,19 @@ export const tagKeys = {
   tag: (tagId: string) => ["tag", tagId],
 };
 
-export function useTagsWithUsageQuery({ blogId }: { blogId: string }) {
+export function useTagsWithUsageQuery(
+  { blogId }: { blogId: string },
+  {
+    enabled,
+  }: {
+    enabled: boolean;
+  }
+) {
   const supa = getSupabaseBrowserClient();
 
   return useQuery({
     queryKey: tagKeys.tags([blogId]),
-    enabled: !!blogId,
+    enabled: !!blogId && enabled,
     queryFn: async () => {
       const { data } = await supa
         .from("tag_usage_count_v1")

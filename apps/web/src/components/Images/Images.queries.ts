@@ -16,7 +16,10 @@ export const useImages = (blogId: string) =>
     queryFn: () => api.images.getAll(blogId),
   });
 
-export const useMediaQuery = (blogId: string) => {
+export const useMediaQuery = (
+  blogId: string,
+  { enabled }: { enabled: boolean }
+) => {
   const supa = getSupabaseBrowserClient();
   const query = useQuery({
     queryKey: ["media", blogId],
@@ -45,6 +48,7 @@ export const useMediaQuery = (blogId: string) => {
         throw new Error(res.error.message);
       }
     },
+    enabled,
   });
 
   return query;

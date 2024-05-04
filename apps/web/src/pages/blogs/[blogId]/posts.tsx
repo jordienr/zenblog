@@ -68,7 +68,9 @@ export function StatePill({ published }: { published: boolean }) {
 export default function BlogPosts() {
   const router = useRouter();
   const blogId = router.query.blogId as string;
+
   const { tabValue, onTabChange } = useRouterTabs("tab");
+
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [updateTagDialogOpen, setUpdateTagDialogOpen] = useState(false);
   const [deleteTagDialogOpen, setDeleteTagDialogOpen] = useState(false);
@@ -79,11 +81,18 @@ export default function BlogPosts() {
 
   const isLoading = blogLoading || postsLoading;
 
-  const media = useMediaQuery(blogId);
+  const media = useMediaQuery(blogId, {
+    enabled: tabValue === "media",
+  });
   const deleteMedia = useDeleteMediaMutation();
   const [selectedImages, setSelectedImages] = useState<Image[]>([]);
 
-  const tags = useTagsWithUsageQuery({ blogId });
+  const tags = useTagsWithUsageQuery(
+    { blogId },
+    {
+      enabled: tabValue === "tags",
+    }
+  );
 
   const supabase = getSupabaseBrowserClient();
   const queryClient = useQueryClient();
@@ -325,6 +334,11 @@ export default function BlogPosts() {
             </TabsContent>
             <TabsContent value="tags">
               <div className="rounded-xl border bg-white px-2 py-2 shadow-sm">
+                {tags.isLoading && (
+                  <div className="p-12">
+                    <Spinner />
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <h2 className="px-3 py-1 text-lg font-medium tracking-tight">
                     {tags.data?.length ? `${tags.data?.length} tags` : "Tags"}
