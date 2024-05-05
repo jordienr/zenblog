@@ -16,8 +16,8 @@
   </p>
 </p>
 
-  <img src="./apps/zendo/public/static/ui-1.png">
-  <img src="./apps/zendo/public/static/ui-2.png">
+  <img src="./apps/web/public/static/ui-1.png">
+  <img src="./apps/web/public/static/ui-2.png">
 
 ---
 
