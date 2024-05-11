@@ -37,7 +37,7 @@ const renderItems = () => {
         return true;
       }
 
-      return component.ref?.current?.onKeyDown(props);
+      // return component.ref?.current?.onKeyDown(props);
     },
     onExit() {
       popup[0]?.destroy();

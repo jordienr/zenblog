@@ -166,12 +166,12 @@ export const ZendoEditor = (props: Props) => {
           return [UploadImagesPlugin()];
         },
       }),
-      Commands.configure({
-        suggestion: {
-          items: getSuggestionItems,
-          render: renderItems,
-        },
-      }),
+      // Commands.configure({
+      //   suggestion: {
+      //     items: getSuggestionItems,
+      //     render: renderItems,
+      //   },
+      // }),
     ],
   });
 
