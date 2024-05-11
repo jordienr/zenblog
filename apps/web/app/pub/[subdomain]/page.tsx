@@ -10,7 +10,7 @@ async function HostedBlog({
   const supa = createClient();
   const { data: blog } = await supa
     .from("blogs")
-    .select("title, emoji")
+    .select("title, emoji, description")
     .eq("slug", subdomain)
     .single();
 
@@ -30,31 +30,39 @@ async function HostedBlog({
 
   return (
     <div className="mx-auto max-w-xl px-2 py-8">
-      <h2 className="mb-4 flex items-center gap-2 p-2 font-medium">
-        <span className="text-xl">{blog?.emoji}</span>
-        <span>{blog?.title}</span>
-      </h2>
+      <div className="mb-8 grid p-2">
+        <h2 className="flex flex-col gap-2 font-medium">
+          <span className="text-xl">{blog?.emoji}</span>
+          <span className="text-lg">{blog?.title}</span>
+        </h2>
+        {blog?.description && (
+          <p className="font-mono text-sm text-zinc-500">{blog?.description}</p>
+        )}
+      </div>
 
       {posts.data?.length === 0 && (
         <>
           <div className="">
             <h2 className="font-medium">No posts yet</h2>
-            <p className="text-slate-500">Check back later, see you soon!</p>
+            <p className="font-mono text-slate-500">
+              Check back later, see you soon!
+            </p>
           </div>
         </>
       )}
 
       {posts.data?.map((post) => (
         <Link
-          className="group grid grid-cols-6 border-b border-transparent p-2 transition-all hover:border-slate-300"
+          className="group flex flex-wrap gap-2 rounded-lg border-b border-transparent p-2 transition-all hover:bg-zinc-50"
           key={post.slug}
           href={`/blog/${post.slug}`}
         >
-          <span className="col-span-2 text-slate-500">
-            {formatDate(post.published_at)}
-          </span>
-          <span className="col-span-4 font-medium group-hover:text-orange-500">
+          <span className="font-medium group-hover:text-orange-500">
             {post.title}
+          </span>
+          <span>opinion</span>
+          <span className="ml-auto text-right font-mono tracking-tight text-slate-400">
+            {formatDate(post.published_at)}
           </span>
         </Link>
       ))}

@@ -13,6 +13,29 @@ module.exports = {
     "./src/**/*.{ts,tsx}",
   ],
   theme: {
+    fontFamily: {
+      default: [
+        "var(--font-sans)",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji",
+      ],
+      mono: [
+        "var(--font-mono)",
+        "ui-monospace",
+        "SFMono-Regular",
+        "Menlo",
+        "Monaco",
+        "Consolas",
+        "Liberation Mono",
+        "Courier New",
+        "monospace",
+      ],
+    },
     border: {
       DEFAULT: "0.3px solid var(--border-color)",
       1: "1px",
@@ -34,10 +57,7 @@ module.exports = {
       highlight: {
         DEFAULT: "shadow",
       },
-      fontFamily: {
-        default: ["var(--font-inter)"],
-        mono: ["var(--font-ibm-plex-mono)", "monospace"],
-      },
+
       colors: {
         slate: {
           50: "#f9fafb",

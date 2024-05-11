@@ -11,20 +11,19 @@ import {
 import { Toaster } from "sonner";
 import { useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
-import Head from "next/head";
 
 // Fonts
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-sans",
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
-  variable: "--font-ibm-plex-mono",
+  variable: "--font-mono",
 });
 
 // Main Component
