@@ -178,7 +178,7 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
     >
       <DropdownMenu>
         <DropdownMenuTrigger tabIndex={-1} asChild>
-          <Button variant={"ghost"} className="w-24 text-zinc-500">
+          <Button variant={"ghost"} className="w-20 text-zinc-500">
             {editor?.isFocused ||
             editor?.isActive("paragraph") ||
             editor?.isActive("heading")

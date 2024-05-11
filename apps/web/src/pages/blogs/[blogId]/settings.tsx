@@ -11,7 +11,7 @@ import { CodeBlock } from "@/components/CodeBlock";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useBlogQuery } from "@/queries/blogs";
+import { useBlogQuery, useUpdateBlogMutation } from "@/queries/blogs";
 import { CopyCell } from "@/components/copy-cell";
 import { AlertCircle, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
@@ -43,13 +43,12 @@ export default function BlogSettings() {
     refetch: refetchBlog,
   } = useBlogQuery(blogId);
 
-  const updateBlog = useMutation({
-    mutationFn: (blogData: PatchBlog) => api.blogs.update(blogId, blogData),
-  });
+  const updateBlog = useUpdateBlogMutation();
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
-      const res = await updateBlog.mutateAsync(formData);
+      console.log(formData);
+      const res = await updateBlog.mutateAsync({ ...formData, id: blogId });
       toast.success("Blog updated successfully");
 
       reset(formData);

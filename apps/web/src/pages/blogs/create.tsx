@@ -43,14 +43,16 @@ export default function CreateBlog() {
   const createBlog = useCreateBlogMutation();
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
-
     const res = await createBlog.mutateAsync({
       title: data.title,
       description: data.description || "",
       emoji: data.emoji || DEFAULT_EMOJI,
       slug: data.slug,
     });
+
+    if (res?.id) {
+      router.push(`/blogs/${res.id}/posts`);
+    }
 
     if (createBlog.isError) {
       console.error(createBlog.error);
@@ -112,7 +114,7 @@ export default function CreateBlog() {
   return (
     <AppLayout>
       <div className="mx-auto max-w-md pt-12">
-        {createBlog.isSuccess && (
+        {/* {createBlog.isSuccess && (
           <div className="section">
             <Confetti width={width} height={height} />
             <div className="mt-8 text-center text-4xl font-semibold">🎉</div>
@@ -145,15 +147,17 @@ export default function CreateBlog() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
         {!createBlog.isSuccess && (
           <div className="section p-4">
-            <h1 className="mb-4 mt-1 text-xl font-semibold">Create a blog</h1>
+            <h1 className="mb-4 mt-1 text-center font-semibold">
+              Create a blog
+            </h1>
             <form
               className="flex flex-col gap-4"
               onSubmit={handleSubmit(onSubmit)}
             >
-              <div className="flex items-end gap-4">
+              <div className="flex flex-col items-center gap-2">
                 <Label htmlFor="emoji">
                   <span className="sr-only block">Emoji</span>
                   <Controller
@@ -178,9 +182,17 @@ export default function CreateBlog() {
                 </div>
                 <div className="w-full">
                   <Label className="flex-grow" htmlFor="title">
-                    Slug
+                    <div className="sr-only">Slug</div>
                   </Label>
-                  <Input type="text" id="slug" required {...register("slug")} />
+                  <div className="flex font-mono tracking-tighter">
+                    <span
+                      contentEditable={true}
+                      id="slug"
+                      {...register("slug")}
+                      className="rounded-md text-zinc-700 transition-all hover:bg-zinc-100"
+                    >{`${watch("slug")}`}</span>
+                    <span>.zenblog.com</span>
+                  </div>
                 </div>
               </div>
 

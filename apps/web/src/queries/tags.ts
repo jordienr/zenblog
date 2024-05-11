@@ -21,7 +21,7 @@ export function useTagsWithUsageQuery(
     enabled: !!blogId && enabled,
     queryFn: async () => {
       const { data } = await supa
-        .from("tag_usage_count_v1")
+        .from("tag_usage_count_v2")
         .select("*")
         .eq("blog_id", blogId);
 
@@ -37,6 +37,10 @@ export function useDeleteTagMutation() {
   return useMutation(
     async (tagId: string) => {
       const res = await supa.from("blog_tags").delete().eq("id", tagId);
+
+      if (res.error) {
+        throw new Error(res.error.message);
+      }
 
       return res;
     },
@@ -55,6 +59,10 @@ export function useUpdateTagMutation() {
   return useMutation(
     async (tag: { id: string; name: string; slug: string }) => {
       const res = await supa.from("blog_tags").update(tag).eq("id", tag.id);
+
+      if (res.error) {
+        throw new Error(res.error.message);
+      }
 
       return res;
     },

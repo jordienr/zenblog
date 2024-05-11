@@ -44,6 +44,9 @@ import { useBlogTags } from "./Editor.queries";
 import { TagPicker } from "../Tags/TagPicker";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "../ui/checkbox";
+import Commands from "./slash-commands/commands";
+import getSuggestionItems from "./slash-commands/items";
+import renderItems from "./slash-commands/renderItems";
 
 const formSchema = z.object({
   title: z.string(),
@@ -106,6 +109,7 @@ export const ZendoEditor = (props: Props) => {
     props.post?.cover_image || ""
   );
   const [showImagePicker, setShowImagePicker] = React.useState(false);
+  const [showTagPicker, setShowTagPicker] = React.useState(false);
 
   const blogsQuery = useBlogsQuery();
   const postsQuery = usePostsQuery();
@@ -160,6 +164,12 @@ export const ZendoEditor = (props: Props) => {
       TiptapImage.extend({
         addProseMirrorPlugins() {
           return [UploadImagesPlugin()];
+        },
+      }),
+      Commands.configure({
+        suggestion: {
+          items: getSuggestionItems,
+          render: renderItems,
         },
       }),
     ],
@@ -262,7 +272,7 @@ export const ZendoEditor = (props: Props) => {
   }
 
   return (
-    <div className="bg-zinc-50 pb-24">
+    <div className="min-h-screen bg-zinc-50 pb-24">
       {!isSubscribed && !subscription.isLoading && (
         <>
           <div className="absolute inset-0 z-40 flex items-center justify-center overflow-hidden bg-zinc-100/80">
@@ -415,7 +425,7 @@ export const ZendoEditor = (props: Props) => {
           </Button>
         </div>
       </form>
-      <div className="mx-auto mt-2 flex w-full max-w-3xl flex-col rounded-md border bg-white  pb-6 pt-2 shadow-md">
+      <div className="mx-auto mt-2 flex w-full max-w-3xl flex-col rounded-md border bg-white  pb-6 pt-2 shadow-md lg:mt-12">
         {coverImgUrl && (
           <div className="relative mt-2 flex items-center justify-center border-b">
             <button
@@ -480,9 +490,9 @@ export const ZendoEditor = (props: Props) => {
             className="mt-1 w-full max-w-2xl rounded-xl bg-transparent
             p-2 text-4xl font-medium text-zinc-800 outline-none focus:bg-zinc-100"
           />
-          <div className="group flex gap-0.5">
+          <div className="group flex gap-1.5">
             {tags.length > 0 && (
-              <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1">
                 {tags.map((tag) => (
                   <span
                     key={tag.id}
@@ -504,7 +514,6 @@ export const ZendoEditor = (props: Props) => {
                 ))}
               </div>
             )}
-
             <TagPicker
               allTags={blogTags.data || []}
               selectedTags={tags}
@@ -512,11 +521,13 @@ export const ZendoEditor = (props: Props) => {
                 setTags(newTags);
               }}
               blogId={blogId}
+              open={showTagPicker}
+              onOpenChange={setShowTagPicker}
             >
               <button
                 tabIndex={-1}
                 className={cn(
-                  "flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-zinc-400 opacity-0 transition-all hover:text-zinc-700 group-hover:opacity-100",
+                  "flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1 text-xs text-zinc-400 opacity-0 transition-all hover:text-zinc-700 group-hover:opacity-100",
                   {
                     "opacity-100": tags.length === 0,
                   }

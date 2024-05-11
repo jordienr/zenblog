@@ -64,3 +64,30 @@ export const useCreateBlogMutation = () => {
     }
   );
 };
+
+export const useUpdateBlogMutation = () => {
+  const queryClient = useQueryClient();
+  const supa = getSupabaseBrowserClient();
+
+  return useMutation(
+    async (blogData: {
+      id: string;
+      title: string;
+      description: string;
+      emoji: string;
+    }) => {
+      const res = await supa
+        .from("blogs")
+        .update(blogData)
+        .eq("id", blogData.id)
+        .select()
+        .single();
+      return res.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(keys.blogs());
+      },
+    }
+  );
+};

@@ -86,6 +86,7 @@ export default function BlogPosts() {
   });
   const deleteMedia = useDeleteMediaMutation();
   const [selectedImages, setSelectedImages] = useState<Image[]>([]);
+  const [selectedTag, setSelectedTag] = useState<{ tag_id?: string | null }>();
 
   const tags = useTagsWithUsageQuery(
     { blogId },
@@ -232,6 +233,9 @@ export default function BlogPosts() {
                     />
                   );
                 })}
+                <div className="px-3 pt-2 text-center font-mono text-xs text-zinc-500">
+                  Total posts: {posts.length}
+                </div>
               </TabSection>
             </TabsContent>
             <TabsContent value="media">
@@ -292,7 +296,7 @@ export default function BlogPosts() {
                       onOpenChange={setShowUploadDialog}
                     >
                       <DialogTrigger asChild>
-                        <Button variant="outline">
+                        <Button variant="ghost">
                           <Upload size="16" />
                           Upload
                         </Button>
@@ -370,14 +374,14 @@ export default function BlogPosts() {
                   )}
 
                   <div className="grid divide-y">
-                    {tags.data?.length && (
+                    {tags.data?.length ? (
                       <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
                         <div>Tag</div>
                         <div>Slug</div>
                         <div>Posts with tag</div>
                         <div></div>
                       </div>
-                    )}
+                    ) : null}
 
                     {tags.data?.map((tag) => {
                       return (
@@ -416,6 +420,8 @@ export default function BlogPosts() {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
+                                    console.log("selected tag", tag);
+                                    setSelectedTag(tag);
                                     setDeleteTagDialogOpen(true);
                                   }}
                                 >
@@ -442,23 +448,6 @@ export default function BlogPosts() {
                             open={updateTagDialogOpen}
                             onOpenChange={setUpdateTagDialogOpen}
                           />
-                          <ConfirmDialog
-                            title="Delete tag"
-                            description="Are you sure you want to delete this tag? This action cannot be undone."
-                            open={deleteTagDialogOpen}
-                            onOpenChange={setDeleteTagDialogOpen}
-                            onConfirm={async () => {
-                              const res = await deleteTagMutation.mutateAsync(
-                                tag.tag_id!
-                              );
-                              if (res.error) {
-                                toast.error("Failed to delete tag");
-                                return;
-                              }
-                              setDeleteTagDialogOpen(false);
-                              toast.success("Tag deleted");
-                            }}
-                          />
                         </div>
                       );
                     })}
@@ -467,6 +456,26 @@ export default function BlogPosts() {
               </TabSection>
             </TabsContent>
           </Tabs>
+          <ConfirmDialog
+            title="Delete tag"
+            description="Are you sure you want to delete this tag? This action cannot be undone."
+            open={deleteTagDialogOpen}
+            onOpenChange={setDeleteTagDialogOpen}
+            onConfirm={async () => {
+              if (!selectedTag?.tag_id) return;
+
+              const res = await deleteTagMutation.mutateAsync(
+                selectedTag.tag_id
+              );
+
+              if (res.error) {
+                toast.error("Failed to delete tag");
+                return;
+              }
+              setDeleteTagDialogOpen(false);
+              toast.success("Tag deleted");
+            }}
+          />
         </div>
       </AppLayout>
     );

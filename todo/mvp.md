@@ -11,6 +11,7 @@
 - [x] Integration guide tab
 - [] Slash commands in editor (like notion or craft)
 - [] Improve tag picker
+- [] fix "add it to my website" button after creating a blog
 
 ## Pricing
 

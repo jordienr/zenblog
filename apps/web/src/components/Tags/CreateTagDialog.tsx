@@ -25,7 +25,7 @@ export function CreateTagDialog({ blogId }: PropsWithChildren<Props>) {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant={"outline"} title="Create tag">
+          <Button size="sm" variant={"ghost"} title="Create tag">
             <Plus />
             <div>Create tag</div>
           </Button>
