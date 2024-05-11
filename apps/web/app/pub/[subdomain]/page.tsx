@@ -1,25 +1,28 @@
 import { FadeIn } from "app/ui/fade-in";
-import { createClient } from "../../supa";
 import Link from "next/link";
 import React from "react";
+import { getBlog, getPosts } from "../queries";
+
+export async function generateMetadata({
+  params: { subdomain },
+}: {
+  params: { subdomain: string };
+}) {
+  const blog = await getBlog(subdomain);
+
+  return {
+    title: `${blog?.title} - Zenblog` || "A zenblog blog",
+    description: blog?.description || "Start writing your blog today",
+  };
+}
 
 async function HostedBlog({
   params: { subdomain },
 }: {
   params: { subdomain: string };
 }) {
-  const supa = createClient();
-  const { data: blog } = await supa
-    .from("blogs")
-    .select("title, emoji, description")
-    .eq("slug", subdomain)
-    .single();
-
-  const posts = await supa
-    .from("public_posts_v1")
-    .select("title, slug, published_at")
-    .eq("blog_slug", subdomain)
-    .eq("published", true);
+  const blog = await getBlog(subdomain);
+  const posts = await getPosts(subdomain);
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -41,7 +44,7 @@ async function HostedBlog({
         )}
       </div>
 
-      {posts.data?.length === 0 && (
+      {posts?.length === 0 && (
         <>
           <div className="">
             <h2 className="font-medium">No posts yet</h2>
@@ -53,7 +56,7 @@ async function HostedBlog({
       )}
 
       <div className="divide-y md:divide-y-0">
-        {posts.data?.map((post, index) => (
+        {posts?.map((post, index) => (
           <FadeIn delay={index * 0.05} key={post.slug}>
             <Link
               className="group grid flex-wrap gap-2 rounded-lg p-2 transition-all hover:bg-zinc-50 md:flex"
