@@ -2,6 +2,7 @@
 import { sendViewEvent } from "@/analytics";
 import { ContentRenderer } from "@/cms/ContentRenderer";
 import { createClient } from "app/supa";
+import { FadeIn } from "app/ui/fade-in";
 import React from "react";
 
 const Post = async ({
@@ -35,25 +36,27 @@ const Post = async ({
   }
 
   return (
-    <div className="mx-auto max-w-xl px-2 py-8">
-      <div className="p-4">
-        <h1 className="text-2xl font-medium">{post.title}</h1>
+    <FadeIn>
+      <div className="mx-auto max-w-xl px-2 py-8">
+        <div className="p-4">
+          <h1 className="text-2xl font-medium">{post.title}</h1>
+        </div>
+        <div className="p-2">
+          {post.cover_image && (
+            <img
+              src={post.cover_image}
+              height="400"
+              width={(16 / 9) * 400}
+              loading="lazy"
+              alt={post.title}
+            />
+          )}
+        </div>
+        <div className="overflow-auto p-4">
+          <ContentRenderer content={post.content} />
+        </div>
       </div>
-      <div className="p-2">
-        {post.cover_image && (
-          <img
-            src={post.cover_image}
-            height="400"
-            width={(16 / 9) * 400}
-            loading="lazy"
-            alt={post.title}
-          />
-        )}
-      </div>
-      <div className="overflow-auto p-4">
-        <ContentRenderer content={post.content} />
-      </div>
-    </div>
+    </FadeIn>
   );
 };
 

@@ -1,3 +1,4 @@
+import { FadeIn } from "app/ui/fade-in";
 import { createClient } from "../../supa";
 import Link from "next/link";
 import React from "react";
@@ -51,20 +52,21 @@ async function HostedBlog({
         </>
       )}
 
-      {posts.data?.map((post) => (
-        <Link
-          className="group flex flex-wrap gap-2 rounded-lg border-b border-transparent p-2 transition-all hover:bg-zinc-50"
-          key={post.slug}
-          href={`/blog/${post.slug}`}
-        >
-          <span className="font-medium group-hover:text-orange-500">
-            {post.title}
-          </span>
-          <span>opinion</span>
-          <span className="ml-auto text-right font-mono tracking-tight text-slate-400">
-            {formatDate(post.published_at)}
-          </span>
-        </Link>
+      {posts.data?.map((post, index) => (
+        <FadeIn delay={index * 0.05} key={post.slug}>
+          <Link
+            className="group flex flex-wrap gap-2 rounded-lg border-b border-transparent p-2 transition-all hover:bg-zinc-50"
+            key={post.slug}
+            href={`/blog/${post.slug}`}
+          >
+            <span className="text-zinc-900 group-hover:text-orange-500">
+              {post.title}
+            </span>
+            <span className="ml-auto text-right font-mono tracking-tight text-slate-400">
+              {formatDate(post.published_at)}
+            </span>
+          </Link>
+        </FadeIn>
       ))}
     </div>
   );
