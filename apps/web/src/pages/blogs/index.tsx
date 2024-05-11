@@ -19,7 +19,7 @@ export default function Dashboard() {
       <div className="mt-8 min-h-screen">
         <div className="mx-auto max-w-5xl">
           <div className="flex items-center justify-between p-3">
-            <h1 className="text-xl font-semibold">My blogs</h1>
+            <h1 className="text-lg font-medium">My blogs</h1>
             <div>
               <Button variant="outline" asChild>
                 <Link href="/blogs/create">
@@ -40,7 +40,7 @@ export default function Dashboard() {
                 <PiPencilLine size="48" className="text-orange-500" />
               </div>
               <h2 className="mt-4 text-2xl">Start by creating a blog</h2>
-              <Button asChild className="mt-6">
+              <Button variant="default" asChild className="mt-6">
                 <Link href="/blogs/create">
                   <Plus />
                   Create blog
@@ -52,11 +52,11 @@ export default function Dashboard() {
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border border-b-2 bg-white transition-all"
+                  className="group rounded-xl border border-zinc-100 bg-white transition-all hover:border-zinc-200"
                   key={blog.id}
                 >
                   <Link
-                    className="block w-full min-w-[320px] gap-3 rounded-xl p-3  "
+                    className="flex h-full w-full min-w-[320px] flex-col gap-3 rounded-xl p-3"
                     href={`/blogs/${blog.id}/posts`}
                   >
                     <div className="flex items-center gap-4">
@@ -70,7 +70,7 @@ export default function Dashboard() {
                         <p className="text-zinc-500">{blog.description}</p>
                       </div>
                     </div>
-                    <div className="actions mt-4">
+                    <div className="actions mt-auto justify-self-end align-bottom">
                       <Button
                         size={"icon"}
                         variant={"ghost"}
