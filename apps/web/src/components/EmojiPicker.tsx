@@ -28,7 +28,7 @@ export function EmojiPicker({ emoji, onEmojiChange }: Props) {
   return (
     <div className="relative">
       <button
-        className="h-11 w-11 rounded-full border text-2xl shadow-sm hover:border-orange-400"
+        className="h-11 w-11 rounded-full border border-zinc-200 text-2xl shadow-sm hover:border-orange-400"
         title="Toggle emoji picker"
         onClick={onClick}
       >
