@@ -62,11 +62,13 @@ const Post = async ({
     return url;
   }
 
+  const url = getBlogUrl();
+
   return (
     <FadeIn>
       <nav className="mx-auto max-w-xl border-b border-zinc-100 px-4 py-2 text-sm">
         <Link
-          href={getBlogUrl()}
+          href={url}
           className="flex items-center font-medium tracking-tight text-zinc-700"
         >
           <span className="mr-2 text-base">{blog?.emoji}</span>

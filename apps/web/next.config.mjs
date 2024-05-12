@@ -7,8 +7,6 @@ await import("./src/env.mjs");
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
-  appDir: true,
   transpilePackages: [ "react-syntax-highlighter" ],
-  appRootSelector: "main"
 };
 export default config;

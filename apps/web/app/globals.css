@@ -7,3 +7,45 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Code Highlight */
+
+:root {
+  --sh-class: #54e1ca;
+  --sh-identifier: #e2ffe6;
+  --sh-sign: #8996a3;
+  --sh-property: #acf581;
+  --sh-entity: #80bff7;
+  --sh-jsxliterals: #c0a0fb;
+  --sh-string: #39f6ba;
+  --sh-keyword: #ff958e;
+  --sh-comment: #708370;
+}
+
+pre code span.sh__token--class {
+  color: var(--sh-class);
+}
+pre code span.sh__token--identifier {
+  color: var(--sh-identifier);
+}
+pre code span.sh__token--sign {
+  color: var(--sh-sign);
+}
+pre code span.sh__token--property {
+  color: var(--sh-property);
+}
+pre code span.sh__token--entity {
+  color: var(--sh-entity);
+}
+pre code span.sh__token--jsxliterals {
+  color: var(--sh-jsxliterals);
+}
+pre code span.sh__token--string {
+  color: var(--sh-string);
+}
+pre code span.sh__token--keyword {
+  color: var(--sh-keyword);
+}
+pre code span.sh__token--comment {
+  color: var(--sh-comment);
+}
