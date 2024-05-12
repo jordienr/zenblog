@@ -9,6 +9,9 @@ input[type="checkbox"] {
 button button {
   border: 3px solid red !important;
 }
+p div {
+  border: 3px solid red !important;
+}
 
 .base-toast {
   @apply rounded-full bg-zinc-800 text-zinc-50;
@@ -42,7 +45,7 @@ button button {
 }
 
 .section {
-  @apply rounded-xl border border-b-2 bg-white;
+  @apply rounded-xl border bg-white;
 }
 
 .section-title {

@@ -33,7 +33,7 @@ async function HostedBlog({
   params: { subdomain: string };
 }) {
   const blog = await getBlog(subdomain);
-  const posts = await getPosts(subdomain);
+  const posts = await getPosts(subdomain, blog?.order);
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -72,7 +72,7 @@ async function HostedBlog({
             <Link
               className="group grid flex-wrap gap-2 p-2 transition-all hover:bg-zinc-50 md:flex md:rounded-lg"
               key={post.slug}
-              href={`/blog/${post.slug}`}
+              href={`/${post.slug}`}
             >
               <span className="text-zinc-900 group-hover:text-orange-500">
                 {post.title}

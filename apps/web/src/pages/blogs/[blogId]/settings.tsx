@@ -86,9 +86,9 @@ export default function BlogSettings() {
 
   async function onDeleteBlogClick() {
     const confirm1 = prompt(
-      `To confirm you want to delete this blog, type "I want to delete ${blog?.title}"`
+      `To confirm you want to delete this blog, type "Delete ${blog?.title}"`
     );
-    if (confirm1 === `I want to delete ${blog?.title}`) {
+    if (confirm1 === `Delete ${blog?.title}`) {
       if (
         confirm(
           "This action is irreversible. Are you sure you want to delete this blog?"
@@ -179,15 +179,16 @@ export default function BlogSettings() {
           </form>
         </section>
 
-        <section className="section mt-24 border border-red-500 !bg-red-50/30 p-3">
+        <section className="section mt-24 border border-red-500 bg-white p-3">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
             <AlertCircle size={24} className="text-red-600" />
             Danger zone
           </h2>
-          <p className="text-red-600">
-            <div>This action cannot be undone.</div>
-            <div>This will permanently delete the blog.</div>
-            <div>This will also delete all posts in the blog.</div>
+          <p className="font-mono text-red-600">
+            This action cannot be undone.
+            <br /> This will permanently delete the blog.
+            <br />
+            This will also delete all posts in the blog.
           </p>
           <div className="actions">
             <Button
