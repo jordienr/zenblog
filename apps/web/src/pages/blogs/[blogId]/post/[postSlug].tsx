@@ -23,7 +23,11 @@ export default function Post() {
 
   const sb = getSupabaseBrowserClient();
 
-  const { data: post, isLoading, isRefetching } = usePostQuery(postSlug);
+  const {
+    data: post,
+    isLoading,
+    isRefetching,
+  } = usePostQuery(postSlug, blogId);
 
   const tagsQuery = usePostTags({ blogId, postId: post?.data?.id || "" });
 

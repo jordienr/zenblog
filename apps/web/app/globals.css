@@ -7,8 +7,3 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-button > button {
-  outline: 2px solid red !important;
-  background: red !important;
-}

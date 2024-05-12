@@ -6,6 +6,10 @@ input[type="checkbox"] {
   accent-color: theme("colors.orange.600");
 }
 
+button button {
+  border: 3px solid red !important;
+}
+
 .base-toast {
   @apply rounded-full bg-zinc-800 text-zinc-50;
 }

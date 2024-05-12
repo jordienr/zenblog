@@ -155,7 +155,7 @@ export default function BlogPosts() {
               </TabsList>
               <div className="flex items-center">
                 <Dialog>
-                  <DialogTrigger>
+                  <DialogTrigger asChild>
                     <Button variant="ghost">
                       <CodeIcon />
                       Integration
@@ -404,7 +404,7 @@ export default function BlogPosts() {
 
                           <div className="flex items-center justify-end">
                             <DropdownMenu modal={false}>
-                              <DropdownMenuTrigger>
+                              <DropdownMenuTrigger asChild>
                                 <Button size="icon" variant={"ghost"}>
                                   <MoreVertical size="16" />
                                 </Button>
@@ -578,7 +578,7 @@ function TabSection({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border bg-white py-2 shadow-sm">
+    <div className="rounded-xl border bg-white py-2">
       <div className="flex justify-between border-b px-3 py-1 pb-3">
         <h2 className="text-lg font-medium">{title}</h2>
         {actions}

@@ -24,7 +24,7 @@ export const usePostsQuery = () => {
   });
 };
 
-export const usePostQuery = (postSlug: string) => {
+export const usePostQuery = (postSlug: string, blogId: string) => {
   const sb = getSupabaseBrowserClient();
 
   return useQuery({
@@ -34,6 +34,7 @@ export const usePostQuery = (postSlug: string) => {
         .from("posts")
         .select("*")
         .eq("slug", postSlug)
+        .eq("blog_id", blogId)
         .single();
 
       if (error) {
