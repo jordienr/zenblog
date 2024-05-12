@@ -66,18 +66,18 @@ async function HostedBlog({
         </>
       )}
 
-      <div className="divide-y md:divide-y-0">
+      <div className="divide-y sm:divide-y-0">
         {posts?.map((post, index) => (
           <FadeIn delay={index * 0.05} key={post.slug}>
             <Link
-              className="group grid flex-wrap gap-2 p-2 transition-all hover:bg-zinc-50 md:flex md:rounded-lg"
+              className="group grid flex-wrap gap-2 p-2 transition-all hover:bg-zinc-50 sm:flex sm:rounded-lg"
               key={post.slug}
               href={`/${post.slug}`}
             >
               <span className="text-zinc-900 group-hover:text-orange-500">
                 {post.title}
               </span>
-              <span className="ml-auto text-right font-mono text-xs tracking-tight text-slate-400 md:text-base">
+              <span className="ml-auto text-right font-mono text-xs tracking-tight text-slate-400 sm:text-base">
                 {formatDate(post.published_at)}
               </span>
             </Link>
