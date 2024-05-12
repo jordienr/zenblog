@@ -70,7 +70,7 @@ async function HostedBlog({
         {posts?.map((post, index) => (
           <FadeIn delay={index * 0.05} key={post.slug}>
             <Link
-              className="group grid flex-wrap gap-2 rounded-lg p-2 transition-all hover:bg-zinc-50 md:flex"
+              className="group grid flex-wrap gap-2 p-2 transition-all hover:bg-zinc-50 md:flex md:rounded-lg"
               key={post.slug}
               href={`/blog/${post.slug}`}
             >
