@@ -44,7 +44,7 @@ export const useCreateBlogTag = () => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["tags"]);
+        queryClient.invalidateQueries(["blog-tags"]);
       },
     }
   );

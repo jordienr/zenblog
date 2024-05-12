@@ -2,8 +2,8 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const tagKeys = {
-  tags: (keys: string[]) => ["tags", ...keys],
-  tag: (tagId: string) => ["tag", tagId],
+  tags: (keys: string[]) => ["blog-tags", ...keys],
+  tag: (tagId: string) => ["blog-tag", tagId],
 };
 
 export function useTagsWithUsageQuery(
@@ -30,13 +30,17 @@ export function useTagsWithUsageQuery(
   });
 }
 
-export function useDeleteTagMutation() {
+export function useDeleteTagMutation(blogId: string) {
   const queryClient = useQueryClient();
   const supa = getSupabaseBrowserClient();
 
   return useMutation(
     async (tagId: string) => {
-      const res = await supa.from("blog_tags").delete().eq("id", tagId);
+      const res = await supa
+        .from("blog_tags")
+        .delete()
+        .eq("id", tagId)
+        .eq("blog_id", blogId);
 
       if (res.error) {
         throw new Error(res.error.message);
@@ -46,13 +50,13 @@ export function useDeleteTagMutation() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(tagKeys.tags([""]));
+        queryClient.invalidateQueries(tagKeys.tags([blogId]));
       },
     }
   );
 }
 
-export function useUpdateTagMutation() {
+export function useUpdateTagMutation(blogId: string) {
   const queryClient = useQueryClient();
   const supa = getSupabaseBrowserClient();
 
@@ -68,7 +72,7 @@ export function useUpdateTagMutation() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(tagKeys.tags([""]));
+        queryClient.invalidateQueries(tagKeys.tags([blogId]));
       },
     }
   );

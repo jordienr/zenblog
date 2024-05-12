@@ -86,7 +86,11 @@ export default function BlogPosts() {
   });
   const deleteMedia = useDeleteMediaMutation();
   const [selectedImages, setSelectedImages] = useState<Image[]>([]);
-  const [selectedTag, setSelectedTag] = useState<{ tag_id?: string | null }>();
+  const [selectedTag, setSelectedTag] = useState<{
+    tag_id: string | null;
+    tag_name: string | null;
+    slug: string | null;
+  }>();
 
   const tags = useTagsWithUsageQuery(
     { blogId },
@@ -118,8 +122,8 @@ export default function BlogPosts() {
     },
   });
 
-  const deleteTagMutation = useDeleteTagMutation();
-  const updateTagMutation = useUpdateTagMutation();
+  const deleteTagMutation = useDeleteTagMutation(blogId);
+  const updateTagMutation = useUpdateTagMutation(blogId);
 
   function getPostViews(slug: string) {
     const post = postViews.data?.find((p: any) => p.post_slug === slug);
@@ -378,7 +382,7 @@ export default function BlogPosts() {
                       <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
                         <div>Tag</div>
                         <div>Slug</div>
-                        <div>Posts with tag</div>
+                        <div className="text-right">Posts with tag</div>
                         <div></div>
                       </div>
                     ) : null}
@@ -400,7 +404,9 @@ export default function BlogPosts() {
                             </p>
                           </div>
 
-                          <div className="font-mono">{tag.post_count}</div>
+                          <div className="text-right font-mono">
+                            {tag.post_count}
+                          </div>
 
                           <div className="flex items-center justify-end">
                             <DropdownMenu modal={false}>
@@ -412,6 +418,10 @@ export default function BlogPosts() {
                               <DropdownMenuContent>
                                 <DropdownMenuItem
                                   onClick={() => {
+                                    if (!tag) {
+                                      return;
+                                    }
+                                    setSelectedTag(tag);
                                     setUpdateTagDialogOpen(true);
                                   }}
                                 >
@@ -420,7 +430,9 @@ export default function BlogPosts() {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
-                                    console.log("selected tag", tag);
+                                    if (!tag) {
+                                      return;
+                                    }
                                     setSelectedTag(tag);
                                     setDeleteTagDialogOpen(true);
                                   }}
@@ -431,23 +443,6 @@ export default function BlogPosts() {
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
-                          <UpdateTagDialog
-                            tag={tag}
-                            onSubmit={async (newTag) => {
-                              const res = await updateTagMutation.mutateAsync({
-                                name: newTag.tag_name,
-                                slug: newTag.slug,
-                                id: tag.tag_id!,
-                              });
-                              if (res.error) {
-                                toast.error("Failed to update tag");
-                                return;
-                              }
-                              toast.success("Tag updated");
-                            }}
-                            open={updateTagDialogOpen}
-                            onOpenChange={setUpdateTagDialogOpen}
-                          />
                         </div>
                       );
                     })}
@@ -456,6 +451,25 @@ export default function BlogPosts() {
               </TabSection>
             </TabsContent>
           </Tabs>
+          <UpdateTagDialog
+            tag={selectedTag}
+            onSubmit={async (newTag) => {
+              if (!newTag.tag_id) return;
+              const res = await updateTagMutation.mutateAsync({
+                name: newTag.tag_name,
+                slug: newTag.slug,
+                id: newTag.tag_id,
+              });
+              if (res.error) {
+                toast.error("Failed to update tag");
+                return;
+              }
+              setUpdateTagDialogOpen(false);
+              toast.success("Tag updated");
+            }}
+            open={updateTagDialogOpen}
+            onOpenChange={setUpdateTagDialogOpen}
+          />
           <ConfirmDialog
             title="Delete tag"
             description="Are you sure you want to delete this tag? This action cannot be undone."

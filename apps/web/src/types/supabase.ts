@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       blog_tags: {
@@ -41,9 +41,10 @@ export interface Database {
           {
             foreignKeyName: "blog_tags_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       blogs: {
@@ -52,7 +53,7 @@ export interface Database {
           description: string | null
           emoji: string
           id: string
-          slug: string | null
+          slug: string
           title: string
           user_id: string
         }
@@ -61,7 +62,7 @@ export interface Database {
           description?: string | null
           emoji: string
           id?: string
-          slug?: string | null
+          slug: string
           title: string
           user_id?: string
         }
@@ -70,7 +71,7 @@ export interface Database {
           description?: string | null
           emoji?: string
           id?: string
-          slug?: string | null
+          slug?: string
           title?: string
           user_id?: string
         }
@@ -78,15 +79,17 @@ export interface Database {
           {
             foreignKeyName: "blogs_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "blogs_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       feedback: {
@@ -157,61 +160,71 @@ export interface Database {
           {
             foreignKeyName: "post_tags_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "posts"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "posts_with_blog_and_subscription_status"
             referencedColumns: ["post_id"]
           },
           {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "posts_with_blog_and_subscription_status_v2"
             referencedColumns: ["post_id"]
           },
           {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "posts_with_tags"
             referencedColumns: ["post_id"]
           },
           {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "posts_with_tags_v2"
             referencedColumns: ["post_id"]
           },
           {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "public_posts_v1"
             referencedColumns: ["post_id"]
           },
           {
             foreignKeyName: "post_tags_tag_id_fkey"
             columns: ["tag_id"]
+            isOneToOne: false
             referencedRelation: "blog_tags"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "post_tags_tag_id_fkey"
             columns: ["tag_id"]
-            referencedRelation: "tag_usage_count_v1"
+            isOneToOne: false
+            referencedRelation: "tag_usage_count_v2"
             referencedColumns: ["tag_id"]
-          }
+          },
         ]
       }
       posts: {
         Row: {
+          abstract: string
           blog_id: string
           content: Json
           cover_image: string | null
@@ -227,6 +240,7 @@ export interface Database {
           user_id: string
         }
         Insert: {
+          abstract?: string
           blog_id: string
           content?: Json
           cover_image?: string | null
@@ -242,6 +256,7 @@ export interface Database {
           user_id?: string
         }
         Update: {
+          abstract?: string
           blog_id?: string
           content?: Json
           cover_image?: string | null
@@ -260,21 +275,24 @@ export interface Database {
           {
             foreignKeyName: "posts_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "public_posts_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "public_posts_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       prices: {
@@ -345,15 +363,17 @@ export interface Database {
           {
             foreignKeyName: "subscriptions_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "subscriptions_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       teams: {
@@ -382,19 +402,90 @@ export interface Database {
           {
             foreignKeyName: "public_teams_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "public_teams_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }
     Views: {
+      post_tags_with_tags: {
+        Row: {
+          created_at: string | null
+          id: number | null
+          post_id: string | null
+          tag_description: string | null
+          tag_id: string | null
+          tag_name: string | null
+          tag_slug: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_with_blog_and_subscription_status"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_with_blog_and_subscription_status_v2"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_with_tags"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_with_tags_v2"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "public_posts_v1"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "blog_tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tag_usage_count_v2"
+            referencedColumns: ["tag_id"]
+          },
+        ]
+      }
       posts_with_blog_and_subscription_status: {
         Row: {
           blog_id: string | null
@@ -415,9 +506,10 @@ export interface Database {
           {
             foreignKeyName: "posts_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       posts_with_blog_and_subscription_status_v2: {
@@ -441,9 +533,10 @@ export interface Database {
           {
             foreignKeyName: "posts_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       posts_with_tags: {
@@ -465,9 +558,10 @@ export interface Database {
           {
             foreignKeyName: "posts_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       posts_with_tags_v2: {
@@ -490,9 +584,10 @@ export interface Database {
           {
             foreignKeyName: "posts_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       public_posts_v1: {
@@ -517,12 +612,13 @@ export interface Database {
           {
             foreignKeyName: "posts_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
-      tag_usage_count_v1: {
+      tag_usage_count_v2: {
         Row: {
           blog_id: string | null
           created_at: string | null
@@ -536,9 +632,10 @@ export interface Database {
           {
             foreignKeyName: "blog_tags_blog_id_fkey"
             columns: ["blog_id"]
+            isOneToOne: false
             referencedRelation: "blogs"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       users: {
@@ -687,3 +784,84 @@ export interface Database {
   }
 }
 
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never

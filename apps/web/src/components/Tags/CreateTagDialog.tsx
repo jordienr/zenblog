@@ -37,19 +37,19 @@ export function CreateTagDialog({ blogId }: PropsWithChildren<Props>) {
             onSubmit={async (e) => {
               e.preventDefault();
               e.stopPropagation();
-              const target = e.target as HTMLFormElement;
-              const formData = new FormData(target);
-              const name = formData.get("name") as string;
-              const slug = formData.get("slug") as string;
-              if (!name || !slug) {
+              if (!title || !slug) {
                 toast.error("Name and slug are required");
                 return;
               }
-              await createTag.mutateAsync({ name, slug, blog_id: blogId });
-              formData.set("name", "");
-              formData.set("slug", "");
+              await createTag.mutateAsync({
+                name: title,
+                slug,
+                blog_id: blogId,
+              });
 
-              target.reset();
+              setTitle("");
+              setSlug("");
+
               toast.success("Tag created");
               setOpen(false);
             }}
