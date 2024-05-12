@@ -293,7 +293,7 @@ export const ZendoEditor = (props: Props) => {
       )}
       <form
         onSubmit={formSubmit}
-        className="sticky top-0 z-20 flex w-full items-center justify-end bg-zinc-50 px-3 py-1.5 text-zinc-800 md:justify-between"
+        className="sticky top-0 z-20 flex w-full items-center justify-end border-b bg-zinc-50 px-3 py-1.5 text-zinc-800 md:justify-between"
       >
         <div className="hidden items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-zinc-800 md:flex">
           {blogsQuery.isLoading ? null : (
@@ -425,7 +425,7 @@ export const ZendoEditor = (props: Props) => {
           </Button>
         </div>
       </form>
-      <div className="mx-auto mt-2 flex w-full max-w-3xl flex-col rounded-md border bg-white  pb-6 pt-2 shadow-md lg:mt-12">
+      <div className="mx-auto mt-2 flex w-full max-w-3xl flex-col rounded-md border border-zinc-200 bg-white pb-6 pt-2 lg:mt-12">
         {coverImgUrl && (
           <div className="relative mt-2 flex items-center justify-center border-b">
             <button
@@ -547,9 +547,9 @@ export const ZendoEditor = (props: Props) => {
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-h2:font-semibold -mt-2 min-h-[700px] cursor-text rounded-lg px-8 py-1.5 font-light leading-10 tracking-normal transition-all"
+            className="prose prose-p:text-lg prose-h2:font-semibold mx-auto -mt-2 min-h-[700px] w-full cursor-text rounded-lg px-8 py-1.5 font-light leading-10 tracking-normal transition-all"
           >
-            <EditorContent editor={editor} />
+            <EditorContent className="w-full" editor={editor} />
           </div>
         </div>
       </div>

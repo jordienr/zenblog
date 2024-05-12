@@ -47,7 +47,6 @@ import { useRouterTabs } from "@/hooks/useRouterTabs";
 import { ImageUploader } from "@/components/Images/ImageUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { usePostViewsQuery } from "@/queries/analytics";
-import { on } from "events";
 import { IntegrationGuide } from "@/components/integration-guide";
 
 export function StatePill({ published }: { published: boolean }) {
@@ -68,6 +67,8 @@ export function StatePill({ published }: { published: boolean }) {
 export default function BlogPosts() {
   const router = useRouter();
   const blogId = router.query.blogId as string;
+  // Show views only in dev mode
+  const showViews = process.env.NODE_ENV === "development";
 
   const { tabValue, onTabChange } = useRouterTabs("tab");
 
@@ -215,6 +216,7 @@ export default function BlogPosts() {
                 {posts.map((post) => {
                   return (
                     <PostItem
+                      showViews={showViews}
                       views={getPostViews(post.slug || "")}
                       key={post.post_id}
                       post={post}
@@ -501,11 +503,13 @@ function PostItem({
   blogId,
   views,
   onDeleteClick,
+  showViews,
 }: {
   post: any;
   blogId: string;
   views: string;
   onDeleteClick: () => void;
+  showViews?: boolean;
 }) {
   return (
     <Link
@@ -532,9 +536,11 @@ function PostItem({
           <StatePill published={post.published || false} />
         </div>
         <h2 className="ml-1 text-lg font-normal">{post.title}</h2>
-        <span className="px-1 font-mono text-xs text-zinc-500">
-          {views ? `${views} views` : "0 views"}
-        </span>
+        {showViews && (
+          <span className="px-1 font-mono text-xs text-zinc-500">
+            {views ? `${views} views` : "0 views"}
+          </span>
+        )}
       </div>
 
       <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">

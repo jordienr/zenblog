@@ -18,7 +18,8 @@
     "qs": "git add . && git commit -m \"quick save\" && git push",
     "stripe:webhook": "stripe listen --forward-to localhost:3000/api/webhooks/stripe",
     "stripe:event": "stripe trigger payment_intent.succeeded",
-    "stripe:sync": "tsx ./scripts/stripe-sync.ts"
+    "stripe:sync": "tsx ./scripts/stripe-sync.ts",
+    "ff:typegen": "npx hypertune"
   },
   "devDependencies": {
     "@turbo/gen": "^1.9.7",
@@ -37,8 +38,10 @@
     "@supabase/ssr": "^0.1.0",
     "@tiptap/suggestion": "^2.3.1",
     "@types/inquirer": "^9.0.3",
+    "hypertune": "^2.1.1",
     "next": "^14.1.0",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.1",
+    "web": "^0.1.0"
   },
   "engines": {
     "node": ">=18.0.0",

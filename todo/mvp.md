@@ -10,8 +10,8 @@
 - [] email provider
 - [x] Integration guide tab
 - [] Slash commands in editor (like notion or craft)
-- [] Improve tag picker
-- [] fix "add it to my website" button after creating a blog
+- [x] Improve tag picker
+- [x] fix "add it to my website" button after creating a blog
 
 ## Pricing
 
@@ -21,16 +21,19 @@
 
 - Integration guide
   - [x] instruct users to keep the id private.
-  - [] create a different column for the connection string
+  - [] create a different column for the connection string (so it can be rotated without breaking the blog)
   - [] allow users to rotate the connection string
   - [] Recommend users to cache content
-  - [] create tinybird endpoint to get all views for a blog
+
+## Analytics
+
+- [] create tinybird endpoint to get all views for a blog
 
 ## Posts
 
 - [] When uploading an image, it would be nice if you could rename it before uploading.
-- [] See "published at" and "updated at" dates in post list
-- [] change published date in post settings
+- [x] See "published at" and "updated at" dates in post list
+- [x] change published date in post settings
 - [] pagination
 
 ## Tags

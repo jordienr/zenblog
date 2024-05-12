@@ -11,6 +11,7 @@
     "supabase:typegen": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts"
   },
   "dependencies": {
+    "flags": "*",
     "@builder.io/react-hydration-overlay": "^0.0.8",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",

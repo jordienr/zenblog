@@ -190,7 +190,7 @@ export default function CreateBlog() {
                       id="slug"
                       {...register("slug")}
                       className="rounded-md text-zinc-700 transition-all hover:bg-zinc-100"
-                    >{`${watch("slug")}`}</span>
+                    >{`${watch("slug") || " "}`}</span>
                     <span>.zenblog.com</span>
                   </div>
                 </div>
