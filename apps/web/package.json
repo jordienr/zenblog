@@ -65,7 +65,7 @@
     "micro": "^10.0.1",
     "mini-svg-data-uri": "^1.4.4",
     "nanoid": "^5.0.7",
-    "next": "^14.0.4",
+    "next": "^14.2.3",
     "next-plausible": "^3.7.2",
     "openai": "^4.12.4",
     "raw-body": "^2.5.2",

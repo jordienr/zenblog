@@ -1,4 +1,5 @@
 import { createClient } from "app/supa";
+import { wait } from "app/utils/wait";
 
 export async function getBlog(subdomain: string) {
   const supa = createClient();
