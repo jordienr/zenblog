@@ -20,8 +20,13 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Instrument_Serif } from "next/font/google";
 import { ZendoEditor } from "@/components/Editor/ZendoEditor";
-import { toast } from "sonner";
+
+const serif = Instrument_Serif({
+  weight: ["400"],
+  subsets: ["latin"],
+});
 
 const Home = () => {
   const user = useUser();
@@ -58,7 +63,7 @@ const Home = () => {
       </Head>
       <div className="bg-white">
         <div className="flex flex-col">
-          <nav className="mx-auto flex w-full max-w-3xl items-center justify-between p-5">
+          <nav className="mx-auto flex w-full max-w-xl items-center justify-between p-5">
             <div className="flex-grow cursor-default">
               <ZendoLogo />
             </div>
@@ -112,7 +117,7 @@ const Home = () => {
           </nav>
 
           <main className="px-4 pb-24 font-sans">
-            <div className="mx-auto  mt-12 max-w-3xl text-center">
+            <div className="mx-auto  mt-12 max-w-xl text-center">
               <div className="">
                 <Link
                   className="group inline-flex items-center gap-1 rounded-lg bg-zinc-200/70 px-3 py-1 font-mono text-xs font-medium text-zinc-700 transition-all "
@@ -122,10 +127,10 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className={"mt-4 text-3xl font-semibold md:text-4xl "}>
+              <h1 className={`mt-4 text-3xl font-semibold md:text-4xl`}>
                 A tiny blogging CMS
               </h1>
-              <div className="text-lg font-light leading-8 text-zinc-600">
+              <div className="text-sm font-light leading-4 text-zinc-600 md:text-lg md:leading-8">
                 <p className="mx-auto mt-3 max-w-sm">
                   Simple, fast, and open-source blogging.
                   <br />
@@ -189,7 +194,7 @@ const Home = () => {
                   </DialogContent>
                 </Dialog>
 
-                <Carousel className="mt-12 max-w-full">
+                {/* <Carousel className="mt-12 max-w-full">
                   <CarouselContent className="[&_img]:rounded-lg">
                     <CarouselItem>
                       <Image
@@ -218,8 +223,20 @@ const Home = () => {
                   </CarouselContent>
                   <CarouselPrevious className="hidden md:flex" />
                   <CarouselNext className="hidden md:flex" />
-                </Carousel>
+                </Carousel> */}
               </div>
+            </div>
+            <div className="mx-auto mt-14 max-w-4xl rounded-lg border border-zinc-200 shadow-sm *:rounded-lg">
+              <Image
+                className="w-full"
+                src="/static/zenblogui.png"
+                loading="lazy"
+                blurDataURL="/static/zenblogui.png"
+                placeholder="blur"
+                width={1200}
+                height={700}
+                alt="The zenblog editor UI"
+              />
             </div>
           </main>
         </div>
