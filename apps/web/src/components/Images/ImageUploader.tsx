@@ -174,6 +174,17 @@ export const ImageUploader = ({
             {imageInfo && (
               <div className="flex w-full justify-between">
                 <div className="flex items-center gap-2 text-xs">
+                  <input
+                    type="text"
+                    name="filename"
+                    id="filename"
+                    value={
+                      image.name.length > 20
+                        ? `${image.name.slice(0, 20)}...`
+                        : image.name
+                    }
+                    className="bg-transparent text-slate-500"
+                  />
                   <span className=" text-slate-500">{`${imageInfo.height}x${imageInfo.width}px`}</span>
                   <span className=" text-slate-500">{imageInfo.size}</span>
                 </div>

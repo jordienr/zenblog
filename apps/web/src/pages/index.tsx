@@ -20,12 +20,8 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Instrument_Serif } from "next/font/google";
-
-const serif = Instrument_Serif({
-  weight: ["400"],
-  subsets: ["latin"],
-});
+import { ZendoEditor } from "@/components/Editor/ZendoEditor";
+import { toast } from "sonner";
 
 const Home = () => {
   const user = useUser();
@@ -60,9 +56,9 @@ const Home = () => {
         <meta name="description" content="Open source blogging cms" />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="bg-zinc-50">
-        <div className="mx-auto flex max-w-3xl flex-col">
-          <nav className="flex items-center justify-between p-5">
+      <div className="bg-white">
+        <div className="flex flex-col">
+          <nav className="mx-auto flex w-full max-w-3xl items-center justify-between p-5">
             <div className="flex-grow cursor-default">
               <ZendoLogo />
             </div>
@@ -116,30 +112,24 @@ const Home = () => {
           </nav>
 
           <main className="px-4 pb-24 font-sans">
-            <div className="mx-auto mt-12">
+            <div className="mx-auto  mt-12 max-w-3xl text-center">
               <div className="">
                 <Link
-                  className="group inline-flex items-center gap-1 rounded-lg   bg-zinc-200/70 px-3 py-1 font-mono text-xs font-medium text-zinc-700 transition-all "
+                  className="group inline-flex items-center gap-1 rounded-lg bg-zinc-200/70 px-3 py-1 font-mono text-xs font-medium text-zinc-700 transition-all "
                   target="_blank"
                   href="https://git.new/zenblog"
                 >
                   Star us on GitHub
                 </Link>
               </div>
-              <h1
-                className={
-                  "mt-4 text-3xl font-medium tracking-tight md:text-4xl " +
-                  serif.className
-                }
-              >
-                think, write & publish.
+              <h1 className={"mt-4 text-3xl font-semibold md:text-4xl "}>
+                A tiny blogging CMS
               </h1>
               <div className="text-lg font-light leading-8 text-zinc-600">
-                <p className="mt-8 max-w-sm">
-                  Zenblog is a headless CMS for blogging. It was built with
-                  developers and writers in mind. It allows you to fetch your
-                  content easily and is fully typesafe. The UI is minimal and
-                  clean. It&apos;s open source. Hosts images for you.
+                <p className="mx-auto mt-3 max-w-sm">
+                  Simple, fast, and open-source blogging.
+                  <br />
+                  Built for devs and writers.
                 </p>
                 <Dialog>
                   <DialogTrigger className="mt-4 h-9 rounded-xl bg-black px-5 text-sm font-medium text-white shadow-lg ring-black transition-all hover:-translate-y-[2px] hover:shadow-xl ">
