@@ -20,6 +20,12 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Instrument_Serif } from "next/font/google";
+
+const serif = Instrument_Serif({
+  weight: ["400"],
+  subsets: ["latin"],
+});
 
 const Home = () => {
   const user = useUser();
@@ -120,7 +126,12 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
+              <h1
+                className={
+                  "mt-4 text-3xl font-medium tracking-tight md:text-4xl " +
+                  serif.className
+                }
+              >
                 think, write & publish.
               </h1>
               <div className="text-lg font-light leading-8 text-zinc-600">

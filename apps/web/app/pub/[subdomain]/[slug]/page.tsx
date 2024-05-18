@@ -27,6 +27,11 @@ export async function generateMetadata({
       title: `${post?.title} - ${blog?.title}` || "A zenblog blog",
       description: blog?.description || "Start writing your blog today",
       type: "website",
+      images: [
+        {
+          url: `https://zenblog.com/api/og?title=${post?.title}&emoji=${blog?.emoji}&url=${blog?.title}`,
+        },
+      ],
     },
   };
 }

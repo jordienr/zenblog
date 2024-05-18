@@ -134,7 +134,7 @@ const EditorSettings = (props: Props) => {
   const ogImageUrl = `/api/og?title=${props.title}&emoji=${props.blogEmoji}&url=${props.blogTitle}`;
 
   return (
-    <div className="overflow-y-auto [&_h2]:font-mono [&_h2]:text-sm [&_h2]:font-medium">
+    <div className="overflow-y-auto px-1 [&_h2]:font-mono [&_h2]:text-sm [&_h2]:font-medium">
       <section className="mt-2">
         <h2 className="mt-2 pb-2 font-mono">Published date</h2>
         <div className="flex gap-4">
