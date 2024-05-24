@@ -62,12 +62,11 @@ export default function Post() {
           const { tags, ...newData } = data;
           try {
             // TO DO: move this to an rfc
-            const { data: res, error } = await sb
+            const { error } = await sb
               .from("posts")
               .update(newData)
               .eq("slug", postSlug)
-              .select()
-              .single();
+              .select();
 
             if (error) {
               throw error;

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   CodeIcon,
+  ExternalLink,
   ImageOff,
   MoreVertical,
   Pen,
@@ -48,6 +49,7 @@ import { ImageUploader } from "@/components/Images/ImageUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { usePostViewsQuery } from "@/queries/analytics";
 import { IntegrationGuide } from "@/components/integration-guide";
+import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -131,14 +133,24 @@ export default function BlogPosts() {
     return post?.["count()"] || 0;
   }
 
+  const hostedBlogUrl = getHostedBlogUrl(blog?.slug || "");
+
   if (blog && posts) {
     return (
       <AppLayout loading={isLoading}>
         <div className="mx-auto mt-4 max-w-5xl p-4">
           <div className="flex items-center justify-between">
-            <h1 className="mb-2 text-xl">
+            <h1 className="mb-2 flex items-center text-xl">
               <span className="mr-2 text-2xl">{blog.emoji}</span>
               {blog.title}
+              <Link
+                href={hostedBlogUrl}
+                title="Settings"
+                target="_blank"
+                className="ml-2 p-1.5 text-zinc-500"
+              >
+                <ExternalLink size="16" />
+              </Link>
             </h1>
           </div>
 

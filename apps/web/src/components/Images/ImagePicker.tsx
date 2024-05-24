@@ -74,7 +74,7 @@ export function ImagePicker({
             </TabsList>
             <TabsContent value="images">
               <div className="relative">
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                   {media.data?.length === 0 ? (
                     <div className="col-span-2 py-24">
                       <p className="text-center text-sm text-gray-500">

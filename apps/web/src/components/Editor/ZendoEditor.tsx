@@ -2,20 +2,11 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import React, { useEffect } from "react";
 import { Button } from "../ui/button";
-import {
-  SaveIcon,
-  Settings2,
-  ChevronRight,
-  List,
-  CornerUpLeft,
-  Tag,
-  X,
-} from "lucide-react";
+import { SaveIcon, Settings2, List, CornerUpLeft, Tag, X } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { ImagePicker } from "../Images/ImagePicker";
 import { BsFillImageFill } from "react-icons/bs";
-import { EditorMenu } from "./EditorMenu";
 import TiptapImage from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import UploadImagesPlugin, { startImageUpload } from "./upload-image";
@@ -44,9 +35,8 @@ import { useBlogTags } from "./Editor.queries";
 import { TagPicker } from "../Tags/TagPicker";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "../ui/checkbox";
-import Commands from "./slash-commands/commands";
-import getSuggestionItems from "./slash-commands/items";
-import renderItems from "./slash-commands/renderItems";
+import Suggestion from "@tiptap/suggestion";
+import { SlashCommand } from "./slash-commands/slash-commands";
 
 const formSchema = z.object({
   title: z.string(),
@@ -59,6 +49,7 @@ type FormData = z.infer<typeof formSchema>;
 
 type OnSaveData = {
   content?: any;
+  html_content?: string;
   title: string;
   slug: string;
   cover_image?: string;
@@ -166,12 +157,7 @@ export const ZendoEditor = (props: Props) => {
           return [UploadImagesPlugin()];
         },
       }),
-      // Commands.configure({
-      //   suggestion: {
-      //     items: getSuggestionItems,
-      //     render: renderItems,
-      //   },
-      // }),
+      SlashCommand.configure({}),
     ],
   });
 
@@ -181,6 +167,7 @@ export const ZendoEditor = (props: Props) => {
       return;
     }
     const content = editor?.getJSON() || {};
+    const html_content = editor?.getHTML() || "";
     const { title, slug } = data;
 
     if (!title || !slug) {
@@ -190,6 +177,7 @@ export const ZendoEditor = (props: Props) => {
 
     props.onSave({
       content,
+      html_content,
       title: data.title,
       slug: data.slug,
       cover_image: data.cover_image || "",
@@ -244,25 +232,8 @@ export const ZendoEditor = (props: Props) => {
       }
     };
     document.addEventListener("keydown", handleSave);
-
-    // prevent users from leaving if they have unsaved changes
-    window.onbeforeunload = function (e) {
-      if (hasChanges) {
-        const confirm = window.confirm(
-          "You have unsaved changes, are you sure you want to leave?"
-        );
-
-        if (confirm) {
-          return;
-        } else {
-          e.preventDefault();
-        }
-      }
-    };
-
     return () => {
       document.removeEventListener("keydown", handleSave);
-      window.onbeforeunload = null;
     };
   });
 
@@ -271,8 +242,16 @@ export const ZendoEditor = (props: Props) => {
     setValue("cover_image", image);
   }
 
+  useEffect(() => {
+    const titleEl = document.getElementById("title-input");
+    if (!titleEl) return;
+
+    titleEl.style.height = "1px";
+    titleEl.style.height = titleEl?.scrollHeight + "px";
+  }, [title]);
+
   return (
-    <div className="min-h-screen bg-zinc-50 pb-24">
+    <div className="min-h-screen pb-24">
       {!isSubscribed && !subscription.isLoading && (
         <>
           <div className="absolute inset-0 z-40 flex items-center justify-center overflow-hidden bg-zinc-100/80">
@@ -293,88 +272,88 @@ export const ZendoEditor = (props: Props) => {
       )}
       <form
         onSubmit={formSubmit}
-        className="sticky top-0 z-20 flex w-full items-center justify-end border-b bg-zinc-50 px-3 py-1.5 text-zinc-800 md:justify-between"
+        className="sticky top-0 z-20 flex w-full items-center justify-end bg-white py-1.5 pl-1.5 pr-3 text-zinc-800 md:justify-between"
       >
-        <div className="hidden items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-zinc-800 md:flex">
-          {blogsQuery.isLoading ? null : (
-            <DropdownMenu>
-              <div className="flex items-center">
-                <Button size="icon" variant={"ghost"} asChild>
-                  <Link href={`/blogs/${blogQuery.data?.id}/posts`}>
-                    <CornerUpLeft size="16" />
-                  </Link>
-                </Button>
+        <div className="mr-auto flex items-center gap-1 rounded-xl text-sm font-medium tracking-tight text-zinc-800">
+          <Button size="icon" variant={"ghost"} asChild>
+            <Link href={`/blogs/${blogQuery.data?.id}/posts`}>
+              <CornerUpLeft size="16" />
+            </Link>
+          </Button>
+          <div className="hidden items-center gap-1 md:flex">
+            {blogsQuery.isLoading ? null : (
+              <DropdownMenu>
+                <div className="flex items-center">
+                  <DropdownMenuTrigger asChild>
+                    <Button variant={"ghost"}>
+                      <span className="flex h-6 w-6 items-center justify-center text-lg">
+                        {blogQuery.data?.emoji}
+                      </span>
+                      <span>{blogQuery.data?.title}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                </div>
+                <DropdownMenuContent
+                  align="start"
+                  className="-mt-1 max-w-[240px]"
+                >
+                  {blogsQuery.data?.map((blog) => (
+                    <DropdownMenuItem key={blog.id} asChild>
+                      <Link
+                        href={`/blogs/${blog.id}/posts`}
+                        className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
+                      >
+                        <span>{blog.emoji}</span>
+                        <span>{blog.title}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`/blogs/`}
+                      className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
+                    >
+                      <List size="14" />
+                      <span>All blogs</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            <div className="text-zinc-300">/</div>
+
+            {postsQuery.isLoading ? null : (
+              <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={"ghost"}>
-                    <span className="flex h-6 w-6 items-center justify-center text-lg">
-                      {blogQuery.data?.emoji}
-                    </span>
-                    <span>{blogQuery.data?.title}</span>
+                    <div className="flex items-center gap-1.5 rounded-md p-1.5 hover:bg-zinc-100">
+                      <span>{props.post?.title || title || "New post"}</span>
+                    </div>
                   </Button>
                 </DropdownMenuTrigger>
-              </div>
-              <DropdownMenuContent
-                align="start"
-                className="-mt-1 max-w-[240px]"
-              >
-                {blogsQuery.data?.map((blog) => (
-                  <DropdownMenuItem key={blog.id} asChild>
-                    <Link
-                      href={`/blogs/${blog.id}/posts`}
-                      className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
-                    >
-                      <span>{blog.emoji}</span>
-                      <span>{blog.title}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link
-                    href={`/blogs/`}
-                    className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
-                  >
-                    <List size="14" />
-                    <span>All blogs</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-
-          <div className="text-zinc-300">
-            <ChevronRight size="16" />
+                <DropdownMenuContent
+                  align="start"
+                  className="-mt-1 max-w-[240px]"
+                >
+                  {postsQuery.data?.map((post) => (
+                    <DropdownMenuItem key={post.post_id} asChild>
+                      <Link
+                        href={`/blogs/${blogId}/post/${post.slug}`}
+                        className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
+                      >
+                        <span className="text-xs">
+                          {post.published ? "🟢" : "🟠"}
+                        </span>
+                        <span>{post.title}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
-
-          {postsQuery.isLoading ? null : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant={"ghost"}>
-                  <div className="flex items-center gap-1.5 rounded-md p-1.5 hover:bg-zinc-100">
-                    <span>{props.post?.title || title || "New post"}</span>
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="start"
-                className="-mt-1 max-w-[240px]"
-              >
-                {postsQuery.data?.map((post) => (
-                  <DropdownMenuItem key={post.post_id} asChild>
-                    <Link
-                      href={`/blogs/${blogId}/post/${post.slug}`}
-                      className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
-                    >
-                      <span className="text-xs">
-                        {post.published ? "🟢" : "🟠"}
-                      </span>
-                      <span>{post.title}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
         </div>
         <div className="actions">
           <Checkbox
@@ -389,12 +368,6 @@ export const ZendoEditor = (props: Props) => {
             className="flex cursor-pointer items-center py-1.5 text-xs  font-medium text-zinc-600 transition-all hover:text-zinc-800"
             htmlFor="published"
           >
-            {/* <input
-              type="checkbox"
-              id="published"
-              {...register("published")}
-              className="h-4 w-4 rounded-lg border-none border-zinc-200 bg-transparent p-2 text-zinc-800 outline-none transition-all hover:bg-zinc-50 focus-visible:bg-zinc-100"
-            /> */}
             Publish
           </Label>
           <Sheet>
@@ -425,7 +398,7 @@ export const ZendoEditor = (props: Props) => {
           </Button>
         </div>
       </form>
-      <div className="mx-auto mt-2 flex w-full max-w-3xl flex-col rounded-md border border-zinc-200 bg-white pb-6 pt-2 lg:mt-12">
+      <div className="mx-auto flex w-full max-w-3xl flex-col rounded-md bg-white pb-6">
         {coverImgUrl && (
           <div className="relative mt-2 flex items-center justify-center border-b">
             <button
@@ -443,7 +416,7 @@ export const ZendoEditor = (props: Props) => {
           </div>
         )}
 
-        <div className="px-8 pb-2 pt-1.5">
+        <div className="mx-auto w-full max-w-3xl px-8 pb-2">
           <div className="flex w-full items-end justify-between gap-4 transition-all">
             <label
               className="group flex w-full flex-col items-start justify-center gap-1"
@@ -484,13 +457,26 @@ export const ZendoEditor = (props: Props) => {
           </div>
 
           <textarea
+            id="title-input"
             placeholder="A great title"
             {...register("title")}
             style={{ resize: "none" }}
-            className="mt-1 w-full max-w-2xl rounded-xl bg-transparent
-            p-2 text-4xl font-medium text-zinc-800 outline-none focus:bg-zinc-100"
+            className="mt-1 w-full overflow-hidden
+            rounded-xl bg-transparent p-2 text-4xl font-medium text-zinc-700 outline-none"
           />
           <div className="group flex gap-1.5">
+            <TagPicker
+              allTags={blogTags.data || []}
+              selectedTags={tags}
+              onChange={(newTags) => {
+                setTags(newTags);
+              }}
+              blogId={blogId}
+              open={showTagPicker}
+              onOpenChange={setShowTagPicker}
+            >
+              <div></div>
+            </TagPicker>
             {tags.length > 0 && (
               <div className="flex flex-wrap items-center gap-1">
                 {tags.map((tag) => (
@@ -514,40 +500,37 @@ export const ZendoEditor = (props: Props) => {
                 ))}
               </div>
             )}
-            <TagPicker
-              allTags={blogTags.data || []}
-              selectedTags={tags}
-              onChange={(newTags) => {
-                setTags(newTags);
+            <button
+              tabIndex={-1}
+              onClick={() => {
+                setShowTagPicker(true);
               }}
-              blogId={blogId}
-              open={showTagPicker}
-              onOpenChange={setShowTagPicker}
+              className={cn(
+                "flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1 text-xs text-zinc-400 opacity-0 transition-all hover:text-zinc-700 group-hover:opacity-100",
+                {
+                  "opacity-100": tags.length === 0,
+                }
+              )}
             >
-              <button
-                tabIndex={-1}
-                className={cn(
-                  "flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1 text-xs text-zinc-400 opacity-0 transition-all hover:text-zinc-700 group-hover:opacity-100",
-                  {
-                    "opacity-100": tags.length === 0,
-                  }
-                )}
-              >
-                <Tag size="14" className="text-zinc-300" />
-                Add tags
-              </button>
-            </TagPicker>
+              <Tag size="14" className="text-zinc-300" />
+              Add tags
+            </button>
           </div>
         </div>
-        <div className="group">
-          <div className="sticky top-10 z-10 border-b px-3">
+        <div
+          className="group cursor-text"
+          onClick={() => {
+            editor?.commands.focus();
+          }}
+        >
+          {/* <div className="sticky top-10 z-10 border-b px-3">
             <EditorMenu editor={editor} />
-          </div>
+          </div> */}
           <div
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-h2:font-semibold -mt-2 min-h-[700px] w-full !max-w-full cursor-text rounded-lg px-8 py-1.5 font-light leading-10 tracking-normal transition-all"
+            className="prose prose-p:text-lg prose-h2:font-semibold mx-auto -mt-2 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg px-8 py-1.5 font-light leading-10 tracking-normal transition-all"
           >
             <EditorContent className="w-full" editor={editor} />
           </div>

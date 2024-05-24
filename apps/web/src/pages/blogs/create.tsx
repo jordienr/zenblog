@@ -43,6 +43,15 @@ export default function CreateBlog() {
   const createBlog = useCreateBlogMutation();
 
   const onSubmit = async (data: FormData) => {
+    if (!isSubscribed) {
+      return;
+    }
+
+    if (data.slug.length < 3) {
+      alert("Slug must be at least 3 characters long");
+      return;
+    }
+
     const res = await createBlog.mutateAsync({
       title: data.title,
       description: data.description || "",
@@ -184,14 +193,22 @@ export default function CreateBlog() {
                   <Label className="flex-grow" htmlFor="title">
                     <div className="sr-only">Slug</div>
                   </Label>
-                  <div className="flex font-mono tracking-tighter">
-                    <span
-                      contentEditable={true}
-                      id="slug"
-                      {...register("slug")}
-                      className="rounded-md text-zinc-700 transition-all hover:bg-zinc-100"
-                    >{`${watch("slug") || " "}`}</span>
-                    <span>.zenblog.com</span>
+                  {watch("slug")}
+                  <div>
+                    <div className="flex font-mono tracking-tighter">
+                      <input
+                        type="text"
+                        {...register("slug")}
+                        className="flex-1 rounded-md text-right text-zinc-700 transition-all hover:bg-zinc-100"
+                      />
+                      {/* <span
+                        contentEditable={true}
+                        id="slug"
+                        {...register("slug")}
+                        className="rounded-md text-zinc-700 transition-all hover:bg-zinc-100"
+                      >{`${watch("slug") || " "}`}</span> */}
+                      <span>.zenblog.com</span>
+                    </div>
                   </div>
                 </div>
               </div>

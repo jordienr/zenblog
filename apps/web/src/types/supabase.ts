@@ -50,28 +50,34 @@ export type Database = {
       blogs: {
         Row: {
           created_at: string
-          description: string | null
+          description: string
           emoji: string
           id: string
+          order: Database["public"]["Enums"]["blog_sort_order"]
           slug: string
+          theme: string
           title: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          description?: string | null
+          description?: string
           emoji: string
           id?: string
+          order?: Database["public"]["Enums"]["blog_sort_order"]
           slug: string
+          theme?: string
           title: string
           user_id?: string
         }
         Update: {
           created_at?: string
-          description?: string | null
+          description?: string
           emoji?: string
           id?: string
+          order?: Database["public"]["Enums"]["blog_sort_order"]
           slug?: string
+          theme?: string
           title?: string
           user_id?: string
         }
@@ -207,6 +213,13 @@ export type Database = {
             referencedColumns: ["post_id"]
           },
           {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "public_posts_v2"
+            referencedColumns: ["post_id"]
+          },
+          {
             foreignKeyName: "post_tags_tag_id_fkey"
             columns: ["tag_id"]
             isOneToOne: false
@@ -230,6 +243,7 @@ export type Database = {
           cover_image: string | null
           created_at: string
           deleted: boolean
+          html_content: string
           id: string
           metadata: Json[] | null
           published: boolean
@@ -246,6 +260,7 @@ export type Database = {
           cover_image?: string | null
           created_at?: string
           deleted?: boolean
+          html_content?: string
           id?: string
           metadata?: Json[] | null
           published?: boolean
@@ -262,6 +277,7 @@ export type Database = {
           cover_image?: string | null
           created_at?: string
           deleted?: boolean
+          html_content?: string
           id?: string
           metadata?: Json[] | null
           published?: boolean
@@ -471,6 +487,13 @@ export type Database = {
             referencedColumns: ["post_id"]
           },
           {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "public_posts_v2"
+            referencedColumns: ["post_id"]
+          },
+          {
             foreignKeyName: "post_tags_tag_id_fkey"
             columns: ["tag_id"]
             isOneToOne: false
@@ -598,6 +621,35 @@ export type Database = {
           cover_image: string | null
           created_at: string | null
           deleted: boolean | null
+          metadata: Json[] | null
+          post_id: string | null
+          published: boolean | null
+          published_at: string | null
+          slug: string | null
+          subscription_status: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_posts_v2: {
+        Row: {
+          blog_id: string | null
+          blog_slug: string | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          html_content: string | null
           metadata: Json[] | null
           post_id: string | null
           published: boolean | null
@@ -776,7 +828,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      blog_sort_order: "asc" | "desc"
     }
     CompositeTypes: {
       [_ in never]: never

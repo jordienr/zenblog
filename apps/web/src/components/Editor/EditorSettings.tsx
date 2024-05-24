@@ -357,6 +357,8 @@ const EditorSettings = (props: Props) => {
         <Image
           className="mt-4 max-w-full rounded-md border"
           src={ogImageUrl}
+          loading="lazy"
+          blurDataURL="/api/og?title=Loading...&emoji=🚀&url=Loading..."
           alt=""
           width={600}
           height={300}

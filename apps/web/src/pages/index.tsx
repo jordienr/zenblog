@@ -11,20 +11,12 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import { useUser } from "@/utils/supabase/browser";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Instrument_Serif } from "next/font/google";
-import { ZendoEditor } from "@/components/Editor/ZendoEditor";
+import { Spline_Sans } from "next/font/google";
 
-const serif = Instrument_Serif({
-  weight: ["400"],
+const headlineFont = Spline_Sans({
+  display: "swap",
   subsets: ["latin"],
 });
 
@@ -63,7 +55,7 @@ const Home = () => {
       </Head>
       <div className="bg-white">
         <div className="flex flex-col">
-          <nav className="mx-auto flex w-full max-w-xl items-center justify-between p-5">
+          <nav className="mx-auto flex w-full max-w-2xl items-center justify-between p-5">
             <div className="flex-grow cursor-default">
               <ZendoLogo />
             </div>
@@ -127,7 +119,9 @@ const Home = () => {
                   Star us on GitHub
                 </Link>
               </div>
-              <h1 className={`mt-4 text-3xl font-semibold md:text-4xl`}>
+              <h1
+                className={`mt-4 text-3xl font-semibold tracking-tight text-zinc-800 md:text-4xl`}
+              >
                 A tiny blogging CMS
               </h1>
               <div className="text-sm font-light leading-4 text-zinc-600 md:text-lg md:leading-8">
@@ -137,7 +131,7 @@ const Home = () => {
                   Built for devs and writers.
                 </p>
                 <Dialog>
-                  <DialogTrigger className="mt-4 h-9 rounded-xl bg-black px-5 text-sm font-medium text-white shadow-lg ring-black transition-all hover:-translate-y-[2px] hover:shadow-xl ">
+                  <DialogTrigger className="mt-4 h-8 rounded-full bg-zinc-900 px-5 text-sm font-medium text-white transition-all hover:bg-zinc-700">
                     Request access
                   </DialogTrigger>
                   <DialogContent className="px-8 md:max-w-sm">
@@ -226,9 +220,9 @@ const Home = () => {
                 </Carousel> */}
               </div>
             </div>
-            <div className="mx-auto mt-14 max-w-4xl rounded-lg border border-zinc-200 shadow-sm *:rounded-lg">
+            <div className="mx-auto mt-14 max-w-4xl rounded-xl bg-zinc-50 p-2 shadow-sm *:rounded-lg">
               <Image
-                className="w-full"
+                className="w-full rounded-lg border border-zinc-200 shadow-sm"
                 src="/static/zenblogui.png"
                 loading="lazy"
                 blurDataURL="/static/zenblogui.png"

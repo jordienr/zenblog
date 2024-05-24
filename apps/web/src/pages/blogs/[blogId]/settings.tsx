@@ -16,6 +16,7 @@ import { CopyCell } from "@/components/copy-cell";
 import { AlertCircle, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
 import { CgArrowTopRight } from "react-icons/cg";
+import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 
 export default function BlogSettings() {
   type FormData = {
@@ -59,18 +60,7 @@ export default function BlogSettings() {
     }
   });
 
-  function getHostedBlogUrl() {
-    const url = new URL(process.env.NEXT_PUBLIC_BASE_URL || "");
-    // add blog slug as subdomain
-    // remove www
-    if (url.hostname.startsWith("www.")) {
-      url.hostname = url.hostname.slice(4);
-    }
-    url.hostname = `${blog?.slug}.${url.hostname}`;
-    return url;
-  }
-
-  const hostedBlogUrl = getHostedBlogUrl();
+  const hostedBlogUrl = getHostedBlogUrl(blog?.slug || "");
 
   const queryClient = useQueryClient();
   const { mutateAsync: deleteBlogMutation } = useMutation({

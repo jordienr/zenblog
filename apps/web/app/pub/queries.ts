@@ -1,35 +1,44 @@
 import { createClient } from "app/supa";
-import { wait } from "app/utils/wait";
 
 export async function getBlog(subdomain: string) {
   const supa = createClient();
 
-  const { data: blog } = await supa
+  const res = await supa
     .from("blogs")
-    .select("id, title, emoji, description, order")
+    .select("id, title, emoji, description, order, theme")
     .eq("slug", subdomain)
     .single();
 
-  return blog;
+  return res;
 }
 
 export async function getPosts(subdomain: string, sort: string = "desc") {
   const supa = createClient();
-  const { data: posts } = await supa
+  const res = await supa
     .from("public_posts_v1")
-    .select("title, slug, published_at")
+    .select("title, slug, published_at, cover_image")
     .eq("blog_slug", subdomain)
     .eq("published", true)
     .order("published_at", { ascending: sort === "asc" });
 
-  return posts;
+  return res as unknown as {
+    data: {
+      title: string;
+      slug: string;
+      published_at: string;
+      cover_image: string;
+    }[];
+    error: any;
+  };
 }
 
 export async function getPost(subdomain: string, slug: string) {
   const supa = createClient();
   const { data: post } = await supa
-    .from("public_posts_v1")
-    .select("title, content, cover_image")
+    .from("public_posts_v2")
+    .select(
+      "title, content, cover_image, published_at, created_at, html_content"
+    )
     .eq("slug", slug)
     .eq("blog_slug", subdomain)
     .single();

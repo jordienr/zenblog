@@ -59,7 +59,7 @@ module.exports = {
         DEFAULT: "shadow",
       },
       borderColor: {
-        DEFAULT: colors.zinc[100],
+        DEFAULT: "#EDEDED",
       },
 
       colors: {

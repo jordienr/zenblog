@@ -52,7 +52,7 @@ export function TagPicker({
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[280px] p-2">
+      <DropdownMenuContent className="w-[280px] p-2" align="start">
         <div className="flex w-full items-center justify-between pb-3">
           <h3 className="text-xs font-medium text-zinc-500">Tags</h3>
           <Button

@@ -96,7 +96,7 @@ const Post = async ({
           )}
         </div>
         <div className="overflow-auto p-4">
-          <ContentRenderer content={post.content} />
+          <ContentRenderer content={post.html_content} />
         </div>
       </div>
     </FadeIn>

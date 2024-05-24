@@ -49,3 +49,18 @@ pre code span.sh__token--keyword {
 pre code span.sh__token--comment {
   color: var(--sh-comment);
 }
+
+/* Copy button */
+pre {
+  position: relative;
+}
+pre .copy-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.3rem 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  cursor: pointer;
+  border-radius: 0 0 0 0.5rem;
+}
