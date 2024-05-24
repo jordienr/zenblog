@@ -12,6 +12,10 @@
 - [] Slash commands in editor (like notion or craft)
 - [x] Improve tag picker
 - [x] fix "add it to my website" button after creating a blog
+- [] Add Abstract to posts.
+- [] Add html_content to posts col
+- [] fix delete blogs
+- [] use bunny cdn for images
 
 ## Pricing
 
