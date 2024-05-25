@@ -1,20 +1,6 @@
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { PropsWithChildren, useState } from "react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check } from "lucide-react";
+import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CreateTagDialog } from "./CreateTagDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,16 +38,17 @@ export function TagPicker({
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[280px] p-2" align="start">
+      <DropdownMenuContent className="w-[280px] rounded-xl p-1" align="start">
         <div className="flex w-full items-center justify-between pb-3">
-          <h3 className="text-xs font-medium text-zinc-500">Tags</h3>
+          <h3 className="px-3 text-xs font-medium text-zinc-500">Tags</h3>
           <Button
             onClick={() => {
               setShowCreateTag(!showCreateTag);
             }}
             variant={"ghost"}
+            className={cn({ "px-2": !showCreateTag })}
           >
-            {showCreateTag ? "Tags" : "Create tag"}
+            {showCreateTag ? "Tags" : <Plus />}
           </Button>
         </div>
         {showCreateTag ? (
@@ -76,7 +63,9 @@ export function TagPicker({
         ) : (
           <div className="flex flex-wrap gap-1">
             {allTags.length === 0 && (
-              <p className="text-xs text-zinc-400">No tags found</p>
+              <p className="w-full p-4 text-center text-xs text-zinc-400">
+                No tags yet
+              </p>
             )}
             {allTags.map((tag) => (
               <button

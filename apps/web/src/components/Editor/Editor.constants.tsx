@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { PiCodeBlock, PiListNumbers } from "react-icons/pi";
 
-const SIZE = 18;
+const SIZE = 14;
 
 const Separator = {
   id: "separator",
@@ -65,6 +65,15 @@ const LINK_BTN = {
   tooltip: "Link",
   icon: <Link size={SIZE} />,
   command: (editor: Editor) => {
+    // If the selection is a link, remove the link
+    if (editor.isActive("link")) {
+      const confirm = window.confirm("Remove link?");
+      if (confirm) {
+        editor.chain().focus().unsetLink().run();
+      }
+      return;
+    }
+
     const url = window.prompt("Enter the URL");
     if (url) {
       editor?.chain().focus().setLink({ href: url }).run();

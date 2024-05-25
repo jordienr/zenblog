@@ -23,7 +23,7 @@ export const useBlogQuery = (blogId: string) =>
       return res.data;
     },
     {
-      enabled: !!blogId,
+      enabled: !!blogId && blogId !== "demo",
     }
   );
 

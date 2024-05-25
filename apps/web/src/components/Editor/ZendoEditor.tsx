@@ -35,8 +35,11 @@ import { useBlogTags } from "./Editor.queries";
 import { TagPicker } from "../Tags/TagPicker";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "../ui/checkbox";
-import Suggestion from "@tiptap/suggestion";
-import { SlashCommand } from "./slash-commands/slash-commands";
+import {
+  SlashCommand,
+  getSlashCommandSuggestions,
+} from "./slash-commands/slash-commands";
+import { EditorMenu } from "./EditorMenu";
 
 const formSchema = z.object({
   title: z.string(),
@@ -141,6 +144,17 @@ export const ZendoEditor = (props: Props) => {
         }
         return false;
       },
+      handleDOMEvents: {
+        keydown: (view, event) => {
+          // if slash command is open, don't handle keydown events
+          if (["ArrowUp", "ArrowDown", "Enter"].includes(event.key)) {
+            const slashCommand = document.querySelector("#slash-command");
+            if (slashCommand) {
+              return true;
+            }
+          }
+        },
+      },
     },
     extensions: [
       StarterKit.configure({
@@ -150,14 +164,16 @@ export const ZendoEditor = (props: Props) => {
       }),
       TiptapLink,
       Placeholder.configure({
-        placeholder: "Start writing...",
+        placeholder: "Start writing. `/` for commands",
       }),
       TiptapImage.extend({
         addProseMirrorPlugins() {
           return [UploadImagesPlugin()];
         },
       }),
-      SlashCommand.configure({}),
+      SlashCommand.configure({
+        suggestion: getSlashCommandSuggestions([]),
+      }),
     ],
   });
 
@@ -461,10 +477,16 @@ export const ZendoEditor = (props: Props) => {
             placeholder="A great title"
             {...register("title")}
             style={{ resize: "none" }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                editor?.commands.focus();
+              }
+            }}
             className="mt-1 w-full overflow-hidden
-            rounded-xl bg-transparent p-2 text-4xl font-medium text-zinc-700 outline-none"
+            rounded-xl bg-transparent p-1 text-4xl font-medium text-zinc-700 outline-none"
           />
-          <div className="group flex gap-1.5">
+          <div className="group flex items-center gap-1">
             <TagPicker
               allTags={blogTags.data || []}
               selectedTags={tags}
@@ -523,14 +545,14 @@ export const ZendoEditor = (props: Props) => {
             editor?.commands.focus();
           }}
         >
-          {/* <div className="sticky top-10 z-10 border-b px-3">
+          <div className="sticky top-10 z-10 border-b px-3">
             <EditorMenu editor={editor} />
-          </div> */}
+          </div>
           <div
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-h2:font-semibold mx-auto -mt-2 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg px-8 py-1.5 font-light leading-10 tracking-normal transition-all"
+            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 mx-auto -mt-2 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg px-8 py-1.5 font-light leading-10 tracking-normal transition-all"
           >
             <EditorContent className="w-full" editor={editor} />
           </div>

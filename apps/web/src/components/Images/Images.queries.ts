@@ -39,8 +39,6 @@ export const useMediaQuery = (
           return newItem;
         });
 
-        console.log(data);
-
         return data;
       }
 

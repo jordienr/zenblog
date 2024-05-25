@@ -12,6 +12,8 @@ type UseTags = {
 export const useBlogTags = ({ blogId }: UseTags) => {
   const sb = getSupabaseBrowserClient();
 
+  const hasBlogId = !!blogId && blogId !== "demo";
+
   const query = useQuery({
     queryKey: ["tags"],
     queryFn: async () => {
@@ -24,7 +26,7 @@ export const useBlogTags = ({ blogId }: UseTags) => {
       }
       return data;
     },
-    enabled: !!blogId,
+    enabled: hasBlogId,
   });
 
   return query;
