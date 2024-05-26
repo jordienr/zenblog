@@ -12,8 +12,20 @@ export async function generateMetadata({
 }: {
   params: { subdomain: string; slug: string };
 }): Promise<Metadata> {
-  const blog = await getBlog(subdomain);
+  const { data: blog } = await getBlog(subdomain);
   const post = await getPost(subdomain, slug);
+
+  if (!blog) {
+    return {
+      title: "A zenblog blog",
+      description: "Start writing your blog today",
+      openGraph: {
+        title: "A zenblog blog",
+        description: "Start writing your blog today",
+        type: "website",
+      },
+    };
+  }
 
   return {
     title: `${post?.title} - ${blog?.title}` || "A zenblog blog",
@@ -41,8 +53,12 @@ const Post = async ({
 }: {
   params: { slug: string; subdomain: string };
 }) => {
-  const blog = await getBlog(subdomain);
+  const { data: blog } = await getBlog(subdomain);
   const post = await getPost(subdomain, slug);
+
+  if (!blog) {
+    return;
+  }
 
   sendViewEvent({
     blog_id: blog?.id,
@@ -91,12 +107,12 @@ const Post = async ({
               height="400"
               width={(16 / 9) * 400}
               loading="lazy"
-              alt={post.title}
+              alt={post.title || "Cover image"}
             />
           )}
         </div>
         <div className="overflow-auto p-4">
-          <ContentRenderer content={post.html_content} />
+          <ContentRenderer content={post.html_content || ""} />
         </div>
       </div>
     </FadeIn>
