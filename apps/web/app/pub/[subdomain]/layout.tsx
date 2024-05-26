@@ -9,7 +9,7 @@ export default async function Layout({
   params: { subdomain: string };
 }>) {
   const { subdomain } = params;
-  const blog = await getBlog(subdomain);
+  const { data: blog } = await getBlog(subdomain);
 
   return (
     <div>
