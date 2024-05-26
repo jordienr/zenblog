@@ -55,7 +55,7 @@ export const useCreateBlogMutation = () => {
       slug: string;
     }) => {
       const res = await supa.from("blogs").insert(newBlog).select().single();
-      return res.data;
+      return res;
     },
     {
       onSuccess: () => {
@@ -83,6 +83,22 @@ export const useUpdateBlogMutation = () => {
         .select()
         .single();
       return res.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(keys.blogs());
+      },
+    }
+  );
+};
+
+export const useDeleteBlogMutation = () => {
+  const queryClient = useQueryClient();
+  const supa = getSupabaseBrowserClient();
+
+  return useMutation(
+    async (blogId: string) => {
+      await supa.from("blogs").delete().eq("id", blogId);
     },
     {
       onSuccess: () => {

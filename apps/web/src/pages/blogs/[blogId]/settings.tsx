@@ -11,7 +11,11 @@ import { CodeBlock } from "@/components/CodeBlock";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useBlogQuery, useUpdateBlogMutation } from "@/queries/blogs";
+import {
+  useBlogQuery,
+  useDeleteBlogMutation,
+  useUpdateBlogMutation,
+} from "@/queries/blogs";
 import { CopyCell } from "@/components/copy-cell";
 import { AlertCircle, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
@@ -63,14 +67,10 @@ export default function BlogSettings() {
   const hostedBlogUrl = getHostedBlogUrl(blog?.slug || "");
 
   const queryClient = useQueryClient();
-  const { mutateAsync: deleteBlogMutation } = useMutation({
-    mutationFn: () => api.blogs.delete(blogId),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["blogs"]);
-    },
-  });
+  const { mutateAsync: deleteBlogMutation } = useDeleteBlogMutation();
+
   async function deleteBlog() {
-    await deleteBlogMutation();
+    await deleteBlogMutation(blogId);
     await router.push("/blogs");
   }
 
@@ -84,7 +84,6 @@ export default function BlogSettings() {
           "This action is irreversible. Are you sure you want to delete this blog?"
         )
       ) {
-        alert("Deleting blog");
         await deleteBlog();
       } else {
         alert("Action cancelled. Nothing was deleted.");
@@ -169,7 +168,7 @@ export default function BlogSettings() {
           </form>
         </section>
 
-        <section className="section mt-24 border border-red-500 bg-white p-3">
+        <section className="section mt-24 border bg-white p-3">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
             <AlertCircle size={24} className="text-red-600" />
             Danger zone

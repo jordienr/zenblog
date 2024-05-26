@@ -9,12 +9,12 @@
 - [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, etc.
 - [] email provider
 - [x] Integration guide tab
-- [] Slash commands in editor (like notion or craft)
+- [x] Slash commands in editor (like notion or craft)
 - [x] Improve tag picker
 - [x] fix "add it to my website" button after creating a blog
 - [] Add Abstract to posts.
-- [] Add html_content to posts col
-- [] fix delete blogs
+- [x] Add html_content to posts col
+- [x] fix delete blogs
 - [] use bunny cdn for images
 
 ## Pricing

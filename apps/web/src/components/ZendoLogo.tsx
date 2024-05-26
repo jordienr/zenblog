@@ -7,5 +7,10 @@ const Logo = () => (
 );
 
 export default function ZendoLogo() {
-  return <div className="text-lg font-medium tracking-tight">zenblog</div>;
+  return (
+    <div className="flex items-center gap-1.5 text-lg font-medium tracking-tight">
+      <span className="mb-2 text-3xl">🗻</span>
+      zenblog
+    </div>
+  );
 }

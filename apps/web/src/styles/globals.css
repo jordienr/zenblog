@@ -71,11 +71,6 @@ h6 {
   text-wrap: balance;
 }
 
-textarea:active {
-  border: none;
-  outline: none;
-}
-
 .tiptap .is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);

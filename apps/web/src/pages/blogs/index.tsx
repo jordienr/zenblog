@@ -15,7 +15,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   return (
-    <AppLayout>
+    <AppLayout loading={isLoading}>
       <div className="mt-8 min-h-screen">
         <div className="mx-auto max-w-5xl">
           <div className="flex items-center justify-between p-3">
@@ -29,11 +29,6 @@ export default function Dashboard() {
               </Button>
             </div>
           </div>
-          {isLoading && (
-            <div className="flex-center py-12">
-              <Spinner />
-            </div>
-          )}
           {data?.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="rounded-xl border bg-white p-2 shadow-sm">

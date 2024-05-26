@@ -11,7 +11,7 @@ import { Loader } from "lucide-react";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 import { useUser } from "@/utils/supabase/browser";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
@@ -37,12 +37,25 @@ export default function AppLayout({ children, loading = false }: Props) {
           <div className="mx-auto flex h-full items-center justify-between px-4">
             <div className="z-20  flex h-full items-center gap-2">
               <Link
+                tabIndex={-1}
                 href="/blogs"
                 className="rounded-md px-1 py-4 text-lg font-medium"
               >
                 <ZendoLogo />
               </Link>
             </div>
+
+            <a
+              className="
+              sr-only px-4
+              py-2 text-sm font-medium text-orange-600 hover:text-orange-700 focus:not-sr-only
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-200 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50
+            "
+              href="#main"
+            >
+              Skip to content
+            </a>
+
             <div className="flex items-center gap-1">
               <Feedback />
               <Link
@@ -80,14 +93,15 @@ export default function AppLayout({ children, loading = false }: Props) {
             <Loader className="animate-spin text-orange-500" size={32} />
           </div>
         ) : (
-          <motion.div
+          <motion.main
+            id="main"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
             className="min-h-screen bg-zinc-50 pb-24"
           >
             {children}
-          </motion.div>
+          </motion.main>
         )}
         <Footer />
       </AppChecks>

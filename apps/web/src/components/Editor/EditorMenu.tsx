@@ -133,7 +133,7 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
             }
           >
             <button
-              className="h-full w-20 py-1 font-mono"
+              className="h-full w-20 py-[6px] font-mono"
               onClick={() => {
                 setShowTextTypeMenu(!showTextTypeMenu);
               }}
