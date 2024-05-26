@@ -2,24 +2,20 @@
 
 ## Backlog
 
+- [] Add Abstract to posts.
+- [] Add pricing section to homepage
+- [] FAQ on homepage
+- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, vc website, etc.
 - [x] Removing tags doesnt work
 - [x] Published_date
-- [] FAQ on homepage?
 - [x] Update README
-- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, etc.
-- [] email provider
+- [x] email provider
 - [x] Integration guide tab
 - [x] Slash commands in editor (like notion or craft)
 - [x] Improve tag picker
 - [x] fix "add it to my website" button after creating a blog
-- [] Add Abstract to posts.
 - [x] Add html_content to posts col
 - [x] fix delete blogs
-- [] use bunny cdn for images
-
-## Pricing
-
-- [] Add pricing page?
 
 ## Blogs
 
@@ -32,21 +28,13 @@
 ## Analytics
 
 - [x] create tinybird endpoint to get all views for a blog
+- [] store and display total requests for a blog (usage)
 
 ## Posts
 
 - [x] See "published at" and "updated at" dates in post list
 - [x] change published date in post settings
 - [] pagination
-
-## Tags
-
-- [x] Delete tag
-- [x] Update tag
-
-## Media
-
-- [x] CRUD media from media tab in blog view
 
 ## Docs
 
@@ -58,7 +46,7 @@
 - [] Pagination
 - [] Filtering by tag
 
-## Free tier?
+## Free tier
 
 - [] limit to 1 blog
 - [] 1 user
