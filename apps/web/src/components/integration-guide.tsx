@@ -6,7 +6,7 @@ export function IntegrationGuide({ blogId }: { blogId: string }) {
     <>
       <section className="px-3 [&_h3]:mb-3 [&_h3]:mt-8">
         <h2 className="text-lg font-medium">Integration guide</h2>
-        <h3>First, install the zendo client</h3>
+        <h3>First, install the zenblog client</h3>
         <CodeBlock language="bash">{`npm install zenblog`}</CodeBlock>
 
         <h3>Next, store your blog id as an environment variable</h3>

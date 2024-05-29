@@ -57,10 +57,10 @@ const Home = () => {
         <div className="flex flex-col">
           <nav className="mx-auto flex w-full max-w-2xl items-center justify-between p-5">
             <div className="flex-grow cursor-default">
-              <ZendoLogo />
+              <ZendoLogo className="text-xl" size={31} />
             </div>
 
-            <div className="flex flex-grow items-center justify-end gap-4 font-medium text-zinc-600">
+            <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-600">
               {/* <Link href="/blog">Blog</Link> */}
               <LoggedInUser>
                 <Link
@@ -73,7 +73,7 @@ const Home = () => {
               <Link
                 target="_blank"
                 href="https://twitter.com/zenbloghq"
-                className="flex items-center justify-center rounded-full p-2 text-lg  transition-all hover:text-black"
+                className="flex items-center justify-center rounded-full p-2 text-lg transition-all hover:text-black"
                 title="Follow us on Twitter"
                 aria-label="Follow us on Twitter"
               >
@@ -94,13 +94,13 @@ const Home = () => {
               )} */}
 
               {user && (
-                <div className="flex">
-                  <Button asChild>
+                <div className="ml-2 flex">
+                  <Button asChild variant={"secondary"}>
                     <Link
                       className="btn btn-primary inline-block"
                       href="/blogs"
                     >
-                      My Blogs
+                      Dashboard
                     </Link>
                   </Button>
                 </div>
