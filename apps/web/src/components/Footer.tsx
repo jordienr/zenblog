@@ -30,7 +30,6 @@ const Footer = (props: Props) => {
       <div className="mx-auto flex max-w-xl justify-between">
         <div>
           <ZendoLogo />
-          <p className="text-zinc-500">thanks for trying zenblog</p>
           <ul className="mt-4 flex gap-4 text-zinc-400">
             <li>
               <Link href="https://github.com/jordienr/zenblog">

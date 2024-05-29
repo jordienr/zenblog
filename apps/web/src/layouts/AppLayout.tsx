@@ -41,7 +41,7 @@ export default function AppLayout({ children, loading = false }: Props) {
                 href="/blogs"
                 className="rounded-md px-1 py-4 text-lg font-medium"
               >
-                <ZendoLogo />
+                <ZendoLogo hideText />
               </Link>
             </div>
 
