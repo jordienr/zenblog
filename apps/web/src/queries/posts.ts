@@ -101,7 +101,7 @@ export const useUpdatePostTagsMutation = ({ blog_id }: { blog_id: string }) => {
         throw error;
       }
 
-      queryClient.invalidateQueries(["posts"]);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
 };

@@ -6,9 +6,9 @@ const SUBSCRIPTION_KEYS = ["subscription"];
 export function useSubscriptionQuery() {
   const sb = getSupabaseBrowserClient();
 
-  return useQuery(
-    SUBSCRIPTION_KEYS,
-    async () => {
+  return useQuery({
+    queryKey: SUBSCRIPTION_KEYS,
+    queryFn: async () => {
       const { data, error } = await sb
         .from("subscriptions")
         .select("*")
@@ -23,12 +23,10 @@ export function useSubscriptionQuery() {
 
       return data[0];
     },
-    {
-      initialData: {
-        status: "active",
-      },
-    }
-  );
+    initialData: {
+      status: "active",
+    },
+  });
 }
 
 export function useIsSubscribed() {

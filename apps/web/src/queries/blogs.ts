@@ -1,8 +1,5 @@
-import { createAPIClient } from "@/lib/http/api";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-const api = createAPIClient();
 
 export const keys = {
   blogs: () => ["blogs"],
@@ -12,9 +9,9 @@ export const keys = {
 const sb = getSupabaseBrowserClient();
 
 export const useBlogQuery = (blogId: string) =>
-  useQuery(
-    keys.blog(blogId),
-    async () => {
+  useQuery({
+    queryKey: keys.blog(blogId),
+    queryFn: async () => {
       const res = await sb
         .from("blogs")
         .select("id, title, emoji, description, created_at, slug")
@@ -22,33 +19,27 @@ export const useBlogQuery = (blogId: string) =>
         .single();
       return res.data;
     },
-    {
-      enabled: !!blogId && blogId !== "demo",
-    }
-  );
+    enabled: !!blogId && blogId !== "demo",
+  });
 
 export const useBlogsQuery = () =>
-  useQuery(
-    keys.blogs(),
-    async () => {
+  useQuery({
+    queryKey: keys.blogs(),
+    queryFn: async () => {
       const { data, error } = await sb.from("blogs").select("*");
       if (error) {
         throw error;
       }
       return data;
     },
-    {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      cacheTime: 1000 * 60 * 60 * 24, // 1 day
-    }
-  );
+  });
 
 export const useCreateBlogMutation = () => {
   const queryClient = useQueryClient();
   const supa = getSupabaseBrowserClient();
 
-  return useMutation(
-    async (newBlog: {
+  return useMutation({
+    mutationFn: async (newBlog: {
       title: string;
       description: string;
       emoji: string;
@@ -57,20 +48,18 @@ export const useCreateBlogMutation = () => {
       const res = await supa.from("blogs").insert(newBlog).select().single();
       return res;
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(keys.blogs());
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.blogs() });
+    },
+  });
 };
 
 export const useUpdateBlogMutation = () => {
   const queryClient = useQueryClient();
   const supa = getSupabaseBrowserClient();
 
-  return useMutation(
-    async (blogData: {
+  return useMutation({
+    mutationFn: async (blogData: {
       id: string;
       title: string;
       description: string;
@@ -84,26 +73,22 @@ export const useUpdateBlogMutation = () => {
         .single();
       return res.data;
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(keys.blogs());
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.blogs() });
+    },
+  });
 };
 
 export const useDeleteBlogMutation = () => {
   const queryClient = useQueryClient();
   const supa = getSupabaseBrowserClient();
 
-  return useMutation(
-    async (blogId: string) => {
+  return useMutation({
+    mutationFn: async (blogId: string) => {
       await supa.from("blogs").delete().eq("id", blogId);
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(keys.blogs());
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.blogs() });
+    },
+  });
 };

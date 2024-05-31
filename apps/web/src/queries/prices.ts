@@ -7,16 +7,19 @@ const PRICES_KEYS = ["prices"];
 export function usePricesQuery() {
   const sb = getSupabaseBrowserClient();
 
-  return useQuery(PRICES_KEYS, async () => {
-    const { data, error } = await sb.from("prices").select("*");
+  return useQuery({
+    queryKey: PRICES_KEYS,
+    queryFn: async () => {
+      const { data, error } = await sb.from("prices").select("*");
 
-    if (error) {
-      console.error(error);
-      throw error;
-    }
+      if (error) {
+        console.error(error);
+        throw error;
+      }
 
-    type DataItemType = (typeof data)[0] & { price: Stripe.Price };
+      type DataItemType = (typeof data)[0] & { price: Stripe.Price };
 
-    return data as DataItemType[];
+      return data as DataItemType[];
+    },
   });
 }

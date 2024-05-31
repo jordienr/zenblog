@@ -1,14 +1,10 @@
 import { useRouter } from "next/router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAPIClient } from "@/lib/http/api";
+import { useQueryClient } from "@tanstack/react-query";
 import Spinner from "@/components/Spinner";
 import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 import { toast } from "sonner";
-import { useBlogTags } from "@/components/Editor/Editor.queries";
 import { usePostQuery } from "@/queries/posts";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { BsShieldX } from "react-icons/bs";
 import { useState } from "react";
 import { usePostTags } from "@/queries/tags";
 
@@ -39,14 +35,13 @@ export default function Post() {
 
   if (isLoading || tagsQuery.isLoading || isRefetching) {
     return (
-      <div className="flex-center p-12">
+      <div className="flex-center p-32">
         <Spinner />
       </div>
     );
   }
 
   if (!post) {
-    router.push(`/blogs/${blogId}/posts`);
     return (
       <div className="flex-center p-12">
         <h1>Post not found</h1>
@@ -88,15 +83,13 @@ export default function Post() {
               });
             }
 
-            queryClient.invalidateQueries([
-              "posts",
-              "post",
-              blogId,
-              postSlug,
-              "tags",
-            ]);
+            queryClient.invalidateQueries({
+              queryKey: ["posts", "post", blogId, postSlug, "tags"],
+            });
 
-            queryClient.refetchQueries(["posts", "post", blogId, postSlug]);
+            queryClient.refetchQueries({
+              queryKey: ["posts", "post", blogId, postSlug],
+            });
 
             toast.success("Post saved!");
             // Redirect in case the slug changed

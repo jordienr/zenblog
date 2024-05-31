@@ -121,7 +121,7 @@ export default function BlogPosts() {
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries(["posts"]);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
 

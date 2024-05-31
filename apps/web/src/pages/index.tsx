@@ -55,12 +55,12 @@ const Home = () => {
       </Head>
       <div className="bg-white">
         <div className="flex flex-col">
-          <nav className="mx-auto flex w-full max-w-2xl items-center justify-between p-5">
+          <nav className="mx-auto flex w-full max-w-4xl items-center justify-between p-5">
             <div className="flex-grow cursor-default">
               <ZendoLogo className="text-xl" size={31} />
             </div>
 
-            <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-600">
+            <div className="flex flex-grow items-center justify-end gap-1 text-sm font-medium text-zinc-600">
               {/* <Link href="/blog">Blog</Link> */}
               <LoggedInUser>
                 <Link
@@ -134,18 +134,21 @@ const Home = () => {
                   <DialogTrigger className="mt-4 h-8 rounded-full bg-zinc-900 px-5 text-sm font-medium text-white transition-all hover:bg-zinc-700">
                     Request access
                   </DialogTrigger>
-                  <DialogContent className="px-8 md:max-w-sm">
+                  <DialogContent className="rounded-xl px-6 md:max-w-sm">
                     {!hasSubmitted && (
                       <form
-                        className="mt-6 flex flex-col gap-2 py-2 pb-12"
+                        className="flex flex-col gap-2 py-4"
                         onSubmit={onSubmit}
                       >
-                        <h2>
-                          <span className="text-xl font-medium text-zinc-800">
+                        <div>
+                          <h2 className="text-xl font-medium text-zinc-800">
                             Be the first to try it.
-                          </span>
-                        </h2>
-                        <div className="flex flex-col gap-2 [&>*]:w-full">
+                          </h2>
+                          <p className="text-sm text-zinc-500">
+                            We will send the first invites in summer 2024
+                          </p>
+                        </div>
+                        <div className="mt-2 flex flex-col gap-2 [&>*]:w-full">
                           <label htmlFor="name">
                             <Input
                               type="text"
@@ -167,10 +170,8 @@ const Home = () => {
                             />
                           </label>
                         </div>
-                        <div className="">
-                          <Button className="w-full" type="submit">
-                            Request invite!
-                          </Button>
+                        <div className="actions">
+                          <Button type="submit">Request invite!</Button>
                         </div>
                       </form>
                     )}
@@ -180,7 +181,7 @@ const Home = () => {
                         <p className="text-lg font-semibold">
                           Thank you for signing up!
                         </p>
-                        <p className="-mt-4 text-gray-600">
+                        <p className="-mt-4 pb-8 text-gray-600">
                           We will let you know when we launch.
                         </p>
                       </div>
@@ -220,9 +221,9 @@ const Home = () => {
                 </Carousel> */}
               </div>
             </div>
-            <div className="mx-auto mt-14 max-w-4xl rounded-xl bg-zinc-50 p-2 shadow-sm *:rounded-lg">
+            <div className="mx-auto mt-14 max-w-4xl rounded-xl border bg-zinc-50 p-1.5 shadow-sm *:rounded-lg">
               <Image
-                className="w-full rounded-lg border border-zinc-200 shadow-sm"
+                className="w-full rounded-lg border border-zinc-200 shadow-sm transition-all hover:border-orange-200"
                 src="/static/zenblogui.png"
                 loading="lazy"
                 blurDataURL="/static/zenblogui.png"

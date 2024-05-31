@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { ImageError } from "next/dist/server/image-optimizer";
 
 export type Image = {
   id: string;
@@ -220,6 +221,14 @@ export function ImageSelector({
   );
 }
 
+function getImageName(str: string) {
+  if (str.length > 20) {
+    return str.slice(0, 20) + "...";
+  } else {
+    return str;
+  }
+}
+
 type ImageItem = {
   image: Image;
   selected: boolean;
@@ -271,29 +280,14 @@ export function ImageItem({ image, selected, onClick }: ImageItem) {
           }
         )}
       >
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center gap-1.5 p-1.5">
-              <InfoIcon className="text-zinc-400" size={10} />
-              <span className="line-clamp-1 text-left">{image.name}</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent className="">
-            <ul className="">
-              <li>{image.name}</li>
-              <li>
-                Created:{" "}
-                {formatDate(image.created_at, {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </li>
-            </ul>
-          </TooltipContent>
-        </Tooltip>
+        <div className="flex w-full items-center gap-1.5 overflow-hidden break-words p-1">
+          <p
+            title={image.name}
+            className="line-clamp-1 text-ellipsis text-left"
+          >
+            {getImageName(image.name)}
+          </p>
+        </div>
       </div>
     </button>
   );

@@ -5,12 +5,10 @@ import AppLayout from "@/layouts/AppLayout";
 import { usePricesQuery } from "@/queries/prices";
 import { useProductsQuery } from "@/queries/products";
 import { useSubscriptionQuery } from "@/queries/subscription";
-import { useTeamsQuery } from "@/queries/teams";
 import { useUser } from "@/utils/supabase/browser";
 import { Landmark, Loader } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import Stripe from "stripe";
 
 type Props = {};
 
@@ -176,7 +174,6 @@ export const SubscribeSection = () => {
 const AccountPage = (props: Props) => {
   const [loading, setLoading] = React.useState(false);
   const user = useUser();
-  const teams = useTeamsQuery();
 
   async function onManageSubscriptionClick() {
     setLoading(true);

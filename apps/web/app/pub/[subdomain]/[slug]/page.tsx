@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { sendViewEvent } from "@/analytics";
 import { ContentRenderer } from "@/cms/ContentRenderer";
+import { formatDate } from "@/lib/utils";
 import { getBlog, getPost } from "app/pub/queries";
 import { FadeIn } from "app/ui/fade-in";
 import { Metadata } from "next";
@@ -98,6 +99,9 @@ const Post = async ({
       </nav>
       <div className="mx-auto max-w-xl py-4">
         <div className="p-4">
+          <p className="font-mono text-sm font-medium text-zinc-400">
+            {formatDate(post.published_at || "")}
+          </p>
           <h1 className="text-2xl font-medium">{post.title}</h1>
         </div>
         <div className="p-2">

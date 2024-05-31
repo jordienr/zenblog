@@ -9,6 +9,9 @@ input[type="checkbox"] {
 button button {
   border: 3px solid red !important;
 }
+button button::after {
+  content: "button inside button";
+}
 p div {
   border: 3px solid red !important;
 }

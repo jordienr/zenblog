@@ -29,6 +29,7 @@ const posts = await client.posts.list({ withContent: true, limit: 10 });
 - [] Auto generate promotional tweet for a post with AI. With a short description of what the post is about.
 - [] "New blogs" page in zenblog.com that links to new blogs. Good for SEO.
 - [] "New posts" page in zenblog.com that links to new posts. Good for SEO.
+- [] Offline first app with https://github.com/LegendApp/legend-state ?
 
 ## Teams
 
@@ -41,8 +42,8 @@ const posts = await client.posts.list({ withContent: true, limit: 10 });
 
 ## Hosted blogs
 
-- [] Let zenblog host your blog for you
-- [] Custom domain support
+- [x] Let zenblog host your blog for you
+- [x] Custom domain support
   - vercel: (https://github.com/orgs/vercel/discussions/31)
   - cloudflare: https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/domain-support/create-custom-hostnames/
 - [] Hosted blog themes

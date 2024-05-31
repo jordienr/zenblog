@@ -2,6 +2,9 @@
 
 ## Backlog
 
+- [] custom domains
+- [] limit pro plan to 3 blogs
+- [] limit free plan to 1 blog
 - [] Add Abstract to posts.
 - [] Add pricing section to homepage
 - [] FAQ on homepage
@@ -57,3 +60,8 @@
 - Save posts/create in localstorage so its not lost when you reload the page goddammit
 - Apple pay?
 - Stripe link?
+- fav blogs
+
+## More blog data
+
+- social links

@@ -11,23 +11,11 @@ const Footer = (props: Props) => {
       label: "Home",
       href: "/",
     },
-    // {
-    //   label: "Blog",
-    //   href: "/blog",
-    // },
-    // {
-    //   label: "Docs",
-    //   href: "/docs/getting-started",
-    // },
-    // {
-    //   label: "Pricing",
-    //   href: "/pricing",
-    // },
   ];
 
   return (
     <footer className="mt-6 border-t bg-zinc-100 p-4 text-xs text-zinc-700 md:p-12">
-      <div className="mx-auto flex max-w-xl justify-between">
+      <div className="mx-auto flex max-w-3xl justify-between">
         <div>
           <ZendoLogo />
           <ul className="mt-4 flex gap-4 text-zinc-400">

@@ -31,22 +31,6 @@ export const ContentRenderer = ({ content }: Props) => {
     if (!text) return;
     const highlighted = highlight(text);
     codeBlock.innerHTML = highlighted;
-
-    // Add a copy button
-    const button = document.createElement("button");
-    button.innerHTML = "Copy";
-    button.classList.add("copy-button");
-
-    codeBlock.appendChild(button);
-
-    button.addEventListener("click", () => {
-      window.alert("Copied to clipboard");
-      navigator.clipboard.writeText(text);
-      button.innerHTML = "Copied!";
-      setTimeout(() => {
-        button.innerHTML = "Copy";
-      }, 1000);
-    });
   });
 
   return (

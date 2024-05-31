@@ -1,7 +1,4 @@
-import { useCreateTeamMutation, useTeamsQuery } from "@/queries/teams";
-import { useUser } from "@/utils/supabase/browser";
 import { Loader } from "lucide-react";
-import { useRouter } from "next/router";
 import React, { PropsWithChildren, useEffect } from "react";
 
 type Props = {};

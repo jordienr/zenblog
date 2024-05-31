@@ -4,13 +4,14 @@ import "@/styles/globals.css";
 import { useRouter } from "next/router";
 import PlausibleProvider from "next-plausible";
 import {
-  Hydrate,
+  HydrationBoundary,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
+import { trpc } from "@/trpc/utils";
 
 // Fonts
 const inter = Inter({
@@ -45,7 +46,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <UserProvider>
         <PlausibleProvider domain="zenblog.com">
           <QueryClientProvider client={queryClient}>
-            <Hydrate state={pageProps.dehydratedState}>
+            <HydrationBoundary state={pageProps.dehydratedState}>
               <Component key={pathname} {...pageProps} />
               <Toaster
                 position="bottom-center"
@@ -59,7 +60,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   },
                 }}
               />
-            </Hydrate>
+            </HydrationBoundary>
           </QueryClientProvider>
         </PlausibleProvider>
       </UserProvider>
@@ -67,4 +68,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default trpc.withTRPC(MyApp);
