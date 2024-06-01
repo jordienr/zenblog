@@ -91,7 +91,7 @@ export default function CreateBlog() {
 
   if (!isSubscribed) {
     return (
-      <AppLayout loading={createBlog.isLoading}>
+      <AppLayout loading={createBlog.isPending}>
         <div className="section mx-auto my-12 max-w-xl py-12">
           <div className="text-center text-4xl">
             <BsShieldX className="mx-auto text-red-500" size="48" />

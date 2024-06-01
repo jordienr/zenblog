@@ -72,7 +72,7 @@ export function useUploadMediaMutation() {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["media"]);
+      queryClient.invalidateQueries({ queryKey: ["media"] });
     },
   });
 

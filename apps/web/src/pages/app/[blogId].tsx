@@ -12,15 +12,14 @@ export default function Dashboard() {
   const [selectedBlog, setSelectedBlog] = useState<string | null>(null);
   const blogs = useBlogsQuery();
 
-  const posts = useQuery(
-    ["posts", selectedBlog],
-    () => {
+  const posts = useQuery({
+    queryKey: ["posts", selectedBlog],
+    queryFn: () => {
       return api.posts.getAll(selectedBlog as string);
     },
-    {
-      enabled: !!selectedBlog,
-    }
-  );
+
+    enabled: !!selectedBlog,
+  });
 
   function onBlogsSelectChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const blog = blogs.data?.find((blog) => blog.title === e.target.value);
