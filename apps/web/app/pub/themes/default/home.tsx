@@ -1,29 +1,19 @@
+import { Blog, Post } from "app/types";
 import { FadeIn } from "app/ui/fade-in";
+import { formatPostDate } from "app/utils/dates";
 import Link from "next/link";
 import React from "react";
 
-export async function DefaultHome({
+export function DefaultHome({
   posts,
   blog,
+  disableLinks,
 }: {
-  posts: {
-    title: string;
-    published_at: string;
-    slug: string;
-  }[];
-  blog: {
-    emoji: string;
-    title: string;
-    description: string;
-  };
+  posts: Post[];
+  blog: Blog;
+  disableLinks?: boolean;
 }) {
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  console.log({ posts, blog });
 
   return (
     <div className="mx-auto max-w-xl px-2 py-8">
@@ -54,13 +44,13 @@ export async function DefaultHome({
             <Link
               className="group grid flex-wrap items-center gap-2 p-2 transition-all hover:bg-zinc-50 sm:flex sm:rounded-lg"
               key={post.slug}
-              href={`/${post.slug}`}
+              href={disableLinks ? "#" : `/${post.slug}`}
             >
               <span className="text-zinc-800 group-hover:text-zinc-950">
                 {post.title}
               </span>
               <span className="ml-auto text-right font-mono text-xs tracking-tight text-slate-400 sm:text-sm">
-                {formatDate(post.published_at)}
+                {formatPostDate(post.published_at)}
               </span>
             </Link>
           </FadeIn>

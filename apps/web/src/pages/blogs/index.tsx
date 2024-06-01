@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { PiPencilLine } from "react-icons/pi";
 import { useEffect } from "react";
-import { Plus, Settings } from "lucide-react";
+import { Paintbrush, Plus, Settings } from "lucide-react";
 
 export default function Dashboard() {
   const { data, error, isLoading } = useBlogsQuery();
@@ -66,6 +66,20 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="actions mt-auto justify-self-end align-bottom">
+                      <Button
+                        size={"icon"}
+                        variant={"ghost"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(`/blogs/${blog.id}/customise`);
+                        }}
+                        title="Customise"
+                        aria-label="Customise"
+                        className="text-zinc-400 opacity-0 transition-all group-hover:opacity-100"
+                      >
+                        <Paintbrush size="24" />
+                      </Button>
                       <Button
                         size={"icon"}
                         variant={"ghost"}

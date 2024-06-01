@@ -1,8 +1,8 @@
 import React from "react";
 import { getBlog, getPosts } from "../queries";
 import { Metadata } from "next";
-import { DirectoryHome } from "../themes/directory/home";
-import { DefaultHome } from "../themes/default/home";
+import { BlogHomePage } from "../themes/blog-home";
+import { Theme } from "app/types";
 
 export async function generateMetadata({
   params: { subdomain },
@@ -38,14 +38,6 @@ async function HostedBlog({
     blog?.order
   );
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   if (blogError || postsError) {
     return (
       <div className="flex-center p-12">
@@ -54,53 +46,7 @@ async function HostedBlog({
     );
   }
 
-  if (blog.theme === "directory") {
-    return <DirectoryHome blog={blog} posts={posts} />;
-  } else {
-    return <DefaultHome blog={blog} posts={posts} />;
-  }
-
-  // <div className="mx-auto max-w-xl px-2 py-8">
-  //   <div className="mb-8 grid p-2">
-  //     <h2 className="flex flex-col gap-2 font-medium">
-  //       <span className="text-xl">{blog?.emoji}</span>
-  //       <span className="text-lg">{blog?.title}</span>
-  //     </h2>
-  //     {blog?.description && (
-  //       <p className="font-mono text-sm text-zinc-500">{blog?.description}</p>
-  //     )}
-  //   </div>
-
-  //   {posts?.length === 0 && (
-  //     <>
-  //       <div className="">
-  //         <h2 className="font-medium">No posts yet</h2>
-  //         <p className="font-mono text-slate-500">
-  //           Check back later, see you soon!
-  //         </p>
-  //       </div>
-  //     </>
-  //   )}
-
-  //   <div className="divide-y sm:divide-y-0">
-  //     {posts?.map((post, index) => (
-  //       <FadeIn delay={index * 0.05} key={post.slug}>
-  //         <Link
-  //           className="group grid flex-wrap items-center gap-2 p-2 transition-all hover:bg-zinc-50 sm:flex sm:rounded-lg"
-  //           key={post.slug}
-  //           href={`/${post.slug}`}
-  //         >
-  //           <span className="text-zinc-800 group-hover:text-zinc-950">
-  //             {post.title}
-  //           </span>
-  //           <span className="ml-auto text-right font-mono text-xs tracking-tight text-slate-400 sm:text-sm">
-  //             {formatDate(post.published_at)}
-  //           </span>
-  //         </Link>
-  //       </FadeIn>
-  //     ))}
-  //   </div>
-  // </div>
+  return <BlogHomePage theme={blog.theme as Theme} blog={blog} posts={posts} />;
 }
 
 export default HostedBlog;

@@ -2,6 +2,7 @@
 
 ## Backlog
 
+- [] finish pagination in usePostsQuery
 - [] custom domains
 - [] limit pro plan to 3 blogs
 - [] limit free plan to 1 blog

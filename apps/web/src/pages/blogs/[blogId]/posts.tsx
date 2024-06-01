@@ -9,6 +9,7 @@ import {
   ExternalLink,
   ImageOff,
   MoreVertical,
+  Paintbrush,
   Pen,
   Plus,
   Settings,
@@ -171,7 +172,13 @@ export default function BlogPosts() {
                 </TabsTrigger>
               </TabsList>
               <div className="flex items-center">
-                <Dialog>
+                <Button asChild variant="ghost">
+                  <Link href={`/blogs/${blog.id}/customise`} title="New post">
+                    <Paintbrush size="24" />
+                    Customise
+                  </Link>
+                </Button>
+                {/* <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="ghost">
                       <CodeIcon />
@@ -181,7 +188,7 @@ export default function BlogPosts() {
                   <DialogContent>
                     <IntegrationGuide blogId={blogId} />
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
                 <Button asChild variant={"ghost"}>
                   <Link
                     href={`/blogs/${blog.id}/settings`}

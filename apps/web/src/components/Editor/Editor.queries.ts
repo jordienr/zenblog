@@ -1,3 +1,4 @@
+import { query } from "./../../../../../generated/hypertune";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import {
   UseQueryOptions,
@@ -36,20 +37,22 @@ export const useCreateBlogTag = () => {
   const sb = getSupabaseBrowserClient();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation(
-    async (category: { name: string; slug: string; blog_id: string }) => {
+  const mutation = useMutation({
+    mutationFn: async (category: {
+      name: string;
+      slug: string;
+      blog_id: string;
+    }) => {
       const { data, error } = await sb.from("blog_tags").insert(category);
       if (error) {
         throw error;
       }
       return data;
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["tags"]);
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
+    },
+  });
 
   return mutation;
 };
