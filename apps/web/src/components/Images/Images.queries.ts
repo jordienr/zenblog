@@ -93,7 +93,7 @@ export function useDeleteMediaMutation() {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["media"]);
+      queryClient.invalidateQueries({ queryKey: ["media"] });
     },
   });
 
