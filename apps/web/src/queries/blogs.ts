@@ -26,7 +26,10 @@ export const useBlogsQuery = () =>
   useQuery({
     queryKey: keys.blogs(),
     queryFn: async () => {
-      const { data, error } = await sb.from("blogs").select("*");
+      const { data, error } = await sb
+        .from("blogs")
+        .select("*")
+        .order("created_at", { ascending: true });
       if (error) {
         throw error;
       }

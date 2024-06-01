@@ -19,9 +19,11 @@ export function DirectoryHome({
         <h2 className="inline rounded-full bg-white font-mono text-sm font-medium text-orange-500">
           {blog.title}
         </h2>
-        <h1 className="mt-2 text-3xl font-medium">{blog.description}</h1>
+        <h1 className="mt-2 text-2xl font-medium md:text-3xl">
+          {blog.description}
+        </h1>
       </div>
-      <div className="mx-auto grid max-w-5xl grid-cols-3 gap-6 px-3">
+      <div className="mx-auto grid max-w-5xl gap-6 px-3 md:grid-cols-3">
         {posts.map((post, idx) => (
           <FadeIn key={post.slug} delay={idx * 0.1}>
             <Link

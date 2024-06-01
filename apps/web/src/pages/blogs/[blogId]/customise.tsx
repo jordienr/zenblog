@@ -113,44 +113,6 @@ export default function Customise() {
               width: screenSize,
             }}
           >
-            <div className="sticky inset-x-0 top-0 z-50 flex justify-end gap-1 border-b bg-white px-3 py-2">
-              <Button
-                variant={"ghost"}
-                size={"icon"}
-                onClick={() => {
-                  setScreenSize(SCREEN_SIZES.mobile);
-                }}
-              >
-                <Smartphone />
-              </Button>
-              <Button
-                variant={"ghost"}
-                size={"icon"}
-                onClick={() => {
-                  setScreenSize(SCREEN_SIZES.tablet);
-                }}
-              >
-                <Tablet />
-              </Button>
-              <Button
-                variant={"ghost"}
-                size={"icon"}
-                onClick={() => {
-                  setScreenSize(SCREEN_SIZES.laptop);
-                }}
-              >
-                <Laptop />
-              </Button>
-              <Button
-                variant={"ghost"}
-                size={"icon"}
-                onClick={() => {
-                  setScreenSize("100%");
-                }}
-              >
-                <Maximize />
-              </Button>
-            </div>
             <div className="overflow-y-auto">
               <BlogHomePage
                 blog={blog.data}
