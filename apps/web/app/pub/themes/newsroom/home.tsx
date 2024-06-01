@@ -33,7 +33,7 @@ export function NewsroomHome({ posts, blog, disableLinks }: BlogHomeProps) {
         <div className="mx-auto max-w-3xl">
           <Link
             href={disableLinks ? "#" : `/${latestPost?.slug}`}
-            className="grid grid-cols-6 overflow-hidden rounded-2xl border bg-white transition-all"
+            className="grid overflow-hidden rounded-2xl border bg-white transition-all md:grid-cols-6"
           >
             {latestPost?.cover_image && (
               <img
@@ -55,7 +55,7 @@ export function NewsroomHome({ posts, blog, disableLinks }: BlogHomeProps) {
             </div>
           </Link>
 
-          <div className="mt-8 grid grid-cols-2 gap-4">
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
             {postsWithoutLatest?.map((post, index) => (
               <FadeIn delay={index * 0.05} key={post.slug}>
                 <Link

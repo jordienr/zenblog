@@ -28,15 +28,19 @@ export function DirectoryHome({
               href={disableLinks ? "#" : `/${post.slug}`}
               className="group block rounded-lg"
             >
-              {post.cover_image && (
+              {post.cover_image ? (
                 <div className="overflow-hidden rounded-md">
                   <img
-                    width={400}
-                    height={400}
-                    className="mx-auto w-full rounded-md border bg-white transition-all  group-hover:opacity-80"
+                    width={300}
+                    height={300}
+                    className="mx-auto h-[240px] w-full rounded-md border bg-white object-cover transition-all  group-hover:opacity-80"
                     src={post.cover_image}
                     alt={post.title}
                   />
+                </div>
+              ) : (
+                <div className="flex h-[240px] w-full items-center justify-center bg-zinc-50 text-2xl">
+                  ⛩️
                 </div>
               )}
               <div className="px-3 py-1.5 ">

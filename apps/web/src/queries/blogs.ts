@@ -1,5 +1,11 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  MutationOptions,
+  UseMutationOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export const keys = {
   blogs: () => ["blogs"],
@@ -54,17 +60,19 @@ export const useCreateBlogMutation = () => {
   });
 };
 
-export const useUpdateBlogMutation = () => {
+export const useUpdateBlogMutation = (opts?: { onSuccess?: () => void }) => {
   const queryClient = useQueryClient();
   const supa = getSupabaseBrowserClient();
 
   return useMutation({
-    mutationFn: async (blogData: {
-      id: string;
-      title: string;
-      description: string;
-      emoji: string;
-    }) => {
+    mutationFn: async (
+      blogData: { id: string } & Partial<{
+        title: string;
+        description: string;
+        emoji: string;
+        theme: string;
+      }>
+    ) => {
       const res = await supa
         .from("blogs")
         .update(blogData)
@@ -75,6 +83,7 @@ export const useUpdateBlogMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: keys.blogs() });
+      opts?.onSuccess?.();
     },
   });
 };
