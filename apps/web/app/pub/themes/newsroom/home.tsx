@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { BlogHomeProps } from "app/types";
 import { FadeIn } from "app/ui/fade-in";
+import { ZenblogFooter } from "app/ui/zenblog-footer";
 import { formatPostDate } from "app/utils/dates";
 import Link from "next/link";
 
@@ -29,7 +30,7 @@ export function NewsroomHome({ posts, blog, disableLinks }: BlogHomeProps) {
         </>
       )}
 
-      <div className="bg-stone-100/80 p-4">
+      <div className="bg-gray-100/80 p-4">
         <div className="mx-auto max-w-3xl">
           <Link
             href={disableLinks ? "#" : `/${latestPost?.slug}`}
@@ -74,7 +75,7 @@ export function NewsroomHome({ posts, blog, disableLinks }: BlogHomeProps) {
                       📰
                     </div>
                   )}
-                  <div className="grid p-2">
+                  <div className="grid p-2 px-3">
                     <span className="text-zinc-800 group-hover:text-zinc-950">
                       {post.title}
                     </span>
@@ -88,6 +89,7 @@ export function NewsroomHome({ posts, blog, disableLinks }: BlogHomeProps) {
           </div>
         </div>
       </div>
+      <ZenblogFooter />
     </div>
   );
 }

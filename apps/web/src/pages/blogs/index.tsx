@@ -65,7 +65,7 @@ export default function Dashboard() {
                         <p className="text-zinc-500">{blog.description}</p>
                       </div>
                     </div>
-                    <div className="actions mt-auto justify-self-end align-bottom">
+                    <div className="mt-auto flex justify-end gap-1 justify-self-end align-bottom">
                       <Button
                         size={"icon"}
                         variant={"ghost"}

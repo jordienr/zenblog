@@ -9,9 +9,14 @@ export const THEMES = [
     name: "Directory",
     description: "A simple directory theme",
   },
+  // {
+  //   id: "newsroom",
+  //   name: "Newsroom",
+  //   description: "A newsroom theme",
+  // },
   {
-    id: "newsroom",
-    name: "Newsroom",
-    description: "A newsroom theme",
+    id: "garden",
+    name: "Garden",
+    description: "For the nature lovers",
   },
 ];

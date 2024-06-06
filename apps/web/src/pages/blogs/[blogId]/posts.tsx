@@ -583,7 +583,6 @@ function PostItem({
               size={"icon"}
               onClick={(e) => {
                 e.stopPropagation();
-                e.preventDefault();
               }}
             >
               <MoreVertical size="16" />
@@ -593,7 +592,6 @@ function PostItem({
             <DropdownMenuItem
               onClick={async (e) => {
                 e.stopPropagation();
-                e.preventDefault();
                 onDeleteClick();
               }}
             >

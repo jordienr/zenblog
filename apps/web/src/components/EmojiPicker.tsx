@@ -2,24 +2,18 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useState } from "react";
 import { useClickAway } from "@uidotdev/usehooks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 type Props = {
   onEmojiChange: (emoji: string) => void;
   emoji: string;
 };
 export function EmojiPicker({ emoji, onEmojiChange }: Props) {
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [_emoji, setEmoji] = useState(emoji);
-
-  const ref = useClickAway(() => {
-    setShowEmojiPicker(false);
-  });
-
-  function onClick(e: any) {
-    e.preventDefault();
-
-    setShowEmojiPicker(!showEmojiPicker);
-  }
 
   function _onEmojiChange(e: any) {
     setEmoji(e.native);
@@ -27,18 +21,19 @@ export function EmojiPicker({ emoji, onEmojiChange }: Props) {
   }
   return (
     <div className="relative">
-      <button
-        className="h-11 w-11 rounded-full border border-zinc-200 text-2xl shadow-sm hover:border-orange-400"
-        title="Toggle emoji picker"
-        onClick={onClick}
-      >
-        {_emoji}
-      </button>
-      {showEmojiPicker && (
-        <div ref={ref} className="absolute top-14 z-40">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            className="h-10 w-10 rounded-full border border-zinc-200 bg-white text-xl shadow-sm hover:border-orange-400"
+            title="Toggle emoji picker"
+          >
+            {_emoji}
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="max-h-full bg-none p-0">
           <Picker data={data} onEmojiSelect={_onEmojiChange} />
-        </div>
-      )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

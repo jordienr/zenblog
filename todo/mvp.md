@@ -20,6 +20,8 @@
 - [x] fix "add it to my website" button after creating a blog
 - [x] Add html_content to posts col
 - [x] fix delete blogs
+- [] "pinned" property for posts
+- [] "pinned" property for blogs
 
 ## Blogs
 

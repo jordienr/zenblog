@@ -2,6 +2,7 @@ import { Blog, Post, Theme } from "app/types";
 import { DefaultHome } from "./default/home";
 import { DirectoryHome } from "./directory/home";
 import { NewsroomHome } from "./newsroom/home";
+import { GardenHome } from "./garden/home";
 
 export function BlogHomePage({
   theme,
@@ -26,6 +27,8 @@ export function BlogHomePage({
     return <DefaultHome {...props} />;
   } else if (theme === "newsroom") {
     return <NewsroomHome {...props} />;
+  } else if (theme === "garden") {
+    return <GardenHome {...props} />;
   } else {
     return <DefaultHome {...props} />;
   }

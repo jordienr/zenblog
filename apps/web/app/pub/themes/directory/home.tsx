@@ -3,6 +3,14 @@ import { Blog, Post } from "app/types";
 import { FadeIn } from "app/ui/fade-in";
 import { formatPostDate } from "app/utils/dates";
 import Link from "next/link";
+import { Bricolage_Grotesque } from "next/font/google";
+import { ZenblogFooter } from "app/ui/zenblog-footer";
+
+const h1Font = Bricolage_Grotesque({
+  display: "swap",
+  subsets: ["latin"],
+  weight: "500",
+});
 
 export function DirectoryHome({
   blog,
@@ -19,7 +27,9 @@ export function DirectoryHome({
         <h2 className="inline rounded-full bg-white font-mono text-sm font-medium text-orange-500">
           {blog.title}
         </h2>
-        <h1 className="mt-2 text-2xl font-medium md:text-3xl">
+        <h1
+          className={`mt-2 text-2xl font-medium md:text-3xl ${h1Font.className}`}
+        >
           {blog.description}
         </h1>
       </div>
@@ -49,17 +59,18 @@ export function DirectoryHome({
                 <h3 className="font-medium group-hover:text-orange-500">
                   {post.title}
                 </h3>
-                <p className="font-mono text-xs text-zinc-500">
-                  {formatPostDate(post.published_at)}
+                <p className="flex gap-4 font-mono text-xs text-zinc-500">
+                  <span>{formatPostDate(post.published_at)}</span>
+                  <span className="opacity-0 transition-all group-hover:opacity-80">
+                    Read more →
+                  </span>
                 </p>
               </div>
             </Link>
           </FadeIn>
         ))}
       </div>
-      <footer className="mx-auto mt-12 max-w-4xl border-t py-6 text-center font-mono text-sm text-stone-500">
-        Powered by zenblog
-      </footer>
+      <ZenblogFooter />
     </div>
   );
 }

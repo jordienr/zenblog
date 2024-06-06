@@ -20,6 +20,7 @@ import { AlertCircle, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
 import { CgArrowTopRight } from "react-icons/cg";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function BlogSettings() {
   type FormData = {
@@ -84,11 +85,7 @@ export default function BlogSettings() {
         )
       ) {
         await deleteBlog();
-      } else {
-        alert("Action cancelled. Nothing was deleted.");
       }
-    } else {
-      alert("Action cancelled. Nothing was deleted.");
     }
   }
 
@@ -152,8 +149,8 @@ export default function BlogSettings() {
             </div>
             <div>
               <Label htmlFor="description">Description</Label>
-              <Input
-                type="text"
+              <Textarea
+                className="resize-none"
                 id="description"
                 {...register("description", {
                   value: blog.description || "",
@@ -169,14 +166,12 @@ export default function BlogSettings() {
 
         <section className="section mt-24 border bg-white p-3">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
-            <AlertCircle size={24} className="text-red-600" />
+            <AlertCircle size={18} className="text-red-600" />
             Danger zone
           </h2>
-          <p className="font-mono text-red-600">
-            This action cannot be undone.
-            <br /> This will permanently delete the blog.
-            <br />
-            This will also delete all posts in the blog.
+          <p className="">
+            This action cannot be undone. This will delete all posts in the
+            blog.
           </p>
           <div className="actions">
             <Button
