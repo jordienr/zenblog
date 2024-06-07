@@ -55,6 +55,14 @@ export function GardenHome({ blog, posts, disableLinks }: BlogHomeProps) {
       <div className="p-3">
         <h2 className={`${serif.className} px-4 text-2xl italic`}>Blog </h2>
 
+        {posts.length === 0 && (
+          <div className="py-8">
+            <h2 className={`text-2xl font-medium ${serif.className}`}>
+              No posts yet
+            </h2>
+            <p className="text-gray-500">Check back later, see you soon!</p>
+          </div>
+        )}
         <div className="divide mt-4 grid gap-0 md:grid-cols-2">
           {posts.map((post) => (
             <Link
