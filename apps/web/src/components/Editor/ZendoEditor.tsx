@@ -44,8 +44,9 @@ import { EditorMenu } from "./EditorMenu";
 const formSchema = z.object({
   title: z.string(),
   slug: z.string(),
-  cover_image: z.string().nullable(),
+  cover_image: z.string().optional(),
   content: z.any(),
+  abstract: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -58,6 +59,7 @@ type OnSaveData = {
   cover_image?: string;
   published: boolean;
   metadata?: any;
+  abstract?: string;
   tags?: {
     id: string;
     name: string;
@@ -81,6 +83,7 @@ export const ZendoEditor = (props: Props) => {
         title: props.post?.title || "",
         slug: props.post?.slug || "",
         cover_image: props.post?.cover_image || "",
+        abstract: props.post?.abstract || "",
       },
     });
   const router = useRouter();
@@ -201,6 +204,7 @@ export const ZendoEditor = (props: Props) => {
       published_at: publishedAt || new Date().toISOString(),
       metadata,
       tags,
+      abstract: data.abstract,
     });
   });
 
@@ -433,13 +437,13 @@ export const ZendoEditor = (props: Props) => {
         )}
 
         <div className="mx-auto w-full max-w-3xl px-8 pb-2">
-          <div className="flex w-full items-end justify-between gap-4 transition-all">
+          <div className="flex w-full items-end justify-between gap-4 pt-1 transition-all">
             <label
               className="group flex w-full flex-col items-start justify-center gap-1"
               htmlFor="slug"
             >
               <span className="mx-2 text-xs text-zinc-400 opacity-0 transition-all group-focus-within:opacity-100">
-                slug
+                Slug
               </span>
               <input
                 required
@@ -537,6 +541,14 @@ export const ZendoEditor = (props: Props) => {
               <Tag size="14" className="text-zinc-300" />
               Add tags
             </button>
+          </div>
+
+          <div className="mt-4 text-sm text-zinc-800">
+            <textarea
+              {...register("abstract")}
+              className="w-full resize-none rounded-lg p-1.5 outline-none transition-all focus:bg-zinc-100"
+              placeholder="Abstract"
+            />
           </div>
         </div>
         <div

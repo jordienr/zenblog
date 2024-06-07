@@ -1,20 +1,11 @@
-import { createAPIClient } from "@/lib/http/api";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const api = createAPIClient();
-
-type QueryFnData = {
-  id: string;
-  url: string;
-  blog_id: string;
-};
-
-export const useImages = (blogId: string) =>
-  useQuery({
-    queryKey: ["images", blogId],
-    queryFn: () => api.images.getAll(blogId),
-  });
+// export const useImages = (blogId: string) =>
+//   useQuery({
+//     queryKey: ["images", blogId],
+//     queryFn: () => api.images.getAll(blogId),
+//   });
 
 export const useMediaQuery = (
   blogId: string,

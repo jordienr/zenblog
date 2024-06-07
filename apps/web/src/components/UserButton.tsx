@@ -34,9 +34,7 @@ const UserButton = (props: Props) => {
           <DropdownMenuItem className="hover:bg-transparent">
             <div className="flex flex-col">
               <span className="text-xs text-zinc-400">Signed in as</span>
-              <span className="font-medium text-zinc-800">
-                jordi@zenblog.com
-              </span>
+              <span className="font-medium text-zinc-800">{user?.email}</span>
             </div>
           </DropdownMenuItem>
           <DropdownMenuSeparator />

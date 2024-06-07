@@ -1,6 +1,4 @@
-import Spinner from "@/components/Spinner";
 import AppLayout from "@/layouts/AppLayout";
-import { createAPIClient } from "@/lib/http/api";
 import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
 import { IoSettingsSharp, IoAdd } from "react-icons/io5";

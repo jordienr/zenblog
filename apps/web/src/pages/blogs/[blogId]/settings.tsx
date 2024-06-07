@@ -1,12 +1,9 @@
 import AppLayout from "@/layouts/AppLayout";
-import { createAPIClient } from "@/lib/http/api";
-import { PatchBlog } from "@/lib/models/blogs/Blogs";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { EmojiPicker } from "@/components/EmojiPicker";
-import { CodeBlock } from "@/components/CodeBlock";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -15,10 +12,8 @@ import {
   useDeleteBlogMutation,
   useUpdateBlogMutation,
 } from "@/queries/blogs";
-import { CopyCell } from "@/components/copy-cell";
 import { AlertCircle, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
-import { CgArrowTopRight } from "react-icons/cg";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -39,7 +34,6 @@ export default function BlogSettings() {
   } = useForm<FormData>();
   const router = useRouter();
   const blogId = router.query.blogId as string;
-  const api = createAPIClient();
 
   const {
     isLoading: blogLoading,

@@ -43,7 +43,7 @@ export function GardenHome({ blog, posts, disableLinks }: BlogHomeProps) {
   return (
     <div className="mx-auto min-h-screen max-w-3xl bg-white">
       <header>
-        <div className="mx-auto max-w-3xl p-3 py-6 text-center text-sm">
+        <div className="mx-auto max-w-3xl p-3 py-8 text-center text-sm">
           <span className="text-xl">{blog.emoji}</span>
           <h1 className={`text-3xl font-medium ${serif.className}`}>
             {blog?.title}

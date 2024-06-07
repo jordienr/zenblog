@@ -6,10 +6,11 @@ export type Blog = {
   description: string;
 };
 export type Post = {
-  cover_image: string;
+  cover_image?: string;
   title: string;
   published_at: string;
   slug: string;
+  abstract?: string;
 };
 
 export type BlogHomeProps = {
