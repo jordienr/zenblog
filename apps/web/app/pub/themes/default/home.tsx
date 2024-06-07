@@ -14,8 +14,6 @@ export function DefaultHome({
   blog: Blog;
   disableLinks?: boolean;
 }) {
-  console.log({ posts, blog });
-
   return (
     <div className="mx-auto max-w-xl px-2 py-8">
       <div className="mb-8 grid p-2">
