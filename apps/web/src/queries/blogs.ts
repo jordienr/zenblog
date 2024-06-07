@@ -22,8 +22,9 @@ export const useBlogQuery = (blogId: string) =>
     enabled: !!blogId && blogId !== "demo",
   });
 
-export const useBlogsQuery = () =>
+export const useBlogsQuery = ({ enabled }: { enabled: boolean }) =>
   useQuery({
+    enabled,
     queryKey: keys.blogs(),
     queryFn: async () => {
       const { data, error } = await sb

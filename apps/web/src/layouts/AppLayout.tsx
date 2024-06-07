@@ -11,8 +11,7 @@ import { Loader } from "lucide-react";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 import { useUser } from "@/utils/supabase/browser";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useEffect } from "react";
 
 type Props = {
   children?: React.ReactNode;
@@ -25,10 +24,11 @@ export default function AppLayout({ children, loading = false }: Props) {
 
   useEffect(() => {
     if (!user && !loading) {
+      console.log("User not found. Redirecting to sign-in page.");
       router.push("/sign-in");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user, loading]);
 
   return (
     <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
@@ -72,7 +72,7 @@ export default function AppLayout({ children, loading = false }: Props) {
           </div>
         </nav>
         {!isSubscribed && (
-          <div className="sticky top-[67px] z-30 flex items-center justify-center">
+          <div className="sticky top-[58px] z-30 flex items-center justify-center">
             <Link
               href="/account"
               className="

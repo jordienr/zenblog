@@ -108,7 +108,7 @@ export const ZendoEditor = (props: Props) => {
   const [showImagePicker, setShowImagePicker] = React.useState(false);
   const [showTagPicker, setShowTagPicker] = React.useState(false);
 
-  const blogsQuery = useBlogsQuery();
+  const blogsQuery = useBlogsQuery({ enabled: true });
   const postsQuery = usePostsQuery();
 
   const blogQuery = useBlogQuery(blogId);

@@ -1,15 +1,16 @@
 import AppLayout from "@/layouts/AppLayout";
 import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
-import { IoSettingsSharp, IoAdd } from "react-icons/io5";
+import { IoAdd } from "react-icons/io5";
 import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { PiPencilLine } from "react-icons/pi";
-import { useEffect } from "react";
 import { Paintbrush, Plus, Settings } from "lucide-react";
+import { useUser } from "@/utils/supabase/browser";
 
 export default function Dashboard() {
-  const { data, error, isLoading } = useBlogsQuery();
+  const user = useUser();
+  const { data, error, isLoading } = useBlogsQuery({ enabled: !!user });
   const router = useRouter();
 
   return (

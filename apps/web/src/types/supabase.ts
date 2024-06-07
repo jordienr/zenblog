@@ -57,6 +57,7 @@ export type Database = {
           slug: string
           theme: string
           title: string
+          updated_at: string
           user_id: string
         }
         Insert: {
@@ -68,6 +69,7 @@ export type Database = {
           slug: string
           theme?: string
           title: string
+          updated_at?: string
           user_id?: string
         }
         Update: {
@@ -79,6 +81,7 @@ export type Database = {
           slug?: string
           theme?: string
           title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -203,6 +206,13 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts_with_tags_v2"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_with_tags_v3"
             referencedColumns: ["post_id"]
           },
           {
@@ -483,6 +493,13 @@ export type Database = {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "posts_with_tags_v3"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "public_posts_v1"
             referencedColumns: ["post_id"]
           },
@@ -589,6 +606,33 @@ export type Database = {
       }
       posts_with_tags_v2: {
         Row: {
+          blog_id: string | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          metadata: Json[] | null
+          post_id: string | null
+          published: boolean | null
+          published_at: string | null
+          slug: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts_with_tags_v3: {
+        Row: {
+          abstract: string | null
           blog_id: string | null
           content: Json | null
           cover_image: string | null

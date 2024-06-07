@@ -1,17 +1,13 @@
-import { createAPIClient } from "@/lib/http/api";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { HiAdjustments, HiChevronDown, HiCog, HiPlus } from "react-icons/hi";
-import { useQuery } from "@tanstack/react-query";
+import { HiChevronDown, HiCog, HiPlus } from "react-icons/hi";
 import { useBlogsQuery } from "@/queries/blogs";
 
 export function BlogSelector() {
   const router = useRouter();
 
-  const currentBlogId = router.query.blogId;
-  const api = createAPIClient();
-  const blogs = useBlogsQuery();
+  const blogs = useBlogsQuery({ enabled: true });
   const [showSelector, setShowSelector] = useState(false);
 
   const getCurrentBlog = () => {
