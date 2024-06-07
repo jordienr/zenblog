@@ -40,6 +40,7 @@ export async function getPost(subdomain: string, slug: string) {
       "title, content, cover_image, published_at, created_at, html_content"
     )
     .eq("slug", slug)
+    .eq("published", true)
     .eq("blog_slug", subdomain)
     .single();
 
