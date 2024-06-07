@@ -188,12 +188,12 @@ export default function Customise() {
             >
               Home
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               className="border-none bg-none data-[state=active]:bg-transparent"
               value="post"
             >
               Post
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
           <TabsContent className="mt-0 h-full" value="home">
             <motion.div
