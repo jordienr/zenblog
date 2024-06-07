@@ -34,7 +34,7 @@ export const ContentRenderer = ({ content }: Props) => {
   });
 
   return (
-    <div className="prose prose-code:reset prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-xl">
+    <div className="prose prose-img:rounded-lg prose-img:shadow-lg prose-code:reset prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-xl">
       <div
         dangerouslySetInnerHTML={{
           __html: parsed.body.innerHTML,

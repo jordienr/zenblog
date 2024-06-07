@@ -60,7 +60,7 @@ export function GardenHome({ blog, posts, disableLinks }: BlogHomeProps) {
             <Link
               key={post.slug}
               href={toLink(`/${post.slug}`)}
-              className="flex gap-3 rounded-lg p-2 transition-all hover:bg-gray-50"
+              className="group flex gap-3 rounded-lg p-2 transition-all hover:bg-gray-50"
             >
               <div className="flex h-24 w-full max-w-32 justify-center overflow-hidden rounded-lg border bg-white">
                 {post.cover_image ? (
@@ -75,11 +75,12 @@ export function GardenHome({ blog, posts, disableLinks }: BlogHomeProps) {
                   <div className="flex items-center text-2xl">🍃</div>
                 )}
               </div>
-              <div className="mt-2 space-y-1 leading-5">
+              <div className="flex h-full w-full flex-col leading-5">
                 <h3 className="font-medium">{post.title}</h3>
-                <span className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500">{post.abstract}</p>
+                <p className="mt-4 justify-self-end text-right align-bottom font-mono text-xs text-gray-300 group-hover:text-gray-400">
                   {formatPostDate(post.published_at)}
-                </span>
+                </p>
               </div>
             </Link>
           ))}

@@ -23,13 +23,15 @@ import { EmojiPicker } from "@/components/EmojiPicker";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
 
 function AccordionSettings({
   children,
   title,
 }: PropsWithChildren<{ title: string }>) {
   return (
-    <Accordion type="multiple">
+    <Accordion type="multiple" value={[title]}>
       <AccordionItem className="border-b transition-colors" value={title}>
         <AccordionTrigger className="p-2 pl-3 text-sm">
           {title}
@@ -51,6 +53,22 @@ export default function Customise() {
       toast.success("Theme updated");
     },
   });
+
+  type FormData = {
+    title: string;
+    description: string;
+    emoji: string;
+    slug: string;
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty },
+    reset,
+    control,
+    getValues,
+  } = useForm<FormData>();
 
   useEffect(() => {
     if (blog.data) {
@@ -89,20 +107,28 @@ export default function Customise() {
           <AccordionSettings title="Blog">
             <div className="grid gap-4">
               <div className="flex items-center gap-2">
-                <EmojiPicker
-                  emoji={blog.data?.emoji}
-                  onEmojiChange={() => {}}
-                />
+                <Controller
+                  control={control}
+                  name="emoji"
+                  defaultValue={blog.data?.emoji}
+                  render={({ field: { onChange, value } }) => (
+                    <EmojiPicker onEmojiChange={onChange} emoji={value} />
+                  )}
+                ></Controller>
                 <div className="flex-grow">
                   <Label className="mt-2">Title</Label>
-                  <Input value={blog.data?.title} />
+                  <Input
+                    {...register("title")}
+                    defaultValue={blog.data?.title}
+                  />
                 </div>
               </div>
 
               <div>
                 <Label className="mt-2">Description</Label>
                 <Textarea
-                  value={blog.data?.description}
+                  {...register("description")}
+                  defaultValue={blog.data?.description}
                   className="resize-none"
                 />
               </div>
@@ -141,9 +167,11 @@ export default function Customise() {
           <Button
             size={"xs"}
             onClick={() => {
+              const formVals = getValues();
               updateBlog.mutate({
                 id: blogId as string,
                 theme,
+                ...formVals,
               });
             }}
           >

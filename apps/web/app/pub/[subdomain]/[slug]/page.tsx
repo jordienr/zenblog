@@ -107,6 +107,7 @@ const Post = async ({
         <div className="p-2">
           {post.cover_image && (
             <img
+              className="rounded-lg"
               src={post.cover_image}
               height="400"
               width={(16 / 9) * 400}
