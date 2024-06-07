@@ -94,10 +94,10 @@ async function upserCustomer(event: Stripe.Event) {
   }
 
   // Update customer in database
-  await supabase.from("customers").upsert({
-    id: customer.id,
-    email: customer.email,
-  });
+  // await supabase.from("customers").upsert({
+  //   id: customer.id,
+  //   email: customer.email,
+  // });
 }
 
 async function upsertPrice(event: Stripe.Event) {
