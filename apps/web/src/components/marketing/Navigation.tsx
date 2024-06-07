@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import ZendoLogo from "../ZendoLogo";
+import { ZendoLogo } from "../ZendoLogo";
 import Link from "next/link";
 import { FaTwitter } from "react-icons/fa";
 import { Button } from "../ui/button";
