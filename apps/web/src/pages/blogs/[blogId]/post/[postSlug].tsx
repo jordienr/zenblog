@@ -15,7 +15,6 @@ export default function Post() {
   const blogId = router.query.blogId as string;
   const postSlug = router.query.postSlug as string;
   const hasPubQuery = router.query.pub as string;
-  const [showPubDialog, setShowPubDialog] = useState(hasPubQuery);
 
   const sb = getSupabaseBrowserClient();
 
@@ -93,7 +92,8 @@ export default function Post() {
 
             toast.success("Post saved!");
             // Redirect in case the slug changed
-            router.push(`/blogs/${blogId}/post/${data.slug}`);
+            const isPublished = data.published ? "?pub=true" : "";
+            router.push(`/blogs/${blogId}/post/${data.slug + isPublished}`);
           } catch (error: any) {
             console.error(error);
             if (error?.code === "23505") {

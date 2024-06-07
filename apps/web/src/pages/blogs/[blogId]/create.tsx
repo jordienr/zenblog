@@ -42,7 +42,8 @@ export default function CreatePost() {
               );
             } else {
               toast.success("Post saved!");
-              router.push(`/blogs/${blogId}/post/${data.slug}`);
+              const isPublished = content.published ? "?pub=true" : "";
+              router.push(`/blogs/${blogId}/post/${data.slug + isPublished}`);
             }
           } catch (error: any) {
             console.error(error);

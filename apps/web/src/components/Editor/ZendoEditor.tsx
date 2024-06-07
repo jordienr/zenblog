@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { EditorContent, useEditor } from "@tiptap/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { SaveIcon, Settings2, List, CornerUpLeft, Tag, X } from "lucide-react";
 import { z } from "zod";
@@ -40,6 +40,8 @@ import {
   getSlashCommandSuggestions,
 } from "./slash-commands/slash-commands";
 import { EditorMenu } from "./EditorMenu";
+import { Dialog, DialogContent } from "../ui/dialog";
+import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 
 const formSchema = z.object({
   title: z.string(),
@@ -74,6 +76,7 @@ type Props = {
   post?: Database["public"]["Tables"]["posts"]["Row"];
   tags?: { id: string; name: string; slug: string }[];
   autoCompleteSlug?: boolean;
+  showPublishedDialog?: boolean;
 };
 
 export const ZendoEditor = (props: Props) => {
@@ -115,6 +118,16 @@ export const ZendoEditor = (props: Props) => {
 
   const title = watch("title");
   const slug = watch("slug");
+
+  const [publishedDialog, setPublishedDialog] = useState(
+    !!router.query.pub || false
+  );
+
+  useEffect(() => {
+    if (!!router.query.pub) {
+      setPublishedDialog(true);
+    }
+  }, [router.query.pub]);
 
   useEffect(() => {
     // When a user writes a space, change it for a dash
@@ -570,6 +583,27 @@ export const ZendoEditor = (props: Props) => {
           </div>
         </div>
       </div>
+
+      <Dialog open={publishedDialog} onOpenChange={setPublishedDialog}>
+        <DialogContent className="!max-w-xs">
+          <h2 className="text-lg font-medium">🎉 Post published!</h2>
+          <p>Your post has been published! </p>
+          <Button
+            variant={"secondary"}
+            onClick={() => {
+              const blogSlug = blogQuery.data?.slug;
+              if (!blogSlug) return;
+              const url = getHostedBlogUrl(blogSlug);
+
+              // open new tab with the blog post
+              const blogPostUrl = `${url}/${slug}`;
+              window.open(blogPostUrl, "_blank", "noopener,noreferrer");
+            }}
+          >
+            View post
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
