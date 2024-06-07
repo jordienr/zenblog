@@ -70,8 +70,6 @@ export function StatePill({ published }: { published: boolean }) {
 export default function BlogPosts() {
   const router = useRouter();
   const blogId = router.query.blogId as string;
-  // Show views only in dev mode
-  const showViews = process.env.NODE_ENV === "development";
 
   const { tabValue, onTabChange } = useRouterTabs("tab");
 
@@ -235,7 +233,7 @@ export default function BlogPosts() {
                 {posts.map((post) => {
                   return (
                     <PostItem
-                      showViews={showViews}
+                      showClicks={true}
                       views={getPostViews(post.slug || "")}
                       key={post.post_id}
                       post={post}
@@ -522,13 +520,13 @@ function PostItem({
   blogId,
   views,
   onDeleteClick,
-  showViews,
+  showClicks,
 }: {
   post: any;
   blogId: string;
   views: string;
   onDeleteClick: () => void;
-  showViews?: boolean;
+  showClicks?: boolean;
 }) {
   return (
     <Link
@@ -555,9 +553,9 @@ function PostItem({
           <StatePill published={post.published || false} />
         </div>
         <h2 className="ml-1 text-lg font-normal">{post.title}</h2>
-        {showViews && (
+        {showClicks && (
           <span className="px-1 font-mono text-xs text-zinc-500">
-            {views ? `${views} views` : "0 views"}
+            {views ? `${views} clicks` : "0 clicks"}
           </span>
         )}
       </div>
