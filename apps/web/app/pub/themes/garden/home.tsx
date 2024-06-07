@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { BlogHomeProps } from "app/types";
+import { SocialLinks } from "app/ui/SocialLinks";
 import { ZenblogFooter } from "app/ui/zenblog-footer";
 import { formatPostDate } from "app/utils/dates";
 import { Cormorant_Garamond } from "next/font/google";
@@ -49,6 +50,11 @@ export function GardenHome({ blog, posts, disableLinks }: BlogHomeProps) {
             {blog?.title}
           </h1>
           <p className="py-1 text-gray-500">{blog?.description}</p>
+          <SocialLinks
+            className={`mt-4 justify-center gap-1 font-mono`}
+            linkClassName="hover:text-emerald-600 hover:bg-emerald-50 transition-all rounded-lg px-2 py-1 text-gray-500 hover:cursor-default"
+            links={blog}
+          />
         </div>
       </header>
       <Separator />

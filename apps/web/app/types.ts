@@ -4,6 +4,9 @@ export type Blog = {
   emoji: string;
   title: string;
   description: string;
+  twitter?: string;
+  instagram?: string;
+  website?: string;
 };
 export type Post = {
   cover_image?: string;

@@ -5,6 +5,7 @@ import { formatPostDate } from "app/utils/dates";
 import Link from "next/link";
 import { Bricolage_Grotesque } from "next/font/google";
 import { ZenblogFooter } from "app/ui/zenblog-footer";
+import { SocialLinks } from "app/ui/SocialLinks";
 
 const h1Font = Bricolage_Grotesque({
   display: "swap",
@@ -32,6 +33,7 @@ export function DirectoryHome({
         >
           {blog.description}
         </h1>
+        <SocialLinks className="mt-6" links={blog} />
       </div>
       {posts.length === 0 && (
         <div className="mx-auto max-w-4xl p-3 py-12">

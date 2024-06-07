@@ -7,7 +7,7 @@ type Props = {
   size?: number;
   className?: string;
 };
-export default forwardRef(function ZendoLogo(props: Props) {
+export function ZendoLogo(props: Props) {
   return (
     <div
       className={cn(
@@ -24,4 +24,4 @@ export default forwardRef(function ZendoLogo(props: Props) {
       {!props.hideText && "zenblog"}
     </div>
   );
-});
+}

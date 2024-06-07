@@ -14,7 +14,9 @@ export const useBlogQuery = (blogId: string) =>
     queryFn: async () => {
       const res = await sb
         .from("blogs")
-        .select("id, title, emoji, description, created_at, slug, theme")
+        .select(
+          "id, title, emoji, description, created_at, slug, theme, twitter, instagram, website"
+        )
         .eq("id", blogId)
         .single();
       return res.data;

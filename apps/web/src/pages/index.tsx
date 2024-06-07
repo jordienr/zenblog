@@ -4,7 +4,7 @@ import { FaTwitter } from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import ZendoLogo from "@/components/ZendoLogo";
+import { ZendoLogo } from "@/components/ZendoLogo";
 import { LoggedInUser } from "@/components/LoggedInUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

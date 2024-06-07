@@ -1,5 +1,5 @@
 import React from "react";
-import ZendoLogo from "./ZendoLogo";
+import { ZendoLogo } from "./ZendoLogo";
 import Link from "next/link";
 import { IoLogoGithub, IoLogoTwitter } from "react-icons/io5";
 

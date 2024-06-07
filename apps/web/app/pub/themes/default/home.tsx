@@ -1,4 +1,5 @@
 import { Blog, Post } from "app/types";
+import { SocialLinks } from "app/ui/SocialLinks";
 import { FadeIn } from "app/ui/fade-in";
 import { ZenblogFooter } from "app/ui/zenblog-footer";
 import { formatPostDate } from "app/utils/dates";
@@ -26,11 +27,17 @@ export function DefaultHome({
         )}
       </div>
 
+      <SocialLinks
+        className="mb-2 mt-2 gap-1 border-b pb-2 font-mono text-xs"
+        linkClassName="px-2 py-1 text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100 transition-all rounded-lg hover:cursor-default"
+        links={blog}
+      />
+
       {posts?.length === 0 && (
         <>
           <div className="">
             <h2 className="font-medium">No posts yet</h2>
-            <p className="font-mono text-slate-500">
+            <p className="font-mono text-zinc-500">
               Check back later, see you soon!
             </p>
           </div>

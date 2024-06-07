@@ -1,5 +1,5 @@
 import UserButton from "@/components/UserButton";
-import ZendoLogo from "@/components/ZendoLogo";
+import { ZendoLogo } from "@/components/ZendoLogo";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Notifications from "@/components/Notifications";

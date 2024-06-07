@@ -1,5 +1,5 @@
 import Spinner from "@/components/Spinner";
-import ZendoLogo from "@/components/ZendoLogo";
+import { ZendoLogo } from "@/components/ZendoLogo";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,6 @@ import { EmojiPicker } from "@/components/EmojiPicker";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 
 function AccordionSettings({
@@ -31,12 +30,12 @@ function AccordionSettings({
   title,
 }: PropsWithChildren<{ title: string }>) {
   return (
-    <Accordion type="multiple" value={[title]}>
+    <Accordion type="multiple" defaultValue={[title]}>
       <AccordionItem className="border-b transition-colors" value={title}>
         <AccordionTrigger className="p-2 pl-3 text-sm">
           {title}
         </AccordionTrigger>
-        <AccordionContent className="px-2 pb-2">{children}</AccordionContent>
+        <AccordionContent className="px-3 pb-6">{children}</AccordionContent>
       </AccordionItem>
     </Accordion>
   );
@@ -59,16 +58,39 @@ export default function Customise() {
     description: string;
     emoji: string;
     slug: string;
+    twitter: string;
+    instagram: string;
+    website: string;
   };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { isDirty },
-    reset,
-    control,
-    getValues,
-  } = useForm<FormData>();
+  const { register, control, getValues, watch, reset } = useForm<FormData>({
+    defaultValues: {
+      title: blog.data?.title,
+      description: blog.data?.description,
+      emoji: blog.data?.emoji,
+      slug: blog.data?.slug,
+      twitter: blog.data?.twitter,
+      instagram: blog.data?.instagram,
+      website: blog.data?.website,
+    },
+  });
+
+  useEffect(() => {
+    // Workaround for form not updating on first render
+    if (blog.data) {
+      reset({
+        title: blog.data.title,
+        description: blog.data.description,
+        emoji: blog.data.emoji,
+        slug: blog.data.slug,
+        twitter: blog.data.twitter,
+        instagram: blog.data.instagram,
+        website: blog.data.website,
+      });
+    }
+  }, [blog.data, reset]);
+
+  const vals = watch();
 
   useEffect(() => {
     if (blog.data) {
@@ -103,76 +125,116 @@ export default function Customise() {
           </Link>
         </div>
 
-        <div className="">
-          <AccordionSettings title="Blog">
-            <div className="grid gap-4">
-              <div className="flex items-center gap-2">
-                <Controller
-                  control={control}
-                  name="emoji"
-                  defaultValue={blog.data?.emoji}
-                  render={({ field: { onChange, value } }) => (
-                    <EmojiPicker onEmojiChange={onChange} emoji={value} />
-                  )}
-                ></Controller>
-                <div className="flex-grow">
-                  <Label className="mt-2">Title</Label>
-                  <Input
-                    {...register("title")}
-                    defaultValue={blog.data?.title}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label className="mt-2">Description</Label>
-                <Textarea
-                  {...register("description")}
-                  defaultValue={blog.data?.description}
-                  className="resize-none"
-                />
+        <AccordionSettings title="Blog">
+          <div className="grid gap-4">
+            <div className="flex items-center gap-2">
+              <Controller
+                control={control}
+                name="emoji"
+                defaultValue={blog.data?.emoji}
+                render={({ field: { onChange, value } }) => (
+                  <EmojiPicker onEmojiChange={onChange} emoji={value} />
+                )}
+              ></Controller>
+              <div className="flex-grow">
+                <Label className="mt-2">Title</Label>
+                <Input {...register("title")} defaultValue={blog.data?.title} />
               </div>
             </div>
-          </AccordionSettings>
 
-          <AccordionSettings title="Theme">
-            <div className="mt-2 grid gap-2">
-              {THEMES.map((t) => (
-                <button
-                  onClick={() => {
-                    setTheme(t.id);
-                  }}
-                  className={cn(
-                    "rounded-lg border bg-white px-3 py-1.5 text-left text-sm hover:border-zinc-200",
-                    {
-                      "!border-orange-500": t.id === theme,
-                    }
-                  )}
-                  key={t.id}
+            <div>
+              <Label className="mt-2">Description</Label>
+              <Textarea
+                {...register("description")}
+                defaultValue={blog.data?.description}
+                className="resize-none"
+              />
+            </div>
+          </div>
+        </AccordionSettings>
+
+        <AccordionSettings title="Social links">
+          <div className="grid gap-4 [&_input]:font-mono [&_input]:text-xs">
+            <div>
+              <Label className="mt-2">Website</Label>
+              <Input
+                {...register("website")}
+                defaultValue={blog.data?.website}
+                placeholder="https://example.com"
+              />
+            </div>
+            <div>
+              <Label className="mt-2">Twitter</Label>
+              <Input
+                {...register("twitter")}
+                defaultValue={blog.data?.twitter}
+                placeholder="https://x.com/username"
+              />
+            </div>
+            <div>
+              <Label className="mt-2">Instagram</Label>
+              <Input
+                {...register("instagram")}
+                defaultValue={blog.data?.instagram}
+                placeholder="https://instagram.com/username"
+              />
+            </div>
+          </div>
+        </AccordionSettings>
+
+        <AccordionSettings title="Theme">
+          <div className="mt-2 grid gap-2">
+            {THEMES.map((t) => (
+              <button
+                onClick={() => {
+                  setTheme(t.id);
+                }}
+                className={cn(
+                  "rounded-lg border bg-white px-3 py-1.5 text-left text-sm hover:border-zinc-200",
+                  {
+                    "!border-orange-500": t.id === theme,
+                  }
+                )}
+                key={t.id}
+              >
+                <h3
+                  className={cn("font-medium", {
+                    "text-orange-500": t.id === theme,
+                  })}
                 >
-                  <h3
-                    className={cn("font-medium", {
-                      "text-orange-500": t.id === theme,
-                    })}
-                  >
-                    {t.name}
-                  </h3>
-                  <p className="text-xs text-zinc-400">{t.description}</p>
-                </button>
-              ))}
-            </div>
-          </AccordionSettings>
-        </div>
+                  {t.name}
+                </h3>
+                <p className="text-xs text-zinc-400">{t.description}</p>
+              </button>
+            ))}
+          </div>
+        </AccordionSettings>
+
         <div className="actions p-2">
           <Button
             size={"xs"}
+            variant={"ghost"}
             onClick={() => {
-              const formVals = getValues();
-              updateBlog.mutate({
+              setTheme(blog.data?.theme);
+              reset();
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            size={"xs"}
+            onClick={() => {
+              const vals = getValues();
+
+              console.log(theme, vals);
+
+              const data = {
                 id: blogId as string,
                 theme,
-                ...formVals,
-              });
+                ...vals,
+              };
+
+              updateBlog.mutate(data);
             }}
           >
             Save
@@ -205,7 +267,7 @@ export default function Customise() {
               className="relative mx-auto h-full overflow-y-auto overflow-x-hidden rounded-t-lg border bg-white shadow-sm transition-all"
             >
               <BlogHomePage
-                blog={blog.data}
+                blog={vals}
                 posts={publishedPosts as Post[]}
                 theme={theme as Theme}
                 disableLinks

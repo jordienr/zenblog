@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { docs } from "@/cms";
-import ZendoLogo from "@/components/ZendoLogo";
+import { ZendoLogo } from "@/components/ZendoLogo";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Github, Twitter } from "lucide-react";
 import Link from "next/link";

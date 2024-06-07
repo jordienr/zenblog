@@ -53,36 +53,45 @@ export type Database = {
           description: string
           emoji: string
           id: string
+          instagram: string
           order: Database["public"]["Enums"]["blog_sort_order"]
           slug: string
           theme: string
           title: string
+          twitter: string
           updated_at: string
           user_id: string
+          website: string
         }
         Insert: {
           created_at?: string
           description?: string
           emoji: string
           id?: string
+          instagram?: string
           order?: Database["public"]["Enums"]["blog_sort_order"]
           slug: string
           theme?: string
           title: string
+          twitter?: string
           updated_at?: string
           user_id?: string
+          website?: string
         }
         Update: {
           created_at?: string
           description?: string
           emoji?: string
           id?: string
+          instagram?: string
           order?: Database["public"]["Enums"]["blog_sort_order"]
           slug?: string
           theme?: string
           title?: string
+          twitter?: string
           updated_at?: string
           user_id?: string
+          website?: string
         }
         Relationships: [
           {
