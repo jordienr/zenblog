@@ -50,7 +50,7 @@ export default function Customise() {
   const posts = usePostsQuery();
   const updateBlog = useUpdateBlogMutation({
     onSuccess: () => {
-      toast.success("Theme updated");
+      toast.success("Blog updated");
     },
   });
 
