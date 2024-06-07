@@ -58,12 +58,12 @@ export default function AppLayout({ children, loading = false }: Props) {
 
             <div className="flex items-center gap-1">
               <Feedback />
-              <Link
+              {/* <Link
                 className="rounded-full px-3 py-4 text-sm font-medium text-slate-600 hover:text-orange-600"
                 href="/docs/getting-started"
               >
                 Docs
-              </Link>
+              </Link> */}
               <Notifications />
               <span className="ml-2">
                 <UserButton />
