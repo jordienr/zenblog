@@ -33,6 +33,14 @@ export function DirectoryHome({
           {blog.description}
         </h1>
       </div>
+      {posts.length === 0 && (
+        <div className="mx-auto max-w-4xl p-3 py-12">
+          <h2 className="font-medium">No posts yet</h2>
+          <p className="font-mono text-zinc-500">
+            Check back later, see you soon!
+          </p>
+        </div>
+      )}
       <div className="mx-auto grid max-w-5xl gap-6 px-3 md:grid-cols-3">
         {posts.map((post, idx) => (
           <FadeIn key={post.slug} delay={idx * 0.1}>
