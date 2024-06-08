@@ -61,15 +61,12 @@ const Home = () => {
             </div>
 
             <div className="flex flex-grow items-center justify-end gap-1 text-sm font-medium text-zinc-600">
-              {/* <Link href="/blog">Blog</Link> */}
-              <LoggedInUser>
-                <Link
-                  className="rounded-full px-3 py-1.5 hover:text-zinc-800"
-                  href="/docs"
-                >
-                  Docs
-                </Link>
-              </LoggedInUser>
+              <Link
+                className="rounded-lg px-2 py-1"
+                href="https://blog.zenblog.com"
+              >
+                Blog
+              </Link>
               <Link
                 target="_blank"
                 href="https://twitter.com/zenbloghq"
