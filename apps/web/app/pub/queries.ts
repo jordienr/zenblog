@@ -5,7 +5,9 @@ export async function getBlog(subdomain: string) {
 
   const res = await supa
     .from("blogs")
-    .select("id, title, emoji, description, order, theme")
+    .select(
+      "id, title, emoji, description, order, theme, twitter, instagram, website"
+    )
     .eq("slug", subdomain)
     .single();
 
