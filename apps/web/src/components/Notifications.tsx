@@ -50,6 +50,9 @@ const Notifications = (props: Props) => {
         <DropdownMenuContent align="end">
           {notifications.length === 0 ? (
             <div className="p-8 text-center text-zinc-400">
+              <div className="flex justify-center">
+                <Bell size="17" className="animate-bounce text-orange-400" />
+              </div>
               No notifications
             </div>
           ) : (
