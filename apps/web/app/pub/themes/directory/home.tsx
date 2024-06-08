@@ -33,7 +33,11 @@ export function DirectoryHome({
         >
           {blog.description}
         </h1>
-        <SocialLinks className="mt-6" links={blog} />
+        <SocialLinks
+          className="mt-6"
+          linkClassName="hover:bg-orange-50 hover:text-orange-600"
+          links={blog}
+        />
       </div>
       {posts.length === 0 && (
         <div className="mx-auto max-w-4xl p-3 py-12">

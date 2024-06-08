@@ -82,6 +82,7 @@
     "react-hook-form": "^7.43.9",
     "react-icons": "^4.8.0",
     "react-query": "^3.39.3",
+    "react-resizable-panels": "^2.0.19",
     "react-syntax-highlighter": "^15.5.0",
     "react-use": "^17.4.0",
     "react-use-clipboard": "^1.0.9",

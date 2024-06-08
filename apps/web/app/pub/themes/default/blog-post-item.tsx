@@ -31,11 +31,10 @@ export function BlogPostItem({
           key={post.slug}
           href={disableLinks ? "#" : `/${post.slug}`}
         >
-          <div className="grid flex-wrap items-center justify-between sm:flex">
+          <div className="flex-wrap items-center justify-between sm:flex">
             <span className="text-zinc-700 group-hover:text-zinc-950">
               {post.title}
             </span>
-            {/* <AnimatePresence mode="popLayout"> */}
             <motion.div
               key={rightText}
               animate={{
@@ -54,11 +53,10 @@ export function BlogPostItem({
                 duration: 0.2,
                 ease: "easeOut",
               }}
-              className="flex gap-2 overflow-hidden text-right font-mono text-xs tracking-tight text-zinc-400"
+              className="hidden gap-2 text-right font-mono text-xs tracking-tight text-zinc-400 sm:block"
             >
               {rightText}
             </motion.div>
-            {/* </AnimatePresence> */}
           </div>
           {post.abstract && (
             <p className="font-mono text-xs text-zinc-500">{post.abstract}</p>

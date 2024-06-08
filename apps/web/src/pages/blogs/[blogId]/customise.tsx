@@ -24,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Controller, useForm } from "react-hook-form";
+import { FaMobile } from "react-icons/fa";
+import { Laptop, Smartphone, Tablet } from "lucide-react";
 
 function AccordionSettings({
   children,
@@ -44,6 +46,7 @@ function AccordionSettings({
 export default function Customise() {
   const router = useRouter();
   const { blogId } = router.query;
+  const [previewWidth, setPreviewWidth] = useState<string | number>("100%");
 
   const blog = useBlogQuery(blogId as string);
   const posts = usePostsQuery();
@@ -243,7 +246,7 @@ export default function Customise() {
       </aside>
       <main className="max-h-screen min-h-screen flex-grow pr-2 pt-2">
         <Tabs defaultValue="home" className="h-full">
-          <TabsList className="py-0">
+          <TabsList className="flex py-0">
             <TabsTrigger
               className="border-none bg-none data-[state=active]:bg-transparent"
               value="home"
@@ -256,22 +259,47 @@ export default function Customise() {
             >
               Post
             </TabsTrigger> */}
+            <div className="ml-auto">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPreviewWidth(360)}
+              >
+                <Smartphone />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPreviewWidth(641)}
+              >
+                <Tablet />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPreviewWidth("100%")}
+              >
+                <Laptop />
+              </Button>
+            </div>
           </TabsList>
-          <TabsContent className="mt-0 h-full" value="home">
+          <TabsContent className="mt-0" value="home">
             <motion.div
               key={theme}
               initial={{ filter: "blur(5px)" }}
               animate={{ filter: "blur(0px)" }}
               exit={{ filter: "blur(5px)" }}
               transition={{ duration: 0.5, ease: "linear" }}
-              className="relative mx-auto h-full overflow-y-auto overflow-x-hidden rounded-t-lg border bg-white shadow-sm transition-all"
+              className="relative mx-auto flex-grow overflow-y-auto overflow-x-hidden rounded-t-lg border bg-white shadow-sm transition-all"
+              style={{
+                maxWidth: previewWidth,
+                height: "calc(100vh - 4rem)",
+              }}
             >
-              <BlogHomePage
-                blog={vals}
-                posts={publishedPosts as Post[]}
-                theme={theme as Theme}
-                disableLinks
-              />
+              <iframe
+                src={`/blogs/${blogId}/customise-preview?theme=${theme}&title=${vals.title}&description=${vals.description}&emoji=${vals.emoji}&slug=${vals.slug}&twitter=${vals.twitter}&instagram=${vals.instagram}&website=${vals.website}`}
+                className="h-full w-full"
+              ></iframe>
             </motion.div>
           </TabsContent>
           <TabsContent className="mt-0" value="post">
