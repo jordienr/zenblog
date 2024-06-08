@@ -15,7 +15,7 @@ export function SocialLinks({
   className?: string;
   linkClassName?: string;
 }) {
-  const allAreEmpty = Object.values(links).every((link) => !link);
+  const allAreEmpty = !links.twitter && !links.instagram && !links.website;
 
   if (allAreEmpty) {
     return null;

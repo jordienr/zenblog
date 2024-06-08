@@ -46,10 +46,14 @@ export function GardenHome({ blog, posts, disableLinks }: BlogHomeProps) {
       <header>
         <div className="mx-auto max-w-3xl p-3 py-8 text-center text-sm">
           <span className="text-xl">{blog.emoji}</span>
-          <h1 className={`text-3xl font-medium ${serif.className}`}>
+          <h1
+            className={`text-3xl font-medium tracking-tight ${serif.className}`}
+          >
             {blog?.title}
           </h1>
-          <p className="py-1 text-gray-500">{blog?.description}</p>
+          <p className="py-1 text-lg tracking-tight text-gray-500">
+            {blog?.description}
+          </p>
           <SocialLinks
             className={`mt-4 justify-center gap-1 font-mono`}
             linkClassName="hover:text-emerald-600 hover:bg-emerald-50 transition-all rounded-lg px-2 py-1 text-gray-500 hover:cursor-default"
