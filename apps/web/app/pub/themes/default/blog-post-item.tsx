@@ -35,30 +35,30 @@ export function BlogPostItem({
             <span className="text-zinc-700 group-hover:text-zinc-950">
               {post.title}
             </span>
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                key={rightText}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                initial={{
-                  opacity: 0,
-                  y: 20,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: -20,
-                }}
-                transition={{
-                  duration: 0.2,
-                  ease: "easeOut",
-                }}
-                className="flex gap-2 overflow-hidden text-right font-mono text-xs tracking-tight text-zinc-400"
-              >
-                {rightText}
-              </motion.div>
-            </AnimatePresence>
+            {/* <AnimatePresence mode="popLayout"> */}
+            <motion.div
+              key={rightText}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              exit={{
+                opacity: 0,
+                y: -20,
+              }}
+              transition={{
+                duration: 0.2,
+                ease: "easeOut",
+              }}
+              className="flex gap-2 overflow-hidden text-right font-mono text-xs tracking-tight text-zinc-400"
+            >
+              {rightText}
+            </motion.div>
+            {/* </AnimatePresence> */}
           </div>
           {post.abstract && (
             <p className="font-mono text-xs text-zinc-500">{post.abstract}</p>
