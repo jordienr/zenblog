@@ -101,8 +101,6 @@ export default function Customise() {
     }
   }, [blog.data]);
 
-  const publishedPosts = posts.data?.filter((post) => post.published);
-
   const [theme, setTheme] = useState(blog.data?.theme);
 
   // RENDER
