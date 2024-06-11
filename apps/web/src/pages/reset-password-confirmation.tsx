@@ -3,12 +3,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function ResetPasswordConfirmation() {
   const [loading, setLoading] = useState(false);
   const supabase = getSupabaseBrowserClient();
   const router = useRouter();
+
+  useEffect(() => {
+    supabase.auth.getUser().then((res) => {
+      if (!res.data.user) {
+        router.push("/sign-in");
+      }
+    });
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,7 +40,8 @@ export default function ResetPasswordConfirmation() {
     }
 
     alert("Password updated");
-    window.location.pathname = "/sign-in";
+    toast.success("Password updated");
+    router.push("/blogs");
     setLoading(false);
   }
 
