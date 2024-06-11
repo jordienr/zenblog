@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { updateSession } from "./utils/supabase/middleware";
 
 // inspired by https://github.com/vercel/platforms/blob/main/middleware.ts
 
@@ -22,7 +23,7 @@ export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
   if (!subdomain || invalidSubdomains.includes(subdomain)) {
-    return;
+    return await updateSession(req);
   }
 
   const newPath = `/pub/${subdomain}${path}`;

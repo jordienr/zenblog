@@ -91,7 +91,6 @@ export const ZendoEditor = (props: Props) => {
     });
   const router = useRouter();
   const blogId = (router.query.blogId as string) || "demo";
-  const subscription = useSubscriptionQuery();
   const blogTags = useBlogTags({ blogId });
   const [published, setPublished] = React.useState(
     props.post?.published || false
@@ -102,8 +101,6 @@ export const ZendoEditor = (props: Props) => {
   const [publishedAt, setPublishedAt] = React.useState<string | undefined>(
     props.post?.published_at || ""
   );
-
-  const isSubscribed = subscription.data?.status === "active";
 
   const [coverImgUrl, setCoverImgUrl] = React.useState<string | undefined>(
     props.post?.cover_image || ""
@@ -194,10 +191,6 @@ export const ZendoEditor = (props: Props) => {
   });
 
   const formSubmit = handleSubmit(async (data) => {
-    if (!isSubscribed) {
-      alert("You need an active subscription to publish more posts.");
-      return;
-    }
     const content = editor?.getJSON() || {};
     const html_content = editor?.getHTML() || "";
     const { title, slug } = data;
@@ -285,24 +278,6 @@ export const ZendoEditor = (props: Props) => {
 
   return (
     <div className="min-h-screen pb-24">
-      {!isSubscribed && !subscription.isLoading && (
-        <>
-          <div className="absolute inset-0 z-40 flex items-center justify-center overflow-hidden bg-zinc-100/80">
-            <div className="max-w-xs rounded-lg border bg-white p-3 shadow-sm">
-              <span className="text-lg">🙏</span>
-              <h2 className="text-lg font-medium">
-                You need an active subscription to publish more posts.
-              </h2>
-              <Link
-                className="mt-4 inline-block py-2 text-orange-500 underline"
-                href="/account"
-              >
-                Manage your subscription
-              </Link>
-            </div>
-          </div>
-        </>
-      )}
       <form
         onSubmit={formSubmit}
         className="sticky top-0 z-20 flex w-full items-center justify-end bg-white py-1.5 pl-1.5 pr-3 text-zinc-800 md:justify-between"

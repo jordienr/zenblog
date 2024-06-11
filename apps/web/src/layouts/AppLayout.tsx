@@ -43,6 +43,21 @@ export default function AppLayout({ children, loading = false }: Props) {
               >
                 <ZendoLogo hideText />
               </Link>
+              {isSubscribed ? (
+                <div className="rounded-full bg-blue-50 p-1 px-2 text-xs font-medium text-blue-500">
+                  Pro plan
+                </div>
+              ) : (
+                <Link
+                  title="Upgrade to Pro"
+                  href="/account"
+                  className=" rounded-full
+                 bg-emerald-100 p-1
+                px-2 text-center text-xs font-medium text-emerald-600"
+                >
+                  Free
+                </Link>
+              )}
             </div>
 
             <a
@@ -71,23 +86,6 @@ export default function AppLayout({ children, loading = false }: Props) {
             </div>
           </div>
         </nav>
-        {!isSubscribed && (
-          <div className="sticky top-[58px] z-30 flex items-center justify-center">
-            <Link
-              href="/account"
-              className="
-              mx-auto flex max-w-5xl items-center rounded-b-2xl border-x border-b-2 border-yellow-400 bg-yellow-100
-              p-1.5 px-4 text-center font-medium text-yellow-600"
-            >
-              <HiOutlineInformationCircle
-                className="mr-1 text-yellow-600"
-                size={20}
-              />
-              You don&apos;t have an active subscription. Please{" "}
-              <span className="ml-1.5 underline"> subscribe to a plan</span>.
-            </Link>
-          </div>
-        )}
         {loading ? (
           <div className="flex h-[600px] items-center justify-center">
             <Loader className="animate-spin text-orange-500" size={32} />

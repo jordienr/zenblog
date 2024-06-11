@@ -1,18 +1,17 @@
-import { EmojiPicker } from "@/components/EmojiPicker";
 import AppLayout from "@/layouts/AppLayout";
 import { generateSlug } from "@/lib/utils/slugs";
-import { useCreateBlogMutation } from "@/queries/blogs";
+import { useBlogsQuery, useCreateBlogMutation } from "@/queries/blogs";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useIsSubscribed } from "@/queries/subscription";
 import Link from "next/link";
-import { BsShieldX } from "react-icons/bs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { Smile } from "lucide-react";
 
 export default function CreateBlog() {
   const DEFAULT_EMOJI = "📝";
@@ -53,12 +52,11 @@ export default function CreateBlog() {
   }, [slug]);
 
   const createBlog = useCreateBlogMutation();
+  const blogsQuery = useBlogsQuery({ enabled: true });
+
+  const hasOneBlogAlready = blogsQuery.data?.length === 1;
 
   const onSubmit = async (data: FormData) => {
-    if (!isSubscribed) {
-      return;
-    }
-
     if (data.slug.length < 3 && data.slug.length > 24) {
       toast.error("Slug must be at least 3 characters long");
       return;
@@ -89,21 +87,21 @@ export default function CreateBlog() {
     }
   };
 
-  if (!isSubscribed) {
+  if (!isSubscribed && hasOneBlogAlready) {
     return (
       <AppLayout loading={createBlog.isPending}>
         <div className="section mx-auto my-12 max-w-xl py-12">
-          <div className="text-center text-4xl">
-            <BsShieldX className="mx-auto text-red-500" size="48" />
-          </div>
           <h2 className="mt-2">
-            <span className="block text-center text-3xl font-semibold">
-              You are not subscribed to a plan
+            <div className="flex justify-center">
+              <Smile size={32} className="mb-2 text-orange-500" />
+            </div>
+            <span className="block text-center text-lg font-semibold">
+              Free plan can only create 1 blog
             </span>
           </h2>
           <div className="text-center">
-            <p className="text-xl text-zinc-500">
-              Please subscribe to a plan to create more blogs.
+            <p className="text-zinc-500">
+              Please subscribe to the Pro Plan to create more blogs.
             </p>
           </div>
           <div className="mt-8 text-center">
@@ -117,7 +115,7 @@ export default function CreateBlog() {
   }
 
   return (
-    <AppLayout>
+    <AppLayout loading={createBlog.isPending}>
       <div className="mx-auto max-w-md pt-12">
         <div className="section p-4">
           <h1 className="mb-4 mt-1 text-lg font-medium">Create a blog</h1>

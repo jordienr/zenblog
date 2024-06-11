@@ -8,7 +8,6 @@ import {
 } from "./ui/dropdown-menu";
 import Link from "next/link";
 import { useUser } from "@/utils/supabase/browser";
-import { useIsSubscribed, useSubscriptionQuery } from "@/queries/subscription";
 import { cn } from "@/lib/utils";
 import { DoorClosed, DoorOpen, UserIcon } from "lucide-react";
 
@@ -16,7 +15,6 @@ type Props = {};
 
 const UserButton = (props: Props) => {
   const user = useUser();
-  const isSubbed = useIsSubscribed();
 
   return (
     <>

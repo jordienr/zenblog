@@ -4,7 +4,7 @@ import { Tabs, TabsTrigger, TabsList } from "@/components/ui/tabs";
 import AppLayout from "@/layouts/AppLayout";
 import { usePricesQuery } from "@/queries/prices";
 import { useProductsQuery } from "@/queries/products";
-import { useSubscriptionQuery } from "@/queries/subscription";
+import { useIsSubscribed, useSubscriptionQuery } from "@/queries/subscription";
 import { useUser } from "@/utils/supabase/browser";
 import { Landmark, Loader } from "lucide-react";
 import React, { useState } from "react";
@@ -18,7 +18,7 @@ export const SubscribeSection = () => {
   const [interval, setInterval] = React.useState<"year" | "month">("year");
   const [isLoading, setIsLoading] = useState(false);
 
-  function openCheckoutPage(product_id: string) {
+  async function openCheckoutPage(product_id: string) {
     setIsLoading(true);
 
     const pricesForProduct = prices.data?.filter(
@@ -38,7 +38,7 @@ export const SubscribeSection = () => {
       return;
     }
 
-    const res = fetch("/api/create-checkout-session", {
+    const res = await fetch("/api/create-checkout-session", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -48,22 +48,27 @@ export const SubscribeSection = () => {
       }),
     });
 
-    res.then(async (res) => {
-      const json = await res.json();
-      if (json.error) {
-        console.error(json.error);
-        setIsLoading(false);
-        return;
-      }
+    if (!res.ok) {
+      setIsLoading(false);
+      console.error(res.statusText);
+      toast.error("Error creating checkout session, please try again.");
+      return;
+    }
 
-      if (json.url) {
-        window.location.href = json.url;
-      } else {
-        setIsLoading(false);
-        toast.error("Error creating session");
-        console.error("Error creating session");
-      }
-    });
+    const json = await res.json();
+    if (json.error) {
+      console.error(json.error);
+      setIsLoading(false);
+      return;
+    }
+
+    if (json.url) {
+      window.location.href = json.url;
+    } else {
+      setIsLoading(false);
+      toast.error("Error creating session");
+      console.error("Error creating session");
+    }
   }
 
   const loading = products.isLoading || prices.isLoading || isLoading;
@@ -103,10 +108,7 @@ export const SubscribeSection = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-medium">Pricing</h2>
-      <p className="font-mono text-sm text-zinc-500">Cancel anytime</p>
-
-      <IsDevMode>
+      {/* <IsDevMode>
         <pre>
           Run this to sync stripe with the local database:
           <br />
@@ -116,54 +118,37 @@ export const SubscribeSection = () => {
           <br />
           Then refresh the page and subscribe to a plan
         </pre>
-      </IsDevMode>
-
-      <Tabs
-        className="mt-4"
-        value={interval}
-        onValueChange={setInterval as any}
-      >
-        <TabsList>
-          <TabsTrigger value="year">
-            Yearly
-            <span className="ml-2 rounded-full bg-orange-100 px-1.5 py-0.5 text-xs text-orange-600">
-              Best
-            </span>
-          </TabsTrigger>
-          <TabsTrigger value="month">Monthly</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      </IsDevMode> */}
+      <h2 className="text-lg font-medium">Pricing</h2>
+      <p className="font-mono text-sm text-zinc-500">Cancel anytime</p>
 
       <div className="mt-4 ">
         {products.data?.map((product) => (
           <div
             key={product.id}
-            className="relative max-w-sm rounded-xl border border-b-2 border-orange-500 p-3"
+            className="relative max-w-sm rounded-xl border border-b-2 bg-zinc-100/70 p-3"
           >
-            {interval === "year" && (
-              <span className="absolute -top-3 right-4 rounded-full border border-b-2 border-orange-500 bg-orange-100 px-2 py-1 text-xs font-medium text-orange-600">
-                2 Months Free!
-              </span>
-            )}
             <h3 className="text-lg font-semibold">{product.product.name}</h3>
-            <p className="text-zinc-500">{product.product.description}</p>
-            <ul>
-              {product.product.features.map((feat, featIdx) => (
-                <li key={product.id + "-feat-" + featIdx}>{feat.name}</li>
-              ))}
-            </ul>
 
-            <h4 className="mt-4 text-sm font-bold text-zinc-500">Price</h4>
-            <div className="text-xl font-semibold">
+            <div className="mt-2 text-3xl font-semibold">
               {getAmountFromProduct(product.product.id)}
               <span className="text-sm text-zinc-400">/{interval}</span>
             </div>
-
-            <div className="mt-4 flex">
-              <Button onClick={() => openCheckoutPage(product.product.id)}>
-                Subscribe to {product.product.name}
+            <div className="mt-2 flex">
+              <Button
+                size="default"
+                className="w-full"
+                onClick={() => openCheckoutPage(product.product.id)}
+              >
+                Subscribe →
               </Button>
             </div>
+            <ul className="mt-4 grid gap-1.5 px-4 py-4 font-mono">
+              <li>✔︎ Unlimited blogs</li>
+              <li>✔︎ API access</li>
+              <li>✔︎ Supports development</li>
+              <li>🔜 More soon</li>
+            </ul>
           </div>
         ))}
       </div>
@@ -201,8 +186,16 @@ const AccountPage = (props: Props) => {
 
   const subscription = useSubscriptionQuery();
 
+  const isSubbed = useIsSubscribed();
+
   function formatDate(date: string) {
-    return new Date(date).toLocaleDateString();
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    });
   }
 
   return (
@@ -245,7 +238,7 @@ const AccountPage = (props: Props) => {
                 </span>
               ) : (
                 <span>
-                  <span className="rounded-md bg-zinc-100 px-3 py-1 font-mono">
+                  <span className="rounded-md bg-yellow-100 px-3 py-1 font-mono text-yellow-600">
                     {subscription.data?.status || "Not found"}
                   </span>
                 </span>
@@ -272,20 +265,24 @@ const AccountPage = (props: Props) => {
             )}
           </div>
 
-          <hr className="my-6 max-w-lg" />
+          {isSubbed && (
+            <>
+              <hr className="my-6 max-w-lg" />
 
-          <h3 className="text-lg font-medium">Manage your subscription</h3>
-          <p className="text-zinc-500">
-            Check invoices, billing and payment information.
-          </p>
-          <Button
-            className="mt-4"
-            variant="secondary"
-            onClick={onManageSubscriptionClick}
-          >
-            <Landmark />
-            Manage subscription
-          </Button>
+              <h3 className="text-lg font-medium">Manage your subscription</h3>
+              <p className="text-zinc-500">
+                Check invoices, billing and payment information.
+              </p>
+              <Button
+                className="mt-4"
+                variant="secondary"
+                onClick={onManageSubscriptionClick}
+              >
+                <Landmark />
+                Manage subscription
+              </Button>
+            </>
+          )}
         </section>
       </div>
     </AppLayout>

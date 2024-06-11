@@ -30,6 +30,7 @@ export async function getServerClient(
     );
 
     const userRes = await supabase.auth.getUser();
+
     return {
       user: userRes?.data.user,
       db: supabase,

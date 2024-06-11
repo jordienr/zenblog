@@ -1,16 +1,25 @@
 import { NextApiHandler } from "next";
-import { getServerClient } from "@/lib/server/deprecated/supabase";
 import {
   createOrRetrieveCustomer,
   createStripeClient,
 } from "@/lib/server/stripe";
 import { BASE_URL } from "@/lib/config";
+import { createClient } from "app/supa";
 
 const handler: NextApiHandler = async (req, res) => {
+  return;
   try {
     const stripe = createStripeClient();
-    const { user } = await getServerClient(req, res);
+    const supa = createClient();
+    const jwt = req.headers.authorization?.replace("Bearer ", "");
+    console.log(jwt);
+    const {
+      data: { user },
+      error,
+    } = await supa.auth.getUser(jwt);
     const price_id = req.body.price_id;
+
+    console.log(user);
 
     if (!user) {
       return res.status(401).json({ error: "Unauthorized" });

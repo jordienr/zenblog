@@ -11,7 +11,7 @@ export function useSubscriptionQuery() {
     queryFn: async () => {
       const { data, error } = await sb
         .from("subscriptions")
-        .select("*")
+        .select("status")
         .limit(1);
 
       if (error || !data[0]) {
@@ -33,7 +33,7 @@ export function useIsSubscribed() {
   const { isFetching, data } = useSubscriptionQuery();
 
   if (isFetching) {
-    return true; // Assume subscribed to avoid flicker
+    return false; // Assume subscribed to avoid flicker
   }
 
   const isSubscribed = data?.status === "active";
