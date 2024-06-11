@@ -111,7 +111,7 @@ const Home = () => {
                 <Link
                   className="group inline-flex items-center gap-1 rounded-lg bg-zinc-200/70 px-3 py-1 font-mono text-xs font-medium text-zinc-700 transition-all "
                   target="_blank"
-                  href="https://git.new/zenblog"
+                  href="https://github.com/jordienr/zenblog"
                 >
                   Star us on GitHub
                 </Link>
