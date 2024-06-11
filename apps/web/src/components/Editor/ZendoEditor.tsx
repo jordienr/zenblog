@@ -577,7 +577,7 @@ export const ZendoEditor = (props: Props) => {
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 mx-auto -mt-2 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg px-8 py-1.5 font-light leading-10 tracking-normal transition-all"
+            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 mx-auto -mt-2 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg px-8 py-1.5 font-normal leading-10 tracking-normal transition-all"
           >
             <EditorContent className="w-full" editor={editor} />
           </div>
