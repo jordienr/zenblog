@@ -33,7 +33,7 @@ export function InstrumentHome({ posts, blog, disableLinks }: BlogHomeProps) {
           </header>
           <div className="m-3 flex gap-1">
             <div className="h-1 w-60 -skew-x-[30deg] bg-orange-600"></div>
-            <div className="h-1 w-6 -skew-x-[30deg] bg-orange-600"></div>
+            <div className="h-1 w-2 -skew-x-[30deg] bg-orange-600"></div>
             <div className="h-1 w-2 -skew-x-[30deg] bg-orange-600"></div>
           </div>
           <main>

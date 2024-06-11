@@ -20,10 +20,10 @@ export default function ResetPassword() {
     const form = e.currentTarget;
     const email = form.email.value;
 
-    const url = new URL(window.location.href);
+    const url = process.env.NEXT_PUBLIC_BASE_URL;
 
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${url.origin}/reset-password-confirmation`,
+      redirectTo: `${url || ""}/reset-password-confirmation`,
     });
 
     if (error) {
@@ -44,7 +44,9 @@ export default function ResetPassword() {
           <p className="text-slate-500">
             We have sent you a link to reset your password.
           </p>
-          <Link href="https://gmail.com">Open gmail</Link>
+          <Link target="_blank" href="https://gmail.com">
+            Open gmail
+          </Link>
         </div>
       </>
     );
@@ -61,9 +63,9 @@ export default function ResetPassword() {
           We will send you a link to reset your password.
         </p>
         {loading ? (
-          <p>
+          <div>
             <Spinner />
-          </p>
+          </div>
         ) : (
           <>
             <Label htmlFor="email">Email</Label>
