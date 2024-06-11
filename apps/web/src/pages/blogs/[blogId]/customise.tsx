@@ -291,7 +291,7 @@ export default function Customise() {
               className="relative mx-auto flex-grow overflow-y-auto overflow-x-hidden rounded-t-lg border bg-white shadow-sm transition-all"
               style={{
                 maxWidth: previewWidth,
-                height: "calc(100vh - 4rem)",
+                height: "calc(100vh - 3rem)",
               }}
             >
               <iframe

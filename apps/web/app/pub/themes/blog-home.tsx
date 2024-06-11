@@ -3,6 +3,7 @@ import { DefaultHome } from "./default/home";
 import { DirectoryHome } from "./directory/home";
 import { NewsroomHome } from "./newsroom/home";
 import { GardenHome } from "./garden/home";
+import { InstrumentHome } from "./instrument/home";
 
 export function BlogHomePage({
   theme,
@@ -29,6 +30,8 @@ export function BlogHomePage({
     return <NewsroomHome {...props} />;
   } else if (theme === "garden") {
     return <GardenHome {...props} />;
+  } else if (theme === "instrument") {
+    return <InstrumentHome {...props} />;
   } else {
     return <DefaultHome {...props} />;
   }

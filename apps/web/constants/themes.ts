@@ -19,4 +19,9 @@ export const THEMES = [
     name: "Garden",
     description: "For the nature lovers",
   },
+  {
+    id: "instrument",
+    name: "Instrument",
+    description: "A dark, elegant theme",
+  },
 ];
