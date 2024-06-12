@@ -109,7 +109,7 @@ const Home = () => {
             <div className="mx-auto  mt-12 max-w-xl text-center">
               <div className="">
                 <Link
-                  className="group inline-flex items-center gap-1 rounded-lg bg-zinc-200/70 px-3 py-1 font-mono text-xs font-medium text-zinc-700 transition-all "
+                  className="group inline-flex items-center gap-1 rounded-lg bg-orange-100/70 px-3 py-1 font-mono text-xs font-medium text-orange-600 transition-all "
                   target="_blank"
                   href="https://github.com/jordienr/zenblog"
                 >
@@ -218,9 +218,9 @@ const Home = () => {
                 </Carousel> */}
               </div>
             </div>
-            <div className="mx-auto mt-14 max-w-4xl rounded-xl border bg-zinc-50 p-1.5 shadow-sm *:rounded-lg">
+            <div className="mx-auto mt-14 max-w-4xl rounded-xl border bg-zinc-50 p-1.5 shadow-sm *:rounded-lg hover:bg-zinc-50/50">
               <Image
-                className="w-full rounded-lg border border-zinc-200 shadow-sm transition-all hover:border-orange-200"
+                className="w-full rounded-lg border border-zinc-200 shadow-sm transition-all"
                 src="/static/zenblogui.png"
                 loading="lazy"
                 blurDataURL="/static/zenblogui.png"
