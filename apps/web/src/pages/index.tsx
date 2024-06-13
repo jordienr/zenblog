@@ -290,11 +290,11 @@ function PricingItem({
           </div>
         )}
 
-        <div className="flex justify-center pt-4">
+        {/* <div className="flex justify-center pt-4">
           <Button onClick={onClick} className="w-full">
             {action}
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

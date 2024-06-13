@@ -4,12 +4,11 @@
 
 - [] finish pagination in usePostsQuery
 - [] custom domains
-- [] limit pro plan to 3 blogs
-- [] limit free plan to 1 blog
-- [] Add Abstract to posts.
-- [] Add pricing section to homepage
 - [] FAQ on homepage
 - [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, vc website, etc.
+- [x] limit free plan to 1 blog
+- [x] Add pricing section to homepage
+- [x] Add Abstract to posts.
 - [x] Removing tags doesnt work
 - [x] Published_date
 - [x] Update README
