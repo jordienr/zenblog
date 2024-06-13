@@ -3,6 +3,7 @@ const {
 } = require("tailwindcss/lib/util/flattenColorPalette");
 const svgToDataUri = require("mini-svg-data-uri");
 const colors = require("tailwindcss/colors");
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -14,29 +15,6 @@ module.exports = {
     "./src/**/*.{ts,tsx}",
   ],
   theme: {
-    fontFamily: {
-      default: [
-        "var(--font-sans)",
-        "ui-sans-serif",
-        "system-ui",
-        "sans-serif",
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Segoe UI Symbol",
-        "Noto Color Emoji",
-      ],
-      mono: [
-        "var(--font-mono)",
-        "ui-monospace",
-        "SFMono-Regular",
-        "Menlo",
-        "Monaco",
-        "Consolas",
-        "Liberation Mono",
-        "Courier New",
-        "monospace",
-      ],
-    },
     border: {
       DEFAULT: "0.3px solid var(--border-color)",
       1: "1px",
@@ -50,6 +28,29 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        default: [
+          "var(--font-sans)",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji",
+        ],
+        mono: [
+          "var(--font-mono)",
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "Liberation Mono",
+          "Courier New",
+          "monospace",
+        ],
+      },
       textShadow: {
         sm: "0 1px 2px var(--tw-shadow-color)",
         DEFAULT: "0 2px 4px var(--tw-shadow-color)",

@@ -613,7 +613,7 @@ function TabSection({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border bg-white py-2">
+    <div className="rounded-xl border bg-white py-2 shadow-sm">
       <div className="flex justify-between border-b px-3 py-1 pb-3">
         <h2 className="text-lg font-medium">{title}</h2>
         {actions}

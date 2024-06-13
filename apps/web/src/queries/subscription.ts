@@ -1,5 +1,5 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { useQuery } from "@tanstack/react-query";
+import { QueryOptions, useQuery } from "@tanstack/react-query";
 
 const SUBSCRIPTION_KEYS = ["subscription"];
 
@@ -26,7 +26,22 @@ export function useSubscriptionQuery() {
     initialData: {
       status: "active",
     },
+    staleTime: 5 * 60 * 1000,
   });
+}
+
+export function usePlan() {
+  const { data, isLoading } = useSubscriptionQuery();
+
+  if (isLoading) {
+    return "loading";
+  }
+
+  if (data?.status === "active") {
+    return "pro";
+  } else {
+    return "free";
+  }
 }
 
 export function useIsSubscribed() {

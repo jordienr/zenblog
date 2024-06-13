@@ -46,7 +46,7 @@ export default function Dashboard() {
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border border-zinc-100 bg-white transition-all hover:border-zinc-200"
+                  className="group rounded-xl border border-zinc-200 bg-white shadow-sm transition-all hover:border-zinc-200"
                   key={blog.id}
                 >
                   <Link
@@ -67,7 +67,7 @@ export default function Dashboard() {
                     <div className="mt-auto flex justify-end gap-1 justify-self-end align-bottom">
                       <Button
                         size={"icon"}
-                        variant={"ghost"}
+                        variant={"white"}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -81,7 +81,7 @@ export default function Dashboard() {
                       </Button>
                       <Button
                         size={"icon"}
-                        variant={"ghost"}
+                        variant={"white"}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -94,7 +94,7 @@ export default function Dashboard() {
                         <Settings size="24" />
                       </Button>
                       <Button
-                        variant={"secondary"}
+                        variant={"outline"}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();

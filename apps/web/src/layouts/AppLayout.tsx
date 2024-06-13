@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Notifications from "@/components/Notifications";
 import Feedback from "@/components/Feedback";
 import Footer from "@/components/Footer";
-import { useIsSubscribed } from "@/queries/subscription";
+import { useIsSubscribed, usePlan } from "@/queries/subscription";
 import AppChecks from "@/components/LoggedInUserChecks";
 import { Loader } from "lucide-react";
 import { HiOutlineInformationCircle } from "react-icons/hi";
@@ -18,7 +18,7 @@ type Props = {
   loading?: boolean;
 };
 export default function AppLayout({ children, loading = false }: Props) {
-  const isSubscribed = useIsSubscribed();
+  const plan = usePlan();
   const user = useUser();
   const router = useRouter();
 
@@ -31,9 +31,11 @@ export default function AppLayout({ children, loading = false }: Props) {
   }, [user, loading]);
 
   return (
-    <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
+    <div
+      className={`flex min-h-screen flex-col border-b bg-zinc-50/50 font-sans`}
+    >
       <AppChecks>
-        <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl border-b bg-zinc-50">
+        <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl border-b bg-zinc-50/50 backdrop-blur-md">
           <div className="mx-auto flex h-full items-center justify-between px-4">
             <div className="z-20  flex h-full items-center gap-2">
               <Link
@@ -43,11 +45,12 @@ export default function AppLayout({ children, loading = false }: Props) {
               >
                 <ZendoLogo hideText />
               </Link>
-              {isSubscribed ? (
+              {plan === "pro" && (
                 <div className="rounded-full bg-blue-50 p-1 px-2 text-xs font-medium text-blue-500">
                   Pro plan
                 </div>
-              ) : (
+              )}
+              {plan === "free" && (
                 <Link
                   title="Upgrade to Pro"
                   href="/account"
@@ -96,7 +99,7 @@ export default function AppLayout({ children, loading = false }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="min-h-screen bg-zinc-50 pb-24"
+            className="min-h-screen pb-24"
           >
             {children}
           </motion.main>

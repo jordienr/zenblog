@@ -14,7 +14,7 @@ const Footer = (props: Props) => {
   ];
 
   return (
-    <footer className="mt-6 border-t bg-zinc-100 p-4 text-xs text-zinc-700 md:p-12">
+    <footer className="mt-6 border-t bg-zinc-50 p-4 text-xs text-zinc-700 md:p-12">
       <div className="mx-auto flex max-w-3xl justify-between">
         <div>
           <ZendoLogo />

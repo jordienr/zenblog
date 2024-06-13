@@ -39,24 +39,21 @@ export default function CreateBlog() {
     }
   }, [watchTitle, setValue]);
 
-  useEffect(() => {
-    const slugEl = document.getElementById("slug-input");
-    if (!slugEl) return;
-
-    if (slug?.length === 0) {
-      slugEl.style.width = " 70px";
-      return;
-    }
-
-    slugEl.style.width = `${slug?.length * 10}px`;
-  }, [slug]);
-
   const createBlog = useCreateBlogMutation();
   const blogsQuery = useBlogsQuery({ enabled: true });
 
   const hasOneBlogAlready = blogsQuery.data?.length === 1;
 
   const onSubmit = async (data: FormData) => {
+    // validate slug is url friendly, allow only lowercase letters, numbers and hyphens
+    const regex = /^[a-zA-Z0-9-]+$/;
+    if (!regex.test(data.slug)) {
+      toast.error(
+        "Slug must be URL friendly. No special characters or spaces allowed."
+      );
+      return;
+    }
+
     if (data.slug.length < 3 && data.slug.length > 24) {
       toast.error("Slug must be at least 3 characters long");
       return;
@@ -89,7 +86,7 @@ export default function CreateBlog() {
 
   if (!isSubscribed && hasOneBlogAlready) {
     return (
-      <AppLayout loading={createBlog.isPending}>
+      <AppLayout loading={createBlog.isPending || createBlog.isSuccess}>
         <div className="section mx-auto my-12 max-w-xl py-12">
           <h2 className="mt-2">
             <div className="flex justify-center">
@@ -142,15 +139,19 @@ export default function CreateBlog() {
                   <div className="sr-only">Slug</div>
                 </Label>
                 <div>
-                  <div className="flex font-mono tracking-tighter">
+                  <div className="flex rounded-lg border font-mono tracking-tighter">
                     <textarea
                       id="slug-input"
                       placeholder="my-blog"
-                      style={{ resize: "none" }}
+                      style={{
+                        resize: "none",
+                        minWidth: "70px",
+                        width: (watch("slug")?.length || 7) * 10 + "px",
+                      }}
                       {...register("slug")}
                       rows={1}
                       cols={24}
-                      className="min-w-4 max-w-48 overflow-hidden rounded-md bg-transparent py-1 pl-1 pr-0.5 text-right text-sm font-medium text-zinc-700 outline-none hover:bg-zinc-100 focus:bg-zinc-100"
+                      className="overflow-hidden rounded-md bg-transparent py-1 pl-1 pr-0.5 text-right text-sm font-medium text-zinc-700 outline-none hover:bg-zinc-100 focus:bg-zinc-100"
                     />
                     <span className="flex-grow py-1 text-sm">.zenblog.com</span>
                   </div>

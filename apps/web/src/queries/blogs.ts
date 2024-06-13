@@ -38,6 +38,7 @@ export const useBlogsQuery = ({ enabled }: { enabled: boolean }) =>
       }
       return data;
     },
+    staleTime: 5 * 60 * 1000,
   });
 
 export const useCreateBlogMutation = () => {

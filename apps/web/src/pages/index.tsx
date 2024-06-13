@@ -1,11 +1,10 @@
 import Head from "next/head";
 import Link from "next/link";
-import { FaTwitter } from "react-icons/fa";
+import { FaCheckCircle, FaTwitter } from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { ZendoLogo } from "@/components/ZendoLogo";
-import { LoggedInUser } from "@/components/LoggedInUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
@@ -13,15 +12,11 @@ import { useUser } from "@/utils/supabase/browser";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Spline_Sans } from "next/font/google";
-
-const headlineFont = Spline_Sans({
-  display: "swap",
-  subsets: ["latin"],
-});
+import { useRouter } from "next/router";
 
 const Home = () => {
   const user = useUser();
+  const router = useRouter();
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -60,9 +55,9 @@ const Home = () => {
               <ZendoLogo className="text-xl" size={31} />
             </div>
 
-            <div className="flex flex-grow items-center justify-end gap-1 text-sm font-medium text-zinc-600">
+            <div className="flex flex-grow items-center justify-end gap-1 text-sm font-medium text-zinc-500 ">
               <Link
-                className="rounded-lg px-2 py-1"
+                className="rounded-lg px-2 py-1 hover:text-zinc-800"
                 href="https://blog.zenblog.com"
               >
                 Blog
@@ -70,25 +65,12 @@ const Home = () => {
               <Link
                 target="_blank"
                 href="https://twitter.com/zenbloghq"
-                className="flex items-center justify-center rounded-full p-2 text-lg transition-all hover:text-black"
+                className="flex items-center justify-center rounded-full p-2 text-lg transition-all hover:text-zinc-800"
                 title="Follow us on Twitter"
                 aria-label="Follow us on Twitter"
               >
                 <FaTwitter size="18" />
               </Link>
-
-              {/* {!user && (
-                <Button asChild>
-                  <Link
-                    href="/sign-in"
-                    className="btn btn-primary inline-block"
-                    title="Sign in"
-                    aria-label="Sign in"
-                  >
-                    Sign in
-                  </Link>
-                </Button>
-              )} */}
 
               {user && (
                 <div className="ml-2 flex">
@@ -117,15 +99,16 @@ const Home = () => {
                 </Link>
               </div>
               <h1
-                className={`mt-4 text-3xl font-semibold tracking-tight text-zinc-800 md:text-4xl`}
+                className={`mt-4 font-serif text-3xl font-medium italic tracking-tighter text-zinc-800 md:text-4xl`}
               >
-                A tiny blogging CMS
+                A tiny blogging{" "}
+                <span className="font-serif font-extralight italic">
+                  platform
+                </span>
               </h1>
               <div className="text-sm font-light leading-4 text-zinc-600 md:text-lg md:leading-8">
-                <p className="mx-auto mt-3 max-w-sm">
+                <p className="mx-auto mt-3 max-w-sm leading-6">
                   Simple, fast, and open-source blogging.
-                  <br />
-                  Built for devs and writers.
                 </p>
                 <Dialog>
                   <DialogTrigger className="mt-4 h-8 rounded-full bg-zinc-900 px-5 text-sm font-medium text-white transition-all hover:bg-zinc-700">
@@ -185,37 +168,6 @@ const Home = () => {
                     )}
                   </DialogContent>
                 </Dialog>
-
-                {/* <Carousel className="mt-12 max-w-full">
-                  <CarouselContent className="[&_img]:rounded-lg">
-                    <CarouselItem>
-                      <Image
-                        src="/static/ui-1.png"
-                        alt="zenblog"
-                        width={800}
-                        height={400}
-                      />
-                    </CarouselItem>
-                    <CarouselItem>
-                      <Image
-                        src="/static/ui-2.png"
-                        alt="zenblog"
-                        width={800}
-                        height={400}
-                      />
-                    </CarouselItem>
-                    <CarouselItem>
-                      <Image
-                        src="/static/ui-3.png"
-                        alt="zenblog"
-                        width={800}
-                        height={400}
-                      />
-                    </CarouselItem>
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden md:flex" />
-                  <CarouselNext className="hidden md:flex" />
-                </Carousel> */}
               </div>
             </div>
             <div className="mx-auto mt-14 max-w-4xl rounded-xl border bg-zinc-50 p-1.5 shadow-sm *:rounded-lg hover:bg-zinc-50/50">
@@ -230,6 +182,70 @@ const Home = () => {
                 alt="The zenblog editor UI"
               />
             </div>
+
+            <section className="mt-24 border-t py-24 text-center">
+              <h2 className="text-2xl">Simple pricing</h2>
+              <div className="mx-auto mt-8 flex max-w-3xl justify-center gap-4">
+                <PricingItem
+                  price="0"
+                  title="Free plan"
+                  description="Simple, fast, free, and open source blogging."
+                  features={[
+                    "1 blog",
+                    "Unlimited posts",
+                    "Customization",
+                    "zenblog domain",
+                  ]}
+                  action="Get started"
+                  onClick={() => {
+                    router.push("/sign-up");
+                  }}
+                />
+                <PricingItem
+                  price="8.25"
+                  title="Pro plan"
+                  description="Support Zenblog and unlock exclusive features."
+                  features={[
+                    "Unlimited blogs",
+                    "Unlimited posts",
+                    "Custom domains",
+                    "Customization",
+                    "Priority support",
+                    "API Access",
+                  ]}
+                  action="Unlock features"
+                  onClick={() => {
+                    router.push("/sign-up");
+                  }}
+                />
+                {/* <div className="rounded-lg border bg-white px-3 py-2 text-left shadow-sm">
+                  <h3 className="font-medium">Free plan</h3>
+                  <p className="text-xs text-zinc-500">
+                    For personal blogs and small projects
+                  </p>
+                  <ul>
+                    <li>1 blog</li>
+                    <li>Unlimited posts</li>
+                    <li>Customization</li>
+                    <li>zenblog domain</li>
+                  </ul>
+                </div>
+                <div className="rounded-lg border bg-white px-3 py-2 text-left shadow-sm">
+                  <h3 className="font-medium">Pro plan</h3>
+                  <p className="text-xs text-zinc-500">
+                    For professional bloggers and teams
+                  </p>
+                  <ul>
+                    <li>Unlimited blogs</li>
+                    <li>Unlimited posts</li>
+                    <li>Custom domains</li>
+                    <li>Customization</li>
+                    <li>Priority support</li>
+                    <li>API Access</li>
+                  </ul>
+                </div> */}
+              </div>
+            </section>
           </main>
         </div>
         <Footer />
@@ -237,5 +253,58 @@ const Home = () => {
     </>
   );
 };
+
+function PricingItem({
+  title,
+  description,
+  features,
+  action,
+  price,
+  onClick,
+}: {
+  title: string;
+  description: string;
+  features: string[];
+  price: string;
+  action: string;
+  onClick?: () => void;
+}) {
+  return (
+    <div className="flex w-full max-w-[280px] flex-col rounded-lg border bg-white px-4 py-3 text-left shadow-sm">
+      <h2 className="text-lg font-medium">{title}</h2>
+      <p className="text-sm text-zinc-500">{description}</p>
+      <ul className="mt-6 space-y-3 text-left">
+        {features.map((feature) => (
+          <li
+            className="flex items-center gap-2 font-mono text-sm"
+            key={feature}
+          >
+            <FaCheckCircle size="16" className="text-green-500" />
+            {feature}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-auto justify-self-end">
+        {+price > 0 && (
+          <div>
+            <p className="mt-8 font-mono text-2xl font-medium">
+              ${price}
+              <span className="text-sm text-zinc-500">/month</span>
+            </p>
+            <p className="text-xs font-medium text-zinc-500">
+              ${String(+price * 12)} Billed annually
+            </p>
+          </div>
+        )}
+
+        <div className="flex justify-center pt-4">
+          <Button onClick={onClick} className="w-full">
+            {action}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default Home;

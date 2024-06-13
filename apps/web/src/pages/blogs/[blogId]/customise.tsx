@@ -119,7 +119,7 @@ export default function Customise() {
 
   return (
     <div className="flex min-h-screen bg-stone-50">
-      <aside className="sticky top-0 max-h-screen min-h-screen min-w-72 overflow-y-auto">
+      <aside className="sticky top-0 max-h-screen min-h-screen min-w-72 overflow-y-auto border-r">
         <div className="px-2 py-4">
           <Link href="/blogs">
             <ZendoLogo className="h-8 w-auto" />
@@ -242,7 +242,7 @@ export default function Customise() {
           </Button>
         </div>
       </aside>
-      <main className="max-h-screen min-h-screen flex-grow pr-2 pt-2">
+      <main className="max-h-screen min-h-screen flex-grow px-2 pt-2">
         <Tabs defaultValue="home" className="h-full">
           <TabsList className="flex py-0">
             <TabsTrigger
