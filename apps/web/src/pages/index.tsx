@@ -106,7 +106,7 @@ const Home = () => {
                   platform
                 </span>
               </h1>
-              <div className="text-sm font-light leading-4 text-zinc-600 md:text-lg md:leading-8">
+              <div className="text-sm leading-4 text-zinc-500 md:text-lg md:leading-8">
                 <p className="mx-auto mt-3 max-w-sm leading-6">
                   Simple, fast, and open-source blogging.
                 </p>
@@ -184,7 +184,10 @@ const Home = () => {
             </div>
 
             <section className="mt-24 border-t py-24 text-center">
-              <h2 className="text-2xl">Simple pricing</h2>
+              <h2 className="text-2xl font-medium">Simple pricing</h2>
+              <p className="text-zinc-500">
+                Cancel anytime. No questions asked.
+              </p>
               <div className="mx-auto mt-8 flex max-w-3xl justify-center gap-4">
                 <PricingItem
                   price="0"
@@ -193,7 +196,7 @@ const Home = () => {
                   features={[
                     "1 blog",
                     "Unlimited posts",
-                    "Customization",
+                    "Free themes",
                     "zenblog domain",
                   ]}
                   action="Get started"
@@ -208,42 +211,17 @@ const Home = () => {
                   features={[
                     "Unlimited blogs",
                     "Unlimited posts",
-                    "Custom domains",
-                    "Customization",
-                    "Priority support",
-                    "API Access",
+                    "Free themes",
+                    "zenblog domain",
+                    "Premium themes <soon>",
+                    "Custom domains <soon>",
+                    "API Access <soon>",
                   ]}
                   action="Unlock features"
                   onClick={() => {
                     router.push("/sign-up");
                   }}
                 />
-                {/* <div className="rounded-lg border bg-white px-3 py-2 text-left shadow-sm">
-                  <h3 className="font-medium">Free plan</h3>
-                  <p className="text-xs text-zinc-500">
-                    For personal blogs and small projects
-                  </p>
-                  <ul>
-                    <li>1 blog</li>
-                    <li>Unlimited posts</li>
-                    <li>Customization</li>
-                    <li>zenblog domain</li>
-                  </ul>
-                </div>
-                <div className="rounded-lg border bg-white px-3 py-2 text-left shadow-sm">
-                  <h3 className="font-medium">Pro plan</h3>
-                  <p className="text-xs text-zinc-500">
-                    For professional bloggers and teams
-                  </p>
-                  <ul>
-                    <li>Unlimited blogs</li>
-                    <li>Unlimited posts</li>
-                    <li>Custom domains</li>
-                    <li>Customization</li>
-                    <li>Priority support</li>
-                    <li>API Access</li>
-                  </ul>
-                </div> */}
               </div>
             </section>
           </main>
@@ -269,15 +247,30 @@ function PricingItem({
   action: string;
   onClick?: () => void;
 }) {
+  const formattedFeatures = features.map((feat) => {
+    if (feat.includes("<soon>")) {
+      const [feature, soon] = feat.split("<soon>");
+      return (
+        <span key={feature}>
+          {feature}{" "}
+          <span className="rounded-full bg-orange-50 px-1 py-0.5 text-xs text-orange-500">
+            Coming soon
+          </span>
+        </span>
+      );
+    }
+    return <span key={feat}>{feat}</span>;
+  });
+
   return (
     <div className="flex w-full max-w-[280px] flex-col rounded-lg border bg-white px-4 py-3 text-left shadow-sm">
       <h2 className="text-lg font-medium">{title}</h2>
       <p className="text-sm text-zinc-500">{description}</p>
       <ul className="mt-6 space-y-3 text-left">
-        {features.map((feature) => (
+        {formattedFeatures.map((feature, idx) => (
           <li
             className="flex items-center gap-2 font-mono text-sm"
-            key={feature}
+            key={idx + "-feat"}
           >
             <FaCheckCircle size="16" className="text-green-500" />
             {feature}
