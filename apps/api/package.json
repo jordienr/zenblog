@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anatine/zod-openapi": "^2.2.6",
     "@scalar/nextjs-api-reference": "^0.4.42",
     "@ts-rest/core": "^3.45.2",
     "@ts-rest/next": "^3.45.2",

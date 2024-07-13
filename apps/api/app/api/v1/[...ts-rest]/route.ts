@@ -1,27 +1,30 @@
 import { contract } from "@/contract";
 import { createNextHandler } from "@ts-rest/serverless/next";
+import { TsRestResponseError } from "@ts-rest/core";
 
 const handler = createNextHandler(
   contract,
   {
-    getPost: async ({ params }) => {
+    getPostBySlug: async ({ params }) => {
       return {
         status: 200,
         body: {
-          id: "params.id",
+          slug: "params.id",
           title: "Hello",
-          body: "World",
+          html_content: "World",
         },
       };
     },
-    createPost: async ({ body }) => {
+    getPosts: async () => {
       return {
-        status: 201,
-        body: {
-          id: "1",
-          title: body.title,
-          body: body.body,
-        },
+        status: 200,
+        body: [
+          {
+            slug: "1",
+            title: "Hello",
+            html_content: "World",
+          },
+        ],
       };
     },
   },

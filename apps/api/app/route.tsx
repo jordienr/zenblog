@@ -1,10 +1,11 @@
-// app/reference/route.ts
 import { ApiReference } from "@scalar/nextjs-api-reference";
 
-const config = {
+export const GET = ApiReference({
+  metaData: {
+    title: "Zenblog API Docs",
+    description: "API docs for Zenblog",
+  },
   spec: {
     url: "/openapi",
   },
-};
-
-export const GET = ApiReference(config);
+});
