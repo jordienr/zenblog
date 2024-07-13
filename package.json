@@ -6,6 +6,7 @@
     "build:web": "turbo run build --filter=web",
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=web",
+    "dev:api": "turbo run dev --filter=api",
     "start": "concurrently --names \"APP,STRIPE\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev\" \"npm run stripe:webhook\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:typegen": "npx supabase gen types typescript --local --schema public > apps/web/src/types/supabase.ts",
