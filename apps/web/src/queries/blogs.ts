@@ -15,7 +15,7 @@ export const useBlogQuery = (blogId: string) =>
       const res = await sb
         .from("blogs")
         .select(
-          "id, title, emoji, description, created_at, slug, theme, twitter, instagram, website"
+          "id, title, emoji, description, created_at, slug, theme, twitter, instagram, website, access_token"
         )
         .eq("id", blogId)
         .single();
@@ -72,6 +72,7 @@ export const useUpdateBlogMutation = (opts?: { onSuccess?: () => void }) => {
         description: string;
         emoji: string;
         theme: string;
+        access_token: string;
       }>
     ) => {
       const res = await supa

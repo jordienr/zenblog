@@ -49,6 +49,7 @@ export type Database = {
       }
       blogs: {
         Row: {
+          access_token: string | null
           created_at: string
           description: string
           emoji: string
@@ -64,6 +65,7 @@ export type Database = {
           website: string
         }
         Insert: {
+          access_token?: string | null
           created_at?: string
           description?: string
           emoji: string
@@ -79,6 +81,7 @@ export type Database = {
           website?: string
         }
         Update: {
+          access_token?: string | null
           created_at?: string
           description?: string
           emoji?: string
@@ -115,18 +118,21 @@ export type Database = {
           created_at: string
           feedback: string | null
           id: number
+          type: string
           user_email: string | null
         }
         Insert: {
           created_at?: string
           feedback?: string | null
           id?: number
+          type?: string
           user_email?: string | null
         }
         Update: {
           created_at?: string
           feedback?: string | null
           id?: number
+          type?: string
           user_email?: string | null
         }
         Relationships: []
@@ -136,18 +142,21 @@ export type Database = {
           created_at: string | null
           email: string
           id: number
+          invited: boolean
           name: string
         }
         Insert: {
           created_at?: string | null
           email: string
           id?: number
+          invited?: boolean
           name: string
         }
         Update: {
           created_at?: string | null
           email?: string
           id?: number
+          invited?: boolean
           name?: string
         }
         Relationships: []
