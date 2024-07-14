@@ -1,34 +1,36 @@
 import { contract } from "@/contract";
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { TsRestResponseError } from "@ts-rest/core";
-import { API_PATH } from "@/lib/constants";
+import { TsRestRequest, TsRestResponse } from "@ts-rest/serverless";
 
 const handler = createNextHandler(
   contract,
   {
-    getPostBySlug: {
-      handler: async ({ params }) => {
+    posts: {
+      get: async () => {
         return {
           status: 200,
-          body: {
-            slug: "slug",
-            title: "Hello",
-            html_content: "World",
-          },
+          body: [
+            {
+              slug: "1",
+              title: "Hello",
+              html_content: "World",
+            },
+          ],
         };
       },
-    },
-    getPosts: async () => {
-      return {
-        status: 200,
-        body: [
-          {
-            slug: "1",
-            title: "Hello",
-            html_content: "World",
-          },
-        ],
-      };
+      getBySlug: {
+        handler: async ({ params }) => {
+          return {
+            status: 200,
+            body: {
+              slug: "slug",
+              title: "Hello",
+              html_content: "World",
+            },
+          };
+        },
+      },
     },
   },
   {
@@ -36,8 +38,8 @@ const handler = createNextHandler(
     jsonQuery: true,
     responseValidation: true,
     handlerType: "app-router",
-    errorHandler: (error) => {
-      return new Response(
+    errorHandler: async (error: any) => {
+      return new TsRestResponse(
         JSON.stringify({
           message: error.message,
           status: error.statusCode,
