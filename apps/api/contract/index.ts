@@ -22,33 +22,35 @@ const PostSchema = z.object({
 
 export const contract = c.router(
   {
-    getPosts: {
-      method: "GET",
-      summary: "Get all posts",
-      description: "Fetch all posts from your blog",
-      query: z.object({
-        limit: z.number().optional().openapi({
-          description: "The number of posts to fetch",
-          example: 10,
+    posts: c.router({
+      get: {
+        method: "GET",
+        summary: "Get all posts",
+        description: "Fetch all posts from your blog",
+        query: z.object({
+          limit: z.number().optional().openapi({
+            description: "The number of posts to fetch",
+            example: 10,
+          }),
+          offset: z.number().optional().openapi({
+            description: "The number of posts to skip",
+            example: 0,
+          }),
         }),
-        offset: z.number().optional().openapi({
-          description: "The number of posts to skip",
-          example: 0,
-        }),
-      }),
-      path: `/posts`,
-      responses: {
-        200: z.array(PostSchema),
+        path: `/posts`,
+        responses: {
+          200: z.array(PostSchema),
+        },
       },
-    },
-    getPostBySlug: {
-      method: "GET",
-      path: `/posts/:slug`,
-      responses: {
-        200: PostSchema,
+      getBySlug: {
+        method: "GET",
+        path: `/posts/:slug`,
+        responses: {
+          200: PostSchema,
+        },
+        summary: "Get a post by slug",
       },
-      summary: "Get a post by slug",
-    },
+    }),
   },
   {
     pathPrefix: "/api/v1",
