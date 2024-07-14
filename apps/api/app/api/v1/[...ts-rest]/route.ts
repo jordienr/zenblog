@@ -5,15 +5,17 @@ import { TsRestResponseError } from "@ts-rest/core";
 const handler = createNextHandler(
   contract,
   {
-    getPostBySlug: async ({ params }) => {
-      return {
-        status: 200,
-        body: {
-          slug: "params.id",
-          title: "Hello",
-          html_content: "World",
-        },
-      };
+    getPostBySlug: {
+      handler: async ({ params }) => {
+        return {
+          status: 200,
+          body: {
+            slug: "slug",
+            title: "Hello",
+            html_content: "World",
+          },
+        };
+      },
     },
     getPosts: async () => {
       return {
@@ -33,6 +35,20 @@ const handler = createNextHandler(
     jsonQuery: true,
     responseValidation: true,
     handlerType: "app-router",
+    requestMiddleware: [
+      (req) => {
+        console.log(req.headers);
+        const authorization = req.headers.get("Authorization");
+        if (!authorization) {
+          throw new TsRestResponseError(contract, {
+            status: 401,
+            body: {
+              message: "Unauthorized",
+            },
+          });
+        }
+      },
+    ],
   }
 );
 

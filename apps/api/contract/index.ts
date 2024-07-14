@@ -65,6 +65,5 @@ export const contract = c.router(
           description: "Unauthorized",
         }),
     },
-    pathPrefix: "/api/v1",
   }
 );
