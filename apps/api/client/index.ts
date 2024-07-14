@@ -1,4 +1,5 @@
 import { contract } from "@/contract";
+import { BASE_URL } from "@/lib/constants";
 import { initClient } from "@ts-rest/core";
 
 export function createClient({
@@ -9,7 +10,7 @@ export function createClient({
   _baseUrl?: string;
 }) {
   const client = initClient(contract, {
-    baseUrl: _baseUrl || "http://localhost:3000",
+    baseUrl: _baseUrl || BASE_URL,
     baseHeaders: {
       authorization: accessToken,
     },

@@ -51,6 +51,7 @@ export const contract = c.router(
     },
   },
   {
+    pathPrefix: "/api/v1",
     BaseHeaders: {
       headers: {
         Authorization: z.string(),
