@@ -18,3 +18,10 @@ export function createClient({
 
   return client;
 }
+
+// FOR TESTING PURPOSES
+const client = createClient({
+  accessToken: "Test",
+});
+
+client.posts.getBySlug({ params: { slug: "helloworld" } });
