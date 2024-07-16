@@ -18,11 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className + " flex h-screen flex-col"}>
-        <nav className="flex gap-1 border-b px-3 py-1 text-sm *:p-2 *:font-medium">
+        {/* <nav className="flex gap-1 border-b px-3 py-1 text-sm *:p-2 *:font-medium">
           <h2>Zenblog API</h2>
           <Link href="/">Guides</Link>
           <Link href="/reference">API Reference</Link>
-        </nav>
+        </nav> */}
         {children}
       </body>
     </html>

@@ -7,6 +7,7 @@
     "build:api": "turbo run build --filter=api",
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=web",
+    "dev:docs": "turbo run dev --filter=docs",
     "dev:api": "turbo run dev --filter=api",
     "start": "concurrently --names \"APP,STRIPE\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev\" \"npm run stripe:webhook\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
