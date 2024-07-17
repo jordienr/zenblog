@@ -99,12 +99,10 @@ const Home = () => {
                 </Link>
               </div>
               <h1
-                className={`mt-4 font-serif text-3xl font-medium italic tracking-tighter text-zinc-800 md:text-4xl`}
+                className={`mt-4 font-serif text-3xl font-medium tracking-tighter text-zinc-800 md:text-4xl`}
               >
                 A tiny blogging{" "}
-                <span className="font-serif font-extralight italic">
-                  platform
-                </span>
+                <span className="font-serif font-extralight">CMS</span>
               </h1>
               <div className="text-sm leading-4 text-zinc-500 md:text-lg md:leading-8">
                 <p className="mx-auto mt-3 max-w-sm leading-6">
