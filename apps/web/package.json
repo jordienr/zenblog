@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@builder.io/react-hydration-overlay": "^0.0.8",
+    "@chronark/zod-bird": "^0.3.9",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
     "@groundcontrolsh/groundcontrol": "^0.3.0",
