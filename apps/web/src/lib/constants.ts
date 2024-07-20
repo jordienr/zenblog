@@ -8,6 +8,8 @@ export const RESERVED_SLUGS = [
   "subscriptions",
   "posts",
   "blogs",
+  "editor",
+  "writer",
   "categories",
   "tags",
   "comments",
@@ -68,4 +70,5 @@ export const RESERVED_SLUGS = [
   "chris",
   "brian",
   "ben",
+  "bill",
 ] as const;

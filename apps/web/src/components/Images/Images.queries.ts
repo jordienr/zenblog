@@ -1,4 +1,4 @@
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // export const useImages = (blogId: string) =>
@@ -11,7 +11,7 @@ export const useMediaQuery = (
   blogId: string,
   { enabled }: { enabled: boolean }
 ) => {
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
   const query = useQuery({
     queryKey: ["media", blogId],
     queryFn: async () => {
@@ -44,7 +44,7 @@ export const useMediaQuery = (
 };
 
 export function useUploadMediaMutation() {
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -71,7 +71,7 @@ export function useUploadMediaMutation() {
 }
 
 export function useDeleteMediaMutation() {
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

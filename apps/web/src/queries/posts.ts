@@ -1,9 +1,9 @@
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
 export const usePostsQuery = () => {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
   const { query } = useRouter();
   const blogId = query.blogId || "";
 
@@ -25,7 +25,7 @@ export const usePostsQuery = () => {
 };
 
 export const usePostQuery = (postSlug: string, blogId: string) => {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
 
   return useQuery({
     queryKey: ["post", postSlug],
@@ -64,7 +64,7 @@ export const usePostQuery = (postSlug: string, blogId: string) => {
 };
 
 export const useUpdatePostTagsMutation = ({ blog_id }: { blog_id: string }) => {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
 
   type UpdatePostTagsMutation = {

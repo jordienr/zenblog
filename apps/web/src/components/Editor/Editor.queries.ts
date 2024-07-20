@@ -1,5 +1,5 @@
 import { query } from "./../../../../../generated/hypertune";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import {
   UseQueryOptions,
   useMutation,
@@ -11,7 +11,7 @@ type UseTags = {
   blogId: string;
 };
 export const useBlogTags = ({ blogId }: UseTags) => {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
 
   const hasBlogId = !!blogId && blogId !== "demo";
 
@@ -34,7 +34,7 @@ export const useBlogTags = ({ blogId }: UseTags) => {
 };
 
 export const useCreateBlogTag = () => {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

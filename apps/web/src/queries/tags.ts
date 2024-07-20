@@ -1,4 +1,4 @@
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const tagKeys = {
@@ -14,7 +14,7 @@ export function useTagsWithUsageQuery(
     enabled: boolean;
   }
 ) {
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   return useQuery({
     queryKey: tagKeys.tags([blogId]),
@@ -32,7 +32,7 @@ export function useTagsWithUsageQuery(
 
 export function useDeleteTagMutation(blogId: string) {
   const queryClient = useQueryClient();
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   return useMutation({
     mutationFn: async (tagId: string) => {
@@ -56,7 +56,7 @@ export function useDeleteTagMutation(blogId: string) {
 
 export function useUpdateTagMutation(blogId: string) {
   const queryClient = useQueryClient();
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   return useMutation({
     mutationFn: async (tag: { id: string; name: string; slug: string }) => {
@@ -81,7 +81,7 @@ export function usePostTags({
   postId: string;
   blogId: string;
 }) {
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   return useQuery({
     queryKey: tagKeys.tags([postId, blogId]),

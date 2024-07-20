@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function ResetPasswordConfirmation() {
   const [loading, setLoading] = useState(false);
-  const supabase = getSupabaseBrowserClient();
+  const supabase = createSupabaseBrowserClient();
   const router = useRouter();
 
   useEffect(() => {

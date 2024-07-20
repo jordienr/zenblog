@@ -2,7 +2,7 @@ import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -10,7 +10,7 @@ import { useState } from "react";
 export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [step1Success, setStep1Success] = useState(false);
-  const supabase = getSupabaseBrowserClient();
+  const supabase = createSupabaseBrowserClient();
   const router = useRouter();
 
   async function onSubmitStep1(e: React.FormEvent<HTMLFormElement>) {

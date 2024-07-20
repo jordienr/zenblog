@@ -2,7 +2,7 @@ import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const supabase = getSupabaseBrowserClient();
+  const supabase = createSupabaseBrowserClient();
   const router = useRouter();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function SignIn() {
       const email = form.email.value;
       const password = form.password.value;
 
-      const sb = getSupabaseBrowserClient();
+      const sb = createSupabaseBrowserClient();
       const { data, error } = await sb.auth.signUp({
         email,
         password,

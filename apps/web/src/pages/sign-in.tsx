@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { CornerUpLeft } from "lucide-react";
@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
-  const supabase = getSupabaseBrowserClient();
+  const supabase = createSupabaseBrowserClient();
   const user = useUser();
   const router = useRouter();
 

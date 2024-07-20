@@ -1,4 +1,4 @@
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const keys = {
@@ -6,7 +6,7 @@ export const keys = {
   blog: (blogId: string) => ["blog", blogId],
 };
 
-const sb = getSupabaseBrowserClient();
+const sb = createSupabaseBrowserClient();
 
 export const useBlogQuery = (blogId: string) =>
   useQuery({
@@ -43,7 +43,7 @@ export const useBlogsQuery = ({ enabled }: { enabled: boolean }) =>
 
 export const useCreateBlogMutation = () => {
   const queryClient = useQueryClient();
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   return useMutation({
     mutationFn: async (newBlog: {
@@ -63,7 +63,7 @@ export const useCreateBlogMutation = () => {
 
 export const useUpdateBlogMutation = (opts?: { onSuccess?: () => void }) => {
   const queryClient = useQueryClient();
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   return useMutation({
     mutationFn: async (
@@ -92,7 +92,7 @@ export const useUpdateBlogMutation = (opts?: { onSuccess?: () => void }) => {
 
 export const useDeleteBlogMutation = () => {
   const queryClient = useQueryClient();
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   return useMutation({
     mutationFn: async (blogId: string) => {

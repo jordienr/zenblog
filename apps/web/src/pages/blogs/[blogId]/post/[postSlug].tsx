@@ -4,7 +4,7 @@ import Spinner from "@/components/Spinner";
 import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 import { toast } from "sonner";
 import { usePostQuery } from "@/queries/posts";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useState } from "react";
 import { usePostTags } from "@/queries/tags";
 
@@ -16,7 +16,7 @@ export default function Post() {
   const postSlug = router.query.postSlug as string;
   const hasPubQuery = router.query.pub as string;
 
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
 
   const {
     data: post,

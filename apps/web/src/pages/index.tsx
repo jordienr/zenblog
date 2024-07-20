@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import { useUser } from "@/utils/supabase/browser";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useRouter } from "next/router";
@@ -32,7 +32,7 @@ const Home = () => {
   const onSubmit = handleSubmit(async (data) => {
     const formData = formSchema.parse(data);
 
-    const sb = getSupabaseBrowserClient();
+    const sb = createSupabaseBrowserClient();
 
     await sb.from("homepage_signup").insert(formData);
 

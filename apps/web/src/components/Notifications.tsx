@@ -8,12 +8,12 @@ import {
 import { Button } from "./ui/button";
 import { Bell, Loader } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 type Props = {};
 
 function useNotifications() {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
 
   return useQuery({
     queryKey: ["notifications"],

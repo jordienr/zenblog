@@ -1,10 +1,10 @@
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { QueryOptions, useQuery } from "@tanstack/react-query";
 
 const SUBSCRIPTION_KEYS = ["subscription"];
 
 export function useSubscriptionQuery() {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
 
   return useQuery({
     queryKey: SUBSCRIPTION_KEYS,

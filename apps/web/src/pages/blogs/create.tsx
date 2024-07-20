@@ -59,6 +59,13 @@ export default function CreateBlog() {
       return;
     }
 
+    if (RESERVED_SLUGS.includes(data.slug)) {
+      toast.error(
+        `${data.slug} slug is not available. Please choose another slug`
+      );
+      return;
+    }
+
     const res = await createBlog.mutateAsync({
       title: data.title,
       description: data.description || "",

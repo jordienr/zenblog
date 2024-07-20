@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import imageCompression from "browser-image-compression";
 import { ImageIcon, Loader } from "lucide-react";
 import { Input } from "../ui/input";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { nanoid } from "nanoid";
 
@@ -24,7 +24,7 @@ export const ImageUploader = ({
   const [imageInfo, setImageInfo] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   useEffect(() => {
     // on mount, listen for paste events

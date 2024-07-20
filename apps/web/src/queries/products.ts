@@ -1,9 +1,9 @@
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 import Stripe from "stripe";
 
 export function useProductsQuery() {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
 
   return useQuery({
     queryKey: ["products"],

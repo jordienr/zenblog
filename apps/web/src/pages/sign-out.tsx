@@ -1,9 +1,9 @@
 import Spinner from "@/components/Spinner";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useEffect } from "react";
 
 export default function SignOut() {
-  const supa = getSupabaseBrowserClient();
+  const supa = createSupabaseBrowserClient();
 
   useEffect(() => {
     supa.auth.signOut().then((res) => {

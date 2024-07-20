@@ -8,13 +8,13 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { FeedbackForm } from "./Feedback/feedback-form";
 
 type Props = {};
 
 const Feedback = (props: Props) => {
-  const sb = getSupabaseBrowserClient();
+  const sb = createSupabaseBrowserClient();
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {

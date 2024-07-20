@@ -9,7 +9,7 @@ if (!supabaseKey) {
   throw new Error("Missing supabaseKey");
 }
 
-export function getSupabaseBrowserClient() {
+export function createSupabaseBrowserClient() {
   if (!supabaseKey) {
     throw new Error("Missing supabaseKey");
   }

@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -101,7 +101,7 @@ export default function BlogPosts() {
     }
   );
 
-  const supabase = getSupabaseBrowserClient();
+  const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
 
   const postViews = usePostViewsQuery({
