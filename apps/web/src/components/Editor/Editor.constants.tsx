@@ -13,6 +13,7 @@ import {
   ListIcon,
   Pilcrow,
   Strikethrough,
+  Underline,
 } from "lucide-react";
 import { PiCodeBlock, PiListNumbers } from "react-icons/pi";
 
@@ -37,6 +38,13 @@ const ITALIC_BTN = {
   tooltip: "Italic (Cmd+I)",
   icon: <ItalicIcon size={SIZE} />,
   command: (editor: Editor) => editor?.chain().focus().toggleItalic().run(),
+};
+
+const UNDERLINE_BTN = {
+  id: "underline",
+  tooltip: "Underline",
+  icon: <Underline size={SIZE} />,
+  command: (editor: Editor) => editor?.chain().focus().toggleUnderline().run(),
 };
 
 const STRIKETHROUGH_BTN = {
@@ -142,6 +150,7 @@ const HEADING6_BTN = {
 export const TOP_MENU_BUTTONS = [
   BOLD_BTN,
   ITALIC_BTN,
+  UNDERLINE_BTN,
   STRIKETHROUGH_BTN,
   CODE_BTN,
   CODE_BLOCK_BTN,
@@ -154,6 +163,7 @@ export const TOP_MENU_BUTTONS = [
 export const BUBBLE_MENU_BUTTONS = [
   BOLD_BTN,
   ITALIC_BTN,
+  UNDERLINE_BTN,
   STRIKETHROUGH_BTN,
   CODE_BTN,
   CODE_BLOCK_BTN,

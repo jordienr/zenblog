@@ -14,11 +14,11 @@ export const THEMES = [
   //   name: "Newsroom",
   //   description: "A newsroom theme",
   // },
-  {
-    id: "garden",
-    name: "Garden",
-    description: "For the nature lovers",
-  },
+  // {
+  //   id: "garden",
+  //   name: "Garden",
+  //   description: "For the nature lovers",
+  // },
   // {
   //   id: "instrument",
   //   name: "Instrument",

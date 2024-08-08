@@ -14,6 +14,7 @@ import { generateSlug } from "@/lib/utils/slugs";
 import { Label } from "../ui/label";
 import { useRouter } from "next/router";
 import { useBlogQuery, useBlogsQuery } from "@/queries/blogs";
+import Underline from "@tiptap/extension-underline";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -187,6 +188,7 @@ export const ZendoEditor = (props: Props) => {
       SlashCommand.configure({
         suggestion: getSlashCommandSuggestions([]),
       }),
+      Underline,
     ],
   });
 

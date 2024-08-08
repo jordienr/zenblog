@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
+  AreaChartIcon,
   CodeIcon,
   ExternalLink,
   ImageOff,
@@ -170,12 +171,18 @@ export default function BlogPosts() {
                 </TabsTrigger>
               </TabsList>
               <div className="flex items-center">
-                <Button asChild variant="ghost">
-                  <Link href={`/blogs/${blog.id}/customise`} title="New post">
+                {/* <Button asChild variant="ghost">
+                  <Link href={`/blogs/${blog.id}/usage`}>
+                    <AreaChartIcon size="24" />
+                    API Usage
+                  </Link>
+                </Button> */}
+                {/* <Button asChild variant="ghost">
+                  <Link href={`/blogs/${blog.id}/customise`}>
                     <Paintbrush size="24" />
                     Customise
                   </Link>
-                </Button>
+                </Button> */}
                 {/* <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="ghost">
@@ -188,11 +195,7 @@ export default function BlogPosts() {
                   </DialogContent>
                 </Dialog> */}
                 <Button asChild variant={"ghost"}>
-                  <Link
-                    href={`/blogs/${blog.id}/settings`}
-                    title="Settings"
-                    aria-label="Settings"
-                  >
+                  <Link href={`/blogs/${blog.id}/settings`}>
                     <Settings size="24" />
                     Settings
                   </Link>
