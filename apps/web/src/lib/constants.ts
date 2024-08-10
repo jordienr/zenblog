@@ -71,4 +71,4 @@ export const RESERVED_SLUGS = [
   "brian",
   "ben",
   "bill",
-] as const;
+];

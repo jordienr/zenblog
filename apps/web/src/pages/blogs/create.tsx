@@ -12,6 +12,7 @@ import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Smile } from "lucide-react";
+import { RESERVED_SLUGS } from "@/lib/constants";
 
 export default function CreateBlog() {
   const DEFAULT_EMOJI = "📝";

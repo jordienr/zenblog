@@ -1,32 +1,125 @@
 import { contract } from "@/contract";
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { TsRestResponseError } from "@ts-rest/core";
-import { TsRestRequest, TsRestResponse } from "@ts-rest/serverless";
+import { TsRestResponse } from "@ts-rest/serverless";
+import { supabase } from "@/lib/db";
+
+function getBlogIdFromToken(token: string) {
+  return supabase.from("blogs").select("id").eq("access_token", token).single();
+}
 
 const handler = createNextHandler(
   contract,
   {
     posts: {
-      get: async () => {
-        return {
-          status: 200,
-          body: [
-            {
-              slug: "1",
-              title: "Hello",
-              html_content: "World",
+      get: async ({ headers, query }) => {
+        const { data: blog, error } = await getBlogIdFromToken(
+          headers.authorization
+        );
+
+        if (error) {
+          throw new TsRestResponseError(contract, {
+            status: 401,
+            body: {
+              message: "Unauthorized",
             },
-          ],
-        };
+          });
+        }
+
+        if (blog?.id) {
+          const offset = query.offset || 0;
+          const limit = query.limit || 30;
+
+          const posts = await supabase
+            .from("posts")
+            .select("title, published_at, created_at, slug, cover_image")
+            .eq("deleted", false)
+            .eq("published", true)
+            .eq("blog_id", blog.id)
+            .order("published_at", { ascending: false })
+            .range(offset, offset + limit - 1);
+
+          if (posts.error) {
+            throw new TsRestResponseError(contract, {
+              status: 404,
+              body: {
+                message: "No posts found",
+              },
+            });
+          }
+
+          return {
+            status: 200,
+            body: posts.data,
+          };
+        } else {
+          throw new TsRestResponseError(contract, {
+            status: 401,
+            body: {
+              message: "Unauthorized",
+            },
+          });
+        }
       },
       getBySlug: {
-        handler: async ({ params }) => {
+        handler: async ({ params, headers }) => {
+          const { data: blog, error } = await getBlogIdFromToken(
+            headers.authorization
+          );
+
+          if (error) {
+            throw new TsRestResponseError(contract, {
+              status: 401,
+              body: {
+                message: "Unauthorized",
+              },
+            });
+          }
+
+          if (blog?.id) {
+            const post = await supabase
+              .from("posts")
+              .select(
+                "title, published_at, created_at, slug, cover_image, html_content"
+              )
+              .eq("deleted", false)
+              .eq("published", true)
+              .eq("blog_id", blog.id)
+              .eq("slug", params.slug)
+              .single();
+
+            if (post.error) {
+              throw new TsRestResponseError(contract, {
+                status: 404,
+                body: {
+                  message: "Post not found",
+                },
+              });
+            }
+
+            return {
+              status: 200,
+              body: post.data,
+            };
+          } else {
+            throw new TsRestResponseError(contract, {
+              status: 401,
+              body: {
+                message: "Unauthorized",
+              },
+            });
+          }
+
           return {
             status: 200,
             body: {
               slug: "slug",
               title: "Hello",
               html_content: "World",
+              created_at: "2021-01-01",
+              published_at: "2021-01-01",
+              cover_image: "https://example.com/cover.jpg",
+              abstract: "This is my first post!",
             },
           };
         },
@@ -34,7 +127,6 @@ const handler = createNextHandler(
     },
   },
   {
-    // basePath: API_PATH,
     jsonQuery: true,
     responseValidation: true,
     handlerType: "app-router",
@@ -57,10 +149,11 @@ const handler = createNextHandler(
       (req) => {
         const authorization = req.headers.get("Authorization");
         if (!authorization) {
+          console.log("🔴 Middleware: Missing Authorization header.");
           throw new TsRestResponseError(contract, {
             status: 401,
             body: {
-              message: "Unauthorized",
+              message: "Unauthorized. Missing Authorization header.",
             },
           });
         }
