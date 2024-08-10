@@ -5,12 +5,13 @@
 - [] finish pagination in usePostsQuery
 - [] FAQ on homepage
 - [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, vc website, etc.
-- [] "pinned" property for blogs
+- [] Add categories to posts API
 
 ## Blogs
 
-- Integration guide
-  - [] Recommend users to cache content
+- [] nextjs example
+- [] astro example
+- [] nuxt example
 
 ## Analytics
 
@@ -19,18 +20,9 @@
 - [] total pageviews for blog
 - [] usage based limit
 
-## Posts
-
-- [] pagination
-
 ## Docs
 
 - [] Add documentation for integrating with Zenblog
-- [] Copypastable Zenblog Renderer component similar to shadcn
-
-## API Client
-
-- [] Pagination
 
 ## Free tier
 
