@@ -3,6 +3,8 @@ import { createNextHandler } from "@ts-rest/serverless/next";
 import { TsRestResponseError } from "@ts-rest/core";
 import { TsRestResponse } from "@ts-rest/serverless";
 import { supabase } from "@/lib/db";
+import { ratelimit } from "@/lib/ratelimit";
+import { tsr } from "@ts-rest/serverless/fetch";
 
 function getBlogIdFromToken(token: string) {
   return supabase.from("blogs").select("id").eq("access_token", token).single();
@@ -146,7 +148,7 @@ const handler = createNextHandler(
       );
     },
     requestMiddleware: [
-      (req) => {
+      async (req, res) => {
         const authorization = req.headers.get("Authorization");
         if (!authorization) {
           console.log("🔴 Middleware: Missing Authorization header.");
@@ -154,6 +156,17 @@ const handler = createNextHandler(
             status: 401,
             body: {
               message: "Unauthorized. Missing Authorization header.",
+            },
+          });
+        }
+
+        const { success } = await ratelimit.limit(authorization);
+
+        if (!success) {
+          throw new TsRestResponseError(contract, {
+            status: 429,
+            body: {
+              message: "Too Many Requests",
             },
           });
         }

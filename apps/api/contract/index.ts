@@ -3,6 +3,7 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import { extendZodWithOpenApi } from "@anatine/zod-openapi";
+import { RATELIMIT_CONFIG } from "@/lib/ratelimit";
 
 extendZodWithOpenApi(z);
 const c = initContract();
@@ -91,6 +92,13 @@ export const contract = c.router(
         })
         .openapi({
           description: "Unauthorized",
+        }),
+      429: z
+        .object({
+          message: z.string(),
+        })
+        .openapi({
+          description: `Too Many Requests. The API is rate limited to ${RATELIMIT_CONFIG.limit} requests per ${RATELIMIT_CONFIG.window}.`,
         }),
     },
   }
