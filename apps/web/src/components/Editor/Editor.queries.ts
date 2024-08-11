@@ -1,11 +1,5 @@
-import { query } from "./../../../../../generated/hypertune";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
-import {
-  UseQueryOptions,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type UseTags = {
   blogId: string;
