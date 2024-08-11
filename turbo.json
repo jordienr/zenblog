@@ -1,17 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "**/.env.*local"
-  ],
+  "globalDependencies": ["**/.env.*local"],
   "tasks": {
     "build": {
-      "dependsOn": [
-        "^build"
+      "env": [
+        "NEXT_PUBLIC_*",
+        "TINYBIRD_TOKEN",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN"
       ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},
     "dev": {
