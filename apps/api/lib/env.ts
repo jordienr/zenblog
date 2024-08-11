@@ -17,12 +17,12 @@ export function env() {
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   };
 
-  try {
-    const env = envSchema.parse(envMap);
+  const result = envSchema.safeParse(envMap);
 
-    return env;
-  } catch (error) {
-    console.error(error);
+  if (result.success) {
+    return result.data;
+  } else {
+    console.error(result.error.format());
     throw new Error("Invalid environment variables");
   }
 }
