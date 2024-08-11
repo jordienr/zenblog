@@ -1,5 +1,6 @@
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { createServerClient } from "@/lib/server/supabase";
+import { createClient } from "app/supa";
 
 /**
  * Defines your inner context shape.
@@ -31,7 +32,7 @@ export async function createInnerTRPCContext(opts?: CreateInnerContextOptions) {
 export const createTRPCContext = async (opts?: CreateNextContextOptions) => {
   const acceptLanguage = opts?.req.headers["accept-language"];
 
-  // const supabase = createServerClient(opts?.req);
+  const supabase = createClient();
 
   const innerContext = await createInnerTRPCContext({
     req: opts?.req,
@@ -40,7 +41,7 @@ export const createTRPCContext = async (opts?: CreateNextContextOptions) => {
   return {
     ...innerContext,
     req: opts?.req,
-    // supabase,
+    supabase,
   };
 };
 
