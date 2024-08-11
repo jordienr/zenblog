@@ -4,7 +4,6 @@ import { TsRestResponseError } from "@ts-rest/core";
 import { TsRestResponse } from "@ts-rest/serverless";
 import { supabase } from "@/lib/db";
 import { ratelimit } from "@/lib/ratelimit";
-import { tsr } from "@ts-rest/serverless/fetch";
 
 function getBlogIdFromToken(token: string) {
   return supabase.from("blogs").select("id").eq("access_token", token).single();
