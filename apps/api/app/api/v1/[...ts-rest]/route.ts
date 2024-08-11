@@ -19,6 +19,7 @@ const handler = createNextHandler(
         );
 
         if (error) {
+          console.log("🔴 Error getting blog id from token:", error);
           throw new TsRestResponseError(contract, {
             status: 401,
             body: {
@@ -41,6 +42,7 @@ const handler = createNextHandler(
             .range(offset, offset + limit - 1);
 
           if (posts.error) {
+            console.log("🔴 Error getting posts:", posts.error);
             throw new TsRestResponseError(contract, {
               status: 404,
               body: {
@@ -69,6 +71,7 @@ const handler = createNextHandler(
           );
 
           if (error) {
+            console.log("🔴 Error getting blog id from token:", error);
             throw new TsRestResponseError(contract, {
               status: 401,
               body: {
@@ -103,6 +106,7 @@ const handler = createNextHandler(
               body: post.data,
             };
           } else {
+            console.log("🔴 Error getting blog id from token:", error);
             throw new TsRestResponseError(contract, {
               status: 401,
               body: {
@@ -110,19 +114,6 @@ const handler = createNextHandler(
               },
             });
           }
-
-          return {
-            status: 200,
-            body: {
-              slug: "slug",
-              title: "Hello",
-              html_content: "World",
-              created_at: "2021-01-01",
-              published_at: "2021-01-01",
-              cover_image: "https://example.com/cover.jpg",
-              abstract: "This is my first post!",
-            },
-          };
         },
       },
     },
