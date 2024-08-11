@@ -1,5 +1,5 @@
 import { contract } from "@/contract";
-import { BASE_URL } from "@/lib/constants";
+import { env } from "@/lib/env";
 import { initClient } from "@ts-rest/core";
 
 export function createClient({
@@ -10,7 +10,7 @@ export function createClient({
   _baseUrl?: string;
 }) {
   const client = initClient(contract, {
-    baseUrl: _baseUrl || BASE_URL,
+    baseUrl: _baseUrl || env().BASE_API_URL,
     baseHeaders: {
       authorization: accessToken,
     },

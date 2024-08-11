@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/lib/constants";
+import { env } from "@/lib/env";
 import { ApiReference } from "@scalar/nextjs-api-reference";
 
 export const GET = ApiReference({
@@ -6,7 +6,7 @@ export const GET = ApiReference({
     title: "Zenblog API Docs",
     description: "API docs for Zenblog",
   },
-  baseServerURL: BASE_URL,
+  baseServerURL: env().BASE_API_URL,
   spec: {
     url: "/openapi",
   },
