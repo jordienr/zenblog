@@ -27,6 +27,7 @@
 ## Free tier
 
 - [x] limit to 1 blog
+- [] limit to 20 images
 
 ## QOL
 
@@ -35,3 +36,7 @@
 - Apple pay?
 - Stripe link?
 - fav blogs
+
+## Improvements
+
+- Use a JWT with the blog id to authenticate the API, should make api faster by removing one req to get the blog id
