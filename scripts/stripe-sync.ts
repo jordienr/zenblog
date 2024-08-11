@@ -1,5 +1,5 @@
-import { createStripeClient } from "../apps/zendo/src/lib/server/stripe";
-import { createAdminClient } from "../apps/zendo/src/lib/server/supabase";
+import { createStripeClient } from "../apps/web/src/lib/server/stripe";
+import { createAdminClient } from "../apps/web/src/lib/server/supabase";
 import "dotenv/config";
 
 const supabase = createAdminClient();
