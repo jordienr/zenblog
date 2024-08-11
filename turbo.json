@@ -1,12 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": [
-    "NEXT_PUBLIC_*",
-    "TINYBIRD_TOKEN",
-    "UPSTASH_REDIS_REST_URL",
-    "UPSTASH_REDIS_REST_TOKEN"
-  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -14,7 +8,12 @@
     },
     "api#build": {
       "dependsOn": ["^build"],
-      "env": ["UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"],
+      "env": [
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN"
+      ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},
