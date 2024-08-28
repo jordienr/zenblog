@@ -1,7 +1,7 @@
-import { getConfig, createDebugger, throwError } from "./lib";
+import { createLogger, throwError } from "./lib";
 import { Post, PostWithContent, CreateClientOpts } from "./lib/types";
 
-async function createFetcher(
+function createFetcher(
   config: { api: string; accessToken: string },
   log: (...args: any[]) => void
 ) {
@@ -53,26 +53,30 @@ export function createZenblogClient<T>({
       "Zenblog is not supported in the browser. Make sure you don't leak your access token."
     );
   }
-
-  const config = getConfig(_url);
-  const log = createDebugger(_debug || false);
-
   if (!accessToken) {
     throwError("accessToken is required");
   }
 
+  const logger = createLogger(_debug || false);
+  const fetcher = createFetcher(
+    {
+      api: _url || "https://api.zenblog.com",
+      accessToken,
+    },
+    logger
+  );
+
   type ReqOpts = {
     cache?: RequestInit["cache"];
   };
-
   return {
     posts: {
       list: async function (opts?: ReqOpts): Promise<Post[]> {
-        const posts = await _fetch(`posts`, {
+        const posts = await fetcher(`posts`, {
           method: "GET",
           cache: opts?.cache || "default",
         });
-        log("posts.getAll", posts);
+        logger("posts.getAll", posts);
 
         type PostWithT = Post & T;
         return posts as PostWithT[]; // to do: validate
@@ -81,12 +85,12 @@ export function createZenblogClient<T>({
         { slug }: { slug: string },
         opts?: ReqOpts
       ): Promise<PostWithContent> {
-        const post = await _fetch(`post/${slug}`, {
+        const post = await fetcher(`post/${slug}`, {
           method: "GET",
           cache: opts?.cache || "default",
         });
 
-        log("posts.getBySlug", post);
+        logger("posts.getBySlug", post);
 
         return post as PostWithContent & T; // to do: export types from api
       },

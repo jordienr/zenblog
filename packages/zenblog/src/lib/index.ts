@@ -7,7 +7,7 @@ export function throwError(msg: string, ...args: any[]) {
   throw new Error("[zenblog error] " + msg);
 }
 
-export function createDebugger(debug: boolean) {
+export function createLogger(debug: boolean) {
   return (...args: any[]) => {
     if (debug) {
       console.log("[🍊] ", ...args);
