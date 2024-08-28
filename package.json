@@ -8,6 +8,7 @@
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=web",
     "dev:docs": "turbo run dev --filter=docs",
+    "dev:nextjs": "cd templates/nextjs && turbo run dev",
     "dev:api": "turbo run dev --filter=api",
     "start": "concurrently --names \"APP,STRIPE\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev\" \"npm run stripe:webhook\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -22,8 +23,7 @@
     "qs": "git add . && git commit -m \"quick save\" && git push",
     "stripe:webhook": "stripe listen --forward-to localhost:3000/api/webhooks/stripe",
     "stripe:event": "stripe trigger payment_intent.succeeded",
-    "stripe:sync": "tsx ./scripts/stripe-sync.ts",
-    "ff:typegen": "npx hypertune"
+    "stripe:sync": "tsx ./scripts/stripe-sync.ts"
   },
   "devDependencies": {
     "@turbo/gen": "^1.9.7",
@@ -36,7 +36,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "demos/*"
+    "templates/*"
   ],
   "dependencies": {
     "@ai-sdk/openai": "^0.0.24",

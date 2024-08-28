@@ -1,10 +1,9 @@
-import { getBlog } from "@/zenblog";
-import Image from "next/image";
+import { createBlog } from "@/zenblog";
 import Link from "next/link";
 
 export default async function Home() {
-  const blog = getBlog();
-  const posts = await blog.posts.getAll();
+  const blog = createBlog();
+  const posts = await blog.posts.list();
 
   const formatDate = (date: string) => {
     const d = new Date(date);

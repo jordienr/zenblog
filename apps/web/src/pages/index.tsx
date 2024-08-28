@@ -19,6 +19,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Switch } from "@/components/ui/switch";
+import { Leaves } from "@/components/3d/leaves";
 
 const Home = () => {
   const user = useUser();
@@ -57,7 +59,7 @@ const Home = () => {
         />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="bg-white">
+      <div className="">
         <div className="flex flex-col">
           <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
             <div className="flex-grow cursor-default">
@@ -174,8 +176,10 @@ const Home = () => {
                   </DialogContent>
                 </Dialog>
               </div>
+
+              <Leaves />
             </div>
-            <div className="mx-4 mx-auto mt-24 max-w-6xl rounded-xl border p-1.5 shadow-sm hover:bg-zinc-50/50">
+            <div className="mx-auto mt-24 max-w-6xl rounded-xl border bg-white p-1.5 shadow-sm">
               <Image
                 className="w-full rounded-lg border border-zinc-200 shadow-sm transition-all"
                 src="/static/zenblog-ui.png"
@@ -188,52 +192,44 @@ const Home = () => {
               />
             </div>
 
-            <section className="mt-24 border-t py-24 text-center">
+            {/* <section className="mt-24 border-t py-24 text-center">
               <h2 className="text-2xl font-medium">Simple pricing</h2>
               <p className="text-zinc-500">
                 Cancel anytime. No questions asked.
               </p>
-              <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-4">
-                {/* <PricingItem
+              <div className="mx-auto mt-8 flex flex-wrap justify-center gap-4">
+                <PricingItem
                   price="0"
-                  title="Free plan"
+                  title="Hobby"
                   description="Simple, fast, free, and open source blogging."
-                  features={[
-                    "1 blog",
-                    "Unlimited posts",
-                    "API access",
-                    "1.000 views/month",
-                  ]}
+                  features={["1 blog", "API access", "100 images"]}
                   action="Get started"
                   onClick={() => {
                     router.push("/sign-up");
                   }}
-                /> */}
+                />
                 <PricingItem
                   price="9"
-                  title="Pro plan"
+                  title="Pro"
                   description="Support Zenblog and unlock exclusive features."
-                  features={[
-                    "Unlimited blogs",
-                    "Unlimited blogs",
-                    "Unlimited posts",
-                    "API access",
-                    "10.000 views/month",
-                  ]}
+                  features={["Unlimited blogs", "API access", "1000 images"]}
                   action="Unlock features"
                   onClick={() => {
                     router.push("/sign-up");
                   }}
                 />
               </div>
-            </section>
+            </section> */}
 
-            <section className="mt-24 border-t py-24 text-center">
+            <section className="mt-24 py-24 text-center">
               <h2 className="text-2xl font-medium">
                 Frequently asked questions
               </h2>
               <div className="mx-auto mt-12 max-w-xl text-left">
-                <Accordion type="multiple" className="rounded-xl border *:px-4">
+                <Accordion
+                  type="multiple"
+                  className="divide-y rounded-xl border *:px-4"
+                >
                   <AccordionItem value="zenblog">
                     <AccordionTrigger>What is zenblog?</AccordionTrigger>
                     <AccordionContent>
@@ -321,7 +317,7 @@ function PricingItem({
   });
 
   return (
-    <div className="flex w-full max-w-[280px] flex-col rounded-lg border bg-white px-4 py-3 pb-8 text-left shadow-sm">
+    <div className="flex w-full max-w-lg flex-1 flex-col rounded-lg border px-4 py-3 pb-8 text-left shadow-sm">
       <h2 className="text-lg font-medium">{title}</h2>
       <p className="text-sm text-zinc-500">{description}</p>
       <ul className="mt-6 space-y-3 text-left">

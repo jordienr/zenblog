@@ -1,66 +1,22 @@
-function logError(...args: any[]) {
-  console.error("[zenblog error] ", ...args);
-}
+import { getConfig, createDebugger, throwError } from "./lib";
+import { Post, PostWithContent, CreateClientOpts } from "./lib/types";
 
-function throwError(msg: string, ...args: any[]) {
-  logError(msg, ...args);
-  throw new Error("[zenblog error] " + msg);
-}
-
-function createDebugger(debug: boolean) {
-  return (...args: any[]) => {
-    if (debug) {
-      console.log("[🍊] ", ...args);
-    }
-  };
-}
-
-function getConfig(url?: string): { api: string } {
-  if (url) {
-    return {
-      api: url,
-    };
-  }
-  return {
-    api: "https://www.zenblog.com/api/public",
-  };
-}
-
-export type Post = {
-  slug: string;
-  title: string;
-  content?: any;
-  cover_image?: string;
-  created_at: string;
-  updated_at: string;
-  published_at: string;
-};
-
-export type PostWithContent = Post & {
-  content: any;
-};
-
-export type CreateClientOpts = {
-  blogId: string;
-  _url?: string;
-  debug?: boolean;
-};
-
-export function createZenblogClient<T>({
-  blogId,
-  _url,
-  debug,
-}: CreateClientOpts) {
-  const config = getConfig(_url);
-  const log = createDebugger(debug || false);
-  log("createClient ", config);
-
-  async function _fetch(path: string, opts: RequestInit) {
+async function createFetcher(
+  config: { api: string; accessToken: string },
+  log: (...args: any[]) => void
+) {
+  return async function _fetch(path: string, opts: RequestInit) {
     try {
-      const URL = `${config.api}/${blogId}/${path}`;
-      console.log("URL", URL);
+      const URL = `${config.api}/${path}`;
 
-      log("fetching ", URL, opts);
+      log("fetch ", URL, {
+        headers: {
+          authorization: `Bearer ${config.accessToken}`,
+          "Content-Type": "application/json",
+          ...opts.headers,
+        },
+        ...opts,
+      });
       const res = await fetch(URL, opts);
       const json = await res.json();
 
@@ -84,10 +40,25 @@ export function createZenblogClient<T>({
       console.error("[Zenblog Error] ", error);
       throw error;
     }
+  };
+}
+
+export function createZenblogClient<T>({
+  accessToken,
+  _url,
+  _debug,
+}: CreateClientOpts) {
+  if (typeof window !== "undefined") {
+    throwError(
+      "Zenblog is not supported in the browser. Make sure you don't leak your access token."
+    );
   }
 
-  if (!blogId) {
-    throwError("blogId is required");
+  const config = getConfig(_url);
+  const log = createDebugger(_debug || false);
+
+  if (!accessToken) {
+    throwError("accessToken is required");
   }
 
   type ReqOpts = {
@@ -99,9 +70,6 @@ export function createZenblogClient<T>({
       list: async function (opts?: ReqOpts): Promise<Post[]> {
         const posts = await _fetch(`posts`, {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
           cache: opts?.cache || "default",
         });
         log("posts.getAll", posts);
@@ -110,20 +78,17 @@ export function createZenblogClient<T>({
         return posts as PostWithT[]; // to do: validate
       },
       get: async function (
-        slug: string,
+        { slug }: { slug: string },
         opts?: ReqOpts
       ): Promise<PostWithContent> {
         const post = await _fetch(`post/${slug}`, {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
           cache: opts?.cache || "default",
         });
 
         log("posts.getBySlug", post);
 
-        return post as PostWithContent & T; // to do: validate
+        return post as PostWithContent & T; // to do: export types from api
       },
     },
   };

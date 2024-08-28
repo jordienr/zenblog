@@ -1,17 +1,14 @@
-import { createClient } from "zenblog";
+import { createZenblogClient } from "zenblog";
 
-export const getBlog = () => {
-  const blogId = process.env.ZENBLOG_DEMO_BLOG_ID;
-  console.log("BLOG ID_______", blogId);
+export const createBlog = () => {
+  const accessToken = process.env.ZENBLOG_ACCESS_TOKEN;
 
-  if (!blogId) {
+  if (!accessToken) {
     throw new Error("No blog ID provided");
   }
 
-  const blog = createClient({
-    blogId,
-    debug: true,
-    _url: process.env.NEXT_PUBLIC_API_URL + "/public",
+  const blog = createZenblogClient({
+    accessToken,
   });
 
   return blog;

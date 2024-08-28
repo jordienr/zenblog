@@ -4,8 +4,10 @@
 
 - [] finish pagination in usePostsQuery
 - [] FAQ on homepage
-- [] Homepage use cases examples: personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, vc website, etc.
-- [] Add categories to posts API
+- [] Nextjs example in homepage
+- [] Add tags to posts API
+- [] Fix deleting tags with posts
+- [] Use a JWT with the blog id to authenticate the API, should make api faster by removing one req to get the blog id
 
 ## Blogs
 
@@ -37,6 +39,6 @@
 - Stripe link?
 - fav blogs
 
-## Improvements
+## Themes
 
-- Use a JWT with the blog id to authenticate the API, should make api faster by removing one req to get the blog id
+- [] personal blog, docs, careers page, product listing pages, help center, changelogs, directory websites, vc website, etc.

@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { getBlog } from "@/zenblog";
+import { createBlog } from "@/zenblog";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
@@ -8,8 +8,8 @@ export default async function Home({
 }: {
   params: { slug: string };
 }) {
-  const blog = getBlog();
-  const post = await blog.posts.getBySlug(slug);
+  const blog = createBlog();
+  const post = await blog.posts.get({ slug });
   revalidatePath(`/blog/${slug}`);
 
   return (
