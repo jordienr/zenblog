@@ -17,21 +17,10 @@ function createFetcher(
         },
       };
 
-      log("fetch ", URL, reqOpts);
+      log(">>>>> fetch ", URL, reqOpts.headers);
       const res = await fetch(URL, reqOpts);
       const json = await res.json();
 
-      if (res.headers.get("zenblog-subscription-status") === "inactive") {
-        throwError(
-          "Zenblog subscription is inactive. Go to https://zenblog.com to subscribe."
-        );
-      }
-      log("res", {
-        status: res.status,
-        statusText: res.statusText,
-        ok: res.ok,
-        json,
-      });
       if (!res.ok) {
         throwError("Error fetching data from API", res);
       }
@@ -77,7 +66,6 @@ export function createZenblogClient<T>({
           method: "GET",
           cache: opts?.cache || "default",
         });
-        logger("posts.getAll", posts);
 
         type PostWithT = Post & T;
         return posts as PostWithT[]; // to do: validate
@@ -86,12 +74,10 @@ export function createZenblogClient<T>({
         { slug }: { slug: string },
         opts?: ReqOpts
       ): Promise<PostWithContent> {
-        const post = await fetcher(`post/${slug}`, {
+        const post = await fetcher(`posts/${slug}`, {
           method: "GET",
           cache: opts?.cache || "default",
         });
-
-        logger("posts.getBySlug", post);
 
         return post as PostWithContent & T; // to do: export types from api
       },

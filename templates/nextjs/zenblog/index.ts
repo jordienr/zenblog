@@ -4,13 +4,11 @@ export const createBlog = () => {
   const accessToken = process.env.ZENBLOG_ACCESS_TOKEN;
 
   if (!accessToken) {
-    throw new Error("Missing ZENBLOG_ACCESS_TOKEN environment variable");
+    throw new Error("Missing ZENBLOG_ACCESS_TOKEN");
   }
 
   const blog = createZenblogClient({
     accessToken,
-    _debug: true,
-    _url: "http://localhost:3001/api/v1",
   });
 
   return blog;

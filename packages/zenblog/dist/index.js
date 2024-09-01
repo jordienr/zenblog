@@ -14,18 +14,9 @@ function createFetcher(config, log) {
                     ...opts.headers,
                 },
             };
-            log("fetch ", URL, reqOpts);
+            log(">>>>> fetch ", URL, reqOpts.headers);
             const res = await fetch(URL, reqOpts);
             const json = await res.json();
-            if (res.headers.get("zenblog-subscription-status") === "inactive") {
-                (0, lib_1.throwError)("Zenblog subscription is inactive. Go to https://zenblog.com to subscribe.");
-            }
-            log("res", {
-                status: res.status,
-                statusText: res.statusText,
-                ok: res.ok,
-                json,
-            });
             if (!res.ok) {
                 (0, lib_1.throwError)("Error fetching data from API", res);
             }
@@ -56,15 +47,13 @@ function createZenblogClient({ accessToken, _url, _debug, }) {
                     method: "GET",
                     cache: opts?.cache || "default",
                 });
-                logger("posts.getAll", posts);
                 return posts; // to do: validate
             },
             get: async function ({ slug }, opts) {
-                const post = await fetcher(`post/${slug}`, {
+                const post = await fetcher(`posts/${slug}`, {
                     method: "GET",
                     cache: opts?.cache || "default",
                 });
-                logger("posts.getBySlug", post);
                 return post; // to do: export types from api
             },
         },
