@@ -15,6 +15,7 @@ const handler = createNextHandler(
   {
     posts: {
       get: async ({ headers, query }) => {
+        console.log("🍊 API: headers", headers.authorization);
         const { data: blog, error } = await getBlogIdFromToken(
           headers.authorization
         );
@@ -140,7 +141,8 @@ const handler = createNextHandler(
     },
     requestMiddleware: [
       async (req, res) => {
-        const authorization = req.headers.get("Authorization");
+        const authorization = req.headers.get("authorization");
+        console.log("🍊 Middleware: Authorization header", req.headers);
         if (!authorization) {
           console.log("🔴 Middleware: Missing Authorization header.");
           throw new TsRestResponseError(contract, {

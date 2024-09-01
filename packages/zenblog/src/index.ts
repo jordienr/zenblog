@@ -8,16 +8,17 @@ function createFetcher(
   return async function _fetch(path: string, opts: RequestInit) {
     try {
       const URL = `${config.api}/${path}`;
-
-      log("fetch ", URL, {
+      const reqOpts = {
+        ...opts,
         headers: {
           authorization: `Bearer ${config.accessToken}`,
           "Content-Type": "application/json",
           ...opts.headers,
         },
-        ...opts,
-      });
-      const res = await fetch(URL, opts);
+      };
+
+      log("fetch ", URL, reqOpts);
+      const res = await fetch(URL, reqOpts);
       const json = await res.json();
 
       if (res.headers.get("zenblog-subscription-status") === "inactive") {

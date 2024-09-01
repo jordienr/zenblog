@@ -6,15 +6,16 @@ function createFetcher(config, log) {
     return async function _fetch(path, opts) {
         try {
             const URL = `${config.api}/${path}`;
-            log("fetch ", URL, {
+            const reqOpts = {
+                ...opts,
                 headers: {
                     authorization: `Bearer ${config.accessToken}`,
                     "Content-Type": "application/json",
                     ...opts.headers,
                 },
-                ...opts,
-            });
-            const res = await fetch(URL, opts);
+            };
+            log("fetch ", URL, reqOpts);
+            const res = await fetch(URL, reqOpts);
             const json = await res.json();
             if (res.headers.get("zenblog-subscription-status") === "inactive") {
                 (0, lib_1.throwError)("Zenblog subscription is inactive. Go to https://zenblog.com to subscribe.");
