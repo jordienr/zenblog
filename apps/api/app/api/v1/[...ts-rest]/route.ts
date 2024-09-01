@@ -6,7 +6,8 @@ import { supabase } from "@/lib/db";
 import { ratelimit } from "@/lib/ratelimit";
 
 function getBlogIdFromToken(token: string) {
-  return supabase.from("blogs").select("id").eq("access_token", token).single();
+  const key = token.split(" ")[1];
+  return supabase.from("blogs").select("id").eq("access_token", key).single();
 }
 
 const handler = createNextHandler(
