@@ -2,12 +2,12 @@ import { createLogger, throwError } from "./lib";
 import { Post, PostWithContent, CreateClientOpts } from "./lib/types";
 
 function createFetcher(
-  config: { api: string; accessToken: string },
+  config: { url: string; accessToken: string },
   log: (...args: any[]) => void
 ) {
   return async function _fetch(path: string, opts: RequestInit) {
     try {
-      const URL = `${config.api}/${path}`;
+      const URL = `${config.url}/${path}`;
       const reqOpts = {
         ...opts,
         headers: {
@@ -50,7 +50,7 @@ export function createZenblogClient<T>({
   const logger = createLogger(_debug || false);
   const fetcher = createFetcher(
     {
-      api: _url || "https://api.zenblog.com",
+      url: _url || "https://api.zenblog.com/api/v1",
       accessToken,
     },
     logger

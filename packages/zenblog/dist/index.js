@@ -5,7 +5,7 @@ const lib_1 = require("./lib");
 function createFetcher(config, log) {
     return async function _fetch(path, opts) {
         try {
-            const URL = `${config.api}/${path}`;
+            const URL = `${config.url}/${path}`;
             const reqOpts = {
                 ...opts,
                 headers: {
@@ -37,7 +37,7 @@ function createZenblogClient({ accessToken, _url, _debug, }) {
     }
     const logger = (0, lib_1.createLogger)(_debug || false);
     const fetcher = createFetcher({
-        api: _url || "https://api.zenblog.com",
+        url: _url || "https://api.zenblog.com/api/v1",
         accessToken,
     }, logger);
     return {
