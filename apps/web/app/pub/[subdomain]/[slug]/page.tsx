@@ -13,6 +13,7 @@ export async function generateMetadata({
 }: {
   params: { subdomain: string; slug: string };
 }): Promise<Metadata> {
+  console.log(subdomain);
   const { data: blog } = await getBlog(subdomain);
   const post = await getPost(subdomain, slug);
 

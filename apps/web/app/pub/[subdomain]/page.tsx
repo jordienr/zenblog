@@ -9,6 +9,7 @@ export async function generateMetadata({
 }: {
   params: { subdomain: string };
 }): Promise<Metadata> {
+  console.log(subdomain);
   const { data: blog } = await getBlog(subdomain);
 
   return {
@@ -42,6 +43,8 @@ async function HostedBlog({
     return (
       <div className="flex-center p-12">
         <h1>Blog not found</h1>
+        <p>{blogError?.message}</p>
+        <p>{postsError?.message}</p>
       </div>
     );
   }

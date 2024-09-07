@@ -17,7 +17,7 @@ export async function getBlog(subdomain: string) {
 export async function getPosts(subdomain: string, sort: string = "desc") {
   const supa = createClient();
   const res = await supa
-    .from("public_posts_v3")
+    .from("posts_v4")
     .select("title, slug, published_at, cover_image, abstract")
     .eq("blog_slug", subdomain)
     .eq("published", true)
@@ -37,7 +37,7 @@ export async function getPosts(subdomain: string, sort: string = "desc") {
 export async function getPost(subdomain: string, slug: string) {
   const supa = createClient();
   const { data: post } = await supa
-    .from("public_posts_v2")
+    .from("posts_v4")
     .select(
       "title, content, cover_image, published_at, created_at, html_content"
     )

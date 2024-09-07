@@ -104,11 +104,36 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      categories: {
+        Row: {
+          blog_id: string
+          created_at: string
+          id: number
+          name: string
+          slug: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string
+          id?: number
+          name?: string
+          slug?: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string
+          id?: number
+          name?: string
+          slug?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "blogs_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "categories_blog_id_fkey"
+            columns: ["blog_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "blogs"
             referencedColumns: ["id"]
           },
         ]
@@ -202,6 +227,13 @@ export type Database = {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "posts_v4"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "posts_with_blog_and_subscription_status"
             referencedColumns: ["post_id"]
           },
@@ -231,13 +263,6 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts_with_tags_v3"
-            referencedColumns: ["post_id"]
-          },
-          {
-            foreignKeyName: "post_tags_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "public_posts_v1"
             referencedColumns: ["post_id"]
           },
           {
@@ -274,6 +299,7 @@ export type Database = {
         Row: {
           abstract: string
           blog_id: string
+          category_id: number | null
           content: Json
           cover_image: string | null
           created_at: string
@@ -291,6 +317,7 @@ export type Database = {
         Insert: {
           abstract?: string
           blog_id: string
+          category_id?: number | null
           content?: Json
           cover_image?: string | null
           created_at?: string
@@ -308,6 +335,7 @@ export type Database = {
         Update: {
           abstract?: string
           blog_id?: string
+          category_id?: number | null
           content?: Json
           cover_image?: string | null
           created_at?: string
@@ -331,10 +359,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "public_posts_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "posts_category_id_fkey"
+            columns: ["category_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "categories"
             referencedColumns: ["id"]
           },
           {
@@ -418,13 +446,6 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "subscriptions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       teams: {
@@ -457,13 +478,6 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "public_teams_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
     }
@@ -485,6 +499,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "posts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_v4"
+            referencedColumns: ["post_id"]
           },
           {
             foreignKeyName: "post_tags_post_id_fkey"
@@ -525,13 +546,6 @@ export type Database = {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
-            referencedRelation: "public_posts_v1"
-            referencedColumns: ["post_id"]
-          },
-          {
-            foreignKeyName: "post_tags_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
             referencedRelation: "public_posts_v2"
             referencedColumns: ["post_id"]
           },
@@ -555,6 +569,36 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tag_usage_count_v2"
             referencedColumns: ["tag_id"]
+          },
+        ]
+      }
+      posts_v4: {
+        Row: {
+          abstract: string | null
+          blog_id: string | null
+          blog_slug: string | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          html_content: string | null
+          metadata: Json[] | null
+          post_id: string | null
+          published: boolean | null
+          published_at: string | null
+          slug: string | null
+          subscription_status: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -689,34 +733,6 @@ export type Database = {
           },
         ]
       }
-      public_posts_v1: {
-        Row: {
-          blog_id: string | null
-          blog_slug: string | null
-          content: Json | null
-          cover_image: string | null
-          created_at: string | null
-          deleted: boolean | null
-          metadata: Json[] | null
-          post_id: string | null
-          published: boolean | null
-          published_at: string | null
-          slug: string | null
-          subscription_status: string | null
-          tags: string[] | null
-          title: string | null
-          updated_at: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "posts_blog_id_fkey"
-            columns: ["blog_id"]
-            isOneToOne: false
-            referencedRelation: "blogs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       public_posts_v2: {
         Row: {
           blog_id: string | null
@@ -795,117 +811,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      users: {
-        Row: {
-          aud: string | null
-          banned_until: string | null
-          confirmation_sent_at: string | null
-          confirmation_token: string | null
-          confirmed_at: string | null
-          created_at: string | null
-          deleted_at: string | null
-          email: string | null
-          email_change: string | null
-          email_change_confirm_status: number | null
-          email_change_sent_at: string | null
-          email_change_token_current: string | null
-          email_change_token_new: string | null
-          email_confirmed_at: string | null
-          encrypted_password: string | null
-          id: string | null
-          instance_id: string | null
-          invited_at: string | null
-          is_sso_user: boolean | null
-          is_super_admin: boolean | null
-          last_sign_in_at: string | null
-          phone: string | null
-          phone_change: string | null
-          phone_change_sent_at: string | null
-          phone_change_token: string | null
-          phone_confirmed_at: string | null
-          raw_app_meta_data: Json | null
-          raw_user_meta_data: Json | null
-          reauthentication_sent_at: string | null
-          reauthentication_token: string | null
-          recovery_sent_at: string | null
-          recovery_token: string | null
-          role: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          aud?: string | null
-          banned_until?: string | null
-          confirmation_sent_at?: string | null
-          confirmation_token?: string | null
-          confirmed_at?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          email?: string | null
-          email_change?: string | null
-          email_change_confirm_status?: number | null
-          email_change_sent_at?: string | null
-          email_change_token_current?: string | null
-          email_change_token_new?: string | null
-          email_confirmed_at?: string | null
-          encrypted_password?: string | null
-          id?: string | null
-          instance_id?: string | null
-          invited_at?: string | null
-          is_sso_user?: boolean | null
-          is_super_admin?: boolean | null
-          last_sign_in_at?: string | null
-          phone?: string | null
-          phone_change?: string | null
-          phone_change_sent_at?: string | null
-          phone_change_token?: string | null
-          phone_confirmed_at?: string | null
-          raw_app_meta_data?: Json | null
-          raw_user_meta_data?: Json | null
-          reauthentication_sent_at?: string | null
-          reauthentication_token?: string | null
-          recovery_sent_at?: string | null
-          recovery_token?: string | null
-          role?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          aud?: string | null
-          banned_until?: string | null
-          confirmation_sent_at?: string | null
-          confirmation_token?: string | null
-          confirmed_at?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          email?: string | null
-          email_change?: string | null
-          email_change_confirm_status?: number | null
-          email_change_sent_at?: string | null
-          email_change_token_current?: string | null
-          email_change_token_new?: string | null
-          email_confirmed_at?: string | null
-          encrypted_password?: string | null
-          id?: string | null
-          instance_id?: string | null
-          invited_at?: string | null
-          is_sso_user?: boolean | null
-          is_super_admin?: boolean | null
-          last_sign_in_at?: string | null
-          phone?: string | null
-          phone_change?: string | null
-          phone_change_sent_at?: string | null
-          phone_change_token?: string | null
-          phone_confirmed_at?: string | null
-          raw_app_meta_data?: Json | null
-          raw_user_meta_data?: Json | null
-          reauthentication_sent_at?: string | null
-          reauthentication_token?: string | null
-          recovery_sent_at?: string | null
-          recovery_token?: string | null
-          role?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
       }
     }
     Functions: {
