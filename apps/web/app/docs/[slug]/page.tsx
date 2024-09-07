@@ -8,7 +8,7 @@ import React from "react";
 type Props = {};
 
 const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
-  const post = await docs.posts.get(slug);
+  const post = await docs.posts.get({ slug });
 
   return (
     <div>
