@@ -26,7 +26,7 @@ export default async function Home({
           Back to blog
         </Link>
         <h1 className="text-xl font-normal">{post.title}</h1>
-        <pre>{JSON.stringify(post.content)}</pre>
+        <div dangerouslySetInnerHTML={{ __html: post.html_content }} />
       </div>
     </main>
   );

@@ -8,7 +8,7 @@ export type Post = {
     published_at: string;
 };
 export type PostWithContent = Post & {
-    content: any;
+    html_content: string;
 };
 export type CreateClientOpts = {
     accessToken: string;

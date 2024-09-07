@@ -9,7 +9,7 @@ export type Post = {
 };
 
 export type PostWithContent = Post & {
-  content: any;
+  html_content: string;
 };
 
 export type CreateClientOpts = {
