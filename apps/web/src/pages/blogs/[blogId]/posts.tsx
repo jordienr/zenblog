@@ -556,26 +556,20 @@ function PostItem({
           <StatePill published={post.published || false} />
         </div>
         <h2 className="ml-1 text-lg font-normal">{post.title}</h2>
-        {showClicks && (
-          <span className="px-1 font-mono text-xs text-zinc-500">
-            {views ? `${views} clicks` : "0 clicks"}
-          </span>
-        )}
-      </div>
-
-      <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
         {post.tags && post.tags.length > 0 && (
           <div className="flex items-center gap-2">
             {post.tags?.map((tag: any) => (
               <span
                 key={tag}
-                className="rounded-md bg-zinc-100 px-2 py-1 font-mono text-xs font-semibold text-zinc-600"
+                className="px-1 py-0.5 font-mono text-xs font-semibold text-zinc-400"
               >
-                {tag}
+                #{tag}
               </span>
             ))}
           </div>
         )}
+      </div>
+      <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
         <span>{formatDate(post.published_at || "")}</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
