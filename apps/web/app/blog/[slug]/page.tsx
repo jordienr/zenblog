@@ -9,7 +9,7 @@ type Props = {};
 
 const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
   const blog = getBlogClient();
-  const post = await blog.posts.get(slug);
+  const post = await blog.posts.get({ slug });
 
   return (
     <div>
