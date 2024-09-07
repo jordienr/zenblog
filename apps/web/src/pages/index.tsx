@@ -177,7 +177,7 @@ const Home = () => {
                 </Dialog>
               </div>
 
-              <Leaves />
+              {/* <Leaves /> */}
             </div>
             <div className="mx-auto mt-24 max-w-6xl rounded-xl border bg-white p-1.5 shadow-sm">
               <Image
