@@ -113,7 +113,6 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
             appendTo={"parent"}
             placement="bottom"
             visible={showTextTypeMenu}
-            trigger="click"
             content={
               <div className="rounded-xl bg-zinc-800 p-1 text-zinc-50">
                 {menuTypeItems.map(({ icon, label, command }, i) => (

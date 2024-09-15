@@ -10,6 +10,7 @@
 - [] Use a JWT with the blog id to authenticate the API, should make api faster by removing one req to get the blog id
 - [] Add tags to posts API
 - [] fix creating tags in tags tab
+- [] fix metadata format so that its {key:value} not [{key:foo,value:bar}]
 
 ## Blogs
 

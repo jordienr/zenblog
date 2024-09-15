@@ -43,6 +43,7 @@ import {
 import { EditorMenu } from "./EditorMenu";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
+import { useCategories } from "@/queries/categories";
 
 const formSchema = z.object({
   title: z.string(),
@@ -50,6 +51,7 @@ const formSchema = z.object({
   cover_image: z.string().optional(),
   content: z.any(),
   abstract: z.string().optional(),
+  category_id: z.number().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -63,6 +65,7 @@ type OnSaveData = {
   published: boolean;
   metadata?: any;
   abstract?: string;
+  category_id?: number;
   tags?: {
     id: string;
     name: string;
@@ -75,9 +78,11 @@ type Props = {
   onSave: (data: OnSaveData) => Promise<void>;
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
+  category_id?: number;
   tags?: { id: string; name: string; slug: string }[];
   autoCompleteSlug?: boolean;
   showPublishedDialog?: boolean;
+  categories?: { id: number; name: string }[];
 };
 
 export const ZendoEditor = (props: Props) => {
@@ -88,6 +93,7 @@ export const ZendoEditor = (props: Props) => {
         slug: props.post?.slug || "",
         cover_image: props.post?.cover_image || "",
         abstract: props.post?.abstract || "",
+        category_id: props.category_id || 0,
       },
     });
   const router = useRouter();
@@ -95,6 +101,10 @@ export const ZendoEditor = (props: Props) => {
   const blogTags = useBlogTags({ blogId });
   const [published, setPublished] = React.useState(
     props.post?.published || false
+  );
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const selectedCategory = categories?.find(
+    (c) => c.id === getValues("category_id")
   );
 
   const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
@@ -195,7 +205,7 @@ export const ZendoEditor = (props: Props) => {
   const formSubmit = handleSubmit(async (data) => {
     const content = editor?.getJSON() || {};
     const html_content = editor?.getHTML() || "";
-    const { title, slug } = data;
+    const { title, slug, category_id } = data;
 
     if (!title || !slug) {
       toast.error("Title and slug are required");
@@ -213,6 +223,7 @@ export const ZendoEditor = (props: Props) => {
       metadata,
       tags,
       abstract: data.abstract,
+      category_id,
     });
   });
 
@@ -228,7 +239,7 @@ export const ZendoEditor = (props: Props) => {
     setHasChanges(props.post?.cover_image !== getValues("cover_image"));
     setHasChanges(props.post?.published !== published);
     setHasChanges(props.post?.slug !== getValues("slug"));
-
+    setHasChanges(props.post?.category_id !== getValues("category_id"));
     editor?.on("transaction", (ctx) => {
       const hasChanged = ctx.transaction.docChanged;
       setHasChanges(hasChanged);
@@ -243,6 +254,7 @@ export const ZendoEditor = (props: Props) => {
     props.post?.cover_image,
     props.post?.published,
     props.post?.slug,
+    props.post?.category_id,
     getValues,
     metadata,
     published,
@@ -386,20 +398,22 @@ export const ZendoEditor = (props: Props) => {
                 <Settings2 size={16} /> Settings
               </Button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent hideClose className="bg-zinc-50">
               <EditorSettings
                 title={title}
                 metadata={metadata as any}
                 selectedTags={tags}
                 blogEmoji={blogQuery.data?.emoji}
                 blogTitle={blogQuery.data?.title}
+                category={selectedCategory}
                 published_at={publishedAt}
                 onChange={(data) => {
                   setMetadata(data.metadata);
                   setTags(data.tags);
                   setPublishedAt(data.published_at);
+                  setValue("category_id", data.category_id);
                 }}
-              ></EditorSettings>
+              />
             </SheetContent>
           </Sheet>
           <Button type="submit" variant={hasChanges ? "default" : "outline"}>
@@ -537,7 +551,7 @@ export const ZendoEditor = (props: Props) => {
             <textarea
               {...register("abstract")}
               className="w-full resize-none rounded-lg p-1.5 outline-none transition-all focus:bg-zinc-100"
-              placeholder="Abstract"
+              placeholder="Excerpt"
             />
           </div>
         </div>

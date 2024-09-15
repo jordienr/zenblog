@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 import { toast } from "sonner";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { useCategories } from "@/queries/categories";
 
 export default function CreatePost() {
   const router = useRouter();

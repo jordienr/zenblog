@@ -72,3 +72,5 @@ export const RESERVED_SLUGS = [
   "ben",
   "bill",
 ];
+
+export const IS_DEV = process.env.NODE_ENV === "development";

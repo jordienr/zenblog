@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Code, Info, Plus, Trash } from "lucide-react";
+import { Code, Copy, Info, Plus, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { TagManagement } from "./TagManagement";
 import { toast } from "sonner";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
@@ -17,6 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useCategories, useCreateCategory } from "@/queries/categories";
+import { useRouter } from "next/router";
+import { Label } from "../ui/label";
+import Spinner from "../Spinner";
+import { IS_DEV } from "@/lib/constants";
 
 type Tag = {
   id: string;
@@ -35,14 +39,17 @@ type Props = {
   published_at?: string;
   blogEmoji?: string;
   blogTitle?: string;
+  category?: { id: number; name: string };
   onChange: ({
     metadata,
     tags,
     published_at,
+    category_id,
   }: {
     metadata: MetadataItem[];
     tags: Tag[];
     published_at?: string;
+    category_id?: number;
   }) => void;
 };
 
@@ -56,15 +63,8 @@ const EditorSettings = (props: Props) => {
     props.selectedTags || []
   );
   const today = new Date().toISOString().split("T")[0] || "";
-
-  function formatDate(date: string) {
-    try {
-      return new Date(date).toISOString().split(".")[0];
-    } catch (error) {
-      toast.error("Invalid date");
-      // do nothing
-    }
-  }
+  const router = useRouter();
+  const blogId = router.query.blogId as string;
 
   const [publishedAt, setPublishedAt] = useState<{
     day: number;
@@ -97,14 +97,13 @@ const EditorSettings = (props: Props) => {
       props.onChange({
         tags: selectedTags,
         metadata,
+        category_id: props.category?.id,
         published_at: date,
       });
     } catch (error) {
       toast.error("Invalid date");
     }
   }, [publishedAt]);
-
-  const publishedAtValue = formatDate(publishedAtToDate());
 
   function addMetadata() {
     setMetadata([...metadata, { key: "", value: "" }]);
@@ -126,17 +125,100 @@ const EditorSettings = (props: Props) => {
     props.onChange({ tags: selectedTags, metadata: newMetadata });
   };
 
-  const handleCategoryChange = (tags: Tag[]) => {
-    setSelectedTags(tags);
-    props.onChange({ metadata, tags });
-  };
-
   const ogImageUrl = `/api/og?title=${props.title}&emoji=${props.blogEmoji}&url=${props.blogTitle}`;
 
+  const { data: categories, isLoading: isCategoriesLoading } = useCategories();
+  const { mutate: createCategory } = useCreateCategory();
+
+  function EditorSettingsSection({ children }: { children: React.ReactNode }) {
+    return (
+      <section className="mb-4 rounded-xl border bg-white p-3 pt-1.5 shadow-sm shadow-zinc-100">
+        {children}
+      </section>
+    );
+  }
+
   return (
-    <div className="overflow-y-auto px-1 [&_h2]:font-mono [&_h2]:text-sm [&_h2]:font-medium">
-      <section className="mt-2">
-        <h2 className="mt-2 pb-2 font-mono">Published date</h2>
+    <div className="overflow-y-auto [&_h2]:p-1 [&_h2]:font-mono [&_h2]:text-sm [&_h2]:font-medium [&_h2]:text-zinc-800">
+      <h2 className="mb-3">Post Settings</h2>
+      <EditorSettingsSection>
+        <div className="flex items-center justify-between">
+          <h2>Category</h2>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant={"ghost"} size="xs">
+                <Plus size={16} />
+                Add category
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="p-4 md:max-w-sm">
+              <form
+                className="[&_input]:mb-3 [&_input]:mt-1"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const formData = new FormData(e.target as HTMLFormElement);
+                  const name = formData.get("name");
+                  const slug = formData.get("slug");
+                  createCategory({
+                    name: name as string,
+                    slug: slug as string,
+                    blog_id: blogId,
+                  });
+                  toast.success("Category created");
+                }}
+              >
+                <h2 className="text-lg font-medium">Create category</h2>
+                <p className="mb-4 text-sm text-zinc-500">
+                  Posts can have 1 category, but multiple tags.
+                </p>
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" name="name" placeholder="Category name" />
+                <Label htmlFor="slug">Slug</Label>
+                <Input id="slug" name="slug" placeholder="Category slug" />
+                <div className="flex justify-end">
+                  <Button type="submit">Create</Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <div>
+          {isCategoriesLoading ? (
+            <div>
+              <Spinner />
+            </div>
+          ) : (
+            <Select
+              value={props.category?.id.toString()}
+              onValueChange={(e) => {
+                props.onChange({
+                  tags: selectedTags,
+                  metadata: metadata,
+                  category_id: parseInt(e),
+                });
+              }}
+            >
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories?.map((category) => (
+                  <SelectItem
+                    key={category.id + "-category"}
+                    value={category.id.toString()}
+                  >
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      </EditorSettingsSection>
+
+      <EditorSettingsSection>
+        <h2>Published date</h2>
         <div className="flex gap-4">
           <div>
             <label className="text-xs text-zinc-500" htmlFor="date">
@@ -238,32 +320,17 @@ const EditorSettings = (props: Props) => {
             </div>
           </div>
         </div>
-        {/* <Input
-          type="datetime-local"
-          name="published_at"
-          value={publishedAtValue}
-          onChange={(e) => {
-            setPublishedAt(e.target.value);
-            props.onChange({
-              tags: selectedTags,
-              metadata,
-              published_at: e.target.value,
-            });
-          }}
-        /> */}
-      </section>
-      <section>
-        <h2 className="m-0 mt-8 border-b pb-2 font-mono">Custom metadata</h2>
+      </EditorSettingsSection>
 
-        <div className="text-sm font-medium text-slate-700">
-          <div className="flex items-center py-2 text-xs text-slate-500 *:p-1">
-            <div className="w-48">Key</div>
-            <div>Value</div>
+      {IS_DEV && (
+        <EditorSettingsSection>
+          <div className="flex items-center justify-between">
+            <h2>Custom metadata</h2>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="ml-auto" variant={"ghost"}>
+                <Button size="xs" className="ml-auto" variant={"ghost"}>
                   <Code size={16} />
-                  <div>Preview</div>
+                  Preview
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
@@ -282,6 +349,10 @@ const EditorSettings = (props: Props) => {
                 </pre>
               </DialogContent>
             </Dialog>
+          </div>
+          <div className="flex items-center py-2 text-xs text-slate-500 *:p-1">
+            <div className="w-48">Key</div>
+            <div>Value</div>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -332,28 +403,37 @@ const EditorSettings = (props: Props) => {
               </div>
             ))}
           </div>
-        </div>
-        <div>
+
           <Button
-            className="mt-2 w-full"
-            variant={"secondary"}
+            className="mt-4 w-full"
+            variant={"outline"}
             type="button"
             onClick={addMetadata}
           >
             <Plus size={16} />
             Add metadata
           </Button>
-        </div>
-        {/* <div className="mt-4">
-          <TagManagement
-            selectedTags={selectedTags}
-            onChange={handleCategoryChange}
-          />
-        </div> */}
-      </section>
+        </EditorSettingsSection>
+      )}
 
-      <section className="mt-8">
-        <h2>Open graph image</h2>
+      <EditorSettingsSection>
+        <div className="flex items-center justify-between">
+          <h2>Open graph image</h2>
+          <Button
+            size="xs"
+            variant="ghost"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                process.env.NEXT_PUBLIC_BASE_URL + ogImageUrl
+              );
+              toast("Copied image URL to clipboard");
+            }}
+          >
+            <Copy size={16} />
+            Copy URL
+          </Button>
+        </div>
+
         <Image
           className="mt-4 max-w-full rounded-md border"
           src={ogImageUrl}
@@ -363,21 +443,7 @@ const EditorSettings = (props: Props) => {
           width={600}
           height={300}
         />
-        <div className="mt-2 flex justify-end">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              navigator.clipboard.writeText(
-                process.env.NEXT_PUBLIC_BASE_URL + ogImageUrl
-              );
-              toast("Copied image URL to clipboard");
-            }}
-          >
-            Copy image URL
-          </Button>
-          {/* <CopyCell text={process.env.NEXT_PUBLIC_BASE_URL + ogImageUrl} /> */}
-        </div>
-      </section>
+      </EditorSettingsSection>
     </div>
   );
 };
