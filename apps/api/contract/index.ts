@@ -31,6 +31,14 @@ const BasePostSchema = z.object({
   title: z
     .string()
     .openapi({ description: "The title of the post", example: "Hello World!" }),
+  category_name: z.string().nullable().openapi({
+    description: "The name of the category",
+    example: "Tutorials",
+  }),
+  category_slug: z.string().nullable().openapi({
+    description: "The slug of the category",
+    example: "tutorials",
+  }),
 });
 
 const GetPostsSchema = BasePostSchema;

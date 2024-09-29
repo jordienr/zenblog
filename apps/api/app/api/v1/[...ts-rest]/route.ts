@@ -34,8 +34,10 @@ const handler = createNextHandler(
           const limit = query.limit || 30;
 
           const posts = await supabase
-            .from("posts")
-            .select("title, published_at, created_at, slug, cover_image")
+            .from("posts_v5")
+            .select(
+              "title, published_at, created_at, slug, cover_image, category_name, category_slug"
+            )
             .eq("deleted", false)
             .eq("published", true)
             .eq("blog_id", blog.id)
@@ -51,6 +53,7 @@ const handler = createNextHandler(
               },
             });
           }
+          console.log("🟢 Posts:", posts.data[0].category_name);
 
           return {
             status: 200,
