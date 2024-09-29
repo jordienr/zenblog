@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PiPencilLine } from "react-icons/pi";
 import { Paintbrush, Plus, Settings } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
+import { API } from "app/utils/api-client";
 
 export default function Dashboard() {
   const user = useUser();
