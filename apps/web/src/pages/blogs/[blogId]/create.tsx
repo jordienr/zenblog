@@ -17,6 +17,11 @@ export default function CreatePost() {
         onSave={async (content) => {
           const { tags, ...post } = content;
           try {
+            console.log("category", post.category_id);
+            if (post.category_id === 0) {
+              // remove category_id from post
+              delete post.category_id;
+            }
             const { data, error } = await supa
               .from("posts")
               .insert({ ...post, blog_id: blogId })
