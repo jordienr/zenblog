@@ -5,18 +5,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-200 focus-visible focus-visible:border-orange-700  disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-zinc-950 dark:focus-visible:ring-zinc-300 gap-1.5 [&>svg]:w-4 [&>svg]:opacity-60",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-200 focus-visible focus-visible:border-orange-700  disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-zinc-950 ring-1 ring-transparent antialiased dark:focus-visible:ring-zinc-300 gap-1.5 [&>svg]:w-4 leading-none [&>svg]:opacity-60 active:scale-95",
   {
     variants: {
       variant: {
         default:
-          "bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90 hover:bg-gradient-to-b hover:from-orange-400 hover:to-orange-600 dark:hover:from-orange-500 dark:hover:to-orange-600 text-white border border-zinc-700 hover:border-orange-500",
-        destructive:
-          "bg-red-500 text-zinc-50 hover:bg-red-500/90 dark:bg-red-900 dark:text-zinc-50 dark:hover:bg-red-900/90",
+          "border border-slate-500/20 border-b-slate-800/70 border-t-slate-500/70 bg-gradient-to-b from-slate-700 to-slate-800 text-white shadow-md ring-slate-800 flex items-center hover:brightness-125",
+        destructive: "bg-red-500 text-zinc-50 hover:bg-red-500/90",
         outline:
-          "border border-zinc-200 bg-white hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-800 text-zinc-600 dark:hover:text-zinc-50",
+          "border border-transparent ring-zinc-200 bg-white hover:bg-zinc-100 hover:text-zinc-900 text-zinc-600",
         secondary:
-          "bg-zinc-100 hover:bg-orange-100/70 hover:text-orange-600 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80 text-zinc-600",
+          "bg-zinc-100 hover:bg-orange-100/70 hover:text-orange-600 text-zinc-600",
         ghost:
           "hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 text-zinc-600",
         link: "text-zinc-800 underline-offset-4 hover:underline dark:text-zinc-50",

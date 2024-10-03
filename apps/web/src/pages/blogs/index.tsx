@@ -1,18 +1,18 @@
 import AppLayout from "@/layouts/AppLayout";
 import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
-import { IoAdd } from "react-icons/io5";
 import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { PiPencilLine } from "react-icons/pi";
-import { Paintbrush, Plus, Settings } from "lucide-react";
+import { Paintbrush, Pencil, Plus, Settings } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
-import { API } from "app/utils/api-client";
+import { useState } from "react";
 
 export default function Dashboard() {
   const user = useUser();
   const { data, error, isLoading } = useBlogsQuery({ enabled: !!user });
   const router = useRouter();
+  const [hovering, setHovering] = useState("");
 
   return (
     <AppLayout loading={isLoading}>
@@ -43,19 +43,21 @@ export default function Dashboard() {
               </Button>
             </div>
           )}
-          <ul className="mx-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <ul className="mx-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border border-zinc-200 bg-white shadow-sm transition-all hover:border-zinc-200"
+                  className="group rounded-xl border bg-white p-1 transition-all hover:border-zinc-200"
                   key={blog.id}
+                  onMouseEnter={() => setHovering(blog.id)}
+                  onMouseLeave={() => setHovering("")}
                 >
                   <Link
                     className="flex h-full w-full min-w-[320px] flex-col gap-3 rounded-xl p-3"
                     href={`/blogs/${blog.id}/posts`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div>
+                    <div className="flex min-h-16 gap-4">
+                      <div className="">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-zinc-50 text-3xl transition-all group-hover:scale-110">
                           {blog.emoji}
                         </div>
@@ -95,14 +97,13 @@ export default function Dashboard() {
                         <Settings size="24" />
                       </Button>
                       <Button
-                        variant={"outline"}
+                        variant={hovering === blog.id ? "default" : "outline"}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           router.push(`/blogs/${blog.id}/create`);
                         }}
                       >
-                        <IoAdd size="24" />
                         New post
                       </Button>
                     </div>
