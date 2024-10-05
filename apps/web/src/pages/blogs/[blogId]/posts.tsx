@@ -138,22 +138,7 @@ export default function BlogPosts() {
   if (blog && posts) {
     return (
       <AppLayout loading={isLoading}>
-        <div className="mx-auto mt-4 max-w-5xl p-4">
-          <div className="flex items-center justify-between">
-            <h1 className="mb-2 flex items-center text-xl">
-              <span className="mr-2 text-2xl">{blog.emoji}</span>
-              {blog.title}
-              <Link
-                href={hostedBlogUrl}
-                title="Settings"
-                target="_blank"
-                className="ml-2 p-1.5 text-zinc-500"
-              >
-                <ExternalLink size="16" />
-              </Link>
-            </h1>
-          </div>
-
+        <div className="mx-auto max-w-5xl p-4">
           <Tabs
             value={tabValue || "posts"}
             onValueChange={(tabVal) => {
@@ -161,7 +146,10 @@ export default function BlogPosts() {
             }}
           >
             <div className="flex items-center justify-between">
-              <TabsList>
+              <TabsList className="w-full">
+                <h1 className="px-6 font-medium capitalize text-zinc-800">
+                  {blog.title}
+                </h1>
                 <TabsTrigger value="posts">Posts</TabsTrigger>
                 <TabsTrigger onClick={() => {}} value="media">
                   Media
@@ -169,38 +157,16 @@ export default function BlogPosts() {
                 <TabsTrigger onClick={() => {}} value="tags">
                   Tags
                 </TabsTrigger>
-              </TabsList>
-              <div className="flex items-center">
-                {/* <Button asChild variant="ghost">
-                  <Link href={`/blogs/${blog.id}/usage`}>
-                    <AreaChartIcon size="24" />
-                    API Usage
-                  </Link>
-                </Button> */}
-                {/* <Button asChild variant="ghost">
-                  <Link href={`/blogs/${blog.id}/customise`}>
-                    <Paintbrush size="24" />
-                    Customise
-                  </Link>
-                </Button> */}
-                {/* <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost">
-                      <CodeIcon />
-                      Integration
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <IntegrationGuide blogId={blogId} />
-                  </DialogContent>
-                </Dialog> */}
-                <Button asChild variant={"ghost"}>
-                  <Link href={`/blogs/${blog.id}/settings`}>
-                    <Settings size="24" />
+
+                <div className="ml-auto flex flex-1 justify-end">
+                  <Link
+                    href={`/blogs/${blog.id}/settings`}
+                    className="px-3 py-2 text-sm font-medium"
+                  >
                     Settings
                   </Link>
-                </Button>
-              </div>
+                </div>
+              </TabsList>
             </div>
             <TabsContent value="posts">
               <TabSection
@@ -610,9 +576,9 @@ function TabSection({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border bg-white py-2 shadow-sm">
+    <div className="-mt-3 rounded-xl border bg-white py-2 shadow-sm">
       <div className="flex justify-between border-b px-3 py-1 pb-3">
-        <h2 className="text-lg font-medium">{title}</h2>
+        <h2 className="px-2 text-lg font-medium">{title}</h2>
         {actions}
       </div>
       {children}
