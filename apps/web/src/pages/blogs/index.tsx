@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { PiPencilLine } from "react-icons/pi";
-import { Paintbrush, Pencil, Plus, Settings } from "lucide-react";
+import { Paintbrush, Plus, Settings } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
 import { useState } from "react";
 
@@ -97,7 +97,9 @@ export default function Dashboard() {
                         <Settings size="24" />
                       </Button>
                       <Button
-                        variant={hovering === blog.id ? "default" : "outline"}
+                        variant={
+                          hovering === blog.id ? "secondary" : "secondary"
+                        }
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();

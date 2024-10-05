@@ -17,6 +17,16 @@ import Link from "next/link";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import { Textarea } from "@/components/ui/textarea";
 import { createId } from "@/lib/create-id";
+import { API } from "app/utils/api-client";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 export default function BlogSettings() {
   type FormData = {
@@ -44,12 +54,6 @@ export default function BlogSettings() {
   } = useBlogQuery(blogId);
 
   const updateBlog = useUpdateBlogMutation();
-
-  const accessTokenToShow = blog?.access_token
-    ? blog.access_token.slice(0, 4) +
-      "......................" +
-      blog.access_token.slice(-4)
-    : "";
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
@@ -90,11 +94,26 @@ export default function BlogSettings() {
     }
   }
 
-  const generateAccessToken = async () => {
-    const newId = createId({ type: "blog", secret: true });
-    await updateBlog.mutateAsync({ id: blogId, access_token: newId });
+  const [newAPIKey, setNewAPIKey] = useState("");
+  const [showNewAPIKeyDialog, setShowNewAPIKeyDialog] = useState(false);
+  const generateAPIKey = async () => {
+    const res = await API().v2.blogs[":blogId"]["api-keys"].rotate.$post({
+      param: {
+        blogId,
+      },
+    });
+
+    if (!res.ok) {
+      toast.error("Error generating api key");
+      return;
+    }
+
+    const data = (await res.json()) as { message: string; apiKey: string };
+    setNewAPIKey(data.apiKey);
+    setShowNewAPIKeyDialog(true);
+
     refetchBlog();
-    toast.success("Access token created");
+    toast.success("API key created");
   };
 
   if (blogLoading) {
@@ -167,68 +186,89 @@ export default function BlogSettings() {
                 />
               </div>
 
-              <div className="actions">
-                {isDirty && <Button type="submit">Save</Button>}
+              <div className="actions mt-1">
+                <Button type="submit">Save</Button>
               </div>
             </form>
           </div>
         </section>
 
         <section className="section p-3">
-          <h2 className="text-lg font-medium">API Access Tokens</h2>
-          <p>Use this token to fetch your blogs content through the API.</p>
+          <h2 className="text-lg font-medium">Blog API key</h2>
+          <p className="text-zinc-500">
+            Use this key to fetch your blogs content through the API.
+          </p>
           <div className="mt-4 flex items-center gap-2">
             {blog.access_token ? (
-              <div className="flex items-center gap-3">
-                <code className="truncate rounded-lg border px-2 py-1 font-mono text-sm">
-                  {accessTokenToShow}
-                </code>
-
-                <Button
-                  variant={"outline"}
-                  onClick={() => {
-                    navigator.clipboard.writeText(blog.access_token || "");
-                    toast.success("API key copied to clipboard");
-                  }}
-                >
-                  Copy
-                </Button>
+              <div className="flex w-full items-center justify-end gap-3">
                 <Button
                   onClick={() => {
                     if (
                       confirm(
-                        "Are you sure you want to regenerate the access token?\n The current one will stop working."
+                        "Are you sure you want to rotate the API key?\n The current one will stop working."
                       )
                     ) {
-                      generateAccessToken();
+                      generateAPIKey();
                     }
                   }}
                   variant={"destructive"}
                 >
-                  Regenerate
+                  Rotate API key
                 </Button>
               </div>
             ) : (
               <>
                 <Button
                   onClick={() => {
-                    generateAccessToken();
+                    generateAPIKey();
                   }}
                   variant={"outline"}
                 >
-                  Generate Access Token
+                  Generate API key
                 </Button>
               </>
             )}
           </div>
+          <Dialog open={showNewAPIKeyDialog}>
+            <DialogContent className="flex max-w-sm flex-col gap-4">
+              <DialogHeader>
+                <DialogTitle>New API key</DialogTitle>
+                <DialogDescription>
+                  Make sure to save this key in a secure location. <br /> It
+                  will not be shown again.{" "}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={newAPIKey}
+                  readOnly
+                  className="flex-grow font-mono"
+                />
+                <Button
+                  variant={"outline"}
+                  onClick={() => {
+                    navigator.clipboard.writeText(newAPIKey || "");
+                    toast.success("API key copied to clipboard");
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+
+              <DialogFooter>
+                <Button onClick={() => setShowNewAPIKeyDialog(false)}>
+                  I have saved the key securely
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </section>
 
         <section className="section border bg-white p-3">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
-            <AlertCircle size={18} className="text-red-600" />
             Danger zone
           </h2>
-          <p className="">
+          <p className="text-zinc-500">
             This action cannot be undone. This will delete all posts in the
             blog.
           </p>
