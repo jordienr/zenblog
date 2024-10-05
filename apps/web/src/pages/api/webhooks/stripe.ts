@@ -1,8 +1,8 @@
 import { NextApiHandler } from "next";
 import { createStripeClient } from "@/lib/server/stripe";
 import getRawBody from "raw-body";
-import { createAdminClient } from "@/lib/server/supabase";
 import Stripe from "stripe";
+import { createAdminClient } from "@/lib/server/supabase/admin";
 
 console.log("----");
 console.log("----");
