@@ -1,5 +1,5 @@
 import { sendViewEvent } from "@/analytics";
-import { createAdminClient } from "@/lib/server/supabase";
+import { createAdminClient } from "@/lib/server/supabase/admin";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

@@ -2,7 +2,7 @@
 
 import "dotenv/config";
 import { createStripeClient } from "@/lib/server/stripe";
-import { createAdminClient } from "@/lib/server/supabase";
+import { createAdminClient } from "@/lib/server/supabase/admin";
 
 const supabase = createAdminClient();
 const stripe = createStripeClient();

@@ -1,5 +1,5 @@
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { createServerClient } from "@/lib/server/supabase";
+import { createAdminClient } from "@/lib/server/supabase/admin";
 import { createClient } from "app/supa";
 
 /**
