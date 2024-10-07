@@ -6,7 +6,6 @@ type Props = {};
 
 const Index = (props: Props) => {
   const router = useRouter();
-  const blogId = router.query.blogId as string;
 
   useEffect(() => {
     router.push(`/blogs`);

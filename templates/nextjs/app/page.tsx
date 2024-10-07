@@ -27,7 +27,7 @@ export default async function Home() {
           </div>
           <div>{post.title}</div>
           {/* <img
-            src={`http://localhost:3000/api/og?title=${post.title}&emoji=✍️&url=Blog`}
+            src={`http://localhost:3000/api/public/v1/og?title=${post.title}&emoji=✍️&url=Blog`}
             alt=""
           /> */}
         </Link>

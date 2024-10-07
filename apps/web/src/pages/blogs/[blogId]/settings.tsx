@@ -255,7 +255,7 @@ export default function BlogSettings() {
                 </Button>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="p-2">
                 <Button onClick={() => setShowNewAPIKeyDialog(false)}>
                   I have saved the key securely
                 </Button>

@@ -7,6 +7,11 @@ import { PiPencilLine } from "react-icons/pi";
 import { Paintbrush, Plus, Settings } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
 import { useState } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Dashboard() {
   const user = useUser();
@@ -47,7 +52,7 @@ export default function Dashboard() {
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border bg-white p-1 transition-all hover:border-zinc-200"
+                  className="group rounded-xl border bg-white p-1 transition-all hover:border-zinc-300"
                   key={blog.id}
                   onMouseEnter={() => setHovering(blog.id)}
                   onMouseLeave={() => setHovering("")}
@@ -58,7 +63,7 @@ export default function Dashboard() {
                   >
                     <div className="flex min-h-16 gap-4">
                       <div className="">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-zinc-50 text-3xl transition-all group-hover:scale-110">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-zinc-50 text-3xl transition-all">
                           {blog.emoji}
                         </div>
                       </div>
@@ -68,7 +73,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="mt-auto flex justify-end gap-1 justify-self-end align-bottom">
-                      <Button
+                      {/* <Button
                         size={"icon"}
                         variant={"white"}
                         onClick={(e) => {
@@ -81,21 +86,26 @@ export default function Dashboard() {
                         className="text-zinc-400 opacity-0 transition-all group-hover:opacity-100"
                       >
                         <Paintbrush size="24" />
-                      </Button>
-                      <Button
-                        size={"icon"}
-                        variant={"white"}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          router.push(`/blogs/${blog.id}/settings`);
-                        }}
-                        title="Settings"
-                        aria-label="Settings"
-                        className="text-zinc-400 opacity-0 transition-all group-hover:opacity-100"
-                      >
-                        <Settings size="24" />
-                      </Button>
+                      </Button> */}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size={"icon"}
+                            variant={"white"}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              router.push(`/blogs/${blog.id}/settings`);
+                            }}
+                            title="Settings"
+                            aria-label="Settings"
+                            className="text-zinc-400 opacity-0 transition-all group-hover:opacity-100"
+                          >
+                            <Settings size="24" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Settings</TooltipContent>
+                      </Tooltip>
                       <Button
                         variant={
                           hovering === blog.id ? "secondary" : "secondary"

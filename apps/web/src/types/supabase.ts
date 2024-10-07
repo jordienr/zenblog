@@ -234,6 +234,13 @@ export type Database = {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "posts_v5"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "posts_with_blog_and_subscription_status"
             referencedColumns: ["post_id"]
           },
@@ -511,6 +518,13 @@ export type Database = {
             foreignKeyName: "post_tags_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "posts_v5"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "posts_with_blog_and_subscription_status"
             referencedColumns: ["post_id"]
           },
@@ -577,6 +591,38 @@ export type Database = {
           abstract: string | null
           blog_id: string | null
           blog_slug: string | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          html_content: string | null
+          metadata: Json[] | null
+          post_id: string | null
+          published: boolean | null
+          published_at: string | null
+          slug: string | null
+          subscription_status: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts_v5: {
+        Row: {
+          abstract: string | null
+          blog_id: string | null
+          blog_slug: string | null
+          category_name: string | null
+          category_slug: string | null
           content: Json | null
           cover_image: string | null
           created_at: string | null
@@ -825,6 +871,30 @@ export type Database = {
           title: string
         }
         Returns: string
+      }
+      get_blog_post: {
+        Args: {
+          p_blog_id: string
+          p_slug: string
+        }
+        Returns: {
+          title: string
+          html_content: Json
+          slug: string
+          category_name: string
+          category_slug: string
+          tags: Json
+          abstract: string
+          published_at: string
+        }[]
+      }
+      get_posts_by_blog: {
+        Args: {
+          p_blog_id: string
+          p_limit: number
+          p_offset: number
+        }
+        Returns: Json
       }
       is_blog_owner: {
         Args: {

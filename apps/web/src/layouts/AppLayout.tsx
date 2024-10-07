@@ -11,6 +11,7 @@ import { Loader } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 type Props = {
   children?: React.ReactNode;
@@ -33,78 +34,80 @@ export default function AppLayout({ children, loading = false }: Props) {
     <div
       className={`flex min-h-screen flex-col border-b bg-zinc-50/50 font-sans`}
     >
-      <AppChecks>
-        <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl border-b bg-zinc-50/50 backdrop-blur-md">
-          <div className="mx-auto flex h-full items-center justify-between px-4">
-            <div className="z-20  flex h-full items-center gap-2">
-              <Link
-                tabIndex={-1}
-                href="/blogs"
-                className="rounded-md px-1 py-4 text-lg font-medium"
-              >
-                <ZendoLogo hideText />
-              </Link>
-              {plan === "pro" && (
-                <div className="rounded-full bg-blue-50 p-1 px-2 text-xs font-medium text-blue-500">
-                  Pro plan
-                </div>
-              )}
-              {plan === "free" && (
+      <TooltipProvider>
+        <AppChecks>
+          <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl border-b bg-zinc-50/50 backdrop-blur-md">
+            <div className="mx-auto flex h-full items-center justify-between px-4">
+              <div className="z-20  flex h-full items-center gap-2">
                 <Link
-                  title="Upgrade to Pro"
-                  href="/account"
-                  className=" rounded-full
+                  tabIndex={-1}
+                  href="/blogs"
+                  className="rounded-md px-1 py-4 text-lg font-medium"
+                >
+                  <ZendoLogo hideText />
+                </Link>
+                {plan === "pro" && (
+                  <div className="rounded-full bg-blue-50 p-1 px-2 text-xs font-medium text-blue-500">
+                    Pro plan
+                  </div>
+                )}
+                {plan === "free" && (
+                  <Link
+                    title="Upgrade to Pro"
+                    href="/account"
+                    className=" rounded-full
                  bg-emerald-100 p-1
                 px-2 text-center text-xs font-medium text-emerald-600"
-                >
-                  Free
-                </Link>
-              )}
-            </div>
+                  >
+                    Free
+                  </Link>
+                )}
+              </div>
 
-            <a
-              className="
+              <a
+                className="
               sr-only px-4
               py-2 text-sm font-medium text-orange-600 hover:text-orange-700 focus:not-sr-only
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-200 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50
             "
-              href="#main"
-            >
-              Skip to content
-            </a>
+                href="#main"
+              >
+                Skip to content
+              </a>
 
-            <div className="flex items-center gap-1">
-              <Feedback />
-              {/* <Link
+              <div className="flex items-center gap-1">
+                <Feedback />
+                {/* <Link
                 className="rounded-full px-3 py-4 text-sm font-medium text-slate-600 hover:text-orange-600"
                 href="/docs/getting-started"
               >
                 Docs
               </Link> */}
-              <Notifications />
-              <span className="ml-2">
-                <UserButton />
-              </span>
+                <Notifications />
+                <span className="ml-2">
+                  <UserButton />
+                </span>
+              </div>
             </div>
-          </div>
-        </nav>
-        {loading ? (
-          <div className="flex h-[600px] items-center justify-center">
-            <Loader className="animate-spin text-orange-500" size={32} />
-          </div>
-        ) : (
-          <motion.main
-            id="main"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="min-h-screen pb-24"
-          >
-            {children}
-          </motion.main>
-        )}
-        <Footer />
-      </AppChecks>
+          </nav>
+          {loading ? (
+            <div className="flex h-[600px] items-center justify-center">
+              <Loader className="animate-spin text-orange-500" size={32} />
+            </div>
+          ) : (
+            <motion.main
+              id="main"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="min-h-screen pb-24"
+            >
+              {children}
+            </motion.main>
+          )}
+          <Footer />
+        </AppChecks>
+      </TooltipProvider>
     </div>
   );
 }

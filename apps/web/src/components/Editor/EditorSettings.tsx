@@ -125,7 +125,7 @@ const EditorSettings = (props: Props) => {
     props.onChange({ tags: selectedTags, metadata: newMetadata });
   };
 
-  const ogImageUrl = `/api/og?title=${props.title}&emoji=${props.blogEmoji}&url=${props.blogTitle}`;
+  const ogImageUrl = `/api/public/v1/og?title=${props.title}&emoji=${props.blogEmoji}&url=${props.blogTitle}`;
 
   const { data: categories, isLoading: isCategoriesLoading } = useCategories();
   const { mutate: createCategory } = useCreateCategory();
@@ -438,7 +438,7 @@ const EditorSettings = (props: Props) => {
           className="mt-4 max-w-full rounded-md border"
           src={ogImageUrl}
           loading="lazy"
-          blurDataURL="/api/og?title=Loading...&emoji=🚀&url=Loading..."
+          blurDataURL="/api/public/v1/og?title=Loading...&emoji=🚀&url=Loading..."
           alt=""
           width={600}
           height={300}

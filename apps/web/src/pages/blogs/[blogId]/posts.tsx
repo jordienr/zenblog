@@ -5,15 +5,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
-  AreaChartIcon,
-  CodeIcon,
-  ExternalLink,
   ImageOff,
   MoreVertical,
-  Paintbrush,
   Pen,
   Plus,
-  Settings,
   Trash,
   TrashIcon,
   Upload,
@@ -49,7 +44,6 @@ import { Image, ImageSelector } from "@/components/Images/ImagePicker";
 import { useRouterTabs } from "@/hooks/useRouterTabs";
 import { ImageUploader } from "@/components/Images/ImageUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { usePostViewsQuery } from "@/queries/analytics";
 import { IntegrationGuide } from "@/components/integration-guide";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 
@@ -105,10 +99,6 @@ export default function BlogPosts() {
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
 
-  const postViews = usePostViewsQuery({
-    blog_id: blogId,
-  });
-
   const deletePostMutation = useMutation({
     mutationFn: async (postId: string) => {
       const { data, error } = await supabase
@@ -128,11 +118,6 @@ export default function BlogPosts() {
   const deleteTagMutation = useDeleteTagMutation(blogId);
   const updateTagMutation = useUpdateTagMutation(blogId);
 
-  function getPostViews(slug: string) {
-    const post = postViews.data?.find((p: any) => p.post_slug === slug);
-    return post?.["count()"] || 0;
-  }
-
   const hostedBlogUrl = getHostedBlogUrl(blog?.slug || "");
 
   if (blog && posts) {
@@ -146,7 +131,7 @@ export default function BlogPosts() {
             }}
           >
             <div className="flex items-center justify-between">
-              <TabsList className="w-full">
+              <TabsList className="w-full items-center">
                 <h1 className="px-6 font-medium capitalize text-zinc-800">
                   {blog.title}
                 </h1>
@@ -203,7 +188,6 @@ export default function BlogPosts() {
                   return (
                     <PostItem
                       showClicks={true}
-                      views={getPostViews(post.slug || "")}
                       key={post.post_id}
                       post={post}
                       blogId={blogId}
@@ -493,7 +477,7 @@ function PostItem({
 }: {
   post: any;
   blogId: string;
-  views: string;
+  views?: string;
   onDeleteClick: () => void;
   showClicks?: boolean;
 }) {

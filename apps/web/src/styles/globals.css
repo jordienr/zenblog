@@ -49,7 +49,7 @@ p div {
 }
 
 .section {
-  @apply rounded-xl border bg-white;
+  @apply rounded-xl border border-zinc-300 bg-white;
 }
 
 .section-title {

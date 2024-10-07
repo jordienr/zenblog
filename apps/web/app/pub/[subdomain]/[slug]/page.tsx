@@ -43,7 +43,7 @@ export async function generateMetadata({
       type: "website",
       images: [
         {
-          url: `https://zenblog.com/api/og?title=${post?.title}&emoji=${blog?.emoji}&url=${blog?.title}`,
+          url: `https://zenblog.com/api/public/v1/og?title=${post?.title}&emoji=${blog?.emoji}&url=${blog?.title}`,
         },
       ],
     },

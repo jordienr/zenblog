@@ -70,14 +70,14 @@ export const contract = c.router(
             example: 0,
           }),
         }),
-        path: `/posts`,
+        path: `/blogs/:blogId/posts/`,
         responses: {
           200: z.array(GetPostsSchema),
         },
       },
       getBySlug: {
         method: "GET",
-        path: `/posts/:slug`,
+        path: `/blogs/:blogId/posts/:slug`,
         responses: {
           200: GetPostBySlugSchema,
         },

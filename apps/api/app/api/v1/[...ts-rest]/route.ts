@@ -4,23 +4,39 @@ import { TsRestResponseError } from "@ts-rest/core";
 import { TsRestResponse } from "@ts-rest/serverless";
 import { supabase } from "@/lib/db";
 import { ratelimit } from "@/lib/ratelimit";
+import bcrypt from "bcrypt";
 
-function getBlogIdFromToken(token: string) {
-  const key = token.split(" ")[1];
-  return supabase.from("blogs").select("id").eq("access_token", key).single();
+async function verifyAPIKey(header: string, blogId: string) {
+  const unhashedKey = header.split(" ")[1];
+
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("access_token")
+    .eq("id", blogId)
+    .single();
+
+  if (error) {
+    console.log("🔴 Error getting blog id from token:", error);
+    return false;
+  }
+
+  const isValid = await bcrypt.compare(unhashedKey, data?.access_token);
+
+  console.log("🔴 Is valid:", isValid);
+  return isValid;
 }
 
 const handler = createNextHandler(
   contract,
   {
     posts: {
-      get: async ({ headers, query }) => {
-        const { data: blog, error } = await getBlogIdFromToken(
-          headers.authorization
+      get: async ({ headers, query, params }) => {
+        const isValid = await verifyAPIKey(
+          headers.authorization,
+          params.blogId
         );
 
-        if (error) {
-          console.log("🔴 Error getting blog id from token:", error);
+        if (!isValid) {
           throw new TsRestResponseError(contract, {
             status: 401,
             body: {
@@ -29,7 +45,7 @@ const handler = createNextHandler(
           });
         }
 
-        if (blog?.id) {
+        if (params.blogId) {
           const offset = query.offset || 0;
           const limit = query.limit || 30;
 
@@ -40,7 +56,7 @@ const handler = createNextHandler(
             )
             .eq("deleted", false)
             .eq("published", true)
-            .eq("blog_id", blog.id)
+            .eq("blog_id", params.blogId)
             .order("published_at", { ascending: false })
             .range(offset, offset + limit - 1);
 
@@ -70,12 +86,12 @@ const handler = createNextHandler(
       },
       getBySlug: {
         handler: async ({ params, headers }) => {
-          const { data: blog, error } = await getBlogIdFromToken(
-            headers.authorization
+          const isValid = await verifyAPIKey(
+            headers.authorization,
+            params.blogId
           );
 
-          if (error) {
-            console.log("🔴 Error getting blog id from token:", error);
+          if (!isValid) {
             throw new TsRestResponseError(contract, {
               status: 401,
               body: {
@@ -84,15 +100,25 @@ const handler = createNextHandler(
             });
           }
 
-          if (blog?.id) {
+          if (params.blogId) {
+            console.log("🔴 Missing blogId");
+            throw new TsRestResponseError(contract, {
+              status: 401,
+              body: {
+                message: "Unauthorized",
+              },
+            });
+          }
+
+          if (params.slug) {
             const post = await supabase
               .from("posts")
               .select(
-                "title, published_at, created_at, slug, cover_image, html_content"
+                "title, published_at, created_at, slug, cover_image, html_content, category_name, category_slug"
               )
               .eq("deleted", false)
               .eq("published", true)
-              .eq("blog_id", blog.id)
+              .eq("blog_id", params.blogId)
               .eq("slug", params.slug)
               .single();
 
@@ -110,7 +136,7 @@ const handler = createNextHandler(
               body: post.data,
             };
           } else {
-            console.log("🔴 Error getting blog id from token:", error);
+            console.log("🔴 Missing slug");
             throw new TsRestResponseError(contract, {
               status: 401,
               body: {
@@ -143,7 +169,21 @@ const handler = createNextHandler(
     },
     requestMiddleware: [
       async (req, res) => {
-        const authorization = req.headers.get("authorization");
+        const authorization = req.headers.get("Authorization");
+        const blogId = req.params.blogId;
+
+        console.log("🔴 Blog ID:", blogId);
+
+        if (!blogId) {
+          console.log("🔴 Middleware: Missing blogId.");
+          throw new TsRestResponseError(contract, {
+            status: 401,
+            body: {
+              message: "Unauthorized. Missing blogId.",
+            },
+          });
+        }
+
         if (!authorization) {
           console.log("🔴 Middleware: Missing Authorization header.");
           throw new TsRestResponseError(contract, {

@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { docs } from "@/cms";
 import { ZendoLogo } from "@/components/ZendoLogo";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Github, Twitter } from "lucide-react";
@@ -17,8 +16,6 @@ const layout = async ({
     slug: string;
   };
 }>) => {
-  const posts = await docs.posts.list();
-
   return (
     <div className="mx-auto flex max-h-screen max-w-6xl">
       <aside className="flex min-h-screen min-w-[16rem] flex-col overflow-auto">
@@ -27,24 +24,7 @@ const layout = async ({
             <ZendoLogo />
           </Link>
         </div>
-        <ul className="flex-grow p-4 font-medium">
-          {posts.map((post) => (
-            <Link
-              data-state={params.slug === post.slug ? "active" : "inactive"}
-              className={
-                "group flex items-center gap-1 rounded-md p-1.5 text-zinc-600 transition-all hover:text-orange-600 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600"
-              }
-              key={post.slug}
-              href={"/docs/" + post.slug}
-            >
-              <ArrowRight
-                className="mr-1 inline-block text-inherit opacity-60"
-                size={16}
-              />
-              {post.title}
-            </Link>
-          ))}
-        </ul>
+        <ul className="flex-grow p-4 font-medium"></ul>
         <div className="mt-auto justify-self-end p-4 text-center text-xs text-zinc-500">
           <p>Docs site built with zenblog</p>
         </div>
