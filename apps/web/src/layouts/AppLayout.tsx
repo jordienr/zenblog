@@ -7,11 +7,18 @@ import Feedback from "@/components/Feedback";
 import Footer from "@/components/Footer";
 import { usePlan } from "@/queries/subscription";
 import AppChecks from "@/components/LoggedInUserChecks";
-import { Loader } from "lucide-react";
+import { ChevronDown, Loader } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useBlogsQuery } from "@/queries/blogs";
 
 type Props = {
   children?: React.ReactNode;
@@ -21,6 +28,9 @@ export default function AppLayout({ children, loading = false }: Props) {
   const plan = usePlan();
   const user = useUser();
   const router = useRouter();
+  const { data: blogs, isLoading: blogsLoading } = useBlogsQuery({
+    enabled: true,
+  });
 
   useEffect(() => {
     if (!user && !loading) {
@@ -30,37 +40,73 @@ export default function AppLayout({ children, loading = false }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
+  const selectedBlog = blogs?.find((blog) => blog.id === router.query.blogId);
+
   return (
-    <div
-      className={`flex min-h-screen flex-col border-b bg-zinc-50/50 font-sans`}
-    >
+    <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
       <TooltipProvider>
         <AppChecks>
-          <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl border-b bg-zinc-50/50 backdrop-blur-md">
+          <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl bg-zinc-50">
             <div className="mx-auto flex h-full items-center justify-between px-4">
               <div className="z-20  flex h-full items-center gap-2">
                 <Link
                   tabIndex={-1}
                   href="/blogs"
-                  className="rounded-md px-1 py-4 text-lg font-medium"
+                  className="flex items-center justify-center rounded-xl py-4 text-lg font-medium"
                 >
                   <ZendoLogo hideText />
                 </Link>
-                {plan === "pro" && (
-                  <div className="rounded-full bg-blue-50 p-1 px-2 text-xs font-medium text-blue-500">
-                    Pro plan
-                  </div>
-                )}
-                {plan === "free" && (
-                  <Link
-                    title="Upgrade to Pro"
-                    href="/account"
-                    className=" rounded-full
+                {selectedBlog && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      className="ml-6 flex items-center gap-2 rounded-lg border bg-white px-2 py-1 text-xs font-medium focus-visible:ring-0"
+                      disabled={blogsLoading}
+                    >
+                      <span className="mx-1 -mt-1 flex items-center text-lg">
+                        {selectedBlog?.emoji}
+                      </span>
+                      {selectedBlog?.title}
+                      {blogsLoading ? (
+                        <Loader
+                          className="animate-spin text-orange-500"
+                          size={16}
+                        />
+                      ) : (
+                        <div className="rounded-full p-1 px-2 text-xs font-medium text-blue-500">
+                          Pro
+                        </div>
+                      )}
+                      {plan === "free" && (
+                        <Link
+                          title="Upgrade to Pro"
+                          href="/account"
+                          className=" rounded-full
                  bg-emerald-100 p-1
                 px-2 text-center text-xs font-medium text-emerald-600"
-                  >
-                    Free
-                  </Link>
+                        >
+                          Free
+                        </Link>
+                      )}
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      className="-ml-1 w-48 rounded-lg"
+                    >
+                      {blogs?.map((blog) => (
+                        <DropdownMenuItem asChild key={blog.id}>
+                          <Link
+                            href={`/blogs/${blog.id}/posts`}
+                            className="flex items-center gap-1 px-3"
+                          >
+                            <span className="mr-1 flex items-center text-lg">
+                              {blog.emoji}
+                            </span>
+                            {blog.title}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
 

@@ -44,6 +44,7 @@ import { EditorMenu } from "./EditorMenu";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import { useCategories } from "@/queries/categories";
+import Image from "next/image";
 
 const formSchema = z.object({
   title: z.string(),
@@ -51,7 +52,7 @@ const formSchema = z.object({
   cover_image: z.string().optional(),
   content: z.any(),
   abstract: z.string().optional(),
-  category_id: z.number().optional(),
+  category_id: z.number().nullable(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -65,7 +66,7 @@ type OnSaveData = {
   published: boolean;
   metadata?: any;
   abstract?: string;
-  category_id?: number;
+  category_id: number | null;
   tags?: {
     id: string;
     name: string;
@@ -78,7 +79,6 @@ type Props = {
   onSave: (data: OnSaveData) => Promise<void>;
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
-  category_id?: number;
   tags?: { id: string; name: string; slug: string }[];
   autoCompleteSlug?: boolean;
   showPublishedDialog?: boolean;
@@ -93,7 +93,7 @@ export const ZendoEditor = (props: Props) => {
         slug: props.post?.slug || "",
         cover_image: props.post?.cover_image || "",
         abstract: props.post?.abstract || "",
-        category_id: props.category_id || 0,
+        category_id: props.post?.category_id || null,
       },
     });
   const router = useRouter();
@@ -405,26 +405,30 @@ export const ZendoEditor = (props: Props) => {
                 selectedTags={tags}
                 blogEmoji={blogQuery.data?.emoji}
                 blogTitle={blogQuery.data?.title}
-                category={selectedCategory}
+                category_id={getValues("category_id")}
                 published_at={publishedAt}
                 onChange={(data) => {
                   setMetadata(data.metadata);
                   setTags(data.tags);
                   setPublishedAt(data.published_at);
-                  setValue("category_id", data.category_id);
+                  if (data.category_id) {
+                    setValue("category_id", data.category_id);
+                  } else {
+                    setValue("category_id", null);
+                  }
                 }}
               />
             </SheetContent>
           </Sheet>
-          <Button type="submit" variant={hasChanges ? "default" : "outline"}>
+          <Button type="submit" variant={"default"}>
             <SaveIcon size={16} />
             Save
           </Button>
         </div>
       </form>
-      <div className="mx-auto flex w-full max-w-3xl flex-col rounded-md bg-white pb-6">
+      <div className="mx-auto flex w-full max-w-4xl flex-col rounded-md bg-white pb-6">
         {coverImgUrl && (
-          <div className="relative mt-2 flex items-center justify-center border-b">
+          <div className="relative mt-2 flex items-center justify-center">
             <button
               className="absolute -right-2 -top-2 z-10 rounded-full border bg-white p-1 shadow-sm"
               type="button"
@@ -436,7 +440,11 @@ export const ZendoEditor = (props: Props) => {
               <IoClose />
             </button>
 
-            <img className="max-h-96" src={coverImgUrl || ""} alt="" />
+            <img
+              className="max-h-96 rounded-xl"
+              src={coverImgUrl || ""}
+              alt=""
+            />
           </div>
         )}
 
@@ -578,7 +586,15 @@ export const ZendoEditor = (props: Props) => {
       <Dialog open={publishedDialog} onOpenChange={setPublishedDialog}>
         <DialogContent className="!max-w-xs">
           <h2 className="text-lg font-medium">🎉 Post published!</h2>
-          <p>Your post has been published! </p>
+          <Image
+            className="w-full rounded-md border"
+            src={`/api/public/og?title=${title}&emoji=${blogQuery.data?.emoji}&url=${blogQuery.data?.title}`}
+            loading="lazy"
+            blurDataURL="/api/public/og?title=Loading...&emoji=🚀&url=Loading..."
+            alt="og image"
+            width={600}
+            height={300}
+          />
           <Button
             variant={"secondary"}
             onClick={() => {

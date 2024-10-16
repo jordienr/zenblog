@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   const bgColor = searchParams.get("bgColor") || "#fafafa";
 
   const fontDataInterRegular = await fetch(
-    new URL("../../../assets/Inter-Regular.ttf", import.meta.url)
+    new URL("../../../../assets/Inter-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(

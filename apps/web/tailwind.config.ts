@@ -60,7 +60,7 @@ module.exports = {
         DEFAULT: "shadow",
       },
       borderColor: {
-        DEFAULT: "#EDEDED",
+        DEFAULT: "#e4e4e7",
       },
 
       colors: {

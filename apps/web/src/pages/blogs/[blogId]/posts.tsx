@@ -132,9 +132,6 @@ export default function BlogPosts() {
           >
             <div className="flex items-center justify-between">
               <TabsList className="w-full items-center">
-                <h1 className="px-6 font-medium capitalize text-zinc-800">
-                  {blog.title}
-                </h1>
                 <TabsTrigger value="posts">Posts</TabsTrigger>
                 <TabsTrigger onClick={() => {}} value="media">
                   Media
@@ -143,31 +140,99 @@ export default function BlogPosts() {
                   Tags
                 </TabsTrigger>
 
-                <div className="ml-auto flex flex-1 justify-end">
+                <div className="ml-auto flex flex-1 items-center justify-end gap-2">
                   <Link
                     href={`/blogs/${blog.id}/settings`}
-                    className="px-3 py-2 text-sm font-medium"
+                    className="px-3 py-1.5 text-sm font-medium"
                   >
                     Settings
                   </Link>
+                  <TabsContent asChild value="posts">
+                    <Button asChild>
+                      <Link href={`/blogs/${blog.id}/create`}>
+                        <Plus size="16" />
+                        New post
+                      </Link>
+                    </Button>
+                  </TabsContent>
+                  <TabsContent asChild value="media">
+                    <div className="flex gap-2">
+                      {selectedImages.length > 0 && (
+                        <>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setConfirmDeleteDialogOpen(true);
+                            }}
+                          >
+                            <TrashIcon size="16" />
+                            Delete {selectedImages.length}{" "}
+                            {selectedImages.length > 1 ? "files" : "file"}
+                          </Button>
+                          <ConfirmDialog
+                            open={confirmDeleteDialogOpen}
+                            onOpenChange={setConfirmDeleteDialogOpen}
+                            title="Are you sure you want to delete these files?"
+                            description="Blog posts that reference these files will be affected. This action cannot be undone."
+                            onConfirm={async () => {
+                              const paths = selectedImages.map(
+                                (img) => `${blogId}/${img.name}`
+                              );
+                              const { error, data } =
+                                await deleteMedia.mutateAsync(paths);
+
+                              if (error) {
+                                toast.error("Failed to delete images");
+                                return;
+                              }
+                              toast.success("Images deleted");
+                              setSelectedImages([]);
+                            }}
+                            dialogBody={
+                              <div>
+                                <h2 className="font-medium">
+                                  Files to delete:
+                                </h2>
+                                <ul className="font-mono text-red-500">
+                                  {selectedImages.map((img) => (
+                                    <li key={img.name}>{img.name}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            }
+                          />
+                        </>
+                      )}
+                      <Dialog
+                        open={showUploadDialog}
+                        onOpenChange={setShowUploadDialog}
+                      >
+                        <DialogTrigger asChild>
+                          <Button variant="ghost">
+                            <Upload size="16" />
+                            Upload
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="md:max-w-sm">
+                          <ImageUploader
+                            blogId={blogId}
+                            onSuccessfulUpload={() => {
+                              setShowUploadDialog(false);
+                              media.refetch();
+                            }}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </TabsContent>
+                  <TabsContent asChild value="tags">
+                    <CreateTagDialog blogId={blogId} />
+                  </TabsContent>
                 </div>
               </TabsList>
             </div>
             <TabsContent value="posts">
-              <TabSection
-                title={`${posts.length} Posts`}
-                actions={
-                  <Button asChild>
-                    <Link
-                      href={`/blogs/${blog.id}/create`}
-                      className="btn btn-secondary max-w-[120px]"
-                    >
-                      <Plus size="16" />
-                      New post
-                    </Link>
-                  </Button>
-                }
-              >
+              <TabSection title={`${posts.length} Posts`} actions={<></>}>
                 {posts.length === 0 && (
                   <div className="p-12 py-32 text-center">
                     <div className="text-2xl">✏️</div>
@@ -221,74 +286,7 @@ export default function BlogPosts() {
                     ? `${selectedImages.length} files selected`
                     : "Media"
                 }
-                actions={
-                  <div className="flex gap-2">
-                    {selectedImages.length > 0 && (
-                      <>
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setConfirmDeleteDialogOpen(true);
-                          }}
-                        >
-                          <TrashIcon size="16" />
-                          Delete {selectedImages.length}{" "}
-                          {selectedImages.length > 1 ? "files" : "file"}
-                        </Button>
-                        <ConfirmDialog
-                          open={confirmDeleteDialogOpen}
-                          onOpenChange={setConfirmDeleteDialogOpen}
-                          title="Are you sure you want to delete these files?"
-                          description="Blog posts that reference these files will be affected. This action cannot be undone."
-                          onConfirm={async () => {
-                            const paths = selectedImages.map(
-                              (img) => `${blogId}/${img.name}`
-                            );
-                            const { error, data } =
-                              await deleteMedia.mutateAsync(paths);
-
-                            if (error) {
-                              toast.error("Failed to delete images");
-                              return;
-                            }
-                            toast.success("Images deleted");
-                            setSelectedImages([]);
-                          }}
-                          dialogBody={
-                            <div>
-                              <h2 className="font-medium">Files to delete:</h2>
-                              <ul className="font-mono text-red-500">
-                                {selectedImages.map((img) => (
-                                  <li key={img.name}>{img.name}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          }
-                        />
-                      </>
-                    )}
-                    <Dialog
-                      open={showUploadDialog}
-                      onOpenChange={setShowUploadDialog}
-                    >
-                      <DialogTrigger asChild>
-                        <Button variant="ghost">
-                          <Upload size="16" />
-                          Upload
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="md:max-w-sm">
-                        <ImageUploader
-                          blogId={blogId}
-                          onSuccessfulUpload={() => {
-                            setShowUploadDialog(false);
-                            media.refetch();
-                          }}
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                }
+                actions={<></>}
               >
                 <>
                   {media.isLoading && (
@@ -332,7 +330,7 @@ export default function BlogPosts() {
             <TabsContent value="tags">
               <TabSection
                 title={tags.data?.length ? `${tags.data?.length} tags` : "Tags"}
-                actions={<CreateTagDialog blogId={blogId} />}
+                actions={<></>}
               >
                 <>
                   {tags.isLoading && (
@@ -484,7 +482,7 @@ function PostItem({
   return (
     <Link
       href={`/blogs/${blogId}/post/${post.slug}`}
-      className="flex flex-col gap-4 rounded-sm border-b px-3 py-1.5 ring-orange-300 transition-all hover:bg-zinc-50 md:flex-row md:items-center"
+      className="group flex flex-col gap-4 border-b px-3 py-1.5 transition-all md:flex-row md:items-center"
       key={post.slug}
     >
       <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
@@ -505,7 +503,9 @@ function PostItem({
         <div>
           <StatePill published={post.published || false} />
         </div>
-        <h2 className="ml-1 text-lg font-normal">{post.title}</h2>
+        <h2 className="ml-1 text-lg font-normal text-zinc-700 group-hover:text-zinc-950">
+          {post.title}
+        </h2>
         {post.tags && post.tags.length > 0 && (
           <div className="flex items-center gap-2">
             {post.tags?.map((tag: any) => (
@@ -520,7 +520,7 @@ function PostItem({
         )}
       </div>
       <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
-        <span>{formatDate(post.published_at || "")}</span>
+        <span className="font-mono">{formatDate(post.published_at || "")}</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -560,12 +560,6 @@ function TabSection({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="-mt-3 rounded-xl border bg-white py-2 shadow-sm">
-      <div className="flex justify-between border-b px-3 py-1 pb-3">
-        <h2 className="px-2 text-lg font-medium">{title}</h2>
-        {actions}
-      </div>
-      {children}
-    </div>
+    <div className="rounded-xl border bg-white py-2 shadow-sm">{children}</div>
   );
 }

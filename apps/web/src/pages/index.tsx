@@ -109,12 +109,12 @@ const Home = () => {
               </Link>
 
               <h1
-                className={`mt-2 p-1 text-xl font-medium text-zinc-800 lg:text-2xl xl:text-3xl`}
+                className={`mt-2 p-1 text-2xl font-medium text-zinc-800 lg:text-3xl xl:text-4xl`}
               >
                 A tiny blogging CMS
               </h1>
-              <div className="p-1 text-xl leading-4 text-zinc-400 md:leading-8 lg:text-2xl xl:text-3xl">
-                <p className="-mt-2 leading-6 lg:-mt-1">
+              <div className="p-1 text-2xl leading-4 text-zinc-400 md:leading-8 lg:text-3xl xl:text-4xl">
+                <p className="mt-1 leading-6">
                   Simple, fast, open-source headless blogging CMS
                 </p>
                 <Dialog>

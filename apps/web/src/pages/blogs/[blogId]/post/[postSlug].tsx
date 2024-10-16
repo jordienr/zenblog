@@ -5,7 +5,6 @@ import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 import { toast } from "sonner";
 import { usePostQuery } from "@/queries/posts";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
-import { useState } from "react";
 import { usePostTags } from "@/queries/tags";
 
 export default function Post() {
@@ -14,7 +13,6 @@ export default function Post() {
 
   const blogId = router.query.blogId as string;
   const postSlug = router.query.postSlug as string;
-  const hasPubQuery = router.query.pub as string;
 
   const sb = createSupabaseBrowserClient();
 
@@ -52,7 +50,6 @@ export default function Post() {
     <div className="">
       <ZendoEditor
         onSave={async (data) => {
-          console.log("Saved blog post", data);
           const { tags, ...newData } = data;
           try {
             // TO DO: move this to an rfc

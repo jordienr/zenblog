@@ -2,8 +2,7 @@ import { handle } from "hono/vercel";
 import { createClient } from "@/lib/server/supabase";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
-import { apiReference } from "@scalar/hono-api-reference";
-import { Context, Hono } from "hono";
+import { Hono } from "hono";
 import bcrypt from "bcrypt";
 
 async function verifyAPIKey(header: string, blogId: string) {

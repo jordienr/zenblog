@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  @apply antialiased;
+}
+
 input[type="checkbox"] {
   accent-color: theme("colors.orange.600");
 }
@@ -49,7 +53,7 @@ p div {
 }
 
 .section {
-  @apply rounded-xl border border-zinc-300 bg-white;
+  @apply rounded-xl border border-zinc-200 bg-white;
 }
 
 .section-title {

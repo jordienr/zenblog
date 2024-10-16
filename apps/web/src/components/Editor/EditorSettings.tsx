@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Code, Copy, Info, Plus, Trash } from "lucide-react";
+import { Code, Copy, Cross, Info, Plus, Trash, XIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { toast } from "sonner";
 import "react-datetime-picker/dist/DateTimePicker.css";
@@ -39,7 +39,7 @@ type Props = {
   published_at?: string;
   blogEmoji?: string;
   blogTitle?: string;
-  category?: { id: number; name: string };
+  category_id: number | null;
   onChange: ({
     metadata,
     tags,
@@ -49,7 +49,7 @@ type Props = {
     metadata: MetadataItem[];
     tags: Tag[];
     published_at?: string;
-    category_id?: number;
+    category_id: number | null;
   }) => void;
 };
 
@@ -97,7 +97,7 @@ const EditorSettings = (props: Props) => {
       props.onChange({
         tags: selectedTags,
         metadata,
-        category_id: props.category?.id,
+        category_id: props.category_id || null,
         published_at: date,
       });
     } catch (error) {
@@ -122,10 +122,14 @@ const EditorSettings = (props: Props) => {
 
     newMetadata[index]![type] = event.target.value;
     setMetadata(newMetadata);
-    props.onChange({ tags: selectedTags, metadata: newMetadata });
+    props.onChange({
+      tags: selectedTags,
+      metadata: newMetadata,
+      category_id: props.category_id || null,
+    });
   };
 
-  const ogImageUrl = `/api/public/v1/og?title=${props.title}&emoji=${props.blogEmoji}&url=${props.blogTitle}`;
+  const ogImageUrl = `/api/public/og?title=${props.title}&emoji=${props.blogEmoji}&url=${props.blogTitle}`;
 
   const { data: categories, isLoading: isCategoriesLoading } = useCategories();
   const { mutate: createCategory } = useCreateCategory();
@@ -146,9 +150,8 @@ const EditorSettings = (props: Props) => {
           <h2>Category</h2>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant={"ghost"} size="xs">
+              <Button variant={"ghost"} size="icon">
                 <Plus size={16} />
-                Add category
               </Button>
             </DialogTrigger>
             <DialogContent className="p-4 md:max-w-sm">
@@ -190,7 +193,7 @@ const EditorSettings = (props: Props) => {
             </div>
           ) : (
             <Select
-              value={props.category?.id.toString()}
+              value={props.category_id?.toString()}
               onValueChange={(e) => {
                 props.onChange({
                   tags: selectedTags,
@@ -199,9 +202,26 @@ const EditorSettings = (props: Props) => {
                 });
               }}
             >
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
+              <div className="flex items-center gap-2">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <div>
+                  <Button
+                    variant={"ghost"}
+                    size="icon"
+                    onClick={() => {
+                      props.onChange({
+                        tags: selectedTags,
+                        metadata: metadata,
+                        category_id: null,
+                      });
+                    }}
+                  >
+                    <XIcon size={16} />
+                  </Button>
+                </div>
+              </div>
               <SelectContent>
                 {categories?.map((category) => (
                   <SelectItem
@@ -394,6 +414,7 @@ const EditorSettings = (props: Props) => {
                       props.onChange({
                         tags: selectedTags,
                         metadata: newMetadata,
+                        category_id: props.category_id || null,
                       });
                     }}
                   >
@@ -438,7 +459,7 @@ const EditorSettings = (props: Props) => {
           className="mt-4 max-w-full rounded-md border"
           src={ogImageUrl}
           loading="lazy"
-          blurDataURL="/api/public/v1/og?title=Loading...&emoji=🚀&url=Loading..."
+          blurDataURL="/api/public/og?title=Loading...&emoji=🚀&url=Loading..."
           alt=""
           width={600}
           height={300}

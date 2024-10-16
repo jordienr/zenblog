@@ -130,7 +130,7 @@ export default function BlogSettings() {
 
   return (
     <AppLayout>
-      <div className="mx-auto mt-8 flex max-w-2xl flex-col gap-10 p-4 px-3">
+      <div className="mx-auto mt-8 flex max-w-4xl flex-col gap-10 p-4 px-3">
         <section className="section">
           <div className="p-3">
             <h1 className="text-xl font-medium">
