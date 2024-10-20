@@ -3,7 +3,9 @@
 ## Backlog
 
 - [] finish pagination in usePostsQuery
-- [] FAQ on homepage
+- [] Category management page
+- [] Categories in API + API Client
+- [x] FAQ on homepage
 - [] Nextjs example in homepage
 - [] Add tags to posts API
 - [] Fix deleting tags with posts

@@ -46,7 +46,8 @@ import { ImageUploader } from "@/components/Images/ImageUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { IntegrationGuide } from "@/components/integration-guide";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
-
+import { CategoriesPage } from "./categories";
+import { motion } from "framer-motion";
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
   if (published) {
@@ -74,7 +75,15 @@ export default function BlogPosts() {
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
 
   const { data: blog, isLoading: blogLoading } = useBlogQuery(blogId);
-  const { data: posts, isLoading: postsLoading } = usePostsQuery();
+
+  const POST_PAGE_SIZE = 10;
+  const {
+    data: posts,
+    isLoading: postsLoading,
+    fetchNextPage,
+  } = usePostsQuery({
+    pageSize: POST_PAGE_SIZE,
+  });
 
   const isLoading = blogLoading || postsLoading;
 
@@ -136,17 +145,22 @@ export default function BlogPosts() {
                 <TabsTrigger onClick={() => {}} value="media">
                   Media
                 </TabsTrigger>
+                <TabsTrigger onClick={() => {}} value="categories">
+                  Categories
+                </TabsTrigger>
                 <TabsTrigger onClick={() => {}} value="tags">
                   Tags
                 </TabsTrigger>
+                <TabsTrigger
+                  onClick={() => {
+                    router.push(`/blogs/${blogId}/settings`);
+                  }}
+                  value="settings"
+                >
+                  Settings
+                </TabsTrigger>
 
                 <div className="ml-auto flex flex-1 items-center justify-end gap-2">
-                  <Link
-                    href={`/blogs/${blog.id}/settings`}
-                    className="px-3 py-1.5 text-sm font-medium"
-                  >
-                    Settings
-                  </Link>
                   <TabsContent asChild value="posts">
                     <Button asChild>
                       <Link href={`/blogs/${blog.id}/create`}>
@@ -232,8 +246,11 @@ export default function BlogPosts() {
               </TabsList>
             </div>
             <TabsContent value="posts">
-              <TabSection title={`${posts.length} Posts`} actions={<></>}>
-                {posts.length === 0 && (
+              <TabSection
+                title={`${posts.pages.length * 4} Posts`}
+                actions={<></>}
+              >
+                {posts.pages.length === 0 && (
                   <div className="p-12 py-32 text-center">
                     <div className="text-2xl">✏️</div>
                     <div className="text-lg text-zinc-500">
@@ -249,33 +266,44 @@ export default function BlogPosts() {
                     </Button>
                   </div>
                 )}
-                {posts.map((post) => {
-                  return (
-                    <PostItem
-                      showClicks={true}
-                      key={post.post_id}
-                      post={post}
-                      blogId={blogId}
-                      onDeleteClick={async () => {
-                        const confirmed = window.confirm(
-                          "Are you sure you want to delete this post?"
-                        );
-                        if (!confirmed) return;
-                        try {
-                          await deletePostMutation.mutateAsync(
-                            post.post_id || ""
+                {posts.pages
+                  .flatMap((page) => page)
+                  .map((post) => {
+                    return (
+                      <PostItem
+                        showClicks={true}
+                        key={post?.post_id}
+                        post={post}
+                        blogId={blogId}
+                        onDeleteClick={async () => {
+                          const confirmed = window.confirm(
+                            "Are you sure you want to delete this post?"
                           );
-                          toast.success("Post deleted");
-                        } catch (error) {
-                          console.error(error);
-                          toast.error("Failed to delete post");
-                        }
-                      }}
-                    />
-                  );
-                })}
-                <div className="px-3 pt-2 text-center font-mono text-xs text-zinc-500">
-                  Total posts: {posts.length}
+                          if (!confirmed) return;
+                          try {
+                            await deletePostMutation.mutateAsync(
+                              post?.post_id || ""
+                            );
+                            toast.success("Post deleted");
+                          } catch (error) {
+                            console.error(error);
+                            toast.error("Failed to delete post");
+                          }
+                        }}
+                      />
+                    );
+                  })}
+                <div className="flex items-center gap-4 px-3 pt-2 text-center font-mono text-xs text-zinc-500">
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    onClick={() => {
+                      fetchNextPage();
+                    }}
+                  >
+                    Load more
+                  </Button>
+                  Showing {posts.pages.flatMap((page) => page).length} posts
                 </div>
               </TabSection>
             </TabsContent>
@@ -420,6 +448,11 @@ export default function BlogPosts() {
                 </>
               </TabSection>
             </TabsContent>
+            <TabsContent asChild value="categories">
+              <TabSection title="Categories" actions={<></>}>
+                <CategoriesPage />
+              </TabSection>
+            </TabsContent>
           </Tabs>
           <UpdateTagDialog
             tag={selectedTag}
@@ -481,9 +514,9 @@ function PostItem({
 }) {
   return (
     <Link
+      key={post.slug}
       href={`/blogs/${blogId}/post/${post.slug}`}
       className="group flex flex-col gap-4 border-b px-3 py-1.5 transition-all md:flex-row md:items-center"
-      key={post.slug}
     >
       <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
         {post.cover_image ? (

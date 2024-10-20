@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { createAPIClient } from "@/lib/http/api";
 import { useRouter } from "next/router";
 import { PropsWithChildren, useState } from "react";
 import { ImageUploader } from "./ImageUploader";
@@ -249,13 +248,13 @@ export function ImageItem({ image, selected, onClick }: ImageItem) {
       <div className="relative w-full">
         <img
           className={cn(
-            "h-32 w-full rounded-xl border border-zinc-100 object-cover shadow-sm",
+            "h-28 w-full rounded-xl border border-zinc-100 object-cover shadow-sm",
             {
-              "bg-blend-hue": selected,
+              "opacity-70": selected,
             }
           )}
-          width="48"
-          height="48"
+          width="32"
+          height="32"
           src={image.url}
         />
 

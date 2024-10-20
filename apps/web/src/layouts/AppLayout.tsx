@@ -7,7 +7,7 @@ import Feedback from "@/components/Feedback";
 import Footer from "@/components/Footer";
 import { usePlan } from "@/queries/subscription";
 import AppChecks from "@/components/LoggedInUserChecks";
-import { ChevronDown, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -58,36 +58,38 @@ export default function AppLayout({ children, loading = false }: Props) {
                 </Link>
                 {selectedBlog && (
                   <DropdownMenu>
-                    <DropdownMenuTrigger
-                      className="ml-6 flex items-center gap-2 rounded-lg border bg-white px-2 py-1 text-xs font-medium focus-visible:ring-0"
-                      disabled={blogsLoading}
-                    >
-                      <span className="mx-1 -mt-1 flex items-center text-lg">
-                        {selectedBlog?.emoji}
-                      </span>
-                      {selectedBlog?.title}
-                      {blogsLoading ? (
-                        <Loader
-                          className="animate-spin text-orange-500"
-                          size={16}
-                        />
-                      ) : (
-                        <div className="rounded-full p-1 px-2 text-xs font-medium text-blue-500">
-                          Pro
-                        </div>
-                      )}
-                      {plan === "free" && (
-                        <Link
-                          title="Upgrade to Pro"
-                          href="/account"
-                          className=" rounded-full
+                    <div className="flex items-center gap-2">
+                      <DropdownMenuTrigger
+                        className="ml-6 flex items-center gap-2 rounded-lg border bg-white px-2 py-1 text-xs font-medium focus-visible:ring-0"
+                        disabled={blogsLoading}
+                      >
+                        <span className="mx-1 -mt-1 flex items-center text-lg">
+                          {selectedBlog?.emoji}
+                        </span>
+                        {selectedBlog?.title}
+                        {blogsLoading ? (
+                          <Loader
+                            className="animate-spin text-orange-500"
+                            size={16}
+                          />
+                        ) : (
+                          <div className="rounded-full p-1 px-2 text-xs font-medium text-blue-500">
+                            Pro
+                          </div>
+                        )}
+                        {plan === "free" && (
+                          <Link
+                            title="Upgrade to Pro"
+                            href="/account"
+                            className=" rounded-full
                  bg-emerald-100 p-1
                 px-2 text-center text-xs font-medium text-emerald-600"
-                        >
-                          Free
-                        </Link>
-                      )}
-                    </DropdownMenuTrigger>
+                          >
+                            Free
+                          </Link>
+                        )}
+                      </DropdownMenuTrigger>
+                    </div>
                     <DropdownMenuContent
                       align="start"
                       className="-ml-1 w-48 rounded-lg"

@@ -1,22 +1,33 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
-export const usePostsQuery = () => {
+export const usePostsQuery = ({
+  pageSize = 10,
+}: { pageSize?: number } = {}) => {
   const sb = createSupabaseBrowserClient();
   const { query } = useRouter();
   const blogId = query.blogId || "";
 
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["posts", blogId],
     enabled: !!blogId,
-    queryFn: async () => {
+    initialPageParam: 0,
+    getNextPageParam: (lastPage: any, pages: any) => {
+      return lastPage.length > 0 ? pages.length * pageSize : undefined;
+    },
+    queryFn: async ({ pageParam = 0 }) => {
       const { data, error } = await sb
-        .from("posts_with_tags_v3")
+        .from("posts_v5")
         .select("*")
         .eq("blog_id", blogId)
         .eq("deleted", false)
-        .limit(50)
+        .range(pageParam, pageParam + pageSize)
         .order("created_at", { ascending: false });
 
       return data;
