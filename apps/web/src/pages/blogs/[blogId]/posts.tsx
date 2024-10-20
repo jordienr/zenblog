@@ -1,29 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
-import AppLayout from "@/layouts/AppLayout";
+import AppLayout, { Section } from "@/layouts/AppLayout";
 import { useRouter } from "next/router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Image,
-  ImageIcon,
-  ImageOff,
-  MoreVertical,
-  Pen,
-  Plus,
-  Trash,
-  TrashIcon,
-  Upload,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ImageIcon, Plus } from "lucide-react";
+
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useDeleteMediaMutation,
   useMediaQuery,
@@ -31,10 +15,7 @@ import {
 import { usePostsQuery } from "@/queries/posts";
 import { useBlogQuery } from "@/queries/blogs";
 import { formatDate } from "@/lib/utils";
-import { PiTag } from "react-icons/pi";
-import Spinner from "@/components/Spinner";
 import { useState } from "react";
-import { CreateTagDialog } from "@/components/Tags/CreateTagDialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import {
   useDeleteTagMutation,
@@ -44,12 +25,9 @@ import {
 import { UpdateTagDialog } from "@/components/Tags/UpdateTagDialog";
 import { Image, ImageSelector } from "@/components/Images/ImagePicker";
 import { useRouterTabs } from "@/hooks/useRouterTabs";
-import { ImageUploader } from "@/components/Images/ImageUploader";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { IntegrationGuide } from "@/components/integration-guide";
+
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
-import { CategoriesPage } from "./categories";
-import { motion } from "framer-motion";
+
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
   if (published) {
@@ -92,7 +70,6 @@ export default function BlogPosts() {
   const media = useMediaQuery(blogId, {
     enabled: tabValue === "media",
   });
-  const deleteMedia = useDeleteMediaMutation();
   const [selectedImages, setSelectedImages] = useState<Image[]>([]);
   const [selectedTag, setSelectedTag] = useState<{
     tag_id: string | null;
@@ -133,9 +110,21 @@ export default function BlogPosts() {
 
   if (blog && posts) {
     return (
-      <AppLayout loading={isLoading}>
-        <div className="mx-auto max-w-5xl p-4">
-          <Tabs
+      <AppLayout
+        loading={isLoading}
+        title="Posts"
+        actions={
+          <>
+            <Button asChild>
+              <Link href={`/blogs/${blog.id}/create`}>
+                <Plus size="16" />
+                New post
+              </Link>
+            </Button>
+          </>
+        }
+      >
+        {/* <Tabs
             value={tabValue || "posts"}
             onValueChange={(tabVal) => {
               onTabChange(tabVal);
@@ -161,202 +150,10 @@ export default function BlogPosts() {
                 >
                   Settings
                 </TabsTrigger>
-
-                <div className="ml-auto flex flex-1 items-center justify-end gap-2">
-                  <TabsContent asChild value="posts">
-                    <Button asChild>
-                      <Link href={`/blogs/${blog.id}/create`}>
-                        <Plus size="16" />
-                        New post
-                      </Link>
-                    </Button>
-                  </TabsContent>
-                  <TabsContent asChild value="media">
-                    <div className="flex gap-2">
-                      {selectedImages.length > 0 && (
-                        <>
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setConfirmDeleteDialogOpen(true);
-                            }}
-                          >
-                            <TrashIcon size="16" />
-                            Delete {selectedImages.length}{" "}
-                            {selectedImages.length > 1 ? "files" : "file"}
-                          </Button>
-                          <ConfirmDialog
-                            open={confirmDeleteDialogOpen}
-                            onOpenChange={setConfirmDeleteDialogOpen}
-                            title="Are you sure you want to delete these files?"
-                            description="Blog posts that reference these files will be affected. This action cannot be undone."
-                            onConfirm={async () => {
-                              const paths = selectedImages.map(
-                                (img) => `${blogId}/${img.name}`
-                              );
-                              const { error, data } =
-                                await deleteMedia.mutateAsync(paths);
-
-                              if (error) {
-                                toast.error("Failed to delete images");
-                                return;
-                              }
-                              toast.success("Images deleted");
-                              setSelectedImages([]);
-                            }}
-                            dialogBody={
-                              <div>
-                                <h2 className="font-medium">
-                                  Files to delete:
-                                </h2>
-                                <ul className="font-mono text-red-500">
-                                  {selectedImages.map((img) => (
-                                    <li key={img.name}>{img.name}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            }
-                          />
-                        </>
-                      )}
-                      <Dialog
-                        open={showUploadDialog}
-                        onOpenChange={setShowUploadDialog}
-                      >
-                        <DialogTrigger asChild>
-                          <Button variant="ghost">
-                            <Upload size="16" />
-                            Upload
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="md:max-w-sm">
-                          <ImageUploader
-                            blogId={blogId}
-                            onSuccessfulUpload={() => {
-                              setShowUploadDialog(false);
-                              media.refetch();
-                            }}
-                          />
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </TabsContent>
-                  <TabsContent asChild value="tags">
-                    <CreateTagDialog blogId={blogId} />
-                  </TabsContent>
-                </div>
               </TabsList>
             </div>
-            <TabsContent value="posts">
-              <TabSection
-                title={`${posts.pages.length * 4} Posts`}
-                actions={<></>}
-              >
-                {posts.pages.length === 0 && (
-                  <div className="p-12 py-32 text-center">
-                    <div className="text-2xl">✏️</div>
-                    <div className="text-lg text-zinc-500">
-                      Nothing here yet
-                    </div>
-                    <Button asChild>
-                      <Link
-                        href={`/blogs/${blog.id}/create`}
-                        className="btn btn-primary mx-auto mt-4 max-w-xs"
-                      >
-                        Publish your first post
-                      </Link>
-                    </Button>
-                  </div>
-                )}
-                {posts.pages
-                  .flatMap((page) => page)
-                  .map((post) => {
-                    return (
-                      <PostItem
-                        showClicks={true}
-                        key={post?.post_id}
-                        post={post}
-                        blogId={blogId}
-                        onDeleteClick={async () => {
-                          const confirmed = window.confirm(
-                            "Are you sure you want to delete this post?"
-                          );
-                          if (!confirmed) return;
-                          try {
-                            await deletePostMutation.mutateAsync(
-                              post?.post_id || ""
-                            );
-                            toast.success("Post deleted");
-                          } catch (error) {
-                            console.error(error);
-                            toast.error("Failed to delete post");
-                          }
-                        }}
-                      />
-                    );
-                  })}
-                <div className="flex items-center gap-4 px-3 pt-2 text-center font-mono text-xs text-zinc-500">
-                  <Button
-                    size="xs"
-                    variant="outline"
-                    onClick={() => {
-                      fetchNextPage();
-                    }}
-                  >
-                    Load more
-                  </Button>
-                  Showing {posts.pages.flatMap((page) => page).length} posts
-                </div>
-              </TabSection>
-            </TabsContent>
-            <TabsContent value="media">
-              <TabSection
-                title={
-                  selectedImages.length > 0
-                    ? `${selectedImages.length} files selected`
-                    : "Media"
-                }
-                actions={<></>}
-              >
-                <>
-                  {media.isLoading && (
-                    <>
-                      <div className="flex-center p-12">
-                        <Spinner />
-                      </div>
-                    </>
-                  )}
-
-                  {media.isLoading ||
-                    (media.isRefetching && (
-                      <div className="flex-center p-12">
-                        <Spinner />
-                      </div>
-                    ))}
-                  {media.data?.length === 0 ? (
-                    <>
-                      <div className="p-12 py-32 text-center">
-                        <div className="text-2xl">📷</div>
-                        <div className="text-lg text-zinc-500">
-                          No images uploaded yet
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="mt-3 flex flex-col gap-2 px-3">
-                      <ImageSelector
-                        images={media.data || []}
-                        onChange={(imgs) => {
-                          setSelectedImages(imgs);
-                        }}
-                        selected={selectedImages}
-                        type="multiple"
-                      />
-                    </div>
-                  )}
-                </>
-              </TabSection>
-            </TabsContent>
+           
+           
             <TabsContent value="tags">
               <TabSection
                 title={tags.data?.length ? `${tags.data?.length} tags` : "Tags"}
@@ -455,47 +252,61 @@ export default function BlogPosts() {
                 <CategoriesPage />
               </TabSection>
             </TabsContent>
-          </Tabs>
-          <UpdateTagDialog
-            tag={selectedTag}
-            onSubmit={async (newTag) => {
-              if (!newTag.tag_id) return;
-              const res = await updateTagMutation.mutateAsync({
-                name: newTag.tag_name,
-                slug: newTag.slug,
-                id: newTag.tag_id,
-              });
-              if (res.error) {
-                toast.error("Failed to update tag");
-                return;
-              }
-              setUpdateTagDialogOpen(false);
-              toast.success("Tag updated");
-            }}
-            open={updateTagDialogOpen}
-            onOpenChange={setUpdateTagDialogOpen}
-          />
-          <ConfirmDialog
-            title="Delete tag"
-            description="Are you sure you want to delete this tag? This action cannot be undone."
-            open={deleteTagDialogOpen}
-            onOpenChange={setDeleteTagDialogOpen}
-            onConfirm={async () => {
-              if (!selectedTag?.tag_id) return;
+          </Tabs> */}
 
-              const res = await deleteTagMutation.mutateAsync(
-                selectedTag.tag_id
+        <Section>
+          {posts.pages.length === 0 && (
+            <div className="p-12 py-32 text-center">
+              <div className="text-2xl">✏️</div>
+              <div className="text-lg text-zinc-500">Nothing here yet</div>
+              <Button asChild>
+                <Link
+                  href={`/blogs/${blog.id}/create`}
+                  className="btn btn-primary mx-auto mt-4 max-w-xs"
+                >
+                  Publish your first post
+                </Link>
+              </Button>
+            </div>
+          )}
+          {posts.pages
+            .flatMap((page) => page)
+            .map((post) => {
+              return (
+                <PostItem
+                  showClicks={true}
+                  key={post?.post_id}
+                  post={post}
+                  blogId={blogId}
+                  onDeleteClick={async () => {
+                    const confirmed = window.confirm(
+                      "Are you sure you want to delete this post?"
+                    );
+                    if (!confirmed) return;
+                    try {
+                      await deletePostMutation.mutateAsync(post?.post_id || "");
+                      toast.success("Post deleted");
+                    } catch (error) {
+                      console.error(error);
+                      toast.error("Failed to delete post");
+                    }
+                  }}
+                />
               );
-
-              if (res.error) {
-                toast.error("Failed to delete tag");
-                return;
-              }
-              setDeleteTagDialogOpen(false);
-              toast.success("Tag deleted");
-            }}
-          />
-        </div>
+            })}
+          <div className="flex items-center gap-4 px-3 pt-2 text-center font-mono text-xs text-zinc-500">
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={() => {
+                fetchNextPage();
+              }}
+            >
+              Load more
+            </Button>
+            Showing {posts.pages.flatMap((page) => page).length} posts
+          </div>
+        </Section>
       </AppLayout>
     );
   }
@@ -525,7 +336,7 @@ function PostItem({
           <img
             src={post.cover_image}
             alt="Cover image"
-            className="h-16 w-24 rounded-md bg-zinc-100 object-cover "
+            className="h-16 w-24 min-w-24 rounded-md bg-zinc-100 object-cover "
           />
         ) : (
           <div className="flex-center h-full">
@@ -582,19 +393,5 @@ function PostItem({
         </DropdownMenuContent>
       </DropdownMenu> */}
     </Link>
-  );
-}
-
-function TabSection({
-  title,
-  children,
-  actions,
-}: {
-  title: string;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-xl border bg-white py-2 shadow-sm">{children}</div>
   );
 }

@@ -13,6 +13,7 @@
 - [] Add categories to posts API
 - [] fix creating tags in tags tab
 - [] fix metadata format so that its {key:value} not [{key:foo,value:bar}]
+- [] pagination to media query
 
 ## Blogs
 

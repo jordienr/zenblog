@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { CornerUpLeft } from "lucide-react";
+import { CornerUpLeft, Loader } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -18,12 +18,19 @@ export default function SignIn() {
   const router = useRouter();
 
   useEffect(() => {
+    setLoading(true);
+    if (user) {
+      router.push("/blogs");
+      setLoading(false);
+      return;
+    }
     supabase.auth.getSession().then((res) => {
       if (res.data.session?.user) {
         router.push("/blogs");
       }
+      setLoading(false);
     });
-  }, [router, supabase]);
+  }, [router, supabase, user]);
 
   async function onSubmitMagicLink(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -77,6 +84,11 @@ export default function SignIn() {
           <CornerUpLeft size={18} />
         </Link>
       </div>
+      {loading && (
+        <div className="flex h-[600px] items-center justify-center">
+          <Loader className="animate-spin text-orange-500" size={24} />
+        </div>
+      )}
       <form className="mt-4 flex flex-col gap-2" onSubmit={onSubmit}>
         <h1 className="text-2xl font-medium">Sign in with Password</h1>
 

@@ -19,12 +19,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useBlogsQuery } from "@/queries/blogs";
+import { cn } from "@/lib/utils";
 
 type Props = {
   children?: React.ReactNode;
   loading?: boolean;
+  title?: string;
+  actions?: React.ReactNode;
 };
-export default function AppLayout({ children, loading = false }: Props) {
+export default function AppLayout({
+  children,
+  loading = false,
+  title,
+  actions,
+}: Props) {
   const plan = usePlan();
   const user = useUser();
   const router = useRouter();
@@ -42,54 +50,78 @@ export default function AppLayout({ children, loading = false }: Props) {
 
   const selectedBlog = blogs?.find((blog) => blog.id === router.query.blogId);
 
+  const BlogNavItems = [
+    {
+      label: "Posts",
+      href: `/blogs/${selectedBlog?.id}/posts`,
+    },
+    {
+      label: "Media",
+      href: `/blogs/${selectedBlog?.id}/media`,
+    },
+    {
+      label: "Tags",
+      href: `/blogs/${selectedBlog?.id}/tags`,
+    },
+    {
+      label: "Categories",
+      href: `/blogs/${selectedBlog?.id}/categories`,
+    },
+    {
+      label: "Settings",
+      href: `/blogs/${selectedBlog?.id}/settings`,
+    },
+  ];
+
   return (
     <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
       <TooltipProvider>
         <AppChecks>
-          <nav className="sticky top-0 z-20 mx-auto w-full max-w-5xl bg-zinc-50">
-            <div className="mx-auto flex h-full items-center justify-between px-4">
-              <div className="z-20  flex h-full items-center gap-2">
-                <Link
-                  tabIndex={-1}
-                  href="/blogs"
-                  className="flex items-center justify-center rounded-xl py-4 text-lg font-medium"
-                >
-                  <ZendoLogo hideText />
-                </Link>
+          <nav className="mx-auto w-full bg-white">
+            <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-2">
+              <div className="flex h-full items-center py-3">
+                {!selectedBlog && (
+                  <Link
+                    tabIndex={-1}
+                    href="/blogs"
+                    className="flex items-center justify-center rounded-xl py-4 text-lg font-medium"
+                  >
+                    <ZendoLogo hideText />
+                  </Link>
+                )}
                 {selectedBlog && (
                   <DropdownMenu>
-                    <div className="flex items-center gap-2">
-                      <DropdownMenuTrigger
-                        className="ml-6 flex items-center gap-2 rounded-lg border bg-white px-2 py-1 text-xs font-medium focus-visible:ring-0"
-                        disabled={blogsLoading}
-                      >
-                        <span className="mx-1 -mt-1 flex items-center text-lg">
-                          {selectedBlog?.emoji}
-                        </span>
-                        {selectedBlog?.title}
-                        {blogsLoading ? (
-                          <Loader
-                            className="animate-spin text-orange-500"
-                            size={16}
-                          />
-                        ) : (
-                          <div className="rounded-full p-1 px-2 text-xs font-medium text-blue-500">
-                            Pro
-                          </div>
-                        )}
-                        {plan === "free" && (
-                          <Link
-                            title="Upgrade to Pro"
-                            href="/account"
-                            className=" rounded-full
+                    <DropdownMenuTrigger
+                      className="flex items-center gap-2 rounded-lg py-1 text-xs font-medium hover:bg-zinc-50 focus-visible:ring-0"
+                      disabled={blogsLoading}
+                    >
+                      <span className="mx-1 flex h-7 w-7 items-center justify-center rounded-full border bg-zinc-50 text-lg">
+                        {selectedBlog?.emoji}
+                      </span>
+                      {selectedBlog?.title}
+                      {blogsLoading ? (
+                        <Loader
+                          className="animate-spin text-orange-500"
+                          size={16}
+                        />
+                      ) : (
+                        <div className="rounded-full p-1 px-2 text-xs font-medium text-blue-500">
+                          Pro
+                        </div>
+                      )}
+                      {plan === "free" && (
+                        <Link
+                          title="Upgrade to Pro"
+                          href="/account"
+                          className=" rounded-full
                  bg-emerald-100 p-1
                 px-2 text-center text-xs font-medium text-emerald-600"
-                          >
-                            Free
-                          </Link>
-                        )}
-                      </DropdownMenuTrigger>
-                    </div>
+                        >
+                          Free
+                        </Link>
+                      )}
+                    </DropdownMenuTrigger>
+
                     <DropdownMenuContent
                       align="start"
                       className="-ml-1 w-48 rounded-lg"
@@ -143,19 +175,94 @@ export default function AppLayout({ children, loading = false }: Props) {
               <Loader className="animate-spin text-orange-500" size={32} />
             </div>
           ) : (
-            <motion.main
-              id="main"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="min-h-screen pb-24"
-            >
-              {children}
-            </motion.main>
+            <div className="">
+              {selectedBlog && (
+                <div className="border-b bg-white">
+                  <div className="mx-auto flex max-w-5xl items-center px-2">
+                    {BlogNavItems.map((item) => (
+                      <NavItem
+                        key={item.href}
+                        href={item.href}
+                        selected={item.href === router.asPath}
+                      >
+                        {item.label}
+                      </NavItem>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+                <SectionTitle>{title}</SectionTitle>
+                <SectionActions>{actions}</SectionActions>
+              </div>
+
+              <motion.main
+                id="main"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="mx-auto min-h-screen max-w-5xl px-3 pb-8"
+              >
+                {children}
+              </motion.main>
+            </div>
           )}
           <Footer />
         </AppChecks>
       </TooltipProvider>
     </div>
   );
+}
+
+function NavItem({
+  children,
+  href,
+  selected,
+}: {
+  children: React.ReactNode;
+  href: string;
+  selected?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        `relative flex items-center gap-1 px-2 py-2 text-sm font-medium text-zinc-600 md:px-2 md:py-1`,
+        {
+          "text-zinc-950": selected,
+          "after:absolute after:inset-x-0 after:bottom-[-1px] after:z-10 after:h-[2px] after:w-full after:bg-orange-500 after:content-['']":
+            selected,
+        }
+      )}
+    >
+      {children}
+    </Link>
+  );
+}
+
+export function Section({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("rounded-xl border bg-white py-2 shadow-sm", className)}>
+      {children}
+    </div>
+  );
+}
+
+export function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between px-4">{children}</div>
+  );
+}
+
+export function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-lg font-medium">{children}</h2>;
+}
+export function SectionActions({ children }: { children: React.ReactNode }) {
+  return <div className="flex items-center gap-2">{children}</div>;
 }

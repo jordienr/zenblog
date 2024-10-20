@@ -1,4 +1,4 @@
-import AppLayout from "@/layouts/AppLayout";
+import AppLayout, { Section } from "@/layouts/AppLayout";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,6 +27,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { Separator } from "@radix-ui/react-select";
 
 export default function BlogSettings() {
   type FormData = {
@@ -129,10 +130,10 @@ export default function BlogSettings() {
   }
 
   return (
-    <AppLayout>
-      <div className="mx-auto mt-8 flex max-w-4xl flex-col gap-10 p-4 px-3">
-        <section className="section">
-          <div className="p-3">
+    <AppLayout title="Settings">
+      <div className="space-y-4">
+        <Section>
+          <div className="px-4">
             <h1 className="text-xl font-medium">
               {blog.emoji} {blog.title}
             </h1>
@@ -191,9 +192,9 @@ export default function BlogSettings() {
               </div>
             </form>
           </div>
-        </section>
+        </Section>
 
-        <section className="section p-3">
+        <Section className="p-4">
           <h2 className="text-lg font-medium">Blog API key</h2>
           <p className="text-zinc-500">
             Use this key to fetch your blogs content through the API.
@@ -262,9 +263,11 @@ export default function BlogSettings() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-        </section>
+        </Section>
 
-        <section className="section border bg-white p-3">
+        <div className="py-8 text-center text-zinc-400">~</div>
+
+        <Section className="p-4">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
             Danger zone
           </h2>
@@ -281,7 +284,7 @@ export default function BlogSettings() {
               Delete blog
             </Button>
           </div>
-        </section>
+        </Section>
       </div>
     </AppLayout>
   );
