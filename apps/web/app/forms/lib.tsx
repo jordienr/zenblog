@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import React from "react";
 import { z } from "zod";
 
@@ -71,8 +72,16 @@ z.ZodType.prototype.defaultValue = function (defaultValue: any) {
   return this;
 };
 
-const InputGroup = ({ children }: { children: React.ReactNode }) => (
-  <div className="zf-input-group flex flex-col space-y-2">{children}</div>
+const InputGroup = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div className={cn("zf-input-group flex flex-col space-y-2", className)}>
+    {children}
+  </div>
 );
 
 // Renderer

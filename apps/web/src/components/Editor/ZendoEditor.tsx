@@ -360,17 +360,17 @@ export const ZendoEditor = (props: Props) => {
                   className="-mt-1 max-w-[240px]"
                 >
                   {postsQuery.data?.pages
-                    .flatMap((page) => page.data)
+                    .flatMap((page) => page)
                     .map((post) => (
-                      <DropdownMenuItem key={post.post_id} asChild>
+                      <DropdownMenuItem key={post?.post_id} asChild>
                         <Link
-                          href={`/blogs/${blogId}/post/${post.slug}`}
+                          href={`/blogs/${blogId}/post/${post?.slug}`}
                           className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
                         >
                           <span className="text-xs">
-                            {post.published ? "🟢" : "🟠"}
+                            {post?.published ? "🟢" : "🟠"}
                           </span>
-                          <span>{post.title}</span>
+                          <span>{post?.title}</span>
                         </Link>
                       </DropdownMenuItem>
                     ))}

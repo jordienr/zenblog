@@ -20,7 +20,7 @@ export default function CreatePost() {
             console.log("category", post.category_id);
             if (post.category_id === 0) {
               // remove category_id from post
-              delete post.category_id;
+              post.category_id = null;
             }
             const { data, error } = await supa
               .from("posts")

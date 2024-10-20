@@ -18,7 +18,9 @@ export default function CustomisePreview() {
   } as Blog;
 
   const posts = usePostsQuery();
-  const publishedPosts = posts.data?.filter((post) => post.published);
+  const publishedPosts = posts.data?.pages
+    .flatMap((page) => page)
+    .filter((post) => post?.published);
 
   if (posts.isLoading) return null;
 
