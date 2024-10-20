@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useBlogsQuery } from "@/queries/blogs";
 import { cn } from "@/lib/utils";
+import Head from "next/head";
 
 type Props = {
   children?: React.ReactNode;
@@ -75,6 +76,14 @@ export default function AppLayout({
 
   return (
     <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
+      <Head>
+        <title>zenblog</title>
+        <meta
+          name="description"
+          content="Simple, open source, headless, blogging CMS."
+        />
+        <link rel="icon" href="/static/favicon.ico" />
+      </Head>
       <TooltipProvider>
         <AppChecks>
           <nav

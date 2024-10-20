@@ -55,7 +55,7 @@ const Home = () => {
         <title>zenblog - a tiny blogging cms</title>
         <meta
           name="description"
-          content="Simple, open source, headless blogging CMS."
+          content="Simple, open source, headless, blogging CMS."
         />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>

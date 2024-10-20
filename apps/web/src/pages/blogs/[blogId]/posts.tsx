@@ -164,7 +164,8 @@ export default function BlogPosts() {
                 />
               );
             })}
-          <div className="flex items-center gap-4 px-3 pt-2 text-center font-mono text-xs text-zinc-500">
+          <div className="flex items-center justify-end gap-4 px-3 pt-2 text-center font-mono text-xs text-zinc-500">
+            Showing {posts.pages.flatMap((page) => page).length} posts
             <Button
               size="xs"
               variant="outline"
@@ -174,7 +175,6 @@ export default function BlogPosts() {
             >
               Load more
             </Button>
-            Showing {posts.pages.flatMap((page) => page).length} posts
           </div>
         </Section>
       </AppLayout>
@@ -199,7 +199,7 @@ function PostItem({
     <Link
       key={post.slug}
       href={`/blogs/${blogId}/post/${post.slug}`}
-      className="group flex flex-col gap-4 border-b px-3 py-2 transition-all hover:border-zinc-300 md:flex-row md:items-center"
+      className="borer-zinc-100 group flex flex-col gap-4 border-b px-3 py-2 transition-all hover:border-zinc-300 md:flex-row md:items-center"
     >
       <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
         {post.cover_image ? (
