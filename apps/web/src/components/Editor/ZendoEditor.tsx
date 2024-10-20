@@ -359,19 +359,21 @@ export const ZendoEditor = (props: Props) => {
                   align="start"
                   className="-mt-1 max-w-[240px]"
                 >
-                  {postsQuery.data?.map((post) => (
-                    <DropdownMenuItem key={post.post_id} asChild>
-                      <Link
-                        href={`/blogs/${blogId}/post/${post.slug}`}
-                        className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
-                      >
-                        <span className="text-xs">
-                          {post.published ? "🟢" : "🟠"}
-                        </span>
-                        <span>{post.title}</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
+                  {postsQuery.data?.pages
+                    .flatMap((page) => page.data)
+                    .map((post) => (
+                      <DropdownMenuItem key={post.post_id} asChild>
+                        <Link
+                          href={`/blogs/${blogId}/post/${post.slug}`}
+                          className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
+                        >
+                          <span className="text-xs">
+                            {post.published ? "🟢" : "🟠"}
+                          </span>
+                          <span>{post.title}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

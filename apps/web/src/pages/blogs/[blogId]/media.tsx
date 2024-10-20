@@ -31,7 +31,7 @@ export default function MediaPage() {
           {selectedImages.length > 0 && (
             <>
               <Button
-                variant="outline"
+                variant="destructive"
                 onClick={() => {
                   setConfirmDeleteDialogOpen(true);
                 }}
@@ -73,9 +73,9 @@ export default function MediaPage() {
           )}
           <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
             <DialogTrigger asChild>
-              <Button variant="ghost">
+              <Button variant="outline">
                 <Upload size="16" />
-                Upload
+                Upload media
               </Button>
             </DialogTrigger>
             <DialogContent className="md:max-w-sm">

@@ -20,20 +20,20 @@ export default function Dashboard() {
   const [hovering, setHovering] = useState("");
 
   return (
-    <AppLayout loading={isLoading}>
-      <div className="mt-8 min-h-screen">
+    <AppLayout
+      loading={isLoading}
+      title="My blogs"
+      actions={
+        <Button variant="outline" asChild>
+          <Link href="/blogs/create">
+            <Plus />
+            Create blog
+          </Link>
+        </Button>
+      }
+    >
+      <div className="min-h-screen">
         <div className="mx-auto max-w-5xl">
-          <div className="flex items-center justify-between p-3">
-            <h1 className="text-lg font-medium">My blogs</h1>
-            <div>
-              <Button variant="outline" asChild>
-                <Link href="/blogs/create">
-                  <Plus />
-                  Create blog
-                </Link>
-              </Button>
-            </div>
-          </div>
           {data?.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="rounded-xl border bg-white p-2 shadow-sm">
@@ -48,7 +48,7 @@ export default function Dashboard() {
               </Button>
             </div>
           )}
-          <ul className="mx-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {data?.map((blog) => {
               return (
                 <li

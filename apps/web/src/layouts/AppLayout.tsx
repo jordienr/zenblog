@@ -77,16 +77,21 @@ export default function AppLayout({
     <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
       <TooltipProvider>
         <AppChecks>
-          <nav className="mx-auto w-full bg-white">
+          <nav
+            className={cn("mx-auto w-full bg-white", {
+              "border-b shadow-sm": !selectedBlog,
+            })}
+          >
             <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-2">
               <div className="flex h-full items-center py-3">
                 {!selectedBlog && (
                   <Link
                     tabIndex={-1}
                     href="/blogs"
-                    className="flex items-center justify-center rounded-xl py-4 text-lg font-medium"
+                    className="flex items-center justify-center rounded-xl px-1 py-4 text-lg font-medium"
                   >
                     <ZendoLogo hideText />
+                    <span className="ml-2">zenblog</span>
                   </Link>
                 )}
                 {selectedBlog && (
@@ -155,7 +160,7 @@ export default function AppLayout({
                 Skip to content
               </a>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 pr-2">
                 <Feedback />
                 {/* <Link
                 className="rounded-full px-3 py-4 text-sm font-medium text-slate-600 hover:text-orange-600"
@@ -170,27 +175,27 @@ export default function AppLayout({
               </div>
             </div>
           </nav>
+          {selectedBlog && (
+            <div className="border-b bg-white shadow-sm">
+              <div className="mx-auto flex max-w-5xl items-center px-2">
+                {BlogNavItems.map((item) => (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    selected={item.href === router.asPath}
+                  >
+                    {item.label}
+                  </NavItem>
+                ))}
+              </div>
+            </div>
+          )}
           {loading ? (
             <div className="flex h-[600px] items-center justify-center">
               <Loader className="animate-spin text-orange-500" size={32} />
             </div>
           ) : (
             <div className="">
-              {selectedBlog && (
-                <div className="border-b bg-white">
-                  <div className="mx-auto flex max-w-5xl items-center px-2">
-                    {BlogNavItems.map((item) => (
-                      <NavItem
-                        key={item.href}
-                        href={item.href}
-                        selected={item.href === router.asPath}
-                      >
-                        {item.label}
-                      </NavItem>
-                    ))}
-                  </div>
-                </div>
-              )}
               <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
                 <SectionTitle>{title}</SectionTitle>
                 <SectionActions>{actions}</SectionActions>
@@ -227,7 +232,7 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        `relative flex items-center gap-1 px-2 py-2 text-sm font-medium text-zinc-600 md:px-2 md:py-1`,
+        `relative flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-50 md:px-2 md:py-1`,
         {
           "text-zinc-950": selected,
           "after:absolute after:inset-x-0 after:bottom-[-1px] after:z-10 after:h-[2px] after:w-full after:bg-orange-500 after:content-['']":

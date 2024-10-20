@@ -22,7 +22,7 @@ const UserButton = (props: Props) => {
         <DropdownMenuTrigger className="flex items-center gap-2 rounded-full">
           <div
             className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800 font-bold text-white"
+              "flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-b from-slate-700 to-slate-900 font-bold text-white transition-all hover:brightness-125"
             )}
           >
             {user?.email?.slice(0, 1).toUpperCase()}
