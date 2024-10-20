@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
+  Image,
+  ImageIcon,
   ImageOff,
   MoreVertical,
   Pen,
@@ -52,13 +54,13 @@ export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
   if (published) {
     return (
-      <span className="rounded-md bg-green-50 px-2 py-1 text-xs font-semibold text-green-500">
+      <span className="rounded-md border border-green-200 bg-green-50 px-2 py-1 text-xs font-semibold text-green-500">
         {text}
       </span>
     );
   }
   return (
-    <span className="rounded-md bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-500">
+    <span className="rounded-md border border-orange-200 bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-500">
       {text}
     </span>
   );
@@ -516,7 +518,7 @@ function PostItem({
     <Link
       key={post.slug}
       href={`/blogs/${blogId}/post/${post.slug}`}
-      className="group flex flex-col gap-4 border-b px-3 py-1.5 transition-all md:flex-row md:items-center"
+      className="group flex flex-col gap-4 border-b px-3 py-2 transition-all hover:border-zinc-300 md:flex-row md:items-center"
     >
       <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
         {post.cover_image ? (
@@ -527,15 +529,12 @@ function PostItem({
           />
         ) : (
           <div className="flex-center h-full">
-            <ImageOff size="20" className="text-zinc-400" />
+            <ImageIcon size="20" className="text-zinc-400" />
           </div>
         )}
       </div>
 
       <div className="flex flex-col gap-0.5">
-        <div>
-          <StatePill published={post.published || false} />
-        </div>
         <h2 className="ml-1 text-lg font-normal text-zinc-700 group-hover:text-zinc-950">
           {post.title}
         </h2>
@@ -552,33 +551,36 @@ function PostItem({
           </div>
         )}
       </div>
-      <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
+      <div className="ml-auto flex flex-col items-end gap-2 text-xs text-zinc-500">
+        <div>
+          <StatePill published={post.published || false} />
+        </div>
         <span className="font-mono">{formatDate(post.published_at || "")}</span>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant={"ghost"}
-              size={"icon"}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              <MoreVertical size="16" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              onClick={async (e) => {
-                e.stopPropagation();
-                onDeleteClick();
-              }}
-            >
-              <Trash size="16" />
-              <span className="ml-2">Delete</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
+      {/* <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant={"ghost"}
+            size={"icon"}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <MoreVertical size="16" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={async (e) => {
+              e.stopPropagation();
+              onDeleteClick();
+            }}
+          >
+            <Trash size="16" />
+            <span className="ml-2">Delete</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu> */}
     </Link>
   );
 }
