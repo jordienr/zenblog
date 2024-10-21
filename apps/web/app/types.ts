@@ -13,7 +13,7 @@ export type Post = {
   title: string;
   published_at: string;
   slug: string;
-  abstract?: string;
+  excerpt?: string;
 };
 
 export type BlogHomeProps = {

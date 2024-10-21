@@ -53,8 +53,8 @@ export function InstrumentHome({ posts, blog, disableLinks }: BlogHomeProps) {
                       </p>
                     </div>
                     <div>
-                      {post.abstract && (
-                        <p className="text-zinc-400">{post.abstract}</p>
+                      {post.excerpt && (
+                        <p className="text-zinc-400">{post.excerpt}</p>
                       )}
                     </div>
                   </Link>

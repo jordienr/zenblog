@@ -21,7 +21,7 @@ const BasePostSchema = z.object({
     description: "The cover image of the post",
     example: "https://example.com/cover.jpg",
   }),
-  abstract: z.string().optional().openapi({
+  excerpt: z.string().optional().openapi({
     description: "The excerpt of the post",
     example: "This is my first post!",
   }),

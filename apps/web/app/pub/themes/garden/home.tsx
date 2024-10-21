@@ -95,7 +95,7 @@ export function GardenHome({ blog, posts, disableLinks }: BlogHomeProps) {
               </div>
               <div className="flex h-full w-full flex-col leading-5">
                 <h3 className="font-medium">{post.title}</h3>
-                <p className="text-xs text-gray-500">{post.abstract}</p>
+                <p className="text-xs text-gray-500">{post.excerpt}</p>
                 <p className="mt-4 justify-self-end text-right align-bottom font-mono text-xs text-gray-300 group-hover:text-gray-400">
                   {formatPostDate(post.published_at)}
                 </p>

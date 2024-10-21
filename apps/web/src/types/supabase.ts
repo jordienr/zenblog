@@ -230,13 +230,6 @@ export type Database = {
             referencedColumns: ["post_id"]
           },
           {
-            foreignKeyName: "post_tags_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts_with_blog_and_subscription_status_v2"
-            referencedColumns: ["post_id"]
-          },
-          {
             foreignKeyName: "post_tags_tag_id_fkey"
             columns: ["tag_id"]
             isOneToOne: false
@@ -254,13 +247,13 @@ export type Database = {
       }
       posts: {
         Row: {
-          abstract: string
           blog_id: string
           category_id: number | null
           content: Json
           cover_image: string | null
           created_at: string
           deleted: boolean
+          excerpt: string
           html_content: string
           id: string
           metadata: Json[] | null
@@ -272,13 +265,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          abstract?: string
           blog_id: string
           category_id?: number | null
           content?: Json
           cover_image?: string | null
           created_at?: string
           deleted?: boolean
+          excerpt?: string
           html_content?: string
           id?: string
           metadata?: Json[] | null
@@ -290,13 +283,13 @@ export type Database = {
           user_id?: string
         }
         Update: {
-          abstract?: string
           blog_id?: string
           category_id?: number | null
           content?: Json
           cover_image?: string | null
           created_at?: string
           deleted?: boolean
+          excerpt?: string
           html_content?: string
           id?: string
           metadata?: Json[] | null
@@ -465,7 +458,6 @@ export type Database = {
       }
       posts_v5: {
         Row: {
-          abstract: string | null
           blog_id: string | null
           blog_slug: string | null
           category_name: string | null
@@ -474,34 +466,8 @@ export type Database = {
           cover_image: string | null
           created_at: string | null
           deleted: boolean | null
+          excerpt: string | null
           html_content: string | null
-          metadata: Json[] | null
-          post_id: string | null
-          published: boolean | null
-          published_at: string | null
-          slug: string | null
-          subscription_status: string | null
-          tags: string[] | null
-          title: string | null
-          updated_at: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "posts_blog_id_fkey"
-            columns: ["blog_id"]
-            isOneToOne: false
-            referencedRelation: "blogs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      posts_with_blog_and_subscription_status_v2: {
-        Row: {
-          blog_id: string | null
-          content: Json | null
-          cover_image: string | null
-          created_at: string | null
-          deleted: boolean | null
           metadata: Json[] | null
           post_id: string | null
           published: boolean | null

@@ -51,7 +51,7 @@ const formSchema = z.object({
   slug: z.string(),
   cover_image: z.string().optional(),
   content: z.any(),
-  abstract: z.string().optional(),
+  excerpt: z.string().optional(),
   category_id: z.number().nullable(),
 });
 
@@ -65,7 +65,7 @@ type OnSaveData = {
   cover_image?: string;
   published: boolean;
   metadata?: any;
-  abstract?: string;
+  excerpt?: string;
   category_id: number | null;
   tags?: {
     id: string;
@@ -92,7 +92,7 @@ export const ZendoEditor = (props: Props) => {
         title: props.post?.title || "",
         slug: props.post?.slug || "",
         cover_image: props.post?.cover_image || "",
-        abstract: props.post?.abstract || "",
+        excerpt: props.post?.excerpt || "",
         category_id: props.post?.category_id || null,
       },
     });
@@ -222,7 +222,7 @@ export const ZendoEditor = (props: Props) => {
       published_at: publishedAt || new Date().toISOString(),
       metadata,
       tags,
-      abstract: data.abstract,
+      excerpt: data.excerpt,
       category_id,
     });
   });
@@ -559,7 +559,7 @@ export const ZendoEditor = (props: Props) => {
 
           <div className="mt-4 text-sm text-zinc-800">
             <textarea
-              {...register("abstract")}
+              {...register("excerpt")}
               className="w-full resize-none rounded-lg p-1.5 outline-none transition-all focus:bg-zinc-100"
               placeholder="Excerpt"
             />

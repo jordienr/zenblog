@@ -170,6 +170,14 @@ export default function AppLayout({
               </a>
 
               <div className="flex items-center gap-1 pr-2">
+                <Link
+                  title="API docs"
+                  target="_blank"
+                  className="rounded-full px-3 py-4 text-sm font-medium text-slate-600 hover:text-orange-600"
+                  href="/docs"
+                >
+                  Docs
+                </Link>
                 <Feedback />
                 {/* <Link
                 className="rounded-full px-3 py-4 text-sm font-medium text-slate-600 hover:text-orange-600"

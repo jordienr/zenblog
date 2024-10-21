@@ -58,8 +58,8 @@ export function BlogPostItem({
               {rightText}
             </motion.div>
           </div>
-          {post.abstract && (
-            <p className="font-mono text-xs text-zinc-500">{post.abstract}</p>
+          {post.excerpt && (
+            <p className="font-mono text-xs text-zinc-500">{post.excerpt}</p>
           )}
         </Link>
       </FadeIn>
