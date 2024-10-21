@@ -120,6 +120,72 @@ app.get("/blogs/:blogId/posts/:slug", async (c) => {
   return c.json(post);
 });
 
+// Get blog categories
+app.get("/blogs/:blogId/categories", async (c) => {
+  const blogId = c.req.param("blogId");
+  const supabase = createClient();
+  const authHeader = c.req.header("Authorization");
+
+  if (!blogId) {
+    return c.json({ message: "No blogId provided" }, 400);
+  }
+
+  if (!authHeader) {
+    return c.json({ message: "No authorization header" }, 401);
+  }
+
+  const isValid = await verifyAPIKey(authHeader, blogId);
+
+  if (!isValid) {
+    return c.json({ message: "Invalid API key" }, 401);
+  }
+
+  const { data: categories, error } = await supabase
+    .from("categories")
+    .select("name, slug")
+    .eq("blog_id", blogId);
+
+  if (error) {
+    console.log("🔴 Error getting categories:", error);
+    return c.json({ message: "No categories found" }, 404);
+  }
+
+  return c.json(categories);
+});
+
+// Get blog tags
+app.get("/blogs/:blogId/tags", async (c) => {
+  const blogId = c.req.param("blogId");
+  const supabase = createClient();
+  const authHeader = c.req.header("Authorization");
+
+  if (!blogId) {
+    return c.json({ message: "No blogId provided" }, 400);
+  }
+
+  if (!authHeader) {
+    return c.json({ message: "No authorization header" }, 401);
+  }
+
+  const isValid = await verifyAPIKey(authHeader, blogId);
+
+  if (!isValid) {
+    return c.json({ message: "Invalid API key" }, 401);
+  }
+
+  const { data: tags, error } = await supabase
+    .from("blog_tags")
+    .select("name, slug")
+    .eq("blog_id", blogId);
+
+  if (error) {
+    console.log("🔴 Error getting tags:", error);
+    return c.json({ message: "No tags found" }, 404);
+  }
+
+  return c.json(tags);
+});
+
 export const GET = handle(app);
 export const POST = handle(app);
 export const PUT = handle(app);

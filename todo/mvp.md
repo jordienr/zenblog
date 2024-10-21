@@ -2,10 +2,10 @@
 
 ## Backlog
 
+- [] Paddle for subscriptions. I aint risking it, need a MoR.
 - [] finish pagination in usePostsQuery
 - [] Category management page
 - [] Categories in API + API Client
-- [x] FAQ on homepage
 - [] Nextjs example in homepage
 - [] Add tags to posts API
 - [] Fix deleting tags with posts
