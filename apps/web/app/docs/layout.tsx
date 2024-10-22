@@ -55,7 +55,7 @@ export default function DocsLayout({
           ))}
         </aside>
 
-        <main className="h-full flex-1 space-y-4 overflow-y-auto pb-16">
+        <main className="h-full max-w-3xl flex-1 space-y-4 overflow-y-auto pb-16">
           {children}
         </main>
       </div>
@@ -69,12 +69,9 @@ export function ObjectRenderer({ object }: { object: any }) {
   return (
     <div className="divide-y rounded-md border">
       {keys.map((key) => (
-        <div
-          key={key}
-          className="grid grid-cols-2 gap-2 p-2 text-sm hover:bg-slate-50"
-        >
-          <p className="font-medium">{key}</p>
-          <p className="font-mono">{object[key]}</p>
+        <div key={key} className="flex gap-2 p-2 text-sm hover:bg-slate-50">
+          <p className="w-full max-w-[160px] font-medium">{key}</p>
+          <p className="w-full font-mono">{object[key]}</p>
         </div>
       ))}
     </div>

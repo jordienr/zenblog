@@ -1,5 +1,6 @@
 import { Endpoint } from "./public-api.types";
 
+export const BASE_API_URL = "https://zenblog.com/api/public";
 const BASE_HEADERS = [
   {
     key: "Authorization",
@@ -31,23 +32,21 @@ export const posts: Endpoint = {
     200: {
       description: "The posts",
       type: "object",
-      example: `
-        {
-          posts: { 
-            title: "string",
-            html_content: "string",
-            slug: "string",
-            category_name: "string", // nullable
-            category_slug: "string", // nullable
-            tags: "object",
-            excerpt: "string", // nullable
-            published_at: "string",
-          },
-          total: "number", // The total number of posts
-          offset: "number", // The offset
-          limit: "number", // The limit
-        }
-        `,
+      example: `{
+  posts: { 
+    title: "string",
+    html_content: "string",
+    slug: "string",
+    category_name: "string", // nullable
+    category_slug: "string", // nullable
+    tags: "object",
+    excerpt: "string", // nullable
+    published_at: "string",
+  },
+  total: "number", // The total number of posts
+  offset: "number", // The offset
+  limit: "number", // The limit
+}`,
     },
   },
 };
@@ -62,18 +61,16 @@ export const postBySlug: Endpoint = {
     200: {
       description: "The post",
       type: "object",
-      example: `
-        {
-          title: "string",
-          html_content: "string",
-          slug: "string",
-          category_name: "string",
-          category_slug: "string",
-          tags: "object",
-          excerpt: "string",
-          published_at: "string",
-        }
-        `,
+      example: `{
+title: "string",
+html_content: "string",
+slug: "string",
+category_name: "string",
+category_slug: "string",
+tags: "object",
+excerpt: "string",
+published_at: "string",
+}`,
     },
   },
 };
@@ -88,12 +85,12 @@ export const categories: Endpoint = {
     200: {
       description: "The categories",
       type: "object",
-      example: `
-        [{
-          name: "string",
-          slug: "string",
-        }]
-        `,
+      example: `[
+  {
+    name: "string",
+    slug: "string",
+  }
+]`,
     },
   },
 };
@@ -108,12 +105,12 @@ export const tags: Endpoint = {
     200: {
       description: "The tags",
       type: "object",
-      example: `
-        [{
-          name: "string",
-          slug: "string",
-        }]  
-        `,
+      example: `[
+  {
+    name: "string",
+    slug: "string",
+  }
+]`,
     },
   },
 };

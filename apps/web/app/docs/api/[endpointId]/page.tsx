@@ -2,7 +2,10 @@
 
 import { ObjectRenderer } from "app/docs/layout";
 import { useParams } from "next/navigation";
-import { endpoints } from "app/api/public/[...route]/public-api.constants";
+import {
+  BASE_API_URL,
+  endpoints,
+} from "app/api/public/[...route]/public-api.constants";
 
 export default function Endpoint() {
   const params = useParams<{ endpointId: string }>();
@@ -26,10 +29,10 @@ export default function Endpoint() {
         </h2>
         <p>{endpoint.description}</p>
 
-        <div className="mt-4 max-w-lg">
+        <div className="mt-4">
           <ObjectRenderer
             object={{
-              path: endpoint.path,
+              url: `${BASE_API_URL}${endpoint.path}`,
               method: endpoint.method,
             }}
           />
