@@ -14,7 +14,7 @@ export default async function handler(
     }
 
     const { data, error } = await db
-      .from("posts_with_blog_and_subscription_status_v2")
+      .from("posts_v5")
       .select(
         `title, ${
           withContent ? "content, " : ""
