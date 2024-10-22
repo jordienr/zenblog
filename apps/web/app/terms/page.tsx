@@ -140,6 +140,36 @@ export default function TermsOfService() {
           effective, you agree to be bound by the revised terms.
         </li>
         <li>
+          <h3>Refund Policy</h3>
+          <br />
+          We want you to be satisfied with our Services. If you are not
+          completely satisfied with a paid subscription, you may request a
+          refund according to the following terms:
+          <br />
+          a. For monthly subscriptions: You may request a full refund within 14
+          days of your initial purchase or renewal date.
+          <br />
+          b. For annual subscriptions: You may request a full refund within 30
+          days of your initial purchase or renewal date.
+          <br />
+          c. Refunds will be issued using the original payment method.
+          <br />
+          d. To request a refund, please contact our support team at
+          support@zenblog.com with your account details and reason for the
+          refund request.
+          <br />
+          e. We reserve the right to deny refund requests that we determine to
+          be abusive or fraudulent.
+          <br />
+          f. No refunds will be provided for any add-on services, one-time
+          purchases, or custom development work unless otherwise specified in
+          writing.
+          <br />
+          g. After the refund period has expired, you may cancel your
+          subscription at any time, but no refunds will be provided for any
+          remaining unused portion of your subscription period.
+        </li>
+        <li>
           <h3>Contact Us</h3>
           <br />
           If you have any questions about these Terms, please contact us at
