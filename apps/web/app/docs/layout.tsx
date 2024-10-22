@@ -40,8 +40,8 @@ export default function DocsLayout({
           </div>
         </div>
       </nav>
-      <div className="mx-auto flex h-screen w-full max-w-7xl">
-        <aside className="h-full min-w-[240px] flex-col overflow-y-auto px-4">
+      <div className="mx-auto flex w-full max-w-7xl">
+        <aside className="sticky top-14 h-full min-w-[240px] flex-col overflow-y-auto px-4">
           <SidebarTitle>Docs</SidebarTitle>
           <SidebarLink href="/docs/getting-started">
             Getting Started
@@ -55,10 +55,13 @@ export default function DocsLayout({
           ))}
         </aside>
 
-        <main className="h-full max-w-3xl flex-1 space-y-4 overflow-y-auto pb-16">
+        <main className="h-full max-w-3xl flex-1 space-y-4 pb-16">
           {children}
         </main>
       </div>
+      <footer className="border-t p-8 text-center text-sm text-slate-400">
+        <p>Now go ship something cool</p>
+      </footer>
     </div>
   );
 }
