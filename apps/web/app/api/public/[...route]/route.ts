@@ -33,7 +33,7 @@ async function verifyAPIKey(header: string, blogId: string) {
   return isValid;
 }
 
-export const app = new Hono()
+const app = new Hono()
   .basePath("/api/public")
   .use("*", logger())
   .use("*", prettyJSON());
