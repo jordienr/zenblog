@@ -199,7 +199,7 @@ function PostItem({
     <Link
       key={post.slug}
       href={`/blogs/${blogId}/post/${post.slug}`}
-      className="borer-zinc-100 group flex flex-col gap-4 border-b px-3 py-2 transition-all hover:border-zinc-300 md:flex-row md:items-center"
+      className="group flex flex-col gap-4 border-b border-zinc-200 px-3 py-2 transition-all hover:bg-slate-50 md:flex-row md:items-center"
     >
       <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
         {post.cover_image ? (
@@ -216,9 +216,7 @@ function PostItem({
       </div>
 
       <div className="flex flex-col gap-0.5">
-        <h2 className="ml-1 text-lg font-normal text-zinc-700 group-hover:text-zinc-950">
-          {post.title}
-        </h2>
+        <h2 className="ml-1 text-lg">{post.title}</h2>
         {post.tags && post.tags.length > 0 && (
           <div className="flex items-center gap-2">
             {post.tags?.map((tag: any) => (

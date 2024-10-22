@@ -4,7 +4,7 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { Hono } from "hono";
 import bcrypt from "bcrypt";
-import { Endpoint } from "./route.types";
+import { categories, postBySlug, posts, tags } from "./public-api.constants";
 
 async function verifyAPIKey(header: string, blogId: string) {
   const supabase = createClient();
@@ -38,58 +38,6 @@ export const app = new Hono()
   .use("*", logger())
   .use("*", prettyJSON());
 
-const BASE_HEADERS = [
-  {
-    key: "Authorization",
-    required: true,
-    description: "The API key for the blog",
-  },
-];
-
-// Get posts
-const posts: Endpoint = {
-  id: "posts",
-  path: "/blogs/:blogId/posts",
-  method: "GET",
-  title: "Post list",
-  description: "Get posts for a blog",
-  headers: [
-    ...BASE_HEADERS,
-    {
-      key: "offset",
-      required: false,
-      description: "The offset for the posts",
-    },
-    {
-      key: "limit",
-      required: false,
-      description: "The limit for the posts",
-    },
-  ],
-  response: {
-    200: {
-      description: "The posts",
-      type: "object",
-      example: `
-      {
-        posts: { 
-          title: "string",
-          html_content: "string",
-          slug: "string",
-          category_name: "string", // nullable
-          category_slug: "string", // nullable
-          tags: "object",
-          excerpt: "string", // nullable
-          published_at: "string",
-        },
-        total: "number", // The total number of posts
-        offset: "number", // The offset
-        limit: "number", // The limit
-      }
-      `,
-    },
-  },
-};
 app.get(posts.path, async (c) => {
   const blogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
@@ -138,33 +86,6 @@ app.get(posts.path, async (c) => {
   return c.json(res, 200);
 });
 
-// Get post by slug
-const postBySlug: Endpoint = {
-  id: "postBySlug",
-  path: "/blogs/:blogId/posts/:slug",
-  method: "GET",
-  title: "Post detail",
-  description: "Get a post by its slug",
-  headers: [...BASE_HEADERS],
-  response: {
-    200: {
-      description: "The post",
-      type: "object",
-      example: `
-      {
-        title: "string",
-        html_content: "string",
-        slug: "string",
-        category_name: "string",
-        category_slug: "string",
-        tags: "object",
-        excerpt: "string",
-        published_at: "string",
-      }
-      `,
-    },
-  },
-};
 app.get(postBySlug.path, async (c) => {
   const blogId = c.req.param("blogId");
   const slug = c.req.param("slug");
@@ -198,26 +119,6 @@ app.get(postBySlug.path, async (c) => {
   return c.json(post);
 });
 
-const categories: Endpoint = {
-  id: "categories",
-  path: "/blogs/:blogId/categories",
-  method: "GET",
-  title: "Categories list",
-  description: "Get the categories for a blog",
-  headers: [...BASE_HEADERS],
-  response: {
-    200: {
-      description: "The categories",
-      type: "object",
-      example: `
-      [{
-        name: "string",
-        slug: "string",
-      }]
-      `,
-    },
-  },
-};
 app.get(categories.path, async (c) => {
   const blogId = c.req.param("blogId");
   const supabase = createClient();
@@ -250,26 +151,6 @@ app.get(categories.path, async (c) => {
   return c.json(categories);
 });
 
-const tags: Endpoint = {
-  id: "tags",
-  path: "/blogs/:blogId/tags",
-  method: "GET",
-  title: "Tags list",
-  description: "Get the tags for a blog",
-  headers: [...BASE_HEADERS],
-  response: {
-    200: {
-      description: "The tags",
-      type: "object",
-      example: `
-      [{
-        name: "string",
-        slug: "string",
-      }]  
-      `,
-    },
-  },
-};
 app.get(tags.path, async (c) => {
   const blogId = c.req.param("blogId");
   const supabase = createClient();
@@ -307,5 +188,3 @@ export const POST = handle(app);
 export const PUT = handle(app);
 export const PATCH = handle(app);
 export const DELETE = handle(app);
-
-export const endpoints = [posts, postBySlug, categories, tags];

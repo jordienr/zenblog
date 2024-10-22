@@ -9,6 +9,72 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      authors: {
+        Row: {
+          bio: string | null
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          twitter: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          twitter?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          twitter?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      blog_authors: {
+        Row: {
+          author_id: string
+          blog_id: string
+          id: number
+        }
+        Insert: {
+          author_id: string
+          blog_id: string
+          id?: number
+        }
+        Update: {
+          author_id?: string
+          blog_id?: string
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_authors_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blog_authors_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_tags: {
         Row: {
           blog_id: string
@@ -177,6 +243,53 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      post_authors: {
+        Row: {
+          author_id: string
+          id: number
+          post_id: string
+        }
+        Insert: {
+          author_id: string
+          id?: number
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          id?: number
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_authors_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_authors_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_authors_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_v4"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_authors_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_v5"
+            referencedColumns: ["post_id"]
+          },
+        ]
       }
       post_tags: {
         Row: {
