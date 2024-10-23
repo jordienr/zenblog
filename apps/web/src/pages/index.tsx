@@ -19,8 +19,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Switch } from "@/components/ui/switch";
-import { Leaves } from "@/components/3d/leaves";
 
 const Home = () => {
   const user = useUser();
@@ -62,11 +60,17 @@ const Home = () => {
       <div className="">
         <div className="flex flex-col">
           <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
-            <div className="flex-grow cursor-default">
+            <div className="flex-grow cursor-default px-4">
               <ZendoLogo className="" size={31} />
             </div>
 
-            <div className="flex flex-grow items-center justify-end gap-1 text-sm font-medium text-zinc-500 ">
+            <div className="flex flex-grow items-center justify-end gap-1 px-4 font-medium text-zinc-500">
+              <Link
+                className="rounded-lg px-2 py-1 hover:text-zinc-800"
+                href="/docs"
+              >
+                Docs
+              </Link>
               <Link
                 className="rounded-lg px-2 py-1 hover:text-zinc-800"
                 href="https://blog.zenblog.com"
@@ -85,13 +89,8 @@ const Home = () => {
 
               {user && (
                 <div className="ml-2 flex">
-                  <Button asChild variant={"secondary"}>
-                    <Link
-                      className="btn btn-primary inline-block"
-                      href="/blogs"
-                    >
-                      Dashboard
-                    </Link>
+                  <Button asChild variant={"secondary"} size="default">
+                    <Link href="/blogs">Dashboard</Link>
                   </Button>
                 </div>
               )}
@@ -101,25 +100,25 @@ const Home = () => {
           <main className="mt-12 px-4 pb-24 font-sans">
             <div className="mx-auto max-w-4xl">
               <Link
-                className="p-1.5 text-xs font-medium text-orange-500"
+                className="p-1.5 font-medium text-orange-500"
                 target="_blank"
                 href="https://github.com/jordienr/zenblog"
               >
                 Star us on GitHub
               </Link>
 
-              <h1
-                className={`mt-2 p-1 text-2xl font-medium text-zinc-800 lg:text-3xl xl:text-4xl`}
-              >
+              <h1 className={`mt-2 p-1 text-3xl font-semibold text-zinc-800`}>
                 A tiny blogging CMS
               </h1>
-              <div className="p-1 text-2xl leading-4 text-zinc-400 md:leading-8 lg:text-3xl xl:text-4xl">
+              <div className="p-1 text-3xl font-medium leading-4 text-slate-400">
                 <p className="mt-1 leading-6">
                   Simple, fast, open-source headless blogging CMS
                 </p>
                 <Dialog>
-                  <DialogTrigger className="mt-8 h-8 rounded-lg bg-zinc-900 px-5 text-sm text-white transition-all hover:bg-zinc-700">
-                    Request access
+                  <DialogTrigger asChild>
+                    <Button size="default" className="mt-8 text-base">
+                      Request access
+                    </Button>
                   </DialogTrigger>
                   <DialogContent className="rounded-xl px-6 md:max-w-sm">
                     {!hasSubmitted && (
@@ -176,8 +175,6 @@ const Home = () => {
                   </DialogContent>
                 </Dialog>
               </div>
-
-              {/* <Leaves /> */}
             </div>
             <div className="mx-auto mt-24 max-w-6xl rounded-xl border bg-white p-1.5 shadow-sm">
               <Image

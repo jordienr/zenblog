@@ -40,26 +40,34 @@ export default function DocsLayout({
           </div>
         </div>
       </nav>
-      <div className="mx-auto flex w-full max-w-7xl">
+      <div className="mx-auto flex h-full w-full max-w-7xl">
         <aside className="sticky top-14 h-full min-w-[240px] flex-col overflow-y-auto px-4">
           <SidebarTitle>Docs</SidebarTitle>
           <SidebarLink href="/docs/getting-started">
             Getting Started
           </SidebarLink>
 
-          <SidebarTitle>API</SidebarTitle>
+          <SidebarTitle>API Reference</SidebarTitle>
           {endpoints.map((endpoint) => (
-            <SidebarLink key={endpoint.id} href={`/docs/api/${endpoint.id}`}>
-              {endpoint.title}
+            <SidebarLink
+              className="space-x-2"
+              key={endpoint.id}
+              href={`/docs/api/${endpoint.id}`}
+            >
+              <span className="font-mono text-xs font-medium text-slate-500">
+                {endpoint.method}
+              </span>
+              <span>{endpoint.title}</span>
             </SidebarLink>
           ))}
         </aside>
 
-        <main className="h-full max-w-3xl flex-1 space-y-4 pb-16">
-          {children}
-        </main>
+        <main className="w-full">{children}</main>
+        {/* <aside className="min-w-[240px]">
+          <SidebarTitle>Table of contents</SidebarTitle>
+        </aside> */}
       </div>
-      <footer className="border-t p-8 text-center text-sm text-slate-400">
+      <footer className="mt-12 border-t p-8 text-center text-sm text-slate-400">
         <p>Now go ship something cool</p>
       </footer>
     </div>

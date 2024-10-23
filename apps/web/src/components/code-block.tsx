@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { Prism as ReactSyntaxHighlighter } from "react-syntax-highlighter";
+import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface CodeBlockProps {
   language: string;
@@ -24,7 +26,9 @@ export function CodeBlockComponent({
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const lines = children.split("\n");
+  const languagesWithoutLineNumbers = ["bash", "sh"];
+
+  const showLineNumbers = !languagesWithoutLineNumbers.includes(language);
 
   return (
     <div className="relative rounded-lg border border-slate-700 bg-slate-800">
@@ -45,7 +49,40 @@ export function CodeBlockComponent({
         </div>
       )}
       <div className="overflow-x-auto">
-        <pre className="rounded-none bg-transparent p-0 text-white">
+        <ReactSyntaxHighlighter
+          language={language}
+          showLineNumbers
+          wrapLines
+          codeTagProps={{
+            style: {
+              display: "block",
+            },
+          }}
+          lineNumberStyle={{
+            paddingRight: "0.5rem",
+            opacity: showLineNumbers ? 1 : 0,
+          }}
+          lineProps={(lineNumber) => ({
+            style: {
+              display: "block",
+              width: "100%",
+              backgroundColor: highlightedLines.includes(lineNumber)
+                ? "#4ade8030"
+                : "transparent",
+              borderLeft: highlightedLines.includes(lineNumber)
+                ? "4px solid #4ade80"
+                : "4px solid transparent",
+            },
+          })}
+          style={dracula}
+          customStyle={{
+            backgroundColor: "transparent",
+            padding: "1rem 0",
+          }}
+        >
+          {children}
+        </ReactSyntaxHighlighter>
+        {/* <pre className="rounded-none bg-transparent p-0 text-white">
           <code className={`language-${language} block`}>
             {lines.map((line, index) => (
               <span
@@ -63,7 +100,7 @@ export function CodeBlockComponent({
               </span>
             ))}
           </code>
-        </pre>
+        </pre> */}
       </div>
     </div>
   );

@@ -9,18 +9,14 @@ export default function GettingStarted() {
         a blog in the Zenblog dashboard and grab your API key.
       </p>
       <h2>1. Install Zenblog</h2>
-      <CodeBlockComponent
-        filename="Terminal"
-        language="bash"
-        highlightedLines={[2]}
-      >
+      <CodeBlockComponent filename="Terminal" language="sh">
         {`npm install zenblog`}
       </CodeBlockComponent>
 
       <h2>2. Initialize Zenblog</h2>
       <p>Initialize Zenblog with your API key.</p>
       <CodeBlockComponent
-        filename="index.ts"
+        filename="cms/index.tsx"
         language="typescript"
         highlightedLines={[]}
       >
@@ -32,7 +28,7 @@ const zenblog = createClient({ apiKey: "your-api-key" });`}
       <h2>3. Fetch your posts</h2>
       <p>Fetch your posts from the Zenblog API.</p>
       <CodeBlockComponent
-        filename="index.ts"
+        filename="cms/index.tsx"
         language="typescript"
         highlightedLines={[5]}
       >
@@ -46,19 +42,25 @@ const posts = await zenblog.posts.list();`}
       <h2>4. Render your posts</h2>
       <p>Render your posts in your app.</p>
       <CodeBlockComponent
-        filename="index.ts"
-        language="typescript"
+        filename="cms/index.tsx"
+        language="jsx"
         highlightedLines={[4]}
       >
-        {`<div>{posts.map((post) => (
-  <a href={"/blog/{post.slug}"} key={post.id}>{post.title}</a>
-))}</div>`}
+        {`
+<div>
+  {posts.map((post) => (
+    <a href={\`/blog/\${post.slug}\`} key={post.id}>
+      {post.title}
+    </a>
+  ))}
+</div>
+  `}
       </CodeBlockComponent>
 
       <h2>5. Fetch a single post with content</h2>
       <CodeBlockComponent
-        filename="index.ts"
-        language="typescript"
+        filename="cms/index.tsx"
+        language="tsx"
         highlightedLines={[5]}
       >
         {`import { createClient } from "zenblog";
@@ -70,7 +72,7 @@ const post = await zenblog.posts.get({ slug: "my-first-post" });`}
 
       <h2>6. Render your post</h2>
       <p>Render your post in your app.</p>
-      <CodeBlockComponent filename="index.ts" language="typescript">
+      <CodeBlockComponent filename="cms/index.tsx" language="tsx">
         {`<div>{post.title}</div>
 <div>{post.content}</div>
 <div>{post.publishedAt}</div>
