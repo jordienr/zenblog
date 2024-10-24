@@ -10,7 +10,7 @@ export function throwError(msg: string, ...args: any[]) {
 export function createLogger(debug: boolean) {
   return (...args: any[]) => {
     if (debug) {
-      console.log("[🍊] ", ...args);
+      console.log("[sdk] ", ...args);
     }
   };
 }

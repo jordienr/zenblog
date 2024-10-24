@@ -16,7 +16,13 @@ export const config = {
   ],
 };
 
-const invalidSubdomains = ["www", "localhost:3000", "zenblog", "127"];
+const invalidSubdomains = [
+  "www",
+  "localhost:3000",
+  "localhost:8082",
+  "zenblog",
+  "127",
+];
 
 export default async function middleware(req: NextRequest) {
   const subdomain = req.headers.get("host")?.split(".")[0];

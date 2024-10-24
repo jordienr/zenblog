@@ -289,6 +289,13 @@ export type Database = {
             referencedRelation: "posts_v5"
             referencedColumns: ["post_id"]
           },
+          {
+            foreignKeyName: "post_authors_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_v6"
+            referencedColumns: ["post_id"]
+          },
         ]
       }
       post_tags: {
@@ -340,6 +347,13 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts_v5"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_v6"
             referencedColumns: ["post_id"]
           },
           {
@@ -588,6 +602,66 @@ export type Database = {
           slug: string | null
           subscription_status: string | null
           tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts_v6: {
+        Row: {
+          blog_id: string | null
+          blog_slug: string | null
+          category: Json | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          excerpt: string | null
+          html_content: string | null
+          metadata: Json[] | null
+          post_id: string | null
+          published: boolean | null
+          published_at: string | null
+          slug: string | null
+          subscription_status: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts_v7: {
+        Row: {
+          blog_id: string | null
+          category: Json | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          excerpt: string | null
+          html_content: string | null
+          metadata: Json[] | null
+          published: boolean | null
+          published_at: string | null
+          slug: string | null
+          subscription_status: string | null
+          tags: Json[] | null
           title: string | null
           updated_at: string | null
         }

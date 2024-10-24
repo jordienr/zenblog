@@ -17,5 +17,8 @@
     "zenblog"
   ],
   "author": "Jordi Enric",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@zenblog/types": "*"
+  }
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "build:web": "next build",
-    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "dev": "next dev -p 8082",
     "lint": "next lint",
     "start": "next start",
     "db:typegen": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts"
@@ -116,7 +116,8 @@
     "uuid": "^9.0.0",
     "zenblog": "*",
     "zod": "^3.23.8",
-    "zustand": "^4.3.8"
+    "zustand": "^4.3.8",
+    "@zenblog/types": "*"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",

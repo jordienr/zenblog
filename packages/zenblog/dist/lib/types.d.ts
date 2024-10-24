@@ -1,17 +1,24 @@
 export type Post = {
     slug: string;
     title: string;
-    content?: any;
+    excerpt?: string;
     cover_image?: string;
-    created_at: string;
-    updated_at: string;
     published_at: string;
+    tags: {
+        name: string;
+        slug: string;
+    }[] | [];
+    category: {
+        name: string;
+        slug: string;
+    } | null;
 };
 export type PostWithContent = Post & {
     html_content: string;
 };
 export type CreateClientOpts = {
     accessToken: string;
+    blogId: string;
     _url?: string;
     _debug?: boolean;
 };

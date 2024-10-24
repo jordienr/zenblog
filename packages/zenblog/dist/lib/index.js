@@ -13,7 +13,7 @@ exports.throwError = throwError;
 function createLogger(debug) {
     return (...args) => {
         if (debug) {
-            console.log("[🍊] ", ...args);
+            console.log("[sdk] ", ...args);
         }
     };
 }

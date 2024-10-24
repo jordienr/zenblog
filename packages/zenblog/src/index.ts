@@ -1,23 +1,27 @@
 import { createLogger, throwError } from "./lib";
-import { Post, PostWithContent, CreateClientOpts } from "./lib/types";
+import { Category, Post, PostWithContent, Tag } from "@zenblog/types";
+function toQueryString(obj: Record<string, any>) {
+  const params = new URLSearchParams(obj);
+  return params.toString();
+}
 
 function createFetcher(
-  config: { url: string; accessToken: string },
+  config: { url: string; accessToken: string; blogId: string },
   log: (...args: any[]) => void
 ) {
   return async function _fetch(path: string, opts: RequestInit) {
     try {
-      const URL = `${config.url}/${path}`;
+      const URL = `${config.url}/blogs/${config.blogId}/${path}`;
       const reqOpts = {
         ...opts,
         headers: {
-          authorization: `Bearer ${config.accessToken}`,
+          Authorization: config.accessToken,
           "Content-Type": "application/json",
           ...opts.headers,
         },
       };
 
-      log(">>>>> fetch ", URL, reqOpts.headers);
+      log("fetch ", URL, reqOpts.method);
       const res = await fetch(URL, reqOpts);
       const json = await res.json();
 
@@ -33,8 +37,15 @@ function createFetcher(
   };
 }
 
+type CreateClientOpts = {
+  accessToken: string;
+  blogId: string;
+  _url?: string;
+  _debug?: boolean;
+};
 export function createZenblogClient<T>({
   accessToken,
+  blogId,
   _url,
   _debug,
 }: CreateClientOpts) {
@@ -50,36 +61,65 @@ export function createZenblogClient<T>({
   const logger = createLogger(_debug || false);
   const fetcher = createFetcher(
     {
-      url: _url || "https://api.zenblog.com/api/v1",
+      url: _url || "https://zenblog.com/api/v1/public",
       accessToken,
+      blogId,
     },
     logger
   );
 
   type ReqOpts = {
     cache?: RequestInit["cache"];
+    limit?: number;
+    offset?: number;
   };
   return {
     posts: {
-      list: async function (opts?: ReqOpts): Promise<Post[]> {
-        const posts = await fetcher(`posts`, {
-          method: "GET",
-          cache: opts?.cache || "default",
-        });
+      list: async function (
+        { limit, offset, cache }: ReqOpts = {
+          limit: 20,
+          offset: 0,
+          cache: "default",
+        }
+      ): Promise<{ data: Post[] }> {
+        const data = await fetcher(
+          `posts?${toQueryString({ limit, offset })}`,
+          {
+            method: "GET",
+            cache,
+          }
+        );
 
-        type PostWithT = Post & T;
-        return posts as PostWithT[]; // to do: validate
+        return data as { data: Post[] };
       },
       get: async function (
         { slug }: { slug: string },
         opts?: ReqOpts
-      ): Promise<PostWithContent> {
+      ): Promise<{ data: PostWithContent }> {
         const post = await fetcher(`posts/${slug}`, {
           method: "GET",
           cache: opts?.cache || "default",
         });
 
-        return post as PostWithContent & T; // to do: export types from api
+        return post as { data: PostWithContent };
+      },
+    },
+    categories: {
+      list: async function (): Promise<{ data: Category[] }> {
+        const data = await fetcher(`categories`, {
+          method: "GET",
+        });
+
+        return data as { data: Category[] };
+      },
+    },
+    tags: {
+      list: async function (): Promise<{ data: Tag[] }> {
+        const data = await fetcher(`tags`, {
+          method: "GET",
+        });
+
+        return data as { data: Tag[] };
       },
     },
   };

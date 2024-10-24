@@ -1,15 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 import { getBlogClient } from "@/cms";
-import { ContentRenderer } from "@/cms/ContentRenderer";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
 import React from "react";
-
-type Props = {};
 
 const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
   const blog = getBlogClient();
-  const post = await blog.posts.get({ slug });
+  const { data: post } = await blog.posts.get({ slug });
 
   return (
     <div>
@@ -28,7 +23,10 @@ const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
         )}
       </div>
       <div className="overflow-auto p-4">
-        <ContentRenderer content={post.content} />
+        <div
+          dangerouslySetInnerHTML={{ __html: post.html_content }}
+          className="prose"
+        ></div>
       </div>
     </div>
   );

@@ -1,17 +1,12 @@
 import { createZenblogClient } from "zenblog";
 
-const blogId = process.env.ZENBLOG_BLOG_ID || "";
 export const getBlogClient = () => {
   const blog = createZenblogClient({
-    accessToken: blogId,
+    accessToken: process.env.ZENBLOG_API_TOKEN || "",
+    blogId: process.env.ZENBLOG_BLOG_ID || "",
     _url: process.env.NEXT_PUBLIC_API_URL + "/public",
     _debug: true,
   });
 
   return blog;
 };
-
-const docsId = process.env.ZENBLOG_DOCS_ID || "";
-export const docs = createZenblogClient({
-  accessToken: docsId,
-});

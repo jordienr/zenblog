@@ -1,3 +1,5 @@
+import { Post } from "@zenblog/types";
+
 export type Theme = "directory" | "default" | "newsroom";
 
 export type Blog = {
@@ -7,13 +9,6 @@ export type Blog = {
   twitter?: string;
   instagram?: string;
   website?: string;
-};
-export type Post = {
-  cover_image?: string;
-  title: string;
-  published_at: string;
-  slug: string;
-  excerpt?: string;
 };
 
 export type BlogHomeProps = {

@@ -21,3 +21,10 @@ export type Response = {
     example: string;
   };
 };
+
+export type PublicApiResponse<T> = {
+  data: T;
+  total?: number;
+  offset?: number;
+  limit?: number;
+};

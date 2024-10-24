@@ -5,6 +5,9 @@ import { prettyJSON } from "hono/pretty-json";
 import { Hono } from "hono";
 import bcrypt from "bcrypt";
 import { categories, postBySlug, posts, tags } from "./public-api.constants";
+import { PublicApiResponse } from "./public-api.types";
+import { Post } from "@zenblog/types";
+import { throwError } from "./public-api.errors";
 
 async function verifyAPIKey(header: string, blogId: string) {
   const supabase = createClient();
@@ -21,7 +24,6 @@ async function verifyAPIKey(header: string, blogId: string) {
     .single();
 
   if (error) {
-    console.log("🔴 Error getting blog id from token:", error);
     return false;
   }
 
@@ -46,42 +48,39 @@ app.get(posts.path, async (c) => {
   const authHeader = c.req.header("Authorization");
 
   if (!blogId) {
-    return c.json({ message: "No blogId provided" }, 400);
+    return throwError(c, "MISSING_BLOG_ID");
   }
 
   if (!authHeader) {
-    return c.json({ message: "No authorization header" }, 401);
+    return throwError(c, "MISSING_API_KEY");
   }
 
   const isValid = await verifyAPIKey(authHeader, blogId);
 
   if (!isValid) {
-    return c.json({ message: "Invalid API key" }, 401);
+    return throwError(c, "INVALID_API_KEY");
   }
 
-  const rpcRes = await supabase.rpc("get_posts_by_blog", {
-    p_blog_id: blogId,
-    p_limit: limit || 30,
-    p_offset: offset || 0,
-  });
+  const { data: posts, error } = await supabase
+    .from("posts_v7")
+    .select("title, slug, published_at, excerpt, cover_image, tags, category")
+    .eq("blog_id", blogId)
+    .eq("published", true)
+    .eq("deleted", false)
+    .order("published_at", { ascending: false })
+    .range(offset, offset + limit);
 
-  console.log(rpcRes);
-
-  if (rpcRes.error) {
-    console.log("🔴 Error getting posts:", rpcRes.error);
-    return c.json({ message: "No posts found" }, 404);
+  if (error) {
+    return throwError(c, "NO_POSTS_FOUND");
   }
 
-  const res = {
-    // @ts-ignore
-    posts: rpcRes.data?.posts,
-    // @ts-ignore
-    total: rpcRes.data?.total,
-    offset,
-    limit,
+  if (!posts) {
+    return throwError(c, "NO_POSTS_FOUND");
+  }
+
+  const res: PublicApiResponse<Post[]> = {
+    data: posts as unknown as Post[], // type casting since views return array of Type | null
   };
-
-  console.log(res);
 
   return c.json(res, 200);
 });
@@ -93,30 +92,33 @@ app.get(postBySlug.path, async (c) => {
   const authHeader = c.req.header("Authorization");
 
   if (!blogId || !slug) {
-    return c.json({ message: "No blogId or slug provided" }, 400);
+    return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
   }
 
   if (!authHeader) {
-    return c.json({ message: "No authorization header" }, 401);
+    return throwError(c, "MISSING_API_KEY");
   }
 
   const isValid = await verifyAPIKey(authHeader, blogId);
 
   if (!isValid) {
-    return c.json({ message: "Invalid API key" }, 401);
+    return throwError(c, "INVALID_API_KEY");
   }
 
-  const { data: post, error } = await supabase.rpc("get_blog_post", {
-    p_blog_id: blogId,
-    p_slug: slug,
-  });
+  const { data: post, error } = await supabase
+    .from("posts_v7")
+    .select(
+      "title, slug, published_at, excerpt, cover_image, tags, category, html_content"
+    )
+    .eq("blog_id", blogId)
+    .eq("slug", slug)
+    .single();
 
   if (error) {
-    console.log("🔴 Error getting post:", error);
-    return c.json({ message: "Post not found" }, 404);
+    return throwError(c, "POST_NOT_FOUND");
   }
 
-  return c.json(post);
+  return c.json({ data: post });
 });
 
 app.get(categories.path, async (c) => {
@@ -125,17 +127,17 @@ app.get(categories.path, async (c) => {
   const authHeader = c.req.header("Authorization");
 
   if (!blogId) {
-    return c.json({ message: "No blogId provided" }, 400);
+    return throwError(c, "MISSING_BLOG_ID");
   }
 
   if (!authHeader) {
-    return c.json({ message: "No authorization header" }, 401);
+    return throwError(c, "MISSING_API_KEY");
   }
 
   const isValid = await verifyAPIKey(authHeader, blogId);
 
   if (!isValid) {
-    return c.json({ message: "Invalid API key" }, 401);
+    return throwError(c, "INVALID_API_KEY");
   }
 
   const { data: categories, error } = await supabase
@@ -144,11 +146,10 @@ app.get(categories.path, async (c) => {
     .eq("blog_id", blogId);
 
   if (error) {
-    console.log("🔴 Error getting categories:", error);
-    return c.json({ message: "No categories found" }, 404);
+    return throwError(c, "NO_CATEGORIES_FOUND");
   }
 
-  return c.json(categories);
+  return c.json({ data: categories });
 });
 
 app.get(tags.path, async (c) => {
@@ -157,17 +158,17 @@ app.get(tags.path, async (c) => {
   const authHeader = c.req.header("Authorization");
 
   if (!blogId) {
-    return c.json({ message: "No blogId provided" }, 400);
+    return throwError(c, "MISSING_BLOG_ID");
   }
 
   if (!authHeader) {
-    return c.json({ message: "No authorization header" }, 401);
+    return throwError(c, "MISSING_API_KEY");
   }
 
   const isValid = await verifyAPIKey(authHeader, blogId);
 
   if (!isValid) {
-    return c.json({ message: "Invalid API key" }, 401);
+    return throwError(c, "INVALID_API_KEY");
   }
 
   const { data: tags, error } = await supabase
@@ -176,11 +177,10 @@ app.get(tags.path, async (c) => {
     .eq("blog_id", blogId);
 
   if (error) {
-    console.log("🔴 Error getting tags:", error);
-    return c.json({ message: "No tags found" }, 404);
+    return throwError(c, "NO_TAGS_FOUND");
   }
 
-  return c.json(tags);
+  return c.json({ data: tags });
 });
 
 export const GET = handle(app);

@@ -6,7 +6,7 @@ type Props = {};
 const layout = (props: PropsWithChildren<Props>) => {
   return (
     <div className="mx-auto min-h-screen bg-zinc-50">
-      <div className="mx-auto max-w-3xl ">
+      <div className="mx-auto max-w-5xl ">
         <Navigation />
         {props.children}
       </div>
