@@ -110,7 +110,7 @@ export default function AppLayout({
                 {selectedBlog && (
                   <DropdownMenu>
                     <DropdownMenuTrigger
-                      className="flex items-center gap-2 rounded-lg py-1 text-xs font-medium hover:bg-zinc-50 focus-visible:ring-0"
+                      className="flex items-center gap-2 rounded-lg py-1 pr-3 text-sm font-medium hover:bg-zinc-50 focus-visible:ring-0"
                       disabled={blogsLoading}
                     >
                       <span className="mx-1 flex h-7 w-7 items-center justify-center rounded-full border bg-zinc-50 text-lg">
@@ -123,7 +123,7 @@ export default function AppLayout({
                           size={16}
                         />
                       ) : (
-                        <div className="rounded-full p-1 px-2 text-xs font-medium text-blue-500">
+                        <div className="rounded-full text-xs font-medium text-blue-500">
                           Pro
                         </div>
                       )}
@@ -131,9 +131,7 @@ export default function AppLayout({
                         <Link
                           title="Upgrade to Pro"
                           href="/account"
-                          className=" rounded-full
-                 bg-emerald-100 p-1
-                px-2 text-center text-xs font-medium text-emerald-600"
+                          className=" rounded-full p-1 text-center text-xs font-medium text-emerald-500"
                         >
                           Free
                         </Link>

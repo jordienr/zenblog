@@ -58,13 +58,13 @@ const Home = () => {
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <div className="">
-        <div className="flex flex-col">
+        <div className="flex flex-col px-4">
           <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
-            <div className="flex-grow cursor-default px-4">
+            <div className="flex-grow cursor-default">
               <ZendoLogo className="" size={31} />
             </div>
 
-            <div className="flex flex-grow items-center justify-end gap-1 px-4 font-medium text-zinc-500">
+            <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500">
               <Link
                 className="rounded-lg px-2 py-1 hover:text-zinc-800"
                 href="/docs"
@@ -99,27 +99,30 @@ const Home = () => {
 
           <main className="mt-12 px-4 pb-24 font-sans">
             <div className="mx-auto max-w-4xl">
-              <Link
-                className="p-1.5 font-medium text-orange-500"
-                target="_blank"
-                href="https://github.com/jordienr/zenblog"
+              <h1
+                className={`mt-2 text-4xl font-medium tracking-tight text-zinc-800`}
               >
-                Star us on GitHub
-              </Link>
-
-              <h1 className={`mt-2 p-1 text-3xl font-semibold text-zinc-800`}>
                 A tiny blogging CMS
               </h1>
-              <div className="p-1 text-3xl font-medium leading-4 text-slate-400">
-                <p className="mt-1 leading-6">
+              <div className="mt-3 text-xl font-medium leading-4 text-slate-400">
+                <p className="">
                   Simple, fast, open-source headless blogging CMS
                 </p>
                 <Dialog>
-                  <DialogTrigger asChild>
-                    <Button size="default" className="mt-8 text-base">
-                      Request access
-                    </Button>
-                  </DialogTrigger>
+                  <div className="mt-8 flex items-center gap-4">
+                    <DialogTrigger asChild>
+                      <Button size="default" className="text-sm">
+                        Request access
+                      </Button>
+                    </DialogTrigger>
+                    <Link
+                      className="p-1.5 text-sm font-medium text-slate-500"
+                      target="_blank"
+                      href="https://github.com/jordienr/zenblog"
+                    >
+                      Star us on GitHub
+                    </Link>
+                  </div>
                   <DialogContent className="rounded-xl px-6 md:max-w-sm">
                     {!hasSubmitted && (
                       <form
@@ -184,39 +187,10 @@ const Home = () => {
                 blurDataURL="/static/zenblog-ui.png"
                 placeholder="blur"
                 width={1200}
-                height={700}
+                height={300}
                 alt="The zenblog editor UI"
               />
             </div>
-
-            {/* <section className="mt-24 border-t py-24 text-center">
-              <h2 className="text-2xl font-medium">Simple pricing</h2>
-              <p className="text-zinc-500">
-                Cancel anytime. No questions asked.
-              </p>
-              <div className="mx-auto mt-8 flex flex-wrap justify-center gap-4">
-                <PricingItem
-                  price="0"
-                  title="Hobby"
-                  description="Simple, fast, free, and open source blogging."
-                  features={["1 blog", "API access", "100 images"]}
-                  action="Get started"
-                  onClick={() => {
-                    router.push("/sign-up");
-                  }}
-                />
-                <PricingItem
-                  price="9"
-                  title="Pro"
-                  description="Support Zenblog and unlock exclusive features."
-                  features={["Unlimited blogs", "API access", "1000 images"]}
-                  action="Unlock features"
-                  onClick={() => {
-                    router.push("/sign-up");
-                  }}
-                />
-              </div>
-            </section> */}
 
             <section className="mt-24 py-24 text-center">
               <h2 className="text-2xl font-medium">

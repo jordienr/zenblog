@@ -1,7 +1,12 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const sb = createSupabaseBrowserClient();
+
+const keys = {
+  list: ["categories", "categories-with-post-count"],
+};
 
 type Category = {
   id: string;
@@ -13,7 +18,7 @@ type Category = {
 
 export function useCategoriesWithPostCount() {
   return useQuery({
-    queryKey: ["categories-with-post-count"],
+    queryKey: keys.list,
     queryFn: async () =>
       await sb
         .from("category_post_count")
@@ -26,7 +31,7 @@ export function useCategoriesWithPostCount() {
 
 export function useCategories() {
   return useQuery({
-    queryKey: ["categories"],
+    queryKey: keys.list,
     queryFn: async () => {
       const { data, error } = await sb
         .from("categories")
@@ -46,7 +51,7 @@ export function useCreateCategory() {
     mutationFn: async (category: Omit<Category, "id" | "created_at">) =>
       await sb.from("categories").insert(category).throwOnError(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: keys.list });
     },
   });
 }
@@ -61,18 +66,19 @@ export function useDeleteCategoryMutation(blogId: string) {
         .from("categories")
         .delete()
         .eq("id", categoryId)
-        .eq("blog_id", blogId);
-
-      if (res.error) {
-        throw new Error(res.error.message);
-      }
+        .eq("blog_id", blogId)
+        .throwOnError();
 
       return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["categories-with-post-count"],
+        queryKey: keys.list,
       });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      console.error(error);
     },
   });
 }
@@ -90,18 +96,19 @@ export function useUpdateCategoryMutation() {
       const res = await supa
         .from("categories")
         .update(category)
-        .eq("id", category.id);
-
-      if (res.error) {
-        throw new Error(res.error.message);
-      }
+        .eq("id", category.id)
+        .throwOnError();
 
       return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["categories-with-post-count"],
+        queryKey: keys.list,
       });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      console.error(error);
     },
   });
 }
