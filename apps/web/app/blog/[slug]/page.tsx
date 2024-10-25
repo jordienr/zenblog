@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { getBlogClient } from "@/cms";
+import { ArrowLeftIcon } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
@@ -8,25 +10,41 @@ const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
 
   return (
     <div>
-      <div className="p-4">
-        <h1 className="text-2xl font-medium">{post.title}</h1>
+      <div className="prose mx-auto">
+        <Link href="/blog" className="flex items-center gap-2">
+          <ArrowLeftIcon className="h-4 w-4" />
+          All posts
+        </Link>
+        <p className="text-center text-zinc-500">
+          {new Date(post.published_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
+        <h1 className="text-balance text-center text-5xl font-semibold">
+          {post.title}
+        </h1>
       </div>
-      <div className="p-2">
-        {post.cover_image && (
-          <img
-            src={post.cover_image}
-            height="400"
-            width={(16 / 9) * 400}
-            loading="lazy"
-            alt={post.title}
-          />
-        )}
-      </div>
-      <div className="overflow-auto p-4">
-        <div
-          dangerouslySetInnerHTML={{ __html: post.html_content }}
-          className="prose"
-        ></div>
+      <div className="prose mx-auto p-4">
+        <div>
+          {post.cover_image && (
+            <img
+              src={post.cover_image}
+              height="400"
+              width={(16 / 9) * 400}
+              loading="lazy"
+              alt={post.title}
+              className="rounded-xl border"
+            />
+          )}
+        </div>
+        <div>
+          <div
+            dangerouslySetInnerHTML={{ __html: post.html_content }}
+            className="prose mx-auto"
+          ></div>
+        </div>
       </div>
     </div>
   );

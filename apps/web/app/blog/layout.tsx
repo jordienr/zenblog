@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Navigation from "@/components/marketing/Navigation";
 import React, { PropsWithChildren } from "react";
 
@@ -9,6 +10,8 @@ const layout = (props: PropsWithChildren<Props>) => {
       <div className="mx-auto max-w-5xl ">
         <Navigation />
         {props.children}
+        <div className="h-24"></div>
+        <Footer />
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ const Navigation = (props: Props) => {
   const user = useUser();
 
   return (
-    <nav className="flex items-center justify-between p-3">
+    <nav className="flex items-center justify-between p-6">
       <div className="flex-grow cursor-default">
         <Link href="/">
           <ZendoLogo />
@@ -20,7 +20,7 @@ const Navigation = (props: Props) => {
       </div>
 
       <div className="flex flex-grow items-center justify-end gap-4 font-medium text-zinc-600">
-        <Link href="/blog">Blog</Link>
+        <Link href="/">Home</Link>
 
         <Link
           className="rounded-full px-3 py-1.5 hover:text-zinc-800"
@@ -38,7 +38,7 @@ const Navigation = (props: Props) => {
           <FaTwitter size="18" />
         </Link>
 
-        <Button asChild>
+        {/* <Button asChild>
           <Link
             href="/sign-in"
             className="btn btn-primary inline-block"
@@ -47,7 +47,7 @@ const Navigation = (props: Props) => {
           >
             Sign in
           </Link>
-        </Button>
+        </Button> */}
       </div>
     </nav>
   );

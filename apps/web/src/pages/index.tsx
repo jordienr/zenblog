@@ -73,7 +73,7 @@ const Home = () => {
               </Link>
               <Link
                 className="rounded-lg px-2 py-1 hover:text-zinc-800"
-                href="https://blog.zenblog.com"
+                href="/blog"
               >
                 Blog
               </Link>
