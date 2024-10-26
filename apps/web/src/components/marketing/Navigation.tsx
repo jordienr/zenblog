@@ -14,9 +14,9 @@ const Navigation = (props: Props) => {
   return (
     <div className="px-4">
       <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
-        <div className="flex-grow cursor-default">
+        <Link href="/" className="">
           <ZendoLogo className="" size={31} />
-        </div>
+        </Link>
 
         <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500">
           {/* <Link
