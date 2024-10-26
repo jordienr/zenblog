@@ -2,18 +2,11 @@
 import { getBlogClient } from "@/cms";
 import Link from "next/link";
 import React from "react";
-import { Tags } from "./ui/Tags";
 
-type Props = {};
-
-const Blog = async (props: Props) => {
+export const dynamic = "auto";
+const Blog = async () => {
   const blog = getBlogClient();
-  const [{ data: posts }, { data: categories }, { data: tags }] =
-    await Promise.all([
-      blog.posts.list(),
-      blog.categories.list(),
-      blog.tags.list(),
-    ]);
+  const { data: posts } = await blog.posts.list();
 
   const latestPost = posts[0];
   const postsWithoutLatest = posts.slice(1);

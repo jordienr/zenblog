@@ -4,6 +4,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
+export const dynamic = "auto";
 const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
   const blog = getBlogClient();
   const { data: post } = await blog.posts.get({ slug });

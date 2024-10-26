@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "build": "next build",
     "build:web": "next build",
     "dev": "next dev -p 8082",
