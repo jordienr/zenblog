@@ -72,6 +72,7 @@
     "@types/uuid": "^9.0.1",
     "@uidotdev/usehooks": "^2.0.1",
     "@vercel/og": "^0.6.2",
+    "@zenblog/types": "*",
     "ai": "^3.1.30",
     "bcrypt": "^5.1.1",
     "browser-image-compression": "^2.0.2",
@@ -116,9 +117,8 @@
     "tippy.js": "^6.3.7",
     "uuid": "^9.0.0",
     "zenblog": "*",
-    "zod": "^3.23.8",
-    "zustand": "^4.3.8",
-    "@zenblog/types": "*"
+    "zod": "^3.22.5",
+    "zustand": "^4.3.8"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
