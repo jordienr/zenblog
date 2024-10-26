@@ -1,18 +1,28 @@
 import Head from "next/head";
 import Link from "next/link";
-import { FaCheckCircle, FaTwitter } from "react-icons/fa";
+import {
+  FaBlog,
+  FaCheckCircle,
+  FaCode,
+  FaImage,
+  FaNetworkWired,
+  FaPalette,
+  FaPen,
+  FaPencilAlt,
+  FaPencilRuler,
+  FaRocket,
+  FaSmile,
+  FaWordpress,
+} from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { ZendoLogo } from "@/components/ZendoLogo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
-import { useUser } from "@/utils/supabase/browser";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { useRouter } from "next/router";
 import {
   Accordion,
   AccordionContent,
@@ -21,10 +31,58 @@ import {
 } from "@/components/ui/accordion";
 import Navigation from "@/components/marketing/Navigation";
 
-const Home = () => {
-  const user = useUser();
-  const router = useRouter();
+const FEATURES = [
+  {
+    icon: <FaRocket />,
+    title: "Get started in minutes",
+    description:
+      "No need to configure models, create a blog, write a post, publish.",
+  },
+  {
+    icon: <FaPencilAlt />,
+    title: "More than blogs",
+    description:
+      "Manage your website content easily. Blog, job postings, changelog, docs, help center, etc.",
+  },
+  {
+    icon: <FaNetworkWired />,
+    title: "Easy to integrate",
+    description:
+      "Use our HTTP API to fetch your content and display it on your website however you want. Works with any stack.",
+  },
+  {
+    icon: <FaCode />,
+    title: "Type safety",
+    description:
+      "Use our typesafe API client to fetch your content. No more parsing issues.",
+  },
+  {
+    icon: <FaSmile />,
+    title: "It's not Wordpress",
+    description:
+      "Forget about wordpress headaches. Just focus on writing great content.",
+  },
+  {
+    icon: <FaImage />,
+    title: "Image hosting",
+    description:
+      "We host your images for free. No need to upload them to another service.",
+  },
+  {
+    icon: <FaPencilRuler />,
+    title: "Simple editor",
+    description:
+      "Inspired by tools like Notion, we made an editor that is both powerful and simple to use.",
+  },
+  {
+    icon: <FaPalette />,
+    title: "Themes!",
+    description:
+      "We offer free themes for the most popular frameworks. Or you can build your own.",
+  },
+];
 
+const Home = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const formSchema = z.object({
@@ -155,6 +213,23 @@ const Home = () => {
                 height={300}
                 alt="The zenblog editor UI"
               />
+            </div>
+
+            <div className="mx-auto mt-24 max-w-4xl">
+              <h2 className="text-2xl font-medium">Features</h2>
+              <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
+                {FEATURES.map((feature) => (
+                  <div key={feature.title} className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-slate-400">
+                      {feature.icon && feature.icon}
+                    </div>
+                    <h3 className="text-lg font-medium">{feature.title}</h3>
+                    <p className="text-sm text-zinc-500">
+                      {feature.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <section className="mt-24 py-24 text-center">
