@@ -147,7 +147,7 @@ export default function CreateBlog() {
                   <div className="sr-only">Slug</div>
                 </Label>
                 <div>
-                  <div className="flex rounded-lg border font-mono tracking-tighter">
+                  <div className="flex font-mono tracking-tighter">
                     <textarea
                       id="slug-input"
                       placeholder="my-blog"
@@ -159,7 +159,7 @@ export default function CreateBlog() {
                       {...register("slug")}
                       rows={1}
                       cols={24}
-                      className="overflow-hidden rounded-md bg-transparent py-1 pl-1 pr-0.5 text-right text-sm font-medium text-zinc-700 outline-none hover:bg-zinc-100 focus:bg-zinc-100"
+                      className="overflow-hidden rounded-md bg-transparent px-0.5 py-1 text-right text-sm font-medium text-zinc-700 outline-none"
                     />
                     <span className="flex-grow py-1 text-sm">.zenblog.com</span>
                   </div>

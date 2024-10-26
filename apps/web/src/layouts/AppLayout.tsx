@@ -121,7 +121,6 @@ export default function AppLayout({
                           size={16}
                         />
                       )}
-                      {subscription?.plan}
                       {subscription?.plan === "hobby" && (
                         <Link
                           title="Upgrade to Pro"
@@ -155,6 +154,14 @@ export default function AppLayout({
                           </Link>
                         </DropdownMenuItem>
                       ))}
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/blogs"
+                          className="flex items-center gap-1 px-3"
+                        >
+                          All blogs
+                        </Link>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}

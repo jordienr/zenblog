@@ -260,6 +260,7 @@ function PostItem({
           <DropdownMenuItem
             onClick={async (e) => {
               e.stopPropagation();
+              e.preventDefault();
               onDeleteClick();
             }}
           >
