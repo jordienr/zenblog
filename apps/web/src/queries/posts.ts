@@ -19,7 +19,7 @@ export const usePostsQuery = ({
     enabled: !!blogId,
     initialPageParam: 0,
     getNextPageParam: (lastPage: any, pages: any) => {
-      return lastPage.length > 0 ? pages.length * pageSize : undefined;
+      return lastPage?.length > 0 ? pages.length * pageSize : undefined;
     },
     queryFn: async ({ pageParam = 0 }) => {
       const { data, error } = await sb
