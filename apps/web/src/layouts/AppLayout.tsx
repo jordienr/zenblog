@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Notifications from "@/components/Notifications";
 import Feedback from "@/components/Feedback";
 import Footer from "@/components/Footer";
-import { usePlan } from "@/queries/subscription";
 import AppChecks from "@/components/LoggedInUserChecks";
 import { Loader } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
@@ -21,20 +20,23 @@ import {
 import { useBlogsQuery } from "@/queries/blogs";
 import { cn } from "@/lib/utils";
 import Head from "next/head";
+import { useSubscriptionQuery } from "@/queries/subscription";
 
 type Props = {
   children?: React.ReactNode;
   loading?: boolean;
   title?: string;
   actions?: React.ReactNode;
+  description?: string;
 };
 export default function AppLayout({
   children,
   loading = false,
   title,
   actions,
+  description,
 }: Props) {
-  const plan = usePlan();
+  const { data: subscription } = useSubscriptionQuery();
   const user = useUser();
   const router = useRouter();
   const { data: blogs, isLoading: blogsLoading } = useBlogsQuery({
@@ -119,16 +121,17 @@ export default function AppLayout({
                           size={16}
                         />
                       )}
-                      {plan === "free" && (
+                      {subscription?.plan}
+                      {subscription?.plan === "hobby" && (
                         <Link
                           title="Upgrade to Pro"
                           href="/account"
                           className=" rounded-full p-1 text-center text-xs font-medium text-emerald-500"
                         >
-                          Free
+                          Hobby
                         </Link>
                       )}
-                      {plan === "pro" && (
+                      {subscription?.plan === "pro" && (
                         <div className="rounded-full text-xs font-medium text-blue-500">
                           Pro
                         </div>
@@ -206,7 +209,12 @@ export default function AppLayout({
           ) : (
             <div className="">
               <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-                <SectionTitle>{title}</SectionTitle>
+                <div className="flex flex-col">
+                  <SectionTitle>{title}</SectionTitle>
+                  {description && (
+                    <SectionDescription>{description}</SectionDescription>
+                  )}
+                </div>
                 <SectionActions>{actions}</SectionActions>
               </div>
 
@@ -279,4 +287,11 @@ export function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 export function SectionActions({ children }: { children: React.ReactNode }) {
   return <div className="flex items-center gap-2">{children}</div>;
+}
+export function SectionDescription({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <p className="text-sm text-zinc-500">{children}</p>;
 }

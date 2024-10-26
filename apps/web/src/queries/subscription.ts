@@ -1,6 +1,7 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
 import { QueryOptions, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const SUBSCRIPTION_KEYS = ["subscription"];
 
@@ -10,51 +11,19 @@ export function useSubscriptionQuery() {
 
   return useQuery({
     queryKey: SUBSCRIPTION_KEYS,
+    enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await sb
+      const { data } = await sb
         .from("subscriptions")
-        .select("status")
+        .select("status, plan")
         .eq("user_id", user?.id || "")
-        .limit(1);
+        .limit(1)
+        .throwOnError();
 
-      if (error || !data[0]) {
-        console.error(error);
-        return {
-          status: "inactive",
-        };
-      }
-
-      return data[0];
+      return {
+        status: data?.[0]?.status,
+        plan: data?.[0]?.plan,
+      };
     },
-    initialData: {
-      status: "",
-    },
-    staleTime: 5 * 60 * 1000,
   });
-}
-
-export function usePlan() {
-  const { data, isLoading } = useSubscriptionQuery();
-
-  if (isLoading) {
-    return "";
-  }
-
-  if (data?.status === "active") {
-    return "pro";
-  } else {
-    return "free";
-  }
-}
-
-export function useIsSubscribed() {
-  const { isFetching, data } = useSubscriptionQuery();
-
-  if (isFetching) {
-    return false; // Assume subscribed to avoid flicker
-  }
-
-  const isSubscribed = data?.status === "active";
-
-  return isSubscribed;
 }

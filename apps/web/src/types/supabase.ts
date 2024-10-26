@@ -496,6 +496,7 @@ export type Database = {
       subscriptions: {
         Row: {
           created_at: string
+          plan: string | null
           status: string
           stripe_subscription_id: string
           subscription: Json
@@ -503,6 +504,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          plan?: string | null
           status: string
           stripe_subscription_id: string
           subscription: Json
@@ -510,6 +512,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          plan?: string | null
           status?: string
           stripe_subscription_id?: string
           subscription?: Json

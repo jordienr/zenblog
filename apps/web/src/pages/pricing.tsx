@@ -10,9 +10,9 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function Pricing() {
-  const [subscriptionType, setSubscriptionType] = useState<
-    "monthly" | "yearly"
-  >("yearly");
+  const [subscriptionType, setSubscriptionType] = useState<"month" | "year">(
+    "year"
+  );
 
   const router = useRouter();
   return (
@@ -34,14 +34,14 @@ export default function Pricing() {
         <div className="mt-8">
           <div className="flex items-center gap-1">
             <Button
-              variant={subscriptionType === "monthly" ? "secondary" : "ghost"}
-              onClick={() => setSubscriptionType("monthly")}
+              variant={subscriptionType === "month" ? "secondary" : "ghost"}
+              onClick={() => setSubscriptionType("month")}
             >
               Monthly
             </Button>
             <Button
-              variant={subscriptionType === "yearly" ? "secondary" : "ghost"}
-              onClick={() => setSubscriptionType("yearly")}
+              variant={subscriptionType === "year" ? "secondary" : "ghost"}
+              onClick={() => setSubscriptionType("year")}
             >
               Yearly (2 months free)
             </Button>
@@ -96,7 +96,8 @@ export default function Pricing() {
   );
 }
 
-function PricingCard({
+export function PricingCard({
+  id,
   title,
   monthlyPrice,
   yearlyPrice,
@@ -104,20 +105,21 @@ function PricingCard({
   onClick,
   type,
 }: {
+  id: string;
   title: string;
   monthlyPrice: number;
   yearlyPrice: number;
   features: string[];
   onClick: () => void;
-  type: "monthly" | "yearly";
+  type: "month" | "year";
 }) {
-  const yearlyToMonth = (yearlyPrice / 12).toFixed(2);
+  const yearlyToMonth = yearlyPrice / 12;
 
   const PricingText = () => {
     if (monthlyPrice === 0) {
       return <p className="text-2xl font-medium">Free</p>;
     }
-    if (type === "monthly") {
+    if (type === "month") {
       return (
         <p className="text-slate-500">
           <span className="mr-1 text-xl">$</span>
@@ -141,6 +143,13 @@ function PricingCard({
     );
   };
 
+  function getButtonVariant() {
+    if (id === "pro") {
+      return "default";
+    }
+    return "outline";
+  }
+
   return (
     <div className="rounded-2xl border p-4">
       <h3 className="text-lg font-medium">{title}</h3>
@@ -156,7 +165,9 @@ function PricingCard({
         ))}
       </ul>
       <div className="mt-5">
-        <Button>Get started</Button>
+        <Button variant={getButtonVariant()} onClick={onClick}>
+          Get started
+        </Button>
       </div>
     </div>
   );

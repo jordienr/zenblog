@@ -1,5 +1,5 @@
 import { Context } from "hono";
-import { axiom } from "lib/axiom";
+import { axiom, AXIOM_DATASETS } from "lib/axiom";
 
 const ERROR_TABLE = "zenblog-errors";
 
@@ -18,7 +18,7 @@ const ERROR_MAP: Record<string, ErrorItem> = {
 
 export const throwError = (ctx: Context, error: keyof typeof ERROR_MAP) => {
   console.log(`🔴 ${ERROR_MAP[error]?.message}`);
-  axiom.ingest(ERROR_TABLE, {
+  axiom.ingest(AXIOM_DATASETS.api, {
     error: ERROR_MAP[error]?.message,
     request: ctx.req,
   });

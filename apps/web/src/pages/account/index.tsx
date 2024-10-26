@@ -1,102 +1,60 @@
-import { IsDevMode } from "@/components/is-dev-mode";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsTrigger, TabsList } from "@/components/ui/tabs";
-import AppLayout from "@/layouts/AppLayout";
+import AppLayout, { Section, SectionTitle } from "@/layouts/AppLayout";
+import { PRICING_PLANS, PricingPlan } from "@/lib/pricing.constants";
 import { usePricesQuery } from "@/queries/prices";
 import { useProductsQuery } from "@/queries/products";
-import { useIsSubscribed, useSubscriptionQuery } from "@/queries/subscription";
+import { useSubscriptionQuery } from "@/queries/subscription";
 import { useUser } from "@/utils/supabase/browser";
 import { Landmark, Loader } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { PricingCard } from "../pricing";
+import { API } from "app/utils/api-client";
 
 type Props = {};
 
 export const SubscribeSection = () => {
   const products = useProductsQuery();
   const prices = usePricesQuery();
+  const user = useUser();
   const [interval, setInterval] = React.useState<"year" | "month">("year");
   const [isLoading, setIsLoading] = useState(false);
 
-  async function openCheckoutPage(product_id: string) {
+  async function openCheckoutPage(plan: PricingPlan) {
     setIsLoading(true);
+    toast.info("Redirecting to Stripe...");
 
-    const pricesForProduct = prices.data?.filter(
-      (p) => p.price.product === product_id
-    );
-    if (!pricesForProduct) {
+    if (!user || !user.id) {
+      toast.error("User not found");
       setIsLoading(false);
       return;
     }
 
-    const price = pricesForProduct.find(
-      (p) => p.price.recurring?.interval === interval
-    );
-
-    if (!price) {
-      setIsLoading(false);
-      return;
-    }
-
-    const res = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await API().v2.accounts[":user_id"].checkout.$get({
+      param: {
+        user_id: user.id,
       },
-      body: JSON.stringify({
-        price_id: price.price.id,
-      }),
+      query: {
+        plan: plan.id,
+        interval,
+      },
     });
 
-    if (!res.ok) {
+    const resJson = await response.json();
+
+    console.log(resJson);
+
+    if ("error" in resJson) {
+      toast.error("Error creating checkout session");
+      console.error(resJson.error);
       setIsLoading(false);
-      console.error(res.statusText);
-      toast.error("Error creating checkout session, please try again.");
       return;
     }
 
-    const json = await res.json();
-    if (json.error) {
-      console.error(json.error);
-      setIsLoading(false);
-      return;
-    }
-
-    if (json.url) {
-      window.location.href = json.url;
-    } else {
-      setIsLoading(false);
-      toast.error("Error creating session");
-      console.error("Error creating session");
-    }
+    window.location.href = resJson.url;
   }
 
   const loading = products.isLoading || prices.isLoading || isLoading;
-
-  function formatAmount(price: number) {
-    if (!price) {
-      return "";
-    }
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price / 100);
-  }
-
-  function getAmountFromProduct(prodId: string) {
-    const price = prices.data?.find(
-      (p) =>
-        p.price.product === prodId && p.price.recurring?.interval === interval
-    );
-    if (!price) {
-      return;
-    }
-    const amount = price.price.unit_amount;
-    if (!amount) {
-      return;
-    }
-    return formatAmount(amount);
-  }
 
   if (loading) {
     return (
@@ -108,47 +66,31 @@ export const SubscribeSection = () => {
 
   return (
     <div>
-      {/* <IsDevMode>
-        <pre>
-          Run this to sync stripe with the local database:
-          <br />
-          `npm run stripe:webhook` // listen for stripe events
-          <br />
-          `npm run stripe:sync` // sync stripe products and prices
-          <br />
-          Then refresh the page and subscribe to a plan
-        </pre>
-      </IsDevMode> */}
       <h2 className="text-lg font-medium">Pricing</h2>
       <p className="font-mono text-sm text-zinc-500">Cancel anytime</p>
+      <div className="mt-4 flex gap-2">
+        <Button
+          variant={interval === "month" ? "default" : "outline"}
+          onClick={() => setInterval("month")}
+        >
+          Monthly
+        </Button>
+        <Button
+          variant={interval === "year" ? "default" : "outline"}
+          onClick={() => setInterval("year")}
+        >
+          Yearly
+        </Button>
+      </div>
 
-      <div className="mt-4 ">
-        {products.data?.map((product) => (
-          <div
-            key={product.id}
-            className="relative max-w-sm rounded-xl border border-b-2 bg-zinc-100/70 p-3"
-          >
-            <h3 className="text-lg font-semibold">{product.product.name}</h3>
-
-            <div className="mt-2 text-3xl font-semibold">
-              {getAmountFromProduct(product.product.id)}
-              <span className="text-sm text-zinc-400">/{interval}</span>
-            </div>
-            <div className="mt-2 flex">
-              <Button
-                size="default"
-                className="w-full"
-                onClick={() => openCheckoutPage(product.product.id)}
-              >
-                Subscribe →
-              </Button>
-            </div>
-            <ul className="mt-4 grid gap-1.5 px-4 py-4 font-mono">
-              <li>✔︎ Unlimited blogs</li>
-              <li>✔︎ API access</li>
-              <li>✔︎ Supports development</li>
-              <li>🔜 More soon</li>
-            </ul>
+      <div className="mt-4 grid max-w-xl grid-cols-2 gap-4">
+        {PRICING_PLANS.map((plan) => (
+          <div key={plan.title}>
+            <PricingCard
+              {...plan}
+              type={interval}
+              onClick={() => openCheckoutPage(plan)}
+            />
           </div>
         ))}
       </div>
@@ -162,31 +104,35 @@ const AccountPage = (props: Props) => {
 
   async function onManageSubscriptionClick() {
     setLoading(true);
-    const response = await fetch("/api/customer-portal", {
-      method: "POST",
+    toast.info("Redirecting to Stripe...");
+    const response = await API().v2.accounts[":user_id"][
+      "customer-portal"
+    ].$get({
+      param: {
+        user_id: user?.id || "",
+      },
     });
 
     const json = await response.json();
 
-    if (json.error) {
-      toast.error(json.error);
-      console.error(json.error);
+    if ("error" in json) {
+      toast.error("Error creating customer portal");
+      console.error(json);
       setLoading(false);
       return;
     }
 
-    if (json.session) {
-      window.location.href = json.session;
+    if (json.url) {
+      console.log("redirecting to", json.url);
+      window.location.href = json.url;
     } else {
-      toast.error(json.error);
-      console.error("Error creating session");
+      toast.error("Error creating customer portal");
+      console.error(json);
       setLoading(false);
     }
   }
 
   const subscription = useSubscriptionQuery();
-
-  const isSubbed = useIsSubscribed();
 
   function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-US", {
@@ -199,92 +145,85 @@ const AccountPage = (props: Props) => {
   }
 
   return (
-    <AppLayout loading={loading || subscription.isLoading}>
-      <div className="mx-auto max-w-5xl px-4 py-12">
-        <h1 className="text-xl font-medium">Account settings</h1>
-
-        <section className="my-4 rounded-xl border border-b-2 bg-white p-4">
-          <h2 className="text-lg font-medium">Account</h2>
-          <div className="mt-4 max-w-lg divide-y *:grid *:grid-cols-2 *:p-2">
-            <div>
-              <div>Email</div>
-              <div className="font-mono">{user?.email}</div>
-            </div>
-            <div>
-              <div>Created at</div>
-              <div className="font-mono">
-                {formatDate(user?.created_at || "")}
-              </div>
+    <AppLayout
+      loading={loading || subscription.isLoading}
+      title="Account settings"
+      description="Manage your account and subscription"
+    >
+      <Section className="px-4">
+        <SectionTitle>Account</SectionTitle>
+        <div className="mt-4 max-w-xl divide-y *:grid *:grid-cols-2 *:p-2">
+          <div>
+            <div>Email</div>
+            <div className="font-mono">{user?.email}</div>
+          </div>
+          <div>
+            <div>Created at</div>
+            <div className="font-mono">
+              {formatDate(user?.created_at || "")}
             </div>
           </div>
-
-          {/* <h3 className="mt-8 font-medium">Teams</h3>
-          <ul>
-            {teams.data?.map((team) => (
-              <li key={team.id}>{team.name}</li>
-            ))}
-          </ul> */}
-        </section>
-        <section className="my-4 rounded-xl border border-b-2 bg-white p-4">
-          <h2 className="text-lg font-medium">Subscription details</h2>
-          {subscription.isLoading ? (
-            <></>
-          ) : (
-            <p className="mt-4">
-              Subscription status:{" "}
-              {subscription.data?.status === "active" ? (
-                <span className="rounded-md bg-emerald-100 px-3 py-1 font-mono text-emerald-700">
-                  {subscription.data?.status}
-                </span>
-              ) : (
-                <span>
-                  <span className="rounded-md bg-yellow-100 px-3 py-1 font-mono text-yellow-600">
-                    {subscription.data?.status || "Not found"}
-                  </span>
-                </span>
-              )}
-            </p>
-          )}
-
-          <div className="">
-            {loading ? (
-              <pre>Loading...</pre>
+        </div>
+      </Section>
+      <Section className="my-4 rounded-xl border border-b-2 bg-white p-4">
+        <SectionTitle>Subscription details</SectionTitle>
+        {subscription.isLoading ? (
+          <></>
+        ) : (
+          <p className="mt-4 grid max-w-xl grid-cols-2">
+            Subscription status:{" "}
+            {subscription.data?.status === "active" ? (
+              <span className="inline-flex items-center gap-1 rounded-md px-3 py-1 font-mono text-emerald-700">
+                {subscription.data?.status}
+              </span>
             ) : (
-              <>
-                {subscription.data?.status !== "active" ? (
-                  <>
-                    <hr className="my-8 max-w-lg" />
-                    <SubscribeSection />
-                  </>
-                ) : (
-                  <>
-                    {/* <pre>{JSON.stringify(subscription.data, null, 2)}</pre> */}
-                  </>
-                )}
-              </>
+              <span>
+                <span className="rounded-md bg-yellow-100 px-3 py-1 font-mono text-yellow-600">
+                  {subscription.data?.status || "Free"}
+                </span>
+              </span>
             )}
-          </div>
+          </p>
+        )}
 
-          {isSubbed && (
+        <div className="">
+          {loading ? (
+            <pre>Loading...</pre>
+          ) : (
             <>
-              <hr className="my-6 max-w-lg" />
-
-              <h3 className="text-lg font-medium">Manage your subscription</h3>
-              <p className="text-zinc-500">
-                Check invoices, billing and payment information.
-              </p>
-              <Button
-                className="mt-4"
-                variant="secondary"
-                onClick={onManageSubscriptionClick}
-              >
-                <Landmark />
-                Manage subscription
-              </Button>
+              {subscription.data?.status !== "active" ? (
+                <>
+                  <hr className="my-8 max-w-xl" />
+                  <SubscribeSection />
+                </>
+              ) : (
+                <>
+                  {/* <pre>{JSON.stringify(subscription.data, null, 2)}</pre> */}
+                </>
+              )}
             </>
           )}
-        </section>
-      </div>
+        </div>
+
+        {subscription.data?.status === "active" && (
+          <>
+            <hr className="my-6 max-w-xl" />
+
+            <h3 className="text-lg font-medium">Manage your subscription</h3>
+            <p className="text-zinc-500">
+              Check invoices, billing and payment information.
+            </p>
+            <Button
+              className="mt-4"
+              variant="secondary"
+              onClick={onManageSubscriptionClick}
+            >
+              <Landmark />
+              Manage subscription
+            </Button>
+          </>
+        )}
+      </Section>
     </AppLayout>
   );
 };

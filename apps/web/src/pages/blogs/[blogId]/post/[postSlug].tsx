@@ -25,9 +25,9 @@ export default function Post() {
   const tagsQuery = usePostTags({ blogId, postId: post?.data?.id || "" });
 
   const tags = tagsQuery.data?.map((tagRes) => ({
-    name: tagRes.blog_tags!.name,
-    id: tagRes.blog_tags!.id,
-    slug: tagRes.blog_tags!.slug,
+    name: tagRes.blog_tags?.name || "",
+    id: tagRes.blog_tags?.id || "",
+    slug: tagRes.blog_tags?.slug || "",
   }));
 
   if (isLoading || tagsQuery.isLoading || isRefetching) {

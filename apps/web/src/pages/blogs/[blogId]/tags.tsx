@@ -38,6 +38,7 @@ export default function TagsPage() {
     <AppLayout
       title="Tags"
       actions={<CreateTagDialog blogId={blogId} />}
+      description="Tags help you group your posts. Posts can have multiple tags."
       loading={tags.isLoading}
     >
       <Section>
@@ -62,10 +63,10 @@ export default function TagsPage() {
             return (
               <div
                 key={tag.tag_id}
-                className="grid grid-cols-4 items-center px-2 py-1.5 hover:bg-zinc-50"
+                className="grid grid-cols-4 items-center p-4 hover:bg-zinc-50"
               >
                 <div className="flex items-center gap-2">
-                  <PiTag className="text-orange-500" size="16" />
+                  {/* <PiTag className="text-orange-500" size="16" /> */}
                   <span className="font-medium">{tag.tag_name}</span>
                 </div>
 

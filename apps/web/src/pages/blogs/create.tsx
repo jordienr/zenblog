@@ -7,17 +7,17 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useIsSubscribed } from "@/queries/subscription";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Smile } from "lucide-react";
 import { RESERVED_SLUGS } from "@/lib/constants";
+import { useSubscriptionQuery } from "@/queries/subscription";
 
 export default function CreateBlog() {
   const DEFAULT_EMOJI = "📝";
 
-  const isSubscribed = useIsSubscribed();
+  const { data: subscription, isLoading } = useSubscriptionQuery();
 
   type FormData = {
     title: string;
@@ -92,7 +92,7 @@ export default function CreateBlog() {
     }
   };
 
-  if (!isSubscribed && hasOneBlogAlready) {
+  if (subscription?.status !== "active" && hasOneBlogAlready && !isLoading) {
     return (
       <AppLayout loading={createBlog.isPending || createBlog.isSuccess}>
         <div className="section mx-auto my-12 max-w-xl py-12">

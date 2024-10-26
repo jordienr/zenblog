@@ -3,15 +3,7 @@ import { createStripeClient } from "@/lib/server/stripe";
 import getRawBody from "raw-body";
 import Stripe from "stripe";
 import { createAdminClient } from "@/lib/server/supabase/admin";
-
-console.log("----");
-console.log("----");
-console.log("----");
-console.log("----");
-console.log("----");
-console.log("----");
-console.log("----");
-console.log("----");
+import { axiom, AXIOM_DATASETS } from "lib/axiom";
 
 const stripe = createStripeClient();
 const supabase = createAdminClient();
@@ -38,11 +30,16 @@ async function upsertSubscription(event: Stripe.Event) {
       throw new Error("Invalid user id");
     }
 
+    const isCancelled = event.data.object.status === "canceled";
+
+    const plan = isCancelled ? null : event.data.object.metadata.plan_id;
+
     const res = await supabase.from("subscriptions").upsert(
       {
         stripe_subscription_id: event.data.object.id,
         user_id: userId,
         status: event.data.object.status,
+        plan,
         subscription: event.data.object as any,
       },
       {
@@ -50,7 +47,12 @@ async function upsertSubscription(event: Stripe.Event) {
       }
     );
 
-    console.log(res);
+    console.log("error: ", res.error);
+    console.log("data: ", res.data);
+    axiom.ingest(AXIOM_DATASETS.stripe, {
+      message: "Stripe subscription upserted",
+      payload: { event, res },
+    });
   }
 }
 
@@ -167,12 +169,6 @@ const handler: NextApiHandler = async (req, res) => {
       "customer.subscription.created": upsertSubscription,
       "customer.subscription.updated": upsertSubscription,
       "customer.subscription.deleted": upsertSubscription,
-      "product.created": upsertProduct,
-      "product.updated": upsertProduct,
-      "product.deleted": upsertProduct,
-      "price.created": upsertPrice,
-      "price.updated": upsertPrice,
-      "price.deleted": upsertPrice,
     };
 
     const handler = eventMap[event.type];

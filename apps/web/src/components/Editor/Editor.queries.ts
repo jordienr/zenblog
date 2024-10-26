@@ -41,10 +41,8 @@ export const useCreateBlogTag = () => {
       if (error) {
         throw error;
       }
-      return data;
-    },
-    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] });
+      return data;
     },
   });
 

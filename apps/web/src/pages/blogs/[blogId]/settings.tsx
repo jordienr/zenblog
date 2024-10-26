@@ -1,4 +1,8 @@
-import AppLayout, { Section } from "@/layouts/AppLayout";
+import AppLayout, {
+  Section,
+  SectionDescription,
+  SectionTitle,
+} from "@/layouts/AppLayout";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -263,6 +267,18 @@ export default function BlogSettings() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </Section>
+
+        <Section className="p-4">
+          <SectionTitle>Manage subscription</SectionTitle>
+          <SectionDescription>
+            You can manage your subscription from the account page.
+          </SectionDescription>
+          <div className="mt-4">
+            <Link href="/account">
+              <Button variant={"outline"}>Go to account</Button>
+            </Link>
+          </div>
         </Section>
 
         <div className="py-8 text-center text-zinc-400">~</div>

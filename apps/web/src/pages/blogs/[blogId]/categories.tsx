@@ -109,6 +109,7 @@ export default function CategoriesPage() {
       title="Categories"
       loading={isLoading}
       actions={<CreateCategoryDialog />}
+      description="Categories help you group your posts. Posts can have one category."
     >
       <Section>
         <Table>
@@ -125,9 +126,13 @@ export default function CategoriesPage() {
           <TableBody>
             {categories?.data?.map((category) => (
               <TableRow key={category.category_id}>
-                <TableCell>{category.category_name}</TableCell>
-                <TableCell>{category.category_slug}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="font-medium">
+                  {category.category_name}
+                </TableCell>
+                <TableCell className="font-mono text-slate-500">
+                  {category.category_slug}
+                </TableCell>
+                <TableCell className="text-right font-mono">
                   {category.post_count}
                 </TableCell>
                 <TableCell className="text-right">
