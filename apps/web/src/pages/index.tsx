@@ -19,6 +19,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Navigation from "@/components/marketing/Navigation";
 
 const Home = () => {
   const user = useUser();
@@ -50,7 +51,7 @@ const Home = () => {
   return (
     <>
       <Head>
-        <title>zenblog - a tiny blogging cms</title>
+        <title>Zenblog - A tiny blogging CMS</title>
         <meta
           name="description"
           content="Simple, open source, headless, blogging CMS."
@@ -58,46 +59,10 @@ const Home = () => {
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <div className="">
-        <div className="flex flex-col px-4">
-          <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
-            <div className="flex-grow cursor-default">
-              <ZendoLogo className="" size={31} />
-            </div>
+        <div className="flex flex-col">
+          <Navigation />
 
-            <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500">
-              <Link
-                className="rounded-lg px-2 py-1 hover:text-zinc-800"
-                href="/docs"
-              >
-                Docs
-              </Link>
-              <Link
-                className="rounded-lg px-2 py-1 hover:text-zinc-800"
-                href="/blog"
-              >
-                Blog
-              </Link>
-              <Link
-                target="_blank"
-                href="https://twitter.com/zenbloghq"
-                className="flex items-center justify-center rounded-full p-2 text-lg transition-all hover:text-zinc-800"
-                title="Follow us on Twitter"
-                aria-label="Follow us on Twitter"
-              >
-                <FaTwitter size="18" />
-              </Link>
-
-              {user && (
-                <div className="ml-2 flex">
-                  <Button asChild variant={"secondary"} size="default">
-                    <Link href="/blogs">Dashboard</Link>
-                  </Button>
-                </div>
-              )}
-            </div>
-          </nav>
-
-          <main className="mt-12 px-4 pb-24 font-sans">
+          <main className="mt-12 px-6 pb-24 font-sans">
             <div className="mx-auto max-w-4xl">
               <h1
                 className={`mt-2 text-4xl font-medium tracking-tight text-zinc-800`}

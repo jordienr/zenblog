@@ -3,17 +3,12 @@
 ## Backlog
 
 - [] Paddle for subscriptions. I aint risking it, need a MoR.
-- [] finish pagination in usePostsQuery
-- [] Category management page
-- [] Categories in API + API Client
 - [] Nextjs example in homepage
-- [] Add tags to posts API
-- [] Fix deleting tags with posts
 - [] Use a JWT with the blog id to authenticate the API, should make api faster by removing one req to get the blog id
 - [] Add categories to posts API
-- [] fix creating tags in tags tab
 - [] fix metadata format so that its {key:value} not [{key:foo,value:bar}]
 - [] pagination to media query
+- [] fix reset password
 
 ## Blogs
 

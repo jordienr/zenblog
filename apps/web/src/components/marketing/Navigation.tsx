@@ -12,44 +12,51 @@ const Navigation = (props: Props) => {
   const user = useUser();
 
   return (
-    <nav className="flex items-center justify-between p-6">
-      <div className="flex-grow cursor-default">
-        <Link href="/">
-          <ZendoLogo />
-        </Link>
-      </div>
+    <div className="px-4">
+      <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
+        <div className="flex-grow cursor-default">
+          <ZendoLogo className="" size={31} />
+        </div>
 
-      <div className="flex flex-grow items-center justify-end gap-4 font-medium text-zinc-600">
-        <Link href="/">Home</Link>
-
-        <Link
-          className="rounded-full px-3 py-1.5 hover:text-zinc-800"
-          href="/docs"
-        >
-          Docs
-        </Link>
-        <Link
-          target="_blank"
-          href="https://twitter.com/zenbloghq"
-          className="flex items-center justify-center rounded-full p-2 text-lg text-blue-500 transition-all hover:bg-blue-100"
-          title="Follow us on Twitter"
-          aria-label="Follow us on Twitter"
-        >
-          <FaTwitter size="18" />
-        </Link>
-
-        {/* <Button asChild>
-          <Link
-            href="/sign-in"
-            className="btn btn-primary inline-block"
-            title="Sign in"
-            aria-label="Sign in"
+        <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500">
+          {/* <Link
+            className="rounded-lg px-2 py-1 hover:text-zinc-800"
+            href="/pricing"
           >
-            Sign in
+            Pricing
+          </Link> */}
+          <Link
+            className="rounded-lg px-2 py-1 hover:text-zinc-800"
+            href="/docs"
+          >
+            Docs
           </Link>
-        </Button> */}
-      </div>
-    </nav>
+          <Link
+            className="rounded-lg px-2 py-1 hover:text-zinc-800"
+            href="/blog"
+          >
+            Blog
+          </Link>
+          <Link
+            target="_blank"
+            href="https://twitter.com/zenbloghq"
+            className="flex items-center justify-center rounded-full p-2 text-lg transition-all hover:text-zinc-800"
+            title="Follow us on Twitter"
+            aria-label="Follow us on Twitter"
+          >
+            <FaTwitter size="18" />
+          </Link>
+
+          {user && (
+            <div className="ml-2 flex">
+              <Button asChild variant={"secondary"} size="default">
+                <Link href="/blogs">Dashboard</Link>
+              </Button>
+            </div>
+          )}
+        </div>
+      </nav>
+    </div>
   );
 };
 

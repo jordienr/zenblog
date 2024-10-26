@@ -60,17 +60,13 @@ export default function AppLayout({
       label: "Media",
       href: `/blogs/${selectedBlog?.id}/media`,
     },
-    // {
-    //   label: "Authors",
-    //   href: `/blogs/${selectedBlog?.id}/authors`,
-    // },
-    {
-      label: "Tags",
-      href: `/blogs/${selectedBlog?.id}/tags`,
-    },
     {
       label: "Categories",
       href: `/blogs/${selectedBlog?.id}/categories`,
+    },
+    {
+      label: "Tags",
+      href: `/blogs/${selectedBlog?.id}/tags`,
     },
     {
       label: "Settings",
@@ -81,7 +77,7 @@ export default function AppLayout({
   return (
     <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
       <Head>
-        <title>zenblog</title>
+        <title>Zenblog</title>
         <meta
           name="description"
           content="Simple, open source, headless, blogging CMS."
@@ -117,15 +113,11 @@ export default function AppLayout({
                         {selectedBlog?.emoji}
                       </span>
                       {selectedBlog?.title}
-                      {blogsLoading ? (
+                      {blogsLoading && (
                         <Loader
                           className="animate-spin text-orange-500"
                           size={16}
                         />
-                      ) : (
-                        <div className="rounded-full text-xs font-medium text-blue-500">
-                          Pro
-                        </div>
                       )}
                       {plan === "free" && (
                         <Link
@@ -135,6 +127,11 @@ export default function AppLayout({
                         >
                           Free
                         </Link>
+                      )}
+                      {plan === "pro" && (
+                        <div className="rounded-full text-xs font-medium text-blue-500">
+                          Pro
+                        </div>
                       )}
                     </DropdownMenuTrigger>
 

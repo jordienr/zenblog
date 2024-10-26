@@ -1,10 +1,12 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { useUser } from "@/utils/supabase/browser";
 import { QueryOptions, useQuery } from "@tanstack/react-query";
 
 const SUBSCRIPTION_KEYS = ["subscription"];
 
 export function useSubscriptionQuery() {
   const sb = createSupabaseBrowserClient();
+  const user = useUser();
 
   return useQuery({
     queryKey: SUBSCRIPTION_KEYS,
@@ -12,6 +14,7 @@ export function useSubscriptionQuery() {
       const { data, error } = await sb
         .from("subscriptions")
         .select("status")
+        .eq("user_id", user?.id || "")
         .limit(1);
 
       if (error || !data[0]) {
@@ -24,7 +27,7 @@ export function useSubscriptionQuery() {
       return data[0];
     },
     initialData: {
-      status: "active",
+      status: "",
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -34,7 +37,7 @@ export function usePlan() {
   const { data, isLoading } = useSubscriptionQuery();
 
   if (isLoading) {
-    return "loading";
+    return "";
   }
 
   if (data?.status === "active") {

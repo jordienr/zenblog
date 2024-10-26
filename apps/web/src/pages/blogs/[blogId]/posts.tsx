@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Plus } from "lucide-react";
+import { ImageIcon, MoreVertical, Plus, Trash } from "lucide-react";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -27,6 +27,12 @@ import { Image, ImageSelector } from "@/components/Images/ImagePicker";
 import { useRouterTabs } from "@/hooks/useRouterTabs";
 
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -108,6 +114,8 @@ export default function BlogPosts() {
 
   const hostedBlogUrl = getHostedBlogUrl(blog?.slug || "");
 
+  const noPosts = posts?.pages.flatMap((page) => page).length === 0;
+
   if (blog && posts) {
     return (
       <AppLayout
@@ -124,17 +132,17 @@ export default function BlogPosts() {
           </>
         }
       >
-        <Section>
-          {posts.pages.length === 0 && (
+        <Section className="overflow-hidden py-0">
+          {noPosts && (
             <div className="p-12 py-32 text-center">
-              <div className="text-2xl">✏️</div>
-              <div className="text-lg text-zinc-500">Nothing here yet</div>
+              <div className="text-4xl">✏️</div>
+              <div className="mt-2 text-lg text-zinc-500">Nothing here yet</div>
               <Button asChild>
                 <Link
                   href={`/blogs/${blog.id}/create`}
-                  className="btn btn-primary mx-auto mt-4 max-w-xs"
+                  className="mt-4 inline-flex"
                 >
-                  Publish your first post
+                  Write your first post
                 </Link>
               </Button>
             </div>
@@ -164,7 +172,7 @@ export default function BlogPosts() {
                 />
               );
             })}
-          <div className="flex items-center justify-end gap-4 px-3 pt-2 text-center font-mono text-xs text-zinc-500">
+          <div className="flex items-center justify-end gap-4 p-4 text-center font-mono text-xs text-zinc-500">
             Showing {posts.pages.flatMap((page) => page).length} posts
             <Button
               size="xs"
@@ -199,7 +207,7 @@ function PostItem({
     <Link
       key={post.slug}
       href={`/blogs/${blogId}/post/${post.slug}`}
-      className="group flex flex-col gap-4 border-b border-zinc-200 px-3 py-2 transition-all hover:bg-slate-50 md:flex-row md:items-center"
+      className="group flex flex-col gap-4 border-b border-zinc-200 p-4  transition-all hover:bg-slate-50 md:flex-row md:items-center"
     >
       <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
         {post.cover_image ? (
@@ -236,7 +244,7 @@ function PostItem({
         </div>
         <span className="font-mono">{formatDate(post.published_at || "")}</span>
       </div>
-      {/* <DropdownMenu>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant={"ghost"}
@@ -259,7 +267,7 @@ function PostItem({
             <span className="ml-2">Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu> */}
+      </DropdownMenu>
     </Link>
   );
 }
