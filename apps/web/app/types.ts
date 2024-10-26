@@ -12,7 +12,13 @@ export type Blog = {
 };
 
 export type BlogHomeProps = {
-  posts: Post[];
+  posts: {
+    title: string;
+    slug: string;
+    published_at: string;
+    cover_image: string;
+    excerpt: string;
+  }[];
   blog: Blog;
   disableLinks?: boolean;
 };

@@ -1,11 +1,7 @@
-import { Blog, Post } from "app/types";
+import { Blog } from "app/types";
 import { SocialLinks } from "app/ui/SocialLinks";
-import { FadeIn } from "app/ui/fade-in";
 import { ZenblogFooter } from "app/ui/zenblog-footer";
-import { formatPostDate } from "app/utils/dates";
-import Link from "next/link";
 import React from "react";
-import { motion } from "framer-motion";
 import { BlogPostItem } from "./blog-post-item";
 
 export function DefaultHome({
@@ -13,7 +9,13 @@ export function DefaultHome({
   blog,
   disableLinks,
 }: {
-  posts: Post[];
+  posts: {
+    title: string;
+    slug: string;
+    published_at: string;
+    cover_image: string;
+    excerpt: string;
+  }[];
   blog: Blog;
   disableLinks?: boolean;
 }) {

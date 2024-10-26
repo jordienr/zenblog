@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Blog, Post } from "app/types";
+import { Blog } from "app/types";
 import { FadeIn } from "app/ui/fade-in";
 import { formatPostDate } from "app/utils/dates";
 import Link from "next/link";
@@ -19,7 +19,13 @@ export function DirectoryHome({
   disableLinks,
 }: {
   blog: Blog;
-  posts: Post[];
+  posts: {
+    title: string;
+    slug: string;
+    published_at: string;
+    cover_image: string;
+    excerpt: string;
+  }[];
   disableLinks?: boolean;
 }) {
   return (

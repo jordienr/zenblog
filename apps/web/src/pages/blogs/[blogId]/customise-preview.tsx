@@ -1,6 +1,6 @@
 import { usePostsQuery } from "@/queries/posts";
 import { BlogHomePage } from "app/pub/themes/blog-home";
-import { Blog, Post, Theme } from "app/types";
+import { Blog, Theme } from "app/types";
 import { useRouter } from "next/router";
 
 export default function CustomisePreview() {
@@ -28,7 +28,15 @@ export default function CustomisePreview() {
     <>
       <BlogHomePage
         blog={blog}
-        posts={publishedPosts as Post[]}
+        posts={
+          publishedPosts as {
+            title: string;
+            slug: string;
+            published_at: string;
+            excerpt: string;
+            cover_image: string;
+          }[]
+        }
         theme={theme}
         disableLinks
       />

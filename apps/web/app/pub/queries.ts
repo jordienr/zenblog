@@ -29,6 +29,7 @@ export async function getPosts(subdomain: string, sort: string = "desc") {
       slug: string;
       published_at: string;
       cover_image: string;
+      excerpt: string;
     }[];
     error: any;
   };

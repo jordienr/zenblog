@@ -4,7 +4,6 @@ import { DirectoryHome } from "./directory/home";
 import { NewsroomHome } from "./newsroom/home";
 import { GardenHome } from "./garden/home";
 import { InstrumentHome } from "./instrument/home";
-import { Post } from "@zenblog/types";
 
 export function BlogHomePage({
   theme,
@@ -14,7 +13,13 @@ export function BlogHomePage({
 }: {
   theme: Theme;
   blog: Blog;
-  posts: Post[];
+  posts: {
+    title: string;
+    slug: string;
+    published_at: string;
+    cover_image: string;
+    excerpt: string;
+  }[];
   disableLinks?: boolean;
 }) {
   const props = {

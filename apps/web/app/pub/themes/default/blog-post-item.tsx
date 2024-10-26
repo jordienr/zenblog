@@ -1,9 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-
+import { motion } from "framer-motion";
 import { formatPostDate } from "app/utils/dates";
-import { Post } from "app/types";
 import { FadeIn } from "app/ui/fade-in";
 import Link from "next/link";
 import { useState } from "react";
@@ -13,7 +11,12 @@ export function BlogPostItem({
   disableLinks,
   index,
 }: {
-  post: Post;
+  post: {
+    title: string;
+    slug: string;
+    published_at: string;
+    excerpt: string;
+  };
   disableLinks?: boolean;
   index: number;
 }) {

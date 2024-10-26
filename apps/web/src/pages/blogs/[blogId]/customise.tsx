@@ -5,8 +5,6 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useBlogQuery, useUpdateBlogMutation } from "@/queries/blogs";
 import { usePostsQuery } from "@/queries/posts";
-import { BlogHomePage } from "app/pub/themes/blog-home";
-import { Post, Theme } from "app/types";
 import { THEMES } from "constants/themes";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -24,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Controller, useForm } from "react-hook-form";
-import { FaMobile } from "react-icons/fa";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 
 function AccordionSettings({
