@@ -1,9 +1,10 @@
-import { Blog, Post, Theme } from "app/types";
+import { Blog, Theme } from "app/types";
 import { DefaultHome } from "./default/home";
 import { DirectoryHome } from "./directory/home";
 import { NewsroomHome } from "./newsroom/home";
 import { GardenHome } from "./garden/home";
 import { InstrumentHome } from "./instrument/home";
+import { Post } from "@zenblog/types";
 
 export function BlogHomePage({
   theme,
