@@ -163,6 +163,12 @@ const api = new Hono()
           allow_promotion_codes: true,
           success_url: `${BASE_URL}/account?success=true`,
           cancel_url: `${BASE_URL}/account?canceled=true`,
+          subscription_data: {
+            trial_period_days: 14,
+            metadata: {
+              plan_id: selectedPlan.id,
+            },
+          },
           line_items: [
             {
               quantity: 1,
@@ -170,10 +176,6 @@ const api = new Hono()
                 product_data: {
                   name: selectedPlan.title,
                   description: selectedPlan.description,
-                  metadata: {
-                    plan_id: selectedPlan.id,
-                    interval: interval,
-                  },
                 },
                 currency: "usd",
                 unit_amount: price * 100,

@@ -66,7 +66,7 @@ export const SubscribeSection = () => {
 
   return (
     <div>
-      <h2 className="text-lg font-medium">Pricing</h2>
+      <h2 className="text-lg font-medium">Pick a plan</h2>
       <p className="font-mono text-sm text-zinc-500">Cancel anytime</p>
       <div className="mt-4 flex gap-2">
         <Button
@@ -166,64 +166,40 @@ const AccountPage = (props: Props) => {
         </div>
       </Section>
       <Section className="my-4 rounded-xl border border-b-2 bg-white p-4">
-        <SectionTitle>Subscription details</SectionTitle>
+        <SectionTitle>Subscription</SectionTitle>
         {subscription.isLoading ? (
-          <></>
+          <div className="flex w-full items-center justify-center py-24">
+            <Loader className="animate-spin text-orange-500" size={24} />
+          </div>
         ) : (
-          <p className="mt-4 grid max-w-xl grid-cols-2">
-            Subscription status:{" "}
-            {subscription.data?.status === "active" ? (
-              <span className="inline-flex items-center gap-1 rounded-md px-3 py-1 font-mono text-emerald-700">
-                {subscription.data?.status}
-              </span>
-            ) : (
-              <span>
-                <span className="rounded-md bg-yellow-100 px-3 py-1 font-mono text-yellow-600">
-                  {subscription.data?.status || "Free"}
-                </span>
-              </span>
+          <div className="mt-4 grid max-w-xl grid-cols-2 gap-4">
+            <p className="grid max-w-xl grid-cols-2">Status:</p>
+            <p>{subscription.data?.status || "Free"}</p>
+            {subscription.data?.interval ? (
+              <>
+                <p className="grid max-w-xl grid-cols-2">Current type:</p>
+                <p>
+                  {subscription.data?.interval === "month"
+                    ? "Monthly"
+                    : "Yearly"}
+                </p>
+              </>
+            ) : null}
+            {subscription.data?.status && (
+              <Button variant="outline" onClick={onManageSubscriptionClick}>
+                <Landmark />
+                Manage subscription
+              </Button>
             )}
-          </p>
-        )}
-
-        <div className="">
-          {loading ? (
-            <pre>Loading...</pre>
-          ) : (
-            <>
-              {subscription.data?.status !== "active" ? (
-                <>
-                  <hr className="my-8 max-w-xl" />
-                  <SubscribeSection />
-                </>
-              ) : (
-                <>
-                  {/* <pre>{JSON.stringify(subscription.data, null, 2)}</pre> */}
-                </>
-              )}
-            </>
-          )}
-        </div>
-
-        {subscription.data?.status === "active" && (
-          <>
-            <hr className="my-6 max-w-xl" />
-
-            <h3 className="text-lg font-medium">Manage your subscription</h3>
-            <p className="text-zinc-500">
-              Check invoices, billing and payment information.
-            </p>
-            <Button
-              className="mt-4"
-              variant="secondary"
-              onClick={onManageSubscriptionClick}
-            >
-              <Landmark />
-              Manage subscription
-            </Button>
-          </>
+          </div>
         )}
       </Section>
+
+      {subscription.data?.status !== "active" && (
+        <Section className="my-4 px-4">
+          <SubscribeSection />
+        </Section>
+      )}
     </AppLayout>
   );
 };

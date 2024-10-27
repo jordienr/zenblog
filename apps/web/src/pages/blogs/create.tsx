@@ -55,7 +55,7 @@ export default function CreateBlog() {
       return;
     }
 
-    if (data.slug.length < 3 && data.slug.length > 24) {
+    if (data.slug.length < 3) {
       toast.error("Slug must be at least 3 characters long");
       return;
     }
@@ -101,7 +101,7 @@ export default function CreateBlog() {
               <Smile size={32} className="mb-2 text-orange-500" />
             </div>
             <span className="block text-center text-lg font-semibold">
-              The free plan can only create 1 blog
+              The Hobby plan can only create 1 blog
             </span>
           </h2>
           <div className="text-center">
@@ -147,22 +147,16 @@ export default function CreateBlog() {
                   <div className="sr-only">Slug</div>
                 </Label>
                 <div>
-                  <div className="flex font-mono tracking-tighter">
-                    <textarea
-                      id="slug-input"
-                      placeholder="my-blog"
-                      style={{
-                        resize: "none",
-                        minWidth: "70px",
-                        width: (watch("slug")?.length || 7) * 10 + "px",
-                      }}
-                      {...register("slug")}
-                      rows={1}
-                      cols={24}
-                      className="overflow-hidden rounded-md bg-transparent px-0.5 py-1 text-right text-sm font-medium text-zinc-700 outline-none"
-                    />
-                    <span className="flex-grow py-1 text-sm">.zenblog.com</span>
+                  <Label htmlFor="slug-input">Slug</Label>
+                  <Input
+                    id="slug-input"
+                    {...register("slug")}
+                    className="overflow-hidden bg-transparent py-1 text-sm font-medium text-zinc-700 outline-none"
+                  />
+                  <div className="mt-2 rounded-md bg-zinc-100 px-2 py-1 font-mono tracking-tighter">
+                    https://{watch("slug") || "coolblog"}.zenblog.com
                   </div>
+
                   {slug?.length >= 24 && (
                     <p>
                       <span className="text-xs text-red-500">

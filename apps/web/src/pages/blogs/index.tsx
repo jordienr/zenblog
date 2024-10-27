@@ -12,6 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { FaPencilAlt } from "react-icons/fa";
 
 export default function Dashboard() {
   const user = useUser();
@@ -36,10 +37,12 @@ export default function Dashboard() {
         <div className="mx-auto max-w-5xl">
           {data?.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="rounded-xl border bg-white p-2 shadow-sm">
-                <PiPencilLine size="48" className="text-orange-500" />
+              <div className="text-slate-500">
+                <FaPencilAlt size="48" />
               </div>
-              <h2 className="mt-4 text-2xl">Start by creating a blog</h2>
+              <h2 className="mt-4 text-xl font-medium">
+                Start by creating a blog
+              </h2>
               <Button variant="default" asChild className="mt-6">
                 <Link href="/blogs/create">
                   <Plus />

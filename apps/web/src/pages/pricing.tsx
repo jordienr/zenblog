@@ -151,7 +151,7 @@ export function PricingCard({
   }
 
   return (
-    <div className="rounded-2xl border p-4">
+    <div className="rounded-2xl border bg-white p-4">
       <h3 className="text-lg font-medium">{title}</h3>
       <div className="h-16">
         <PricingText />

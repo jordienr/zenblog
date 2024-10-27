@@ -32,7 +32,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: "hobby",
     title: "Zenblog Hobby Plan",
     description: "For personal blogs and small projects",
-    monthlyPrice: 8,
+    monthlyPrice: 9,
     yearlyPrice: 72,
     features: [
       "1 blog",
@@ -46,7 +46,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     title: "Zenblog Pro Plan",
     description: "For professional blogs and projects",
     monthlyPrice: 20,
-    yearlyPrice: 192,
+    yearlyPrice: 180,
     features: [
       "Unlimited blogs",
       "Unlimited posts",

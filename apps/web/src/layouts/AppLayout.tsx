@@ -21,6 +21,8 @@ import { useBlogsQuery } from "@/queries/blogs";
 import { cn } from "@/lib/utils";
 import Head from "next/head";
 import { useSubscriptionQuery } from "@/queries/subscription";
+import { ZenblogToolbar } from "@/components/dev/zenblog-toolbar";
+import { IS_DEV } from "@/lib/constants";
 
 type Props = {
   children?: React.ReactNode;
@@ -36,7 +38,7 @@ export default function AppLayout({
   actions,
   description,
 }: Props) {
-  const { data: subscription } = useSubscriptionQuery();
+  const { data: sub } = useSubscriptionQuery();
   const user = useUser();
   const router = useRouter();
   const { data: blogs, isLoading: blogsLoading } = useBlogsQuery({
@@ -44,7 +46,7 @@ export default function AppLayout({
   });
 
   useEffect(() => {
-    if (!user && !loading) {
+    if (!user && !loading && !IS_DEV) {
       console.log("User not found. Redirecting to sign-in page.");
       router.push("/sign-in");
     }
@@ -88,6 +90,7 @@ export default function AppLayout({
       </Head>
       <TooltipProvider>
         <AppChecks>
+          {IS_DEV && <ZenblogToolbar />}
           <nav
             className={cn("mx-auto w-full bg-white", {
               "border-b shadow-sm": !selectedBlog,
@@ -121,7 +124,7 @@ export default function AppLayout({
                           size={16}
                         />
                       )}
-                      {subscription?.plan === "hobby" && (
+                      {sub?.plan?.id === "hobby" && (
                         <Link
                           title="Upgrade to Pro"
                           href="/account"
@@ -130,7 +133,7 @@ export default function AppLayout({
                           Hobby
                         </Link>
                       )}
-                      {subscription?.plan === "pro" && (
+                      {sub?.plan?.id === "pro" && (
                         <div className="rounded-full text-xs font-medium text-blue-500">
                           Pro
                         </div>
