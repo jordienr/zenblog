@@ -1,5 +1,3 @@
-import { Post } from "@zenblog/types";
-
 export type Theme = "directory" | "default" | "newsroom";
 
 export type Blog = {

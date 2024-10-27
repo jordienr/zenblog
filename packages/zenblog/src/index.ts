@@ -43,7 +43,7 @@ type CreateClientOpts = {
   _url?: string;
   _debug?: boolean;
 };
-export function createZenblogClient<T>({
+export function createZenblogClient({
   accessToken,
   blogId,
   _url,
