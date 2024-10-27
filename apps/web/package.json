@@ -90,7 +90,7 @@
     "micro": "^10.0.1",
     "mini-svg-data-uri": "^1.4.4",
     "nanoid": "^5.0.7",
-    "next": "^14.2.3",
+    "next": "^14.2.16",
     "next-plausible": "^3.7.2",
     "openai": "^4.12.4",
     "raw-body": "^2.5.2",
@@ -117,7 +117,7 @@
     "tippy.js": "^6.3.7",
     "uuid": "^9.0.0",
     "zenblog": "*",
-    "zod": "^3.22.5",
+    "zod": "^3.23.8",
     "zustand": "^4.3.8"
   },
   "devDependencies": {
