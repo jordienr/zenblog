@@ -23,7 +23,7 @@ export async function getPosts(subdomain: string, sort: string = "desc") {
     .eq("published", true)
     .order("published_at", { ascending: sort === "asc" });
 
-  return res as unknown as {
+  return res as {
     data: {
       title: string;
       slug: string;
@@ -39,9 +39,7 @@ export async function getPost(subdomain: string, slug: string) {
   const supa = createClient();
   const { data: post } = await supa
     .from("posts_v5")
-    .select(
-      "title, content, cover_image, published_at, created_at, html_content"
-    )
+    .select("title, cover_image, published_at, created_at, html_content")
     .eq("slug", slug)
     .eq("published", true)
     .eq("blog_slug", subdomain)
