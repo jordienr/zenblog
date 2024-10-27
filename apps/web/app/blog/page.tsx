@@ -3,7 +3,7 @@ import { getBlogClient } from "@/cms";
 import Link from "next/link";
 import React from "react";
 
-export const dynamic = "auto";
+export const dynamic = "force-dynamic";
 const Blog = async () => {
   const blog = getBlogClient();
   const { data: posts } = await blog.posts.list();
