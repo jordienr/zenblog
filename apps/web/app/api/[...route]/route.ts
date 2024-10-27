@@ -6,7 +6,6 @@ import { prettyJSON } from "hono/pretty-json";
 import { handle } from "hono/vercel";
 import { createClient } from "@/lib/server/supabase";
 import { createId } from "@/lib/create-id";
-export const dynamic = "force-dynamic";
 import bcrypt from "bcrypt";
 import { axiom, AXIOM_DATASETS } from "lib/axiom";
 import {
