@@ -5,7 +5,7 @@ type CreateClientOpts = {
     _url?: string;
     _debug?: boolean;
 };
-export declare function createZenblogClient<T>({ accessToken, blogId, _url, _debug, }: CreateClientOpts): {
+export declare function createZenblogClient({ accessToken, blogId, _url, _debug, }: CreateClientOpts): {
     posts: {
         list: ({ limit, offset, cache }?: {
             cache?: RequestInit["cache"];
