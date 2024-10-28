@@ -48,7 +48,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     features: [
       "2 blogs",
       "Unlimited posts",
-      "Limited API access",
+      "Unlimited API access",
       "Limited media files",
     ],
   },
