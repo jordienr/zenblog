@@ -172,18 +172,20 @@ export default function BlogPosts() {
                 />
               );
             })}
-          <div className="flex items-center justify-end gap-4 p-4 text-center font-mono text-xs text-zinc-500">
-            Showing {posts.pages.flatMap((page) => page).length} posts
-            <Button
-              size="xs"
-              variant="outline"
-              onClick={() => {
-                fetchNextPage();
-              }}
-            >
-              Load more
-            </Button>
-          </div>
+          {posts.pages.flatMap((page) => page).length > 0 && (
+            <div className="flex items-center justify-end gap-4 p-4 text-center font-mono text-xs text-zinc-500">
+              Showing {posts.pages.flatMap((page) => page).length} posts
+              <Button
+                size="xs"
+                variant="outline"
+                onClick={() => {
+                  fetchNextPage();
+                }}
+              >
+                Load more
+              </Button>
+            </div>
+          )}
         </Section>
       </AppLayout>
     );

@@ -26,7 +26,6 @@ import {
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
 import {
-  useCategories,
   useCategoriesWithPostCount,
   useCreateCategory,
   useDeleteCategoryMutation,

@@ -29,7 +29,6 @@ import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import EditorSettings from "./EditorSettings";
 import TiptapLink from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useSubscriptionQuery } from "@/queries/subscription";
 import { toast } from "sonner";
 import { Database } from "@/types/supabase";
 import { useBlogTags } from "./Editor.queries";
@@ -102,7 +101,8 @@ export const ZendoEditor = (props: Props) => {
   const [published, setPublished] = React.useState(
     props.post?.published || false
   );
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: categories, isLoading: categoriesLoading } =
+    useCategories(blogId);
   const selectedCategory = categories?.find(
     (c) => c.id === getValues("category_id")
   );

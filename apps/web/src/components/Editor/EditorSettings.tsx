@@ -131,7 +131,8 @@ const EditorSettings = (props: Props) => {
 
   const ogImageUrl = `/api/public/og?title=${props.title}&emoji=${props.blogEmoji}&url=${props.blogTitle}`;
 
-  const { data: categories, isLoading: isCategoriesLoading } = useCategories();
+  const { data: categories, isLoading: isCategoriesLoading } =
+    useCategories(blogId);
   const { mutate: createCategory } = useCreateCategory();
 
   function EditorSettingsSection({ children }: { children: React.ReactNode }) {
