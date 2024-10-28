@@ -19,6 +19,14 @@ const Footer = (props: Props) => {
       label: "Privacy",
       href: "/privacy",
     },
+    {
+      label: "Contact",
+      href: "/contact",
+    },
+    {
+      label: "Pricing",
+      href: "/pricing",
+    },
   ];
 
   return (

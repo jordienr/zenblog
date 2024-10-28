@@ -19,6 +19,7 @@ import {
   PRICING_PLANS,
   PricingPlanInterval,
   PricingPlanTier,
+  TRIAL_PERIOD_DAYS,
 } from "@/lib/pricing.constants";
 
 const UnauthorizedError = (c: Context) => {
@@ -164,7 +165,7 @@ const api = new Hono()
           success_url: `${BASE_URL}/account?success=true`,
           cancel_url: `${BASE_URL}/account?canceled=true`,
           subscription_data: {
-            trial_period_days: 14,
+            trial_period_days: TRIAL_PERIOD_DAYS,
             metadata: {
               plan_id: selectedPlan.id,
             },
