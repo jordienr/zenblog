@@ -36,13 +36,12 @@ const Footer = (props: Props) => {
           <ZendoLogo />
           <ul className="mt-4 flex gap-4 text-zinc-400">
             <li>
-              {/* <Link href="https://github.com/jordienr/zenblog">
-                <IoLogoGithub size="24" />
-              </Link> */}
-            </li>
-            <li>
-              <Link href="https://twitter.com/zenbloghq">
-                <IoLogoTwitter size="24" />
+              <Link
+                className="flex items-center gap-1"
+                href="https://twitter.com/zenbloghq"
+              >
+                <IoLogoTwitter size="15" />
+                Twitter
               </Link>
             </li>
           </ul>
