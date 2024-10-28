@@ -1,4 +1,4 @@
-import { PricingPlan } from "@/lib/pricing.constants";
+import { PricingPlanId } from "@/lib/pricing.constants";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
 import { useQuery } from "@tanstack/react-query";
@@ -31,7 +31,7 @@ export function useSubscriptionQuery() {
 
       const res = data?.[0]?.subscription as unknown as Stripe.Subscription;
 
-      const plan = res?.metadata?.plan_id as PricingPlan | undefined;
+      const plan = (res?.metadata?.plan_id as PricingPlanId) || "free";
       const interval = res?.items?.data[0]?.plan?.interval as
         | Stripe.Plan.Interval
         | undefined;

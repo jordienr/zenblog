@@ -19,7 +19,7 @@ export const SubscribeSection = () => {
   const user = useUser();
   const [interval, setInterval] = React.useState<"year" | "month">("year");
   const [isLoading, setIsLoading] = useState(false);
-
+  const subscription = useSubscriptionQuery();
   async function openCheckoutPage(plan: PricingPlan) {
     setIsLoading(true);
     toast.info("Redirecting to Stripe...");
@@ -89,6 +89,7 @@ export const SubscribeSection = () => {
             <PricingCard
               {...plan}
               type={interval}
+              isCurrentPlan={subscription.data?.plan === plan.id}
               onClick={() => openCheckoutPage(plan)}
             />
           </div>

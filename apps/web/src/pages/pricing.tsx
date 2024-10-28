@@ -50,6 +50,7 @@ export default function Pricing() {
                 key={plan.title}
                 {...plan}
                 type={subscriptionType}
+                isCurrentPlan={false}
                 onClick={() => {
                   router.push(`/sign-in`);
                 }}
@@ -103,6 +104,7 @@ export function PricingCard({
   onClick,
   type,
   highlight = false,
+  isCurrentPlan,
 }: {
   id: string;
   title: string;
@@ -112,6 +114,7 @@ export function PricingCard({
   onClick: () => void;
   type: "month" | "year";
   highlight?: boolean;
+  isCurrentPlan: boolean;
 }) {
   const yearlyToMonth = yearlyPrice / 12;
 
@@ -173,20 +176,27 @@ export function PricingCard({
           </li>
         ))}
       </ul>
-      <div className="mt-5">
-        {monthlyPrice !== 0 && (
-          <div className="mb-2 text-center font-mono text-xs text-slate-500">
-            Try it free for {TRIAL_PERIOD_DAYS} days!
-          </div>
-        )}
-        <Button
-          className="w-full"
-          variant={getButtonVariant()}
-          onClick={onClick}
-        >
-          Get started
-        </Button>
-      </div>
+      {!isCurrentPlan && (
+        <div className="mt-5">
+          {monthlyPrice !== 0 && (
+            <div className="mb-2 text-center font-mono text-xs text-slate-500">
+              Try it free for {TRIAL_PERIOD_DAYS} days!
+            </div>
+          )}
+          <Button
+            className="w-full"
+            variant={getButtonVariant()}
+            onClick={onClick}
+          >
+            Get started
+          </Button>
+        </div>
+      )}
+      {isCurrentPlan && (
+        <div className="mt-5">
+          <p className="text-center text-slate-500">Current plan</p>
+        </div>
+      )}
     </div>
   );
 }

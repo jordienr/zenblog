@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Smile } from "lucide-react";
 import { RESERVED_SLUGS } from "@/lib/constants";
 import { useSubscriptionQuery } from "@/queries/subscription";
+import { SubscribeSection } from "../account";
 
 export default function CreateBlog() {
   const DEFAULT_EMOJI = "📝";
@@ -91,16 +92,40 @@ export default function CreateBlog() {
     }
   };
 
-  if (!subscription?.plan && totalBlogs === 1 && !isLoading) {
+  if (subscription?.plan === "free" && totalBlogs === 1 && !isLoading) {
     return (
-      <AppLayout loading={createBlog.isPending || createBlog.isSuccess}>
-        <div className="section mx-auto my-12 max-w-xl py-12">
+      <AppLayout loading={createBlog.isPending}>
+        <div className="section mx-auto my-12 max-w-4xl px-4 py-12">
           <h2 className="mt-2">
             <div className="flex justify-center">
               <Smile size={32} className="mb-2 text-orange-500" />
             </div>
             <span className="block text-center text-lg font-semibold">
-              The Hobby plan can only create 1 blog
+              The free plan can only create 1 blog
+            </span>
+          </h2>
+          <div className="text-center">
+            <p className="text-zinc-500">
+              Subscribe to the Hobby or Pro plans to create more blogs.
+            </p>
+          </div>
+
+          <SubscribeSection />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (subscription?.plan === "hobby" && totalBlogs === 2) {
+    return (
+      <AppLayout loading={createBlog.isPending}>
+        <div className="section mx-auto my-12 max-w-3xl px-4 py-12">
+          <h2 className="mt-2">
+            <div className="flex justify-center">
+              <Smile size={32} className="mb-2 text-orange-500" />
+            </div>
+            <span className="block text-center text-lg font-semibold">
+              The Hobby plan can only create 2 blogs
             </span>
           </h2>
           <div className="text-center">
@@ -108,11 +133,7 @@ export default function CreateBlog() {
               Subscribe to the Pro Plan to create more blogs.
             </p>
           </div>
-          <div className="mx-auto mt-8 max-w-xs text-center">
-            <Button asChild>
-              <Link href="/account">Subscribe to a plan</Link>
-            </Button>
-          </div>
+          <SubscribeSection />
         </div>
       </AppLayout>
     );

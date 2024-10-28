@@ -2,11 +2,10 @@ import { z } from "zod";
 
 export const TRIAL_PERIOD_DAYS = 30;
 
-export const PricingPlanTier = z.enum(["hobby", "pro", "free"]);
-export type PricingPlanTierType = z.infer<typeof PricingPlanTier>;
-export const isPricingPlanTier = (
-  value: string
-): value is PricingPlanTierType => PricingPlanTier.safeParse(value).success;
+export const PricingPlanId = z.enum(["hobby", "pro", "free"]);
+export type PricingPlanId = z.infer<typeof PricingPlanId>;
+export const isPricingPlanId = (value: string): value is PricingPlanId =>
+  PricingPlanId.safeParse(value).success;
 
 export const PricingPlanInterval = z.enum(["month", "year"]);
 export type PricingPlanIntervalType = z.infer<typeof PricingPlanInterval>;
@@ -16,7 +15,7 @@ export const isPricingPlanInterval = (
   PricingPlanInterval.safeParse(value).success;
 
 export type PricingPlan = {
-  id: PricingPlanTierType;
+  id: PricingPlanId;
   highlight?: boolean;
   title: string;
   description: string;

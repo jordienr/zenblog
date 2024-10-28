@@ -90,7 +90,7 @@ export default function Dashboard() {
                       >
                         <Paintbrush size="24" />
                       </Button> */}
-                      <Tooltip>
+                      <Tooltip delayDuration={0}>
                         <TooltipTrigger asChild>
                           <Button
                             size={"icon"}
@@ -100,7 +100,6 @@ export default function Dashboard() {
                               e.stopPropagation();
                               router.push(`/blogs/${blog.id}/settings`);
                             }}
-                            title="Settings"
                             aria-label="Settings"
                             className="text-zinc-400 opacity-0 transition-all group-hover:opacity-100"
                           >

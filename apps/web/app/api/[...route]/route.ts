@@ -15,10 +15,10 @@ import {
 import { BASE_URL } from "@/lib/config";
 import {
   isPricingPlanInterval,
-  isPricingPlanTier,
+  isPricingPlanId,
   PRICING_PLANS,
   PricingPlanInterval,
-  PricingPlanTier,
+  PricingPlanId,
   TRIAL_PERIOD_DAYS,
 } from "@/lib/pricing.constants";
 
@@ -111,7 +111,7 @@ const api = new Hono()
     zValidator(
       "query",
       z.object({
-        plan: PricingPlanTier,
+        plan: PricingPlanId,
         interval: PricingPlanInterval,
       })
     ),
@@ -137,7 +137,7 @@ const api = new Hono()
           );
         }
 
-        if (!isPricingPlanTier(plan)) {
+        if (!isPricingPlanId(plan)) {
           return c.json({ error: "Invalid plan" }, { status: 400 });
         }
         if (!isPricingPlanInterval(interval)) {
