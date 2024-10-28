@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "Zenblog blog",
-  description: "An open source blogging platform",
+  description: "An simple headless blogging CMS",
 };
 
 const ibmPlexMono = IBM_Plex_Mono({

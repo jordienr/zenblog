@@ -6,7 +6,7 @@
 <p align="center" style="margin-top: 12px">
 
   <h1 align="center"><tt>Zenblog</tt></h1>
-  <h2 align="center">Simple, open source blogging</h2>
+  <h2 align="center">Simple, fast, headless blogging CMS</h2>
 
 <p align="center">
     <a href="https://zenblog.com"><strong>Website</strong></a> » 

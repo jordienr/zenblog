@@ -79,7 +79,7 @@ export function OpenSource() {
             </div>
           ))}
           <div className="flex justify-center py-3">
-            <a
+            {/* <a
               onMouseEnter={() => setSelectedArr(heartArr)}
               onMouseLeave={() => setSelectedArr(openSourceArr)}
               className="mx-auto inline-flex items-center justify-center gap-2 rounded-lg border bg-white p-1 px-3 text-center font-medium text-black shadow-sm"
@@ -87,7 +87,7 @@ export function OpenSource() {
               target="_blank"
             >
               <span className="text-xl">⭐</span> Star us on GitHub
-            </a>
+            </a> */}
           </div>
         </div>
       </div>

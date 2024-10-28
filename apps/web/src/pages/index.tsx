@@ -110,10 +110,7 @@ const Home = () => {
     <>
       <Head>
         <title>Zenblog - A tiny blogging CMS</title>
-        <meta
-          name="description"
-          content="Simple, open source, headless, blogging CMS."
-        />
+        <meta name="description" content="Simple, headless, blogging CMS." />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <div className="">
@@ -129,7 +126,8 @@ const Home = () => {
               </h1>
               <div className="mt-3 text-xl font-medium leading-4 text-slate-400">
                 <p className="">
-                  Simple, fast, open-source headless blogging CMS
+                  Simple, headless blogging CMS that will make you want to write
+                  more
                 </p>
                 <Dialog>
                   <div className="mt-8 flex items-center gap-4">
@@ -138,13 +136,6 @@ const Home = () => {
                         Request access
                       </Button>
                     </DialogTrigger>
-                    <Link
-                      className="p-1.5 text-sm font-medium text-slate-500"
-                      target="_blank"
-                      href="https://github.com/jordienr/zenblog"
-                    >
-                      Star us on GitHub
-                    </Link>
                   </div>
                   <DialogContent className="rounded-xl px-6 md:max-w-sm">
                     {!hasSubmitted && (
@@ -244,10 +235,10 @@ const Home = () => {
                   <AccordionItem value="zenblog">
                     <AccordionTrigger>What is zenblog?</AccordionTrigger>
                     <AccordionContent>
-                      Zenblog is a simple, open source, headless blogging CMS.
-                      You can use it to manage your own blog, build blogs for
-                      your clients, use it to manage content in a website like a
-                      blog, job postings, a changelog, docs, help center, etc.
+                      Zenblog is a simple, headless blogging CMS. You can use it
+                      to manage your own blog, build blogs for your clients, use
+                      it to manage content in a website like a blog, job
+                      postings, a changelog, docs, help center, etc.
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="headless">

@@ -2,7 +2,8 @@ import Footer from "@/components/Footer";
 import Navigation from "@/components/marketing/Navigation";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader, SectionTitle } from "@/layouts/AppLayout";
-import { PRICING_PLANS } from "@/lib/pricing.constants";
+import { PRICING_PLANS, TRIAL_PERIOD_DAYS } from "@/lib/pricing.constants";
+import { cn } from "@/lib/utils";
 import { CheckIcon } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
@@ -19,10 +20,7 @@ export default function Pricing() {
     <div>
       <Head>
         <title>Zenblog - Pricing</title>
-        <meta
-          name="description"
-          content="Simple, open source, headless, blogging CMS."
-        />
+        <meta name="description" content="Simple, headless, blogging CMS." />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <Navigation />
@@ -43,10 +41,10 @@ export default function Pricing() {
               variant={subscriptionType === "year" ? "secondary" : "ghost"}
               onClick={() => setSubscriptionType("year")}
             >
-              Yearly (2 months free)
+              Yearly (Save money!)
             </Button>
           </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
             {PRICING_PLANS.map((plan) => (
               <PricingCard
                 key={plan.title}
@@ -104,6 +102,7 @@ export function PricingCard({
   features,
   onClick,
   type,
+  highlight = false,
 }: {
   id: string;
   title: string;
@@ -112,6 +111,7 @@ export function PricingCard({
   features: string[];
   onClick: () => void;
   type: "month" | "year";
+  highlight?: boolean;
 }) {
   const yearlyToMonth = yearlyPrice / 12;
 
@@ -122,7 +122,9 @@ export function PricingCard({
     if (type === "month") {
       return (
         <p className="text-slate-500">
-          <span className="mr-1 text-xl">$</span>
+          <span className="mr-1 font-mono text-xl font-medium text-slate-400">
+            $
+          </span>
           <span className="text-2xl font-medium text-slate-900">
             {monthlyPrice}
           </span>{" "}
@@ -133,7 +135,9 @@ export function PricingCard({
     }
     return (
       <p className="text-slate-500">
-        <span className="mr-1 text-xl">$</span>
+        <span className="mr-1 font-mono text-xl font-medium text-slate-400">
+          $
+        </span>
         <span className="text-2xl font-medium text-slate-900">
           {yearlyToMonth}
         </span>{" "}
@@ -144,14 +148,19 @@ export function PricingCard({
   };
 
   function getButtonVariant() {
-    if (id === "pro") {
+    if (highlight) {
       return "default";
     }
     return "outline";
   }
 
   return (
-    <div className="rounded-2xl border bg-white p-4">
+    <div
+      className={cn(
+        "rounded-2xl border bg-white px-5 py-3 pb-5",
+        highlight && "border-orange-500 ring-4 ring-orange-200"
+      )}
+    >
       <h3 className="text-lg font-medium">{title}</h3>
       <div className="h-16">
         <PricingText />
@@ -159,15 +168,24 @@ export function PricingCard({
       <ul className="mt-5 space-y-2 font-medium">
         {features.map((feature) => (
           <li key={feature} className="flex items-center">
-            <CheckIcon className="mr-2 h-4 w-4" />
+            <CheckIcon className="mr-2 h-4 w-4 text-orange-500" />
             {feature}
           </li>
         ))}
       </ul>
       <div className="mt-5">
-        <Button variant={getButtonVariant()} onClick={onClick}>
+        <Button
+          className="w-full"
+          variant={getButtonVariant()}
+          onClick={onClick}
+        >
           Get started
         </Button>
+        {monthlyPrice !== 0 && (
+          <div className="mt-2 text-center font-mono text-xs text-slate-500">
+            Try it free for {TRIAL_PERIOD_DAYS} days!
+          </div>
+        )}
       </div>
     </div>
   );

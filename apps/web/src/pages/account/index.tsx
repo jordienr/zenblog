@@ -83,7 +83,7 @@ export const SubscribeSection = () => {
         </Button>
       </div>
 
-      <div className="mt-4 grid max-w-xl grid-cols-2 gap-4">
+      <div className="mt-4 grid grid-cols-3 gap-4">
         {PRICING_PLANS.map((plan) => (
           <div key={plan.title}>
             <PricingCard
@@ -98,7 +98,7 @@ export const SubscribeSection = () => {
   );
 };
 
-const AccountPage = (props: Props) => {
+const AccountPage = () => {
   const [loading, setLoading] = React.useState(false);
   const user = useUser();
 

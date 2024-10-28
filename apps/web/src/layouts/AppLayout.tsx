@@ -82,10 +82,7 @@ export default function AppLayout({
     <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
       <Head>
         <title>Zenblog</title>
-        <meta
-          name="description"
-          content="Simple, open source, headless, blogging CMS."
-        />
+        <meta name="description" content="Simple, headless, blogging CMS." />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <TooltipProvider>

@@ -29,14 +29,14 @@ export default function DocsLayout({
           </div>
 
           <div>
-            <Link
+            {/* <Link
               title="GitHub"
               target="_blank"
               href="https://github.com/jordienr/zenblog"
               className="text-slate-400 hover:text-slate-600"
             >
               <BsGithub size="24" />
-            </Link>
+            </Link> */}
           </div>
         </div>
       </nav>

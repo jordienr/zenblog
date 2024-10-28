@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const TRIAL_PERIOD_DAYS = 30;
 
-export const PricingPlanTier = z.enum(["hobby", "pro"]);
+export const PricingPlanTier = z.enum(["hobby", "pro", "free"]);
 export type PricingPlanTierType = z.infer<typeof PricingPlanTier>;
 export const isPricingPlanTier = (
   value: string
@@ -17,6 +17,7 @@ export const isPricingPlanInterval = (
 
 export type PricingPlan = {
   id: PricingPlanTierType;
+  highlight?: boolean;
   title: string;
   description: string;
   monthlyPrice: number;
@@ -31,13 +32,22 @@ export type PricingPlan = {
  */
 export const PRICING_PLANS: PricingPlan[] = [
   {
+    id: "free",
+    title: "Zenblog Free Plan",
+    description: "For personal blogs and small projects",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    features: ["1 blog", "100 posts", "50 media files", "Limited API access"],
+  },
+  {
     id: "hobby",
+    highlight: true,
     title: "Zenblog Hobby Plan",
     description: "For personal blogs and small projects",
     monthlyPrice: 9,
     yearlyPrice: 72, // will be divided by 12 in pricing page
     features: [
-      "1 blog",
+      "2 blogs",
       "Unlimited posts",
       "Limited API access",
       "Limited media files",
@@ -47,8 +57,8 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: "pro",
     title: "Zenblog Pro Plan",
     description: "For professional blogs and projects",
-    monthlyPrice: 20,
-    yearlyPrice: 180,
+    monthlyPrice: 30,
+    yearlyPrice: 300,
     features: [
       "Unlimited blogs",
       "Unlimited posts",
