@@ -8,8 +8,12 @@ type Props = {};
 const Footer = (props: Props) => {
   const navLinks = [
     {
-      label: "Home",
-      href: "/",
+      label: "Contact",
+      href: "/contact",
+    },
+    {
+      label: "Pricing",
+      href: "/pricing",
     },
     {
       label: "Terms",
@@ -19,13 +23,20 @@ const Footer = (props: Props) => {
       label: "Privacy",
       href: "/privacy",
     },
+  ];
+
+  const navLinksLeft = [
     {
-      label: "Contact",
-      href: "/contact",
+      label: "Home",
+      href: "/",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      label: "Blog",
+      href: "/blog",
+    },
+    {
+      label: "Docs",
+      href: "/docs",
     },
   ];
 
@@ -46,7 +57,16 @@ const Footer = (props: Props) => {
             </li>
           </ul>
         </div>
-        <div className="text-right">
+        <div className="flex gap-8">
+          <ul className="space-y-2">
+            {navLinksLeft.map((link) => {
+              return (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              );
+            })}
+          </ul>
           <ul className="space-y-2">
             {navLinks.map((link) => {
               return (
