@@ -43,7 +43,7 @@ export default function CreateBlog() {
 
   const createBlog = useCreateBlogMutation();
   const blogsQuery = useBlogsQuery({ enabled: true });
-  const totalBlogs = blogsQuery.data?.length;
+  const totalBlogs = blogsQuery.data?.length || 0;
 
   const onSubmit = async (data: FormData) => {
     // validate slug is url friendly, allow only lowercase letters, numbers and hyphens
@@ -92,7 +92,7 @@ export default function CreateBlog() {
     }
   };
 
-  if (subscription?.plan === "free" && totalBlogs === 1 && !isLoading) {
+  if (subscription?.plan === "free" && totalBlogs >= 1 && !isLoading) {
     return (
       <AppLayout loading={createBlog.isPending}>
         <div className="section mx-auto my-12 max-w-4xl px-4 py-12">
@@ -116,7 +116,7 @@ export default function CreateBlog() {
     );
   }
 
-  if (subscription?.plan === "hobby" && totalBlogs === 2) {
+  if (subscription?.plan === "hobby" && totalBlogs >= 2) {
     return (
       <AppLayout loading={createBlog.isPending}>
         <div className="section mx-auto my-12 max-w-3xl px-4 py-12">
@@ -173,9 +173,11 @@ export default function CreateBlog() {
                     {...register("slug")}
                     className="overflow-hidden bg-transparent py-1 text-sm font-medium text-zinc-700 outline-none"
                   />
-                  <div className="mt-2 rounded-md bg-zinc-100 px-2 py-1 font-mono tracking-tighter">
-                    https://{watch("slug") || "coolblog"}.zenblog.com
-                  </div>
+                  {watch("slug") && (
+                    <div className="mt-2 rounded-md bg-zinc-100 px-2 py-1 font-mono tracking-tighter">
+                      https://{watch("slug")}.zenblog.com
+                    </div>
+                  )}
 
                   {slug?.length >= 24 && (
                     <p>
