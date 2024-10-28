@@ -5,7 +5,22 @@ import Link from "next/link";
 import React from "react";
 
 export const dynamic = "auto";
-const Post = async ({ params: { slug } }: { params: { slug: string } }) => {
+type Params = {
+  params: {
+    slug: string;
+  };
+};
+
+export async function generateMetadata({ params }: Params) {
+  const blog = getBlogClient();
+  const { data: post } = await blog.posts.get({ slug: params.slug });
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+  };
+}
+const Post = async ({ params: { slug } }: Params) => {
   const blog = getBlogClient();
   const { data: post } = await blog.posts.get({ slug });
 

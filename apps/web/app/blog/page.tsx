@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 export const dynamic = "force-dynamic";
+export const metadata = {};
 const Blog = async () => {
   const blog = getBlogClient();
   const { data: posts } = await blog.posts.list();
@@ -15,18 +16,6 @@ const Blog = async () => {
     <div className="p-6">
       <div className="flex items-center justify-between">
         <h1 className="py-8 text-2xl font-semibold text-slate-800">Blog</h1>
-        <div className="flex flex-wrap gap-2 font-mono">
-          {/* {categories.length > 0 &&
-            categories.map((category) => (
-              <Link
-                key={category.slug}
-                href={`/blog/categories/${category.slug}`}
-                className="block p-2 font-medium text-slate-700 underline transition-all hover:scale-105"
-              >
-                {category.name}
-              </Link>
-            ))} */}
-        </div>
       </div>
       <div className="mt-2">
         {latestPost && (
