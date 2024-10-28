@@ -80,6 +80,7 @@ export default function AppLayout({
 
   return (
     <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
+      {IS_DEV && <ZenblogToolbar />}
       <Head>
         <title>Zenblog</title>
         <meta name="description" content="Simple, headless, blogging CMS." />
@@ -87,7 +88,6 @@ export default function AppLayout({
       </Head>
       <TooltipProvider>
         <AppChecks>
-          {IS_DEV && <ZenblogToolbar />}
           <nav
             className={cn("mx-auto w-full bg-white", {
               "border-b shadow-sm": !selectedBlog,

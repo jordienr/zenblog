@@ -1,12 +1,19 @@
-import { PricingPlan, PricingPlanIntervalType } from "@/lib/pricing.constants";
+import { PricingPlan } from "@/lib/pricing.constants";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
-import { QueryOptions, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import Stripe from "stripe";
 
 const SUBSCRIPTION_KEYS = ["subscription"];
 
+/**
+ * Returns the user's subscription data.
+ * @returns
+ * - plan: The user's subscription plan.
+ * - interval: The user's subscription interval.
+ * - status: The user's subscription status.
+ * - isValidSubscription: Whether the user's subscription is valid (active, trialing, or past due).
+ */
 export function useSubscriptionQuery() {
   const sb = createSupabaseBrowserClient();
   const user = useUser();
@@ -29,10 +36,16 @@ export function useSubscriptionQuery() {
         | Stripe.Plan.Interval
         | undefined;
       const status = res?.status;
+
+      const validSubscriptionStatus = ["active", "trialing", "past_due"];
+      const isValidSubscription =
+        status && validSubscriptionStatus.includes(status);
+
       return {
         plan,
         interval,
         status,
+        isValidSubscription,
       };
     },
   });

@@ -22,20 +22,20 @@ const LoggedInUserChecks = (props: PropsWithChildren<Props>) => {
     subscription?.status &&
     validSubscriptionStatus.includes(subscription.status);
 
-  if (!isLoading && !isValidSubscription) {
-    return (
-      <div className="flex h-screen flex-col items-center justify-center bg-zinc-50">
-        <div className="max-w-xl">
-          <SubscribeSection />
-        </div>
-        <div className="mt-4">
-          <Link href="/sign-out" className="text-slate-500 underline">
-            Sign out
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // if (!isLoading && !isValidSubscription) {
+  //   return (
+  //     <div className="flex h-screen flex-col items-center justify-center bg-zinc-50">
+  //       <div className="max-w-3xl">
+  //         <SubscribeSection />
+  //       </div>
+  //       <div className="mt-4">
+  //         <Link href="/sign-out" className="text-slate-500 underline">
+  //           Sign out
+  //         </Link>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return <>{props.children}</>;
 };

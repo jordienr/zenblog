@@ -42,8 +42,7 @@ export default function CreateBlog() {
 
   const createBlog = useCreateBlogMutation();
   const blogsQuery = useBlogsQuery({ enabled: true });
-
-  const hasOneBlogAlready = blogsQuery.data?.length === 1;
+  const totalBlogs = blogsQuery.data?.length;
 
   const onSubmit = async (data: FormData) => {
     // validate slug is url friendly, allow only lowercase letters, numbers and hyphens
@@ -92,7 +91,7 @@ export default function CreateBlog() {
     }
   };
 
-  if (subscription?.status !== "active" && hasOneBlogAlready && !isLoading) {
+  if (!subscription?.plan && totalBlogs === 1 && !isLoading) {
     return (
       <AppLayout loading={createBlog.isPending || createBlog.isSuccess}>
         <div className="section mx-auto my-12 max-w-xl py-12">

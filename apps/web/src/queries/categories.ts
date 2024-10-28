@@ -16,7 +16,7 @@ type Category = {
   blog_id: string;
 };
 
-export function useCategoriesWithPostCount() {
+export function useCategoriesWithPostCount(blogId: string) {
   return useQuery({
     queryKey: keys.list,
     queryFn: async () =>
@@ -25,17 +25,19 @@ export function useCategoriesWithPostCount() {
         .select(
           "category_id, category_name, category_slug, post_count, created_at"
         )
+        .eq("blog_id", blogId)
         .throwOnError(),
   });
 }
 
-export function useCategories() {
+export function useCategories(blogId: string) {
   return useQuery({
     queryKey: keys.list,
     queryFn: async () => {
       const { data, error } = await sb
         .from("categories")
         .select("id, slug, name, created_at")
+        .eq("blog_id", blogId)
         .throwOnError();
       if (error) {
         throw error;

@@ -196,7 +196,7 @@ const AccountPage = () => {
       </Section>
 
       {subscription.data?.status !== "active" && (
-        <Section className="my-4 px-4">
+        <Section className="my-4 px-4 pb-4">
           <SubscribeSection />
         </Section>
       )}

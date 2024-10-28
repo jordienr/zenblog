@@ -8,6 +8,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
 import {
@@ -15,7 +23,7 @@ import {
   useTagsWithUsageQuery,
   useUpdateTagMutation,
 } from "@/queries/tags";
-import { MoreVertical, Pen, Trash } from "lucide-react";
+import { MoreHorizontal, MoreVertical, Pen, Trash } from "lucide-react";
 import { useState } from "react";
 import { PiTag } from "react-icons/pi";
 import { toast } from "sonner";
@@ -38,49 +46,46 @@ export default function TagsPage() {
     <AppLayout
       title="Tags"
       actions={<CreateTagDialog blogId={blogId} />}
-      description="Tags help you group your posts. Posts can have multiple tags."
+      description="Posts can have multiple tags."
       loading={tags.isLoading}
     >
       <Section>
-        {tags.data?.length === 0 && (
-          <div className="p-12 py-32 text-center">
-            <div className="text-2xl">🏷️</div>
-            <div className="text-lg text-zinc-500">Nothing here yet</div>
-          </div>
-        )}
-
-        <div className="grid divide-y">
-          {tags.data?.length ? (
-            <div className="grid grid-cols-4 items-center p-2 text-sm font-medium text-zinc-600">
-              <div>Tag</div>
-              <div>Slug</div>
-              <div className="text-right">Posts with tag</div>
-              <div></div>
-            </div>
-          ) : null}
-
-          {tags.data?.map((tag) => {
-            return (
-              <div
-                key={tag.tag_id}
-                className="grid grid-cols-4 items-center p-4 hover:bg-zinc-50"
-              >
-                <div className="flex items-center gap-2">
-                  {/* <PiTag className="text-orange-500" size="16" /> */}
-                  <span className="font-medium">{tag.tag_name}</span>
-                </div>
-
-                <div className="flex flex-col">
-                  <p className="font-mono text-sm text-zinc-500">{tag.slug}</p>
-                </div>
-
-                <div className="text-right font-mono">{tag.post_count}</div>
-
-                <div className="flex items-center justify-end">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Tag</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead className="text-right">Posts with tag</TableHead>
+              <TableHead className="text-right">
+                <div className="sr-only">Action</div>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tags.data?.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center font-mono text-slate-500"
+                >
+                  No tags found
+                </TableCell>
+              </TableRow>
+            )}
+            {tags.data?.map((tag) => (
+              <TableRow key={tag.tag_id}>
+                <TableCell>{tag.tag_name}</TableCell>
+                <TableCell className="font-mono text-slate-500">
+                  {tag.slug}
+                </TableCell>
+                <TableCell className="text-right font-mono">
+                  {tag.post_count}
+                </TableCell>
+                <TableCell className="text-right">
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <Button size="icon" variant={"ghost"}>
-                        <MoreVertical size="16" />
+                        <MoreHorizontal size="16" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
@@ -93,7 +98,6 @@ export default function TagsPage() {
                           setUpdateTagDialogOpen(true);
                         }}
                       >
-                        <Pen size="16" className="mr-2" />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -105,16 +109,16 @@ export default function TagsPage() {
                           setDeleteTagDialogOpen(true);
                         }}
                       >
-                        <Trash size="16" className="mr-2" />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
         <UpdateTagDialog
           tag={selectedTag}
           onSubmit={async (newTag) => {

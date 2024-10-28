@@ -91,7 +91,7 @@ export function CreateCategoryDialog() {
 export default function CategoriesPage() {
   const blogId = useBlogId();
 
-  const { data: categories, isLoading } = useCategoriesWithPostCount();
+  const { data: categories, isLoading } = useCategoriesWithPostCount(blogId);
   const [selectedCategory, setSelectedCategory] = useState<{
     category_id: number | null;
     category_name: string | null;
@@ -109,7 +109,7 @@ export default function CategoriesPage() {
       title="Categories"
       loading={isLoading}
       actions={<CreateCategoryDialog />}
-      description="Categories help you group your posts. Posts can have one category."
+      description="Posts can have one category."
     >
       <Section>
         <Table>
@@ -124,6 +124,16 @@ export default function CategoriesPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {categories?.data?.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center font-mono text-slate-500"
+                >
+                  No categories found
+                </TableCell>
+              </TableRow>
+            )}
             {categories?.data?.map((category) => (
               <TableRow key={category.category_id}>
                 <TableCell className="font-medium">

@@ -157,7 +157,7 @@ export function PricingCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border bg-white px-5 py-3 pb-5",
+        "flex h-full flex-col rounded-2xl border bg-white px-5 py-3 pb-5",
         highlight && "border-orange-500 ring-4 ring-orange-200"
       )}
     >
@@ -165,7 +165,7 @@ export function PricingCard({
       <div className="h-16">
         <PricingText />
       </div>
-      <ul className="mt-5 space-y-2 font-medium">
+      <ul className="mt-5 h-full flex-1 space-y-2 font-medium">
         {features.map((feature) => (
           <li key={feature} className="flex items-center">
             <CheckIcon className="mr-2 h-4 w-4 text-orange-500" />
@@ -174,6 +174,11 @@ export function PricingCard({
         ))}
       </ul>
       <div className="mt-5">
+        {monthlyPrice !== 0 && (
+          <div className="mb-2 text-center font-mono text-xs text-slate-500">
+            Try it free for {TRIAL_PERIOD_DAYS} days!
+          </div>
+        )}
         <Button
           className="w-full"
           variant={getButtonVariant()}
@@ -181,11 +186,6 @@ export function PricingCard({
         >
           Get started
         </Button>
-        {monthlyPrice !== 0 && (
-          <div className="mt-2 text-center font-mono text-xs text-slate-500">
-            Try it free for {TRIAL_PERIOD_DAYS} days!
-          </div>
-        )}
       </div>
     </div>
   );
