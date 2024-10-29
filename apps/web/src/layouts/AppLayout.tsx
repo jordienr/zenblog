@@ -121,7 +121,7 @@ export default function AppLayout({
                           size={16}
                         />
                       )}
-                      {sub?.plan?.id === "hobby" && (
+                      {sub?.plan === "hobby" && (
                         <Link
                           title="Upgrade to Pro"
                           href="/account"
@@ -130,7 +130,7 @@ export default function AppLayout({
                           Hobby
                         </Link>
                       )}
-                      {sub?.plan?.id === "pro" && (
+                      {sub?.plan === "pro" && (
                         <div className="rounded-full text-xs font-medium text-blue-500">
                           Pro
                         </div>
