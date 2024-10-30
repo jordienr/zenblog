@@ -124,12 +124,17 @@ const Home = () => {
               >
                 A tiny blogging CMS
               </h1>
-              <div className="mt-3 text-xl font-medium leading-4 text-slate-400">
+              <div className="mt-3 text-xl font-medium text-slate-400">
                 <p className="">
                   Simple, headless blogging CMS that will make you want to write
                   more
                 </p>
-                <Dialog>
+                <Link className="mt-8 flex" href="/sign-up">
+                  <Button size="default" className="text-sm">
+                    Get started
+                  </Button>
+                </Link>
+                {/* <Dialog>
                   <div className="mt-8 flex items-center gap-4">
                     <DialogTrigger asChild>
                       <Button size="default" className="text-sm">
@@ -190,7 +195,7 @@ const Home = () => {
                       </div>
                     )}
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
               </div>
             </div>
             <div className="mx-auto mt-24 max-w-6xl rounded-xl border bg-white p-1.5 shadow-sm">

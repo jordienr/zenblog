@@ -11,10 +11,10 @@ const Footer = (props: Props) => {
       label: "Contact",
       href: "/contact",
     },
-    // {
-    //   label: "Pricing",
-    //   href: "/pricing",
-    // },
+    {
+      label: "Pricing",
+      href: "/pricing",
+    },
     {
       label: "Terms",
       href: "/terms",

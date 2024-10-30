@@ -19,12 +19,12 @@ const Navigation = (props: Props) => {
         </Link>
 
         <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500">
-          {/* <Link
+          <Link
             className="rounded-lg px-2 py-1 hover:text-zinc-800"
             href="/pricing"
           >
             Pricing
-          </Link> */}
+          </Link>
           <Link
             className="rounded-lg px-2 py-1 hover:text-zinc-800"
             href="/docs"
@@ -47,10 +47,19 @@ const Navigation = (props: Props) => {
             <FaTwitter size="18" />
           </Link>
 
-          {user && (
+          {user ? (
             <div className="ml-2 flex">
               <Button asChild variant={"secondary"} size="default">
                 <Link href="/blogs">Dashboard</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="ml-2 flex gap-2">
+              <Button asChild variant={"ghost"}>
+                <Link href="/sign-in">Login</Link>
+              </Button>
+              <Button asChild variant={"default"}>
+                <Link href="/sign-up">Sign up</Link>
               </Button>
             </div>
           )}
