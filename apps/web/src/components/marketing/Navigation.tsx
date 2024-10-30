@@ -13,12 +13,12 @@ const Navigation = (props: Props) => {
 
   return (
     <div className="px-4">
-      <nav className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between py-8">
+      <nav className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-center py-8 md:justify-between">
         <Link href="/" className="">
           <ZendoLogo className="" size={31} />
         </Link>
 
-        <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500">
+        <div className="flex flex-grow items-center justify-center gap-1 font-medium text-zinc-500 md:justify-end">
           <Link
             className="rounded-lg px-2 py-1 hover:text-zinc-800"
             href="/pricing"
