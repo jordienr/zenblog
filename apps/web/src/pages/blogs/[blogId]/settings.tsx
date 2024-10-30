@@ -199,40 +199,25 @@ export default function BlogSettings() {
         </Section>
 
         <Section className="p-4">
-          <h2 className="text-lg font-medium">Blog API key</h2>
+          <h2 className="text-lg font-medium">Blog ID</h2>
           <p className="text-zinc-500">
-            Use this key to fetch your blogs content through the API.
+            Use this ID to fetch your blogs content through the API.
           </p>
           <div className="mt-4 flex items-center gap-2">
-            {blog.access_token ? (
-              <div className="flex w-full items-center justify-end gap-3">
-                <Button
-                  onClick={() => {
-                    if (
-                      confirm(
-                        "Are you sure you want to rotate the API key?\n The current one will stop working."
-                      )
-                    ) {
-                      generateAPIKey();
-                    }
-                  }}
-                  variant={"destructive"}
-                >
-                  Rotate API key
-                </Button>
-              </div>
-            ) : (
-              <>
-                <Button
-                  onClick={() => {
-                    generateAPIKey();
-                  }}
-                  variant={"outline"}
-                >
-                  Generate API key
-                </Button>
-              </>
-            )}
+            <Input
+              className="font-mono font-medium text-slate-900"
+              value={blogId}
+              readOnly
+            />
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                navigator.clipboard.writeText(blogId);
+                toast.success("Blog ID copied to clipboard");
+              }}
+            >
+              Copy
+            </Button>
           </div>
           <Dialog open={showNewAPIKeyDialog}>
             <DialogContent className="flex max-w-sm flex-col gap-4">
