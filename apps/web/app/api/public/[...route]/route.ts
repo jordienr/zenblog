@@ -3,37 +3,10 @@ import { createClient } from "@/lib/server/supabase";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { Hono } from "hono";
-import bcrypt from "bcrypt";
 import { categories, postBySlug, posts, tags } from "./public-api.constants";
 import { PublicApiResponse } from "./public-api.types";
 import { Post } from "@zenblog/types";
 import { throwError } from "./public-api.errors";
-
-async function verifyAPIKey(header: string, blogId: string) {
-  const supabase = createClient();
-  const unhashedKey = header.split(" ")[1];
-
-  if (!unhashedKey) {
-    return false;
-  }
-
-  const { data, error } = await supabase
-    .from("blogs")
-    .select("access_token")
-    .eq("id", blogId)
-    .single();
-
-  if (error) {
-    return false;
-  }
-
-  if (!data?.access_token) {
-    return false;
-  }
-
-  const isValid = await bcrypt.compare(unhashedKey, data?.access_token);
-  return isValid;
-}
 
 const app = new Hono()
   .basePath("/api/public")
@@ -45,20 +18,9 @@ app.get(posts.path, async (c) => {
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
   const supabase = createClient();
-  const authHeader = c.req.header("Authorization");
 
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
-  }
-
-  if (!authHeader) {
-    return throwError(c, "MISSING_API_KEY");
-  }
-
-  const isValid = await verifyAPIKey(authHeader, blogId);
-
-  if (!isValid) {
-    return throwError(c, "INVALID_API_KEY");
   }
 
   const { data: posts, error } = await supabase
@@ -89,20 +51,9 @@ app.get(postBySlug.path, async (c) => {
   const blogId = c.req.param("blogId");
   const slug = c.req.param("slug");
   const supabase = createClient();
-  const authHeader = c.req.header("Authorization");
 
   if (!blogId || !slug) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
-  }
-
-  if (!authHeader) {
-    return throwError(c, "MISSING_API_KEY");
-  }
-
-  const isValid = await verifyAPIKey(authHeader, blogId);
-
-  if (!isValid) {
-    return throwError(c, "INVALID_API_KEY");
   }
 
   const { data: post, error } = await supabase
@@ -124,20 +75,9 @@ app.get(postBySlug.path, async (c) => {
 app.get(categories.path, async (c) => {
   const blogId = c.req.param("blogId");
   const supabase = createClient();
-  const authHeader = c.req.header("Authorization");
 
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
-  }
-
-  if (!authHeader) {
-    return throwError(c, "MISSING_API_KEY");
-  }
-
-  const isValid = await verifyAPIKey(authHeader, blogId);
-
-  if (!isValid) {
-    return throwError(c, "INVALID_API_KEY");
   }
 
   const { data: categories, error } = await supabase
@@ -155,20 +95,9 @@ app.get(categories.path, async (c) => {
 app.get(tags.path, async (c) => {
   const blogId = c.req.param("blogId");
   const supabase = createClient();
-  const authHeader = c.req.header("Authorization");
 
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
-  }
-
-  if (!authHeader) {
-    return throwError(c, "MISSING_API_KEY");
-  }
-
-  const isValid = await verifyAPIKey(authHeader, blogId);
-
-  if (!isValid) {
-    return throwError(c, "INVALID_API_KEY");
   }
 
   const { data: tags, error } = await supabase

@@ -13,14 +13,19 @@ function createFetcher(config, log) {
             const reqOpts = {
                 ...opts,
                 headers: {
-                    Authorization: config.accessToken,
                     "Content-Type": "application/json",
                     ...opts.headers,
                 },
             };
             log("fetch ", URL, reqOpts.method);
             const res = await fetch(URL, reqOpts);
-            const json = await res.json();
+            let json;
+            try {
+                json = await res.json();
+            }
+            catch (e) {
+                (0, lib_1.throwError)("Failed to parse JSON response from API", e);
+            }
             if (!res.ok) {
                 (0, lib_1.throwError)("Error fetching data from API", res);
             }
@@ -32,17 +37,13 @@ function createFetcher(config, log) {
         }
     };
 }
-function createZenblogClient({ accessToken, blogId, _url, _debug, }) {
+function createZenblogClient({ blogId, _url, _debug, }) {
     if (typeof window !== "undefined") {
         (0, lib_1.throwError)("Zenblog is not supported in the browser. Make sure you don't leak your access token.");
     }
-    if (!accessToken) {
-        (0, lib_1.throwError)("accessToken is required");
-    }
     const logger = (0, lib_1.createLogger)(_debug || false);
     const fetcher = createFetcher({
-        url: _url || "https://zenblog.com/api/v1/public",
-        accessToken,
+        url: _url || "https://zenblog.com/api/public",
         blogId,
     }, logger);
     return {
