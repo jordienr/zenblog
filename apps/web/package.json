@@ -84,6 +84,7 @@
     "formidable": "^3.5.1",
     "formik": "^2.2.9",
     "framer-motion": "^10.12.12",
+    "hast-util-from-html": "^2.0.3",
     "highlight.js": "^11.9.0",
     "hono": "^4.6.3",
     "lucide-react": "^0.379.0",
