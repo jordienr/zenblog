@@ -13,7 +13,7 @@ const Navigation = (props: Props) => {
 
   return (
     <div className="px-4">
-      <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
+      <nav className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between py-8">
         <Link href="/" className="">
           <ZendoLogo className="" size={31} />
         </Link>
