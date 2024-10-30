@@ -26,7 +26,7 @@ export function IntegrationGuide({ blogId }: { blogId: string }) {
           {`import { createZenblogClient } from "zenblog";
 
 const cms = createZenblogClient({
-  blogId: process.env.BLOG_ID,
+  blogId: process.env.ZENBLOG_BLOG_ID,
 });`}
         </CodeBlock>
 

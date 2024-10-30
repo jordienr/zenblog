@@ -29,7 +29,7 @@ const ReactComponents = (props: Props) => {
   const Blog = () => {
 
     const client = createZenblogClient({
-      blogId: env.ZENDO_BLOG_ID,
+      blogId: env.ZENBLOG_BLOG_ID,
     })
 
     return (
