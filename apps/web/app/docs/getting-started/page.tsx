@@ -20,9 +20,9 @@ export default function GettingStarted() {
         language="typescript"
         highlightedLines={[]}
       >
-        {`import { createClient } from "zenblog";
+        {`import { createZenblogClient } from "zenblog";
 
-const zenblog = createClient({ apiKey: "your-api-key" });`}
+const zenblog = createZenblogClient({ blogId: process.env.ZENBLOG_BLOG_ID });`}
       </CodeBlockComponent>
 
       <h2>3. Fetch your posts</h2>
@@ -32,9 +32,9 @@ const zenblog = createClient({ apiKey: "your-api-key" });`}
         language="typescript"
         highlightedLines={[5]}
       >
-        {`import { createClient } from "zenblog";
+        {`import { createZenblogClient } from "zenblog";
 
-const zenblog = createClient({ apiKey: "your-api-key" });
+const zenblog = createZenblogClient({ blogId: process.env.ZENBLOG_BLOG_ID });
         
 const posts = await zenblog.posts.list();`}
       </CodeBlockComponent>
@@ -63,21 +63,26 @@ const posts = await zenblog.posts.list();`}
         language="tsx"
         highlightedLines={[5]}
       >
-        {`import { createClient } from "zenblog";
+        {`import { createZenblogClient } from "zenblog";
 
-const zenblog = createClient({ apiKey: "your-api-key" });
+const zenblog = createZenblogClient({ blogId: process.env.ZENBLOG_BLOG_ID });
 
 const post = await zenblog.posts.get({ slug: "my-first-post" });`}
       </CodeBlockComponent>
 
       <h2>6. Render your post</h2>
-      <p>Render your post in your app.</p>
+      <p>Render your post in your app. NextJS example.</p>
       <CodeBlockComponent filename="cms/index.tsx" language="tsx">
         {`<div>{post.title}</div>
 <div>{post.content}</div>
 <div>{post.publishedAt}</div>
 <div dangerouslySetInnerHTML={{ __html: post.html_content }} />`}
       </CodeBlockComponent>
+
+      <p>
+        You can use something like Tailwind Typography to easily style the HTML
+        content.
+      </p>
     </div>
   );
 }
