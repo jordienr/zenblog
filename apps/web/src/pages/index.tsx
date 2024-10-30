@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import Link from "next/link";
 import {
@@ -30,6 +31,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Navigation from "@/components/marketing/Navigation";
+import { CgArrowTopRight } from "react-icons/cg";
 
 const FEATURES = [
   {
@@ -38,12 +40,12 @@ const FEATURES = [
     description:
       "No need to configure models, create a blog, write a post, publish.",
   },
-  {
-    icon: <FaPencilAlt />,
-    title: "More than blogs",
-    description:
-      "Manage your website content easily. Blog, job postings, changelog, docs, help center, etc.",
-  },
+  // {
+  //   icon: <FaPencilAlt />,
+  //   title: "More than blogs",
+  //   description:
+  //     "Manage your website content easily. Blog, job postings, changelog, docs, help center, etc.",
+  // },
   {
     icon: <FaNetworkWired />,
     title: "Easy to integrate",
@@ -66,7 +68,7 @@ const FEATURES = [
     icon: <FaImage />,
     title: "Image hosting",
     description:
-      "We host your images for free. No need to upload them to another service.",
+      "We host your images for you. No need to upload them to another service.",
   },
   {
     icon: <FaPencilRuler />,
@@ -74,12 +76,12 @@ const FEATURES = [
     description:
       "Inspired by tools like Notion, we made an editor that is both powerful and simple to use.",
   },
-  {
-    icon: <FaPalette />,
-    title: "Themes!",
-    description:
-      "We offer free themes for the most popular frameworks. Or you can build your own.",
-  },
+  // {
+  //   icon: <FaPalette />,
+  //   title: "Themes!",
+  //   description:
+  //     "We offer free themes for the most popular frameworks. Or you can build your own.",
+  // },
 ];
 
 const Home = () => {
@@ -220,13 +222,47 @@ const Home = () => {
                       {feature.icon && feature.icon}
                     </div>
                     <h3 className="text-lg font-medium">{feature.title}</h3>
-                    <p className="text-sm text-zinc-500">
+                    <p className="max-w-xs text-sm text-zinc-500">
                       {feature.description}
                     </p>
                   </div>
                 ))}
               </div>
             </div>
+
+            <section className="mt-24 py-24 text-center">
+              <h2 className="text-2xl font-medium">Framework examples</h2>
+              <div className="mt-8 flex flex-wrap justify-center gap-8">
+                {[
+                  {
+                    id: "zenbloghq/nextjs",
+                    name: "Next.js",
+                    link: "https://github.com/zenbloghq/nextjs",
+                    desc: "Next.js Zenblog example with Tailwind CSS and TypeScript",
+                  },
+                  {
+                    id: "zenbloghq/astro",
+                    name: "Astro",
+                    link: "https://github.com/zenbloghq/astro",
+                    desc: "Astro Zenblog example with Tailwind CSS and TypeScript",
+                  },
+                ].map((fw) => (
+                  <div
+                    key={fw.id}
+                    className="flex max-w-xs flex-col gap-2 rounded-xl border px-6 py-4 text-left shadow-sm"
+                  >
+                    <h3 className="text-lg font-medium">{fw.name}</h3>
+                    <p className="text-sm text-zinc-500">{fw.desc}</p>
+                    <Link
+                      href={fw.link}
+                      className="mt-4 flex items-center gap-2 font-mono underline"
+                    >
+                      View on Github <CgArrowTopRight className="mt-0.5" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </section>
 
             <section className="mt-24 py-24 text-center">
               <h2 className="text-2xl font-medium">
