@@ -122,90 +122,28 @@ const Home = () => {
           <main className="mt-12 px-6 pb-24 font-sans">
             <div className="mx-auto max-w-4xl">
               <h1
-                className={`mt-2 text-4xl font-medium tracking-tight text-zinc-800`}
+                className={`mt-2 text-4xl font-semibold tracking-tight text-slate-800 md:text-5xl`}
               >
                 A tiny blogging CMS
               </h1>
-              <div className="mt-3 text-xl font-medium text-slate-400">
-                <p className="">
+              <div className="mt-3 font-medium text-slate-500">
+                <p className="text-balance text-2xl">
                   Simple, headless blogging CMS that will make you want to write
                   more
                 </p>
-                <Link className="mt-8 flex" href="/sign-up">
+                <Link className="mt-8 inline-flex" href="/sign-up">
                   <Button size="default" className="text-sm">
-                    Get started
+                    Start blogging for free
                   </Button>
                 </Link>
-                {/* <Dialog>
-                  <div className="mt-8 flex items-center gap-4">
-                    <DialogTrigger asChild>
-                      <Button size="default" className="text-sm">
-                        Request access
-                      </Button>
-                    </DialogTrigger>
-                  </div>
-                  <DialogContent className="rounded-xl px-6 md:max-w-sm">
-                    {!hasSubmitted && (
-                      <form
-                        className="flex flex-col gap-2 py-4"
-                        onSubmit={onSubmit}
-                      >
-                        <div>
-                          <h2 className="text-xl font-medium text-zinc-800">
-                            Be the first to try it.
-                          </h2>
-                          <p className="text-sm text-zinc-500">
-                            We will send the first invites in summer 2024
-                          </p>
-                        </div>
-                        <div className="mt-2 flex flex-col gap-2 [&>*]:w-full">
-                          <label htmlFor="name">
-                            <Input
-                              type="text"
-                              id="name"
-                              placeholder="Name"
-                              aria-label="Name"
-                              title="Name"
-                              {...register("name", { required: true })}
-                            />
-                          </label>
-                          <label htmlFor="email">
-                            <Input
-                              {...register("email", { required: true })}
-                              type="email"
-                              id="email"
-                              aria-label="Email"
-                              placeholder="Email"
-                              title="Email"
-                            />
-                          </label>
-                        </div>
-                        <div className="actions">
-                          <Button type="submit">Request invite!</Button>
-                        </div>
-                      </form>
-                    )}
-                    {hasSubmitted && (
-                      <div className="mx-auto mt-6 flex max-w-xs flex-col gap-4 rounded-xl py-4 text-center">
-                        <span className="-mb-2 text-3xl">🎉</span>
-                        <p className="text-lg font-semibold">
-                          Thank you for signing up!
-                        </p>
-                        <p className="-mt-4 pb-8 text-gray-600">
-                          We will let you know when we launch.
-                        </p>
-                      </div>
-                    )}
-                  </DialogContent>
-                </Dialog> */}
               </div>
             </div>
-            <div className="mx-auto mt-24 max-w-6xl rounded-xl border bg-white p-1.5 shadow-sm">
+            <div className="mx-auto mt-24 max-w-6xl rounded-xl shadow-xl">
               <Image
                 className="w-full rounded-lg border border-zinc-200 shadow-sm transition-all"
-                src="/static/zenblog-ui.png"
+                src="/static/zenblog-ui.webp"
                 loading="lazy"
-                blurDataURL="/static/zenblog-ui.png"
+                blurDataURL="/static/zenblog-ui.webp"
                 placeholder="blur"
                 width={1200}
                 height={300}
