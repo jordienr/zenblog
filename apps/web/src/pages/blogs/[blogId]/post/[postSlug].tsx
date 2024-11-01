@@ -24,18 +24,16 @@ export default function Post() {
 
   const tagsQuery = usePostTags({ blogId, postId: post?.data?.id || "" });
 
-  const tags = tagsQuery.data
-    ?.map((tagRes) => {
-      if (!tagRes.blog_tags) {
-        return;
-      }
+  const tags =
+    tagsQuery.data?.map((tagRes) => {
       return {
-        name: tagRes.blog_tags?.name,
-        id: tagRes.blog_tags?.id,
-        slug: tagRes.blog_tags?.slug,
+        id: tagRes.blog_tags?.id || "",
+        name: tagRes.blog_tags?.name || "",
+        slug: tagRes.blog_tags?.slug || "",
       };
-    })
-    .filter((tag) => tag !== undefined);
+    }) || [];
+
+  const filteredTags = tags.filter((tag) => tag !== undefined);
 
   if (isLoading || tagsQuery.isLoading || isRefetching) {
     return (
@@ -108,16 +106,8 @@ export default function Post() {
           }
         }}
         post={post.data}
-        tags={tags || []}
+        tags={filteredTags || []}
       />
-
-      {/* <Dialog open={showPubDialog} onOpenChange={setShowPubDialog}>
-        <DialogContent>
-          <div className="flex items-center gap-4">
-            Congratulations! Your post is now live.
-          </div>
-        </DialogContent>
-      </Dialog> */}
     </div>
   );
 }
