@@ -34,6 +34,14 @@ const Navigation = (props: Props) => {
     },
   ];
 
+  const mobileLinks = [
+    {
+      label: "Home",
+      href: "/",
+    },
+    ...links,
+  ];
+
   return (
     <div className="px-4">
       <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
@@ -82,7 +90,7 @@ const Navigation = (props: Props) => {
           <Drawer open={isOpen} onOpenChange={setIsOpen}>
             <DrawerContent>
               <div className="flex h-full flex-col items-center justify-center py-12">
-                {links.map((link) => (
+                {mobileLinks.map((link) => (
                   <Link
                     key={link.href}
                     target={link.target}
