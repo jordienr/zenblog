@@ -3,7 +3,8 @@ import { getBlogClient } from "@/cms";
 import Link from "next/link";
 import React from "react";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "auto";
+export const revalidate = 300; // 5 minutes
 export const metadata = {};
 const Blog = async () => {
   const blog = getBlogClient();
