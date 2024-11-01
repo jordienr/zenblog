@@ -232,34 +232,58 @@ const Home = () => {
 
             <section className="mt-24 py-24 text-center">
               <h2 className="text-2xl font-medium">Framework examples</h2>
-              <div className="mt-8 flex flex-wrap justify-center gap-8">
+              <div className="mx-auto mt-8 max-w-4xl space-y-12">
                 {[
                   {
                     id: "zenbloghq/nextjs",
-                    name: "Next.js",
+                    name: "Zenblog, Next.js, Tailwind CSS, TypeScript",
                     link: "https://github.com/zenbloghq/nextjs",
+                    demo: "https://zenblog-nextjs-template.vercel.app/blog",
                     desc: "Next.js Zenblog example with Tailwind CSS and TypeScript",
+                    image: "/static/zenblog-nextjs-template.webp",
                   },
-                  {
-                    id: "zenbloghq/astro",
-                    name: "Astro",
-                    link: "https://github.com/zenbloghq/astro",
-                    desc: "Astro Zenblog example with Tailwind CSS and TypeScript",
-                  },
+                  // {
+                  //   id: "zenbloghq/astro",
+                  //   name: "Zenblog, Astro, Tailwind CSS, TypeScript",
+                  //   link: "https://github.com/zenbloghq/astro",
+                  //   demo: "https://zenblog-astro-template.vercel.app/blog",
+                  //   desc: "Astro Zenblog example with Tailwind CSS and TypeScript",
+                  //   image: "/static/zenblog-astro-template.webp",
+                  // },
                 ].map((fw) => (
-                  <div
-                    key={fw.id}
-                    className="flex max-w-xs flex-col gap-2 rounded-xl border px-6 py-4 text-left shadow-sm"
-                  >
-                    <h3 className="text-lg font-medium">{fw.name}</h3>
-                    <p className="text-sm text-zinc-500">{fw.desc}</p>
-                    <Link
-                      href={fw.link}
-                      className="mt-4 flex items-center gap-2 font-mono underline"
-                    >
-                      View on Github <CgArrowTopRight className="mt-0.5" />
-                    </Link>
-                  </div>
+                  <article key={fw.id} className="grid grid-cols-2">
+                    <div>
+                      <Image
+                        className="w-full rounded-lg border shadow-sm"
+                        src={fw.image}
+                        width={800}
+                        height={400}
+                        alt={`${fw.name} - ${fw.desc}`}
+                      />
+                    </div>
+                    <div className="p-4 text-left">
+                      <h3 className="text-lg font-medium">{fw.name}</h3>
+                      <p className="text-balance text-sm text-zinc-500">
+                        {fw.desc}
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-4 text-orange-600">
+                        <Link
+                          href={fw.link}
+                          target="_blank"
+                          className="mt-4 flex items-center gap-2 underline"
+                        >
+                          Open in Github
+                        </Link>
+                        <Link
+                          href={fw.demo}
+                          target="_blank"
+                          className="mt-4 flex items-center gap-2 underline"
+                        >
+                          Try the demo
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
                 ))}
               </div>
             </section>
