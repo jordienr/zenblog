@@ -4,7 +4,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export const dynamic = "auto";
+export const dynamic = "force-dynamic";
 type Params = {
   params: {
     slug: string;
