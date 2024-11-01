@@ -321,25 +321,21 @@ const Home = () => {
                       Do I need a backend server to use it?
                     </AccordionTrigger>
                     <AccordionContent>
-                      Yes, you need a backend server to use zenblog. You should
-                      fetch your content from a backend server to protect your
-                      API key.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="howmany">
-                    <AccordionTrigger>
-                      How many blogs can I have?
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      During beta, you can have unlimited blogs on the pro plan.
+                      Yes, you should use a backend server to fetch your content
+                      from zenblog and cache it. This will protect your blog id
+                      and make your website faster and SEO friendly.
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="apihow">
                     <AccordionTrigger>How do I use the API?</AccordionTrigger>
                     <AccordionContent>
-                      Once you create your blog, you&apos;ll be able to generate
-                      an API key. You can use this key to fetch content from
-                      your blog. You will find API docs and code examples.
+                      Once you create your blog, you&apos;ll be able to use the
+                      blog id to fetch your content from the public API. Find
+                      more info in the{" "}
+                      <Link className="underline" href="/docs">
+                        API docs
+                      </Link>
+                      .
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
