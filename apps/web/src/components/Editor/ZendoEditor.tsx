@@ -428,7 +428,7 @@ export const ZendoEditor = (props: Props) => {
           </Button>
         </div>
       </form>
-      <div className="mx-auto flex w-full max-w-4xl flex-col rounded-md bg-white pb-6">
+      <div className="mx-auto flex w-full max-w-3xl flex-col rounded-md bg-white px-8 pb-6">
         {coverImgUrl && (
           <div className="relative mt-2 flex items-center justify-center">
             <button
@@ -442,11 +442,7 @@ export const ZendoEditor = (props: Props) => {
               <IoClose />
             </button>
 
-            <img
-              className="max-h-96 rounded-xl"
-              src={coverImgUrl || ""}
-              alt=""
-            />
+            <img className="w-full rounded-xl" src={coverImgUrl || ""} alt="" />
           </div>
         )}
 
