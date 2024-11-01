@@ -6,6 +6,7 @@ import { FaBars, FaTwitter } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { useUser } from "@/utils/supabase/browser";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+import { Drawer, DrawerContent } from "../ui/drawer";
 
 type Props = {};
 
@@ -70,7 +71,7 @@ const Navigation = (props: Props) => {
               </Button>
             </div>
           )}
-          <div className="md:hidden">
+          <div className="ml-2 md:hidden">
             <button
               className="rounded-lg p-2 hover:bg-zinc-100"
               onClick={() => setIsOpen(!isOpen)}
@@ -78,9 +79,9 @@ const Navigation = (props: Props) => {
               <HiOutlineMenu size={24} />
             </button>
           </div>
-          {isOpen && (
-            <div className="absolute inset-0 bg-white">
-              <div className="flex h-full flex-col items-center justify-center">
+          <Drawer open={isOpen} onOpenChange={setIsOpen}>
+            <DrawerContent>
+              <div className="flex h-full flex-col items-center justify-center py-12">
                 {links.map((link) => (
                   <Link
                     key={link.href}
@@ -91,15 +92,9 @@ const Navigation = (props: Props) => {
                     {link.label}
                   </Link>
                 ))}
-                <button
-                  className="mt-4 rounded-lg px-2 py-1 text-xl text-slate-500 hover:text-slate-600"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <HiOutlineX size={24} />
-                </button>
               </div>
-            </div>
-          )}
+            </DrawerContent>
+          </Drawer>
         </div>
       </nav>
     </div>
