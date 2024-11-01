@@ -1,10 +1,14 @@
 {
   "name": "zenblog",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "The typescript client for zenblog",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "public": true,
+  "exports": {
+    ".": "./dist/index.js",
+    "./types": "./src/types.ts"
+  },
   "scripts": {
     "test": "npm test",
     "build": "tsc",
