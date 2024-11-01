@@ -124,6 +124,7 @@ const api = new Hono()
         const interval = c.req.query("interval");
 
         if (error || !user || !user.email || !plan || !interval) {
+          console.log("🔴 error", error, user, plan, interval);
           axiom.ingest(AXIOM_DATASETS.stripe, {
             message: "Error loading checkout session",
             payload: { userId, plan, error, user },
@@ -138,9 +139,12 @@ const api = new Hono()
         }
 
         if (!isPricingPlanId(plan)) {
+          console.log("🔴 !isPricingPlanId", plan);
           return c.json({ error: "Invalid plan" }, { status: 400 });
         }
+
         if (!isPricingPlanInterval(interval)) {
+          console.log("🔴 !isPricingPlanInterval", interval);
           return c.json({ error: "Invalid interval" }, { status: 400 });
         }
 
@@ -152,6 +156,7 @@ const api = new Hono()
         const selectedPlan = PRICING_PLANS.find((p) => p.id === plan);
 
         if (!selectedPlan) {
+          console.log("🔴 !selectedPlan", selectedPlan);
           return c.json({ error: "Invalid plan" }, { status: 400 });
         }
 
@@ -189,6 +194,7 @@ const api = new Hono()
         });
 
         if (!session.url) {
+          console.log("🔴 !session.url", session.url);
           return c.json({ error: "Error creating session" }, { status: 500 });
         }
 
@@ -196,6 +202,7 @@ const api = new Hono()
 
         return c.json({ url: session.url }, { status: 200 });
       } catch (error) {
+        console.log("🔴 error", error);
         console.error(error);
 
         return c.json(
