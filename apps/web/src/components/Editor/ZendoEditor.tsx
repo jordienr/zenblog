@@ -616,7 +616,6 @@ export const ZendoEditor = (props: Props) => {
                 </EditorPropLabel>
                 <EditorPropValue onClick={() => setShowTagPicker(true)}>
                   <div className="flex items-center gap-1 px-3 py-1">
-                    {JSON.stringify(tags.length)}
                     <TagPicker
                       allTags={blogTags.data || []}
                       selectedTags={tags}
