@@ -615,7 +615,7 @@ export const ZendoEditor = (props: Props) => {
                   Tags
                 </EditorPropLabel>
                 <EditorPropValue onClick={() => setShowTagPicker(true)}>
-                  <div className="flex items-center gap-1 px-3 py-1">
+                  <div className="flex items-center gap-1 py-1 pl-2 pr-3 text-left">
                     <TagPicker
                       allTags={blogTags.data || []}
                       selectedTags={tags}
@@ -626,36 +626,38 @@ export const ZendoEditor = (props: Props) => {
                       open={showTagPicker}
                       onOpenChange={setShowTagPicker}
                     >
-                      <div className="mt-6"></div>
+                      <span className="mt-6"></span>
                     </TagPicker>
-                    {tags.length === 0 && "Select some tags"}
-                    {tags.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1">
-                        {tags.map((tag) => (
-                          <span
-                            key={tag.id}
-                            className="flex items-center rounded-md bg-zinc-100 font-mono text-xs font-medium"
-                          >
-                            <div className="p-1 pl-2 pr-0">
-                              {
-                                blogTags.data?.find((t) => t.id === tag.id)
-                                  ?.name
-                              }
-                            </div>
-                            <button
-                              tabIndex={-1}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setTags(tags.filter((t) => t.id !== tag.id));
-                              }}
-                              className="rounded-full p-1 pr-2"
+                    <div className="-mr-2">
+                      {tags.length === 0 && "Select some tags"}
+                      {tags.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1">
+                          {tags.map((tag) => (
+                            <span
+                              key={tag.id}
+                              className="flex items-center rounded-md bg-zinc-100 font-mono text-xs font-medium"
                             >
-                              <X size="12" />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                              <div className="p-1 pl-2 pr-0">
+                                {
+                                  blogTags.data?.find((t) => t.id === tag.id)
+                                    ?.name
+                                }
+                              </div>
+                              <button
+                                tabIndex={-1}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setTags(tags.filter((t) => t.id !== tag.id));
+                                }}
+                                className="rounded-full p-1 pr-2"
+                              >
+                                <X size="12" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </EditorPropValue>
               </motion.div>
