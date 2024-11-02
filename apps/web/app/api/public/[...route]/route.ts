@@ -101,7 +101,7 @@ app.get(tags.path, async (c) => {
   }
 
   const { data: tags, error } = await supabase
-    .from("blog_tags")
+    .from("tags")
     .select("name, slug")
     .eq("blog_id", blogId);
 

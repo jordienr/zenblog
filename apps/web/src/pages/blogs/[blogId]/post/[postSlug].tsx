@@ -23,17 +23,18 @@ export default function Post() {
   } = usePostQuery(postSlug, blogId);
 
   const tagsQuery = usePostTags({ blogId, postId: post?.data?.id || "" });
-
+  console.log("tagsquery", tagsQuery.data);
   const tags =
     tagsQuery.data?.map((tagRes) => {
       return {
-        id: tagRes.blog_tags?.id || "",
-        name: tagRes.blog_tags?.name || "",
-        slug: tagRes.blog_tags?.slug || "",
+        id: tagRes.tags?.id || "",
+        name: tagRes.tags?.name || "",
+        slug: tagRes.tags?.slug || "",
       };
     }) || [];
 
   const filteredTags = tags.filter((tag) => tag.id === undefined);
+  console.log("filteredTags", filteredTags);
 
   if (isLoading || tagsQuery.isLoading || isRefetching) {
     return (

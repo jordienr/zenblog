@@ -1,8 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
 import { EditorContent, useEditor } from "@tiptap/react";
+import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { SaveIcon, Settings2, List, CornerUpLeft, Tag, X } from "lucide-react";
+import {
+  SaveIcon,
+  Settings2,
+  List,
+  CornerUpLeft,
+  Tag,
+  X,
+  ChevronUp,
+  Copy,
+  Info,
+} from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { ImagePicker } from "../Images/ImagePicker";
@@ -23,6 +34,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
+import { Calendar } from "../ui/calendar";
 import { usePostsQuery } from "@/queries/posts";
 import { IoClose } from "react-icons/io5";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
@@ -44,6 +56,14 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import { useCategories } from "@/queries/categories";
 import Image from "next/image";
+import { EditorDateInput } from "../ui/editor-date-input";
+import { EditorCategoryPicker } from "./editor-category-picker";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 const formSchema = z.object({
   title: z.string(),
@@ -101,13 +121,11 @@ export const ZendoEditor = (props: Props) => {
   const [published, setPublished] = React.useState(
     props.post?.published || false
   );
-  const { data: categories, isLoading: categoriesLoading } =
+  const { data: categories, isLoading: isCategoriesLoading } =
     useCategories(blogId);
-  const selectedCategory = categories?.find(
-    (c) => c.id === getValues("category_id")
-  );
 
   const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
+  console.log(props.tags);
   const [tags, setTags] = React.useState(props.tags || []);
   const [publishedAt, setPublishedAt] = React.useState<string | undefined>(
     props.post?.published_at || ""
@@ -290,6 +308,10 @@ export const ZendoEditor = (props: Props) => {
     titleEl.style.height = titleEl?.scrollHeight + "px";
   }, [title]);
 
+  const [showPublishedAtDropdown, setShowPublishedAtDropdown] = useState(false);
+
+  const [showPropertyList, setShowPropertyList] = useState(true);
+
   return (
     <div className="min-h-screen pb-24">
       <form
@@ -400,7 +422,11 @@ export const ZendoEditor = (props: Props) => {
                 <Settings2 size={16} /> Settings
               </Button>
             </SheetTrigger>
-            <SheetContent hideClose className="bg-zinc-50">
+            <SheetContent
+              hideClose
+              className="overflow-y-auto bg-zinc-50"
+              tabIndex={-1}
+            >
               <EditorSettings
                 title={title}
                 metadata={metadata as any}
@@ -447,23 +473,7 @@ export const ZendoEditor = (props: Props) => {
         )}
 
         <div className="mx-auto w-full max-w-3xl px-8 pb-2">
-          <div className="flex w-full items-end justify-between gap-4 pt-1 transition-all">
-            <label
-              className="group flex w-full flex-col items-start justify-center gap-1"
-              htmlFor="slug"
-            >
-              <span className="mx-2 text-xs text-zinc-400 opacity-0 transition-all group-focus-within:opacity-100">
-                Slug
-              </span>
-              <input
-                required
-                placeholder="a-great-title"
-                type="text"
-                {...register("slug")}
-                className="w-full rounded-lg border border-transparent bg-transparent p-1 font-mono text-sm text-zinc-500 outline-none transition-all hover:bg-white focus:bg-zinc-100"
-                autoComplete="off"
-              />
-            </label>
+          <div className="mt-8 flex w-full items-end justify-between gap-4  transition-all">
             <ImagePicker
               open={showImagePicker}
               onOpenChange={setShowImagePicker}
@@ -476,7 +486,7 @@ export const ZendoEditor = (props: Props) => {
             >
               <Button
                 variant={"ghost"}
-                className="text-zinc-600 hover:bg-white"
+                className="px-0 text-zinc-500 hover:bg-white"
               >
                 <span className="flex gap-1.5 whitespace-nowrap !text-xs">
                   <BsFillImageFill className="h-4 w-4 text-zinc-400" />
@@ -498,68 +508,175 @@ export const ZendoEditor = (props: Props) => {
               }
             }}
             className="mt-1 w-full overflow-hidden
-            rounded-xl bg-transparent p-1 text-4xl font-medium text-zinc-700 outline-none"
+            rounded-xl bg-transparent text-4xl font-semibold text-zinc-900 outline-none"
           />
-          <div className="group flex items-center gap-1">
-            <TagPicker
-              allTags={blogTags.data || []}
-              selectedTags={tags}
-              onChange={(newTags) => {
-                setTags(newTags);
-              }}
-              blogId={blogId}
-              open={showTagPicker}
-              onOpenChange={setShowTagPicker}
-            >
-              <div></div>
-            </TagPicker>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1">
-                {tags.map((tag) => (
-                  <span
-                    key={tag.id}
-                    className="flex rounded-full bg-zinc-100 font-mono text-xs font-medium"
-                  >
-                    <div className="p-1 pl-2 pr-0">
-                      {blogTags.data?.find((t) => t.id === tag.id)?.name}
-                    </div>
-                    <button
-                      tabIndex={-1}
-                      onClick={() => {
-                        setTags(tags.filter((t) => t.id !== tag.id));
+          <AnimatePresence>
+            {showPropertyList && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+                className="mt-6 grid grid-cols-4 gap-2 gap-y-2 overflow-hidden text-zinc-500"
+              >
+                <EditorPropLabel tooltip="The slug is a unique identifier for your post, used in the URL.">
+                  Slug
+                </EditorPropLabel>
+                <EditorPropValue>
+                  <div className="flex w-full items-center gap-1 py-1 pl-3 pr-1">
+                    <textarea
+                      className="field-sizinc w-full resize-none truncate bg-transparent font-mono outline-none"
+                      rows={1}
+                      value={slug}
+                      onChange={(e) => {
+                        setValue("slug", e.target.value);
                       }}
-                      className="rounded-full p-1 pr-2"
+                    />
+                    <Button
+                      variant={"ghost"}
+                      size="icon"
+                      onClick={() => {
+                        navigator.clipboard.writeText(slug);
+                        toast.success("Copied to clipboard");
+                      }}
                     >
-                      <X size="10" />
-                    </button>
-                  </span>
-                ))}
-              </div>
+                      <Copy size={16} />
+                    </Button>
+                  </div>
+                </EditorPropValue>
+                <EditorPropLabel tooltip="The date your post was published.">
+                  Published at
+                </EditorPropLabel>
+                <EditorPropValue
+                  onClick={() => setShowPublishedAtDropdown(true)}
+                  className="relative"
+                >
+                  <DropdownMenu
+                    onOpenChange={setShowPublishedAtDropdown}
+                    open={showPublishedAtDropdown}
+                    modal={false}
+                  >
+                    <DropdownMenuTrigger className="w-full px-3 py-1 text-left">
+                      {publishedAt
+                        ? new Date(publishedAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : "Empty"}
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          publishedAt ? new Date(publishedAt) : undefined
+                        }
+                        onSelect={(date) => {
+                          setPublishedAt(date?.toISOString() || "");
+                          setShowPublishedAtDropdown(false);
+                        }}
+                        initialFocus
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </EditorPropValue>
+                <EditorPropLabel tooltip="A short description of your post. Recommended to be 155 characters or less.">
+                  Excerpt
+                </EditorPropLabel>
+                <EditorPropValue>
+                  <textarea
+                    className="field-size-zinc w-full resize-none bg-transparent px-3 py-1 font-mono text-sm outline-none"
+                    rows={3}
+                    onChange={(e) => {
+                      setValue("excerpt", e.target.value);
+                    }}
+                    value={watch("excerpt") || ""}
+                  />
+                  {watch("excerpt") && (
+                    <div className="absolute -bottom-4 right-2 text-xs text-zinc-400 opacity-0 transition-all group-focus-within:opacity-100">
+                      {(watch("excerpt") || "").length}/155
+                    </div>
+                  )}
+                </EditorPropValue>
+                <EditorPropLabel tooltip="Posts can have one category. Good for organizing your posts and creating more pages in your blog.">
+                  Category
+                </EditorPropLabel>
+                <EditorPropValue>
+                  <EditorCategoryPicker
+                    isLoading={isCategoriesLoading}
+                    categories={categories || []}
+                    onChange={(e) => {
+                      setValue("category_id", e);
+                    }}
+                    value={watch("category_id")}
+                  />
+                </EditorPropValue>
+                <EditorPropLabel tooltip="Posts can have multiple tags. Good for finding related posts.">
+                  Tags
+                </EditorPropLabel>
+                <EditorPropValue onClick={() => setShowTagPicker(true)}>
+                  <div className="flex items-center gap-1 px-3 py-1">
+                    {JSON.stringify(tags.length)}
+                    <TagPicker
+                      allTags={blogTags.data || []}
+                      selectedTags={tags}
+                      onChange={(newTags) => {
+                        setTags(newTags);
+                      }}
+                      blogId={blogId}
+                      open={showTagPicker}
+                      onOpenChange={setShowTagPicker}
+                    >
+                      <div className="mt-6"></div>
+                    </TagPicker>
+                    {tags.length === 0 && "Select some tags"}
+                    {tags.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1">
+                        {tags.map((tag) => (
+                          <span
+                            key={tag.id}
+                            className="flex items-center rounded-md bg-zinc-100 font-mono text-xs font-medium"
+                          >
+                            <div className="p-1 pl-2 pr-0">
+                              {
+                                blogTags.data?.find((t) => t.id === tag.id)
+                                  ?.name
+                              }
+                            </div>
+                            <button
+                              tabIndex={-1}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setTags(tags.filter((t) => t.id !== tag.id));
+                              }}
+                              className="rounded-full p-1 pr-2"
+                            >
+                              <X size="12" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </EditorPropValue>
+              </motion.div>
             )}
-            <button
-              tabIndex={-1}
-              onClick={() => {
-                setShowTagPicker(true);
-              }}
-              className={cn(
-                "flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1 text-xs text-zinc-400 opacity-0 transition-all hover:text-zinc-700 group-hover:opacity-100",
-                {
-                  "opacity-100": tags.length === 0,
-                }
-              )}
-            >
-              <Tag size="14" className="text-zinc-300" />
-              Add tags
-            </button>
-          </div>
+          </AnimatePresence>
 
-          <div className="mt-4 text-sm text-zinc-800">
-            <textarea
-              {...register("excerpt")}
-              className="w-full resize-none rounded-lg p-1.5 outline-none transition-all focus:bg-zinc-100"
-              placeholder="Excerpt"
+          <Button
+            variant={"ghost"}
+            className="px-0 opacity-50 hover:opacity-100"
+            onClick={() => setShowPropertyList(!showPropertyList)}
+          >
+            {showPropertyList ? "Hide properties" : "Show properties"}
+            <ChevronUp
+              className={cn(
+                "transition-all",
+                showPropertyList ? "" : "rotate-180"
+              )}
+              size={16}
             />
-          </div>
+          </Button>
         </div>
         <div
           className="group cursor-text"
@@ -612,3 +729,50 @@ export const ZendoEditor = (props: Props) => {
     </div>
   );
 };
+
+function EditorPropLabel({
+  children,
+  tooltip,
+}: {
+  children: React.ReactNode;
+  tooltip: string;
+}) {
+  return (
+    <div className="col-span-1 flex items-start gap-1 py-1 font-medium">
+      <div className="flex items-center gap-1">
+        {children}
+        <TooltipProvider>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <Info size={15} className="text-zinc-400" />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs text-xs">
+              {tooltip}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    </div>
+  );
+}
+function EditorPropValue({
+  children,
+  onClick,
+  className,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+}) {
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "group relative col-span-3 flex cursor-pointer items-center rounded-lg transition-all hover:bg-zinc-100/60 hover:text-zinc-800",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}

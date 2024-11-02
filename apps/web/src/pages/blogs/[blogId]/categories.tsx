@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
+import { generateSlug } from "@/lib/utils/slugs";
 import {
   useCategoriesWithPostCount,
   useCreateCategory,
@@ -32,22 +33,28 @@ import {
   useUpdateCategoryMutation,
 } from "@/queries/categories";
 import { MoreHorizontal, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function CreateCategoryDialog() {
+export function CreateCategoryDialog({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
   const createCategory = useCreateCategory();
   const blogId = useBlogId();
-  const [open, setOpen] = useState(false);
+
+  const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+
+  useEffect(() => {
+    setSlug(generateSlug(name));
+  }, [name]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant={"outline"}>
-          <Plus size={16} />
-          <div>Create category</div>
-        </Button>
-      </DialogTrigger>
       <DialogContent className="!max-w-sm">
         <DialogHeader>
           <DialogTitle>Create category</DialogTitle>
@@ -57,14 +64,11 @@ export function CreateCategoryDialog() {
           onSubmit={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            const formData = new FormData(e.target as HTMLFormElement);
-            const name = formData.get("name");
-            const slug = formData.get("slug");
 
             try {
               await createCategory.mutateAsync({
-                name: name as string,
-                slug: slug as string,
+                name,
+                slug,
                 blog_id: blogId,
               });
               toast.success("Category created");
@@ -75,9 +79,23 @@ export function CreateCategoryDialog() {
           }}
         >
           <Label htmlFor="name">Name</Label>
-          <Input id="name" name="name" placeholder="Technology" />
+          <Input
+            id="name"
+            name="name"
+            placeholder="Technology"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <Label htmlFor="slug">Slug</Label>
-          <Input id="slug" name="slug" placeholder="technology" />
+          <Input
+            id="slug"
+            name="slug"
+            className="disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={!name}
+            placeholder="technology"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+          />
           <div className="flex justify-end">
             <Button type="submit">Create</Button>
           </div>
@@ -102,14 +120,20 @@ export default function CategoriesPage() {
 
   const [deleteCategoryOpen, setDeleteCategoryOpen] = useState(false);
   const deleteCategory = useDeleteCategoryMutation(blogId);
-
+  const [open, setOpen] = useState(false);
   return (
     <AppLayout
       title="Categories"
       loading={isLoading}
-      actions={<CreateCategoryDialog />}
+      actions={
+        <Button size="sm" variant={"outline"} onClick={() => setOpen(true)}>
+          <Plus size={16} />
+          <div>Create category</div>
+        </Button>
+      }
       description="Posts can have one category."
     >
+      <CreateCategoryDialog open={open} setOpen={setOpen} />
       <Section>
         <Table>
           <TableHeader>

@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import { Label } from "../ui/label";
 import Spinner from "../Spinner";
 import { IS_DEV } from "@/lib/constants";
+import { EditorDateInput } from "../ui/editor-date-input";
 
 type Tag = {
   id: string;
@@ -90,20 +91,20 @@ const EditorSettings = (props: Props) => {
     ).toISOString();
   }
 
-  useEffect(() => {
-    try {
-      const date = publishedAtToDate();
+  // useEffect(() => {
+  //   try {
+  //     const date = publishedAtToDate();
 
-      props.onChange({
-        tags: selectedTags,
-        metadata,
-        category_id: props.category_id || null,
-        published_at: date,
-      });
-    } catch (error) {
-      toast.error("Invalid date");
-    }
-  }, [publishedAt]);
+  //     props.onChange({
+  //       tags: selectedTags,
+  //       metadata,
+  //       category_id: props.category_id || null,
+  //       published_at: date,
+  //     });
+  //   } catch (error) {
+  //     toast.error("Invalid date");
+  //   }
+  // }, [publishedAt]);
 
   function addMetadata() {
     setMetadata([...metadata, { key: "", value: "" }]);
@@ -240,107 +241,7 @@ const EditorSettings = (props: Props) => {
 
       <EditorSettingsSection>
         <h2>Published date</h2>
-        <div className="flex gap-4">
-          <div>
-            <label className="text-xs text-zinc-500" htmlFor="date">
-              Date
-            </label>
-            <div className="flex gap-1">
-              <Input
-                type="number"
-                name="day"
-                placeholder="Day"
-                className="w-14 rounded-r-sm"
-                min="1"
-                max="31"
-                value={publishedAt.day}
-                onChange={(e) => {
-                  setPublishedAt({
-                    ...publishedAt,
-                    day: parseInt(e.target.value),
-                  });
-                }}
-              />
-              <Select
-                value={publishedAt.month.toString()}
-                onValueChange={(e) => {
-                  setPublishedAt({
-                    ...publishedAt,
-                    month: parseInt(e),
-                  });
-                }}
-              >
-                <SelectTrigger className="w-[120px] rounded-sm">
-                  <SelectValue placeholder="Month" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">January</SelectItem>
-                  <SelectItem value="1">February</SelectItem>
-                  <SelectItem value="2">March</SelectItem>
-                  <SelectItem value="3">April</SelectItem>
-                  <SelectItem value="4">May</SelectItem>
-                  <SelectItem value="5">June</SelectItem>
-                  <SelectItem value="6">July</SelectItem>
-                  <SelectItem value="7">August</SelectItem>
-                  <SelectItem value="8">September</SelectItem>
-                  <SelectItem value="9">October</SelectItem>
-                  <SelectItem value="10">November</SelectItem>
-                  <SelectItem value="11">December</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="number"
-                name="year"
-                placeholder="Year"
-                className="w-20 rounded-l-sm"
-                value={publishedAt.year}
-                onChange={(e) => {
-                  setPublishedAt({
-                    ...publishedAt,
-                    year: parseInt(e.target.value),
-                  });
-                }}
-              />
-            </div>
-          </div>
-          <div>
-            <label className="text-xs text-zinc-500" htmlFor="time">
-              Time
-            </label>
-            <div className="flex gap-1">
-              <Input
-                type="number"
-                name="hour"
-                placeholder="Hour"
-                className="w-14 rounded-r-sm"
-                min="0"
-                max="23"
-                value={publishedAt.hour}
-                onChange={(e) => {
-                  setPublishedAt({
-                    ...publishedAt,
-                    hour: parseInt(e.target.value),
-                  });
-                }}
-              />
-              <Input
-                type="number"
-                name="minute"
-                placeholder="Minute"
-                className="w-14 rounded-l-sm"
-                min="0"
-                max="59"
-                value={publishedAt.minute}
-                onChange={(e) => {
-                  setPublishedAt({
-                    ...publishedAt,
-                    minute: parseInt(e.target.value),
-                  });
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <EditorDateInput value={publishedAt} onChange={setPublishedAt} />
       </EditorSettingsSection>
 
       {IS_DEV && (

@@ -37,7 +37,7 @@ export function useDeleteTagMutation(blogId: string) {
   return useMutation({
     mutationFn: async (tagId: string) => {
       const res = await supa
-        .from("blog_tags")
+        .from("tags")
         .delete()
         .eq("id", tagId)
         .eq("blog_id", blogId);
@@ -60,7 +60,7 @@ export function useUpdateTagMutation(blogId: string) {
 
   return useMutation({
     mutationFn: async (tag: { id: string; name: string; slug: string }) => {
-      const res = await supa.from("blog_tags").update(tag).eq("id", tag.id);
+      const res = await supa.from("tags").update(tag).eq("id", tag.id);
 
       if (res.error) {
         throw new Error(res.error.message);
@@ -89,8 +89,9 @@ export function usePostTags({
     queryFn: async () => {
       const { data } = await supa
         .from("post_tags")
-        .select("blog_tags(*)")
-        .eq("post_id", postId);
+        .select("tags(id, name, slug)")
+        .eq("post_id", postId)
+        .eq("tags.blog_id", blogId);
 
       return data;
     },
