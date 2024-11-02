@@ -33,7 +33,7 @@ export default function Post() {
       };
     }) || [];
 
-  const filteredTags = tags.filter((tag) => tag !== undefined);
+  const filteredTags = tags.filter((tag) => tag.id === undefined);
 
   if (isLoading || tagsQuery.isLoading || isRefetching) {
     return (

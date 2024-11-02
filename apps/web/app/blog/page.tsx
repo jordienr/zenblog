@@ -25,7 +25,7 @@ const Blog = async () => {
             className="flex gap-4 transition-all hover:scale-[1.02]"
           >
             <img
-              className="h-80 w-full rounded-xl object-cover"
+              className="h-96 w-full rounded-xl object-cover"
               width={300}
               height={200}
               src={latestPost.cover_image || ""}
