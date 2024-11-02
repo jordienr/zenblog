@@ -416,7 +416,7 @@ export const ZendoEditor = (props: Props) => {
           >
             Publish
           </Label>
-          <Sheet>
+          {/* <Sheet>
             <SheetTrigger asChild>
               <Button type="button" title="post settings" variant="ghost">
                 <Settings2 size={16} /> Settings
@@ -447,7 +447,7 @@ export const ZendoEditor = (props: Props) => {
                 }}
               />
             </SheetContent>
-          </Sheet>
+          </Sheet> */}
           <Button type="submit" variant={"default"}>
             <SaveIcon size={16} />
             Save
