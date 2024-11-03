@@ -92,7 +92,7 @@ export type Database = {
           id: string
           instagram: string
           order: Database["public"]["Enums"]["blog_sort_order"]
-          slug: string
+          slug: string | null
           theme: string
           title: string
           twitter: string
@@ -109,7 +109,7 @@ export type Database = {
           id?: string
           instagram?: string
           order?: Database["public"]["Enums"]["blog_sort_order"]
-          slug: string
+          slug?: string | null
           theme?: string
           title: string
           twitter?: string
@@ -126,7 +126,7 @@ export type Database = {
           id?: string
           instagram?: string
           order?: Database["public"]["Enums"]["blog_sort_order"]
-          slug?: string
+          slug?: string | null
           theme?: string
           title?: string
           twitter?: string

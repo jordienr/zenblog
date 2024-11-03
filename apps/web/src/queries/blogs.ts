@@ -50,7 +50,7 @@ export const useCreateBlogMutation = () => {
       title: string;
       description: string;
       emoji: string;
-      slug: string;
+      // slug: string;
     }) => {
       const res = await supa.from("blogs").insert(newBlog).select().single();
       return res;

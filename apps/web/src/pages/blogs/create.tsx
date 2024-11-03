@@ -47,31 +47,31 @@ export default function CreateBlog() {
 
   const onSubmit = async (data: FormData) => {
     // validate slug is url friendly, allow only lowercase letters, numbers and hyphens
-    const regex = /^[a-zA-Z0-9-]+$/;
-    if (!regex.test(data.slug)) {
-      toast.error(
-        "Slug must be URL friendly. No special characters or spaces allowed."
-      );
-      return;
-    }
+    // const regex = /^[a-zA-Z0-9-]+$/;
+    // if (!regex.test(data.slug)) {
+    //   toast.error(
+    //     "Slug must be URL friendly. No special characters or spaces allowed."
+    //   );
+    //   return;
+    // }
 
-    if (data.slug.length < 3) {
-      toast.error("Slug must be at least 3 characters long");
-      return;
-    }
+    // if (data.slug.length < 3) {
+    //   toast.error("Slug must be at least 3 characters long");
+    //   return;
+    // }
 
-    if (RESERVED_SLUGS.includes(data.slug)) {
-      toast.error(
-        `${data.slug} slug is not available. Please choose another slug`
-      );
-      return;
-    }
+    // if (RESERVED_SLUGS.includes(data.slug)) {
+    //   toast.error(
+    //     `${data.slug} slug is not available. Please choose another slug`
+    //   );
+    //   return;
+    // }
 
     const res = await createBlog.mutateAsync({
       title: data.title,
       description: data.description || "",
       emoji: DEFAULT_EMOJI,
-      slug: data.slug,
+      // slug: data.slug,
     });
 
     if (res.error) {
@@ -162,7 +162,7 @@ export default function CreateBlog() {
                   {...register("title")}
                 />
               </div>
-              <div className="w-full">
+              {/* <div className="w-full">
                 <Label className="flex-grow" htmlFor="title">
                   <div className="sr-only">Slug</div>
                 </Label>
@@ -187,7 +187,7 @@ export default function CreateBlog() {
                     </p>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div>
@@ -206,9 +206,9 @@ export default function CreateBlog() {
                   }
                 }}
               />
-              <p className="mt-1 text-xs">
+              {/* <p className="mt-1 text-xs">
                 The description will be shown on the blog homepage.
-              </p>
+              </p> */}
             </div>
             <Button type="submit">Create blog</Button>
           </form>

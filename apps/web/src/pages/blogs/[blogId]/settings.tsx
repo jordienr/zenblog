@@ -119,21 +119,6 @@ export default function BlogSettings() {
       <div className="space-y-4">
         <Section>
           <div className="px-4">
-            <h1 className="text-xl font-medium">
-              {blog.emoji} {blog.title}
-            </h1>
-            <p className="text-sm text-slate-600">{blog.description}</p>
-            <Link
-              target="_blank"
-              className="mt-4 flex items-center gap-1 font-mono text-sm tracking-tighter text-slate-500"
-              href={hostedBlogUrl.toString()}
-            >
-              <ExternalLink size={16} />
-              {hostedBlogUrl.hostname}
-            </Link>
-          </div>
-          <hr className="mt-3" />
-          <div className="p-3">
             <form onSubmit={onSubmit} className="flex flex-col gap-2">
               <div className="flex items-end gap-4">
                 <label htmlFor="emoji" title="Emoji">
