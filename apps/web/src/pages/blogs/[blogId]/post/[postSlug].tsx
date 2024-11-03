@@ -102,7 +102,7 @@ export default function Post() {
           }
         }}
         post={post.data}
-        tags={filteredTags}
+        tags={filteredTags as any} // typescript cant infer properly, breaks build.
       />
     </div>
   );
