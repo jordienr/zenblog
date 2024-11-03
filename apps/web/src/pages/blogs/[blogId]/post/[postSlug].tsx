@@ -27,8 +27,6 @@ export default function Post() {
     post_id: post?.data?.id || "",
   });
 
-  console.log("tagsQuery", tagsQuery.data);
-
   const tags =
     tagsQuery.data?.map((t) => t.tags).filter((t) => t !== null) || [];
 
