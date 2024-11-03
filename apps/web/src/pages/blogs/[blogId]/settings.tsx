@@ -101,25 +101,6 @@ export default function BlogSettings() {
 
   const [newAPIKey, setNewAPIKey] = useState("");
   const [showNewAPIKeyDialog, setShowNewAPIKeyDialog] = useState(false);
-  const generateAPIKey = async () => {
-    const res = await API().v2.blogs[":blogId"]["api-keys"].rotate.$post({
-      param: {
-        blogId,
-      },
-    });
-
-    if (!res.ok) {
-      toast.error("Error generating api key");
-      return;
-    }
-
-    const data = (await res.json()) as { message: string; apiKey: string };
-    setNewAPIKey(data.apiKey);
-    setShowNewAPIKeyDialog(true);
-
-    refetchBlog();
-    toast.success("API key created");
-  };
 
   if (blogLoading) {
     return <AppLayout loading={true}></AppLayout>;

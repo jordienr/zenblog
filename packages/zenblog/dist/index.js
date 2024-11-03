@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createZenblogClient = void 0;
+exports.createZenblogClient = createZenblogClient;
 const lib_1 = require("./lib");
 function toQueryString(obj) {
     const params = new URLSearchParams(obj);
@@ -85,5 +85,4 @@ function createZenblogClient({ blogId, _url, _debug, }) {
         },
     };
 }
-exports.createZenblogClient = createZenblogClient;
 //# sourceMappingURL=index.js.map

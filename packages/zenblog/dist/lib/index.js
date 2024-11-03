@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createLogger = exports.throwError = exports.logError = void 0;
+exports.logError = logError;
+exports.throwError = throwError;
+exports.createLogger = createLogger;
 function logError(...args) {
     console.error("[zenblog error] ", ...args);
 }
-exports.logError = logError;
 function throwError(msg, ...args) {
     logError(msg, ...args);
     throw new Error("[zenblog error] " + msg);
 }
-exports.throwError = throwError;
 function createLogger(debug) {
     return (...args) => {
         if (debug) {
@@ -17,5 +17,4 @@ function createLogger(debug) {
         }
     };
 }
-exports.createLogger = createLogger;
 //# sourceMappingURL=index.js.map

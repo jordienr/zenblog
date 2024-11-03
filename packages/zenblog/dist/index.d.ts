@@ -8,8 +8,8 @@ export declare function createZenblogClient({ blogId, _url, _debug, }: CreateCli
     posts: {
         list: ({ limit, offset, cache }?: {
             cache?: RequestInit["cache"];
-            limit?: number | undefined;
-            offset?: number | undefined;
+            limit?: number;
+            offset?: number;
         }) => Promise<{
             data: Post[];
         }>;
@@ -17,9 +17,9 @@ export declare function createZenblogClient({ blogId, _url, _debug, }: CreateCli
             slug: string;
         }, opts?: {
             cache?: RequestInit["cache"];
-            limit?: number | undefined;
-            offset?: number | undefined;
-        } | undefined) => Promise<{
+            limit?: number;
+            offset?: number;
+        }) => Promise<{
             data: PostWithContent;
         }>;
     };

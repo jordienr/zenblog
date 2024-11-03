@@ -27,8 +27,9 @@ export default function Post() {
     post_id: post?.data?.id || "",
   });
 
-  const tags =
-    tagsQuery.data?.map((t) => t.tags).filter((t) => t !== null) || [];
+  const tags = tagsQuery.data?.map((t) => t.tags);
+
+  const filteredTags = tags?.filter((t) => t !== null) || [];
 
   if (isLoading || tagsQuery.isLoading || isRefetching) {
     return (
@@ -101,7 +102,7 @@ export default function Post() {
           }
         }}
         post={post.data}
-        tags={tags}
+        tags={filteredTags}
       />
     </div>
   );
