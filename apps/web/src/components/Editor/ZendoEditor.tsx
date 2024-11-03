@@ -5,14 +5,12 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import {
   SaveIcon,
-  Settings2,
   List,
   CornerUpLeft,
-  Tag,
   X,
   ChevronUp,
-  Copy,
   Info,
+  Loader2,
 } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -37,8 +35,6 @@ import {
 import { Calendar } from "../ui/calendar";
 import { usePostsQuery } from "@/queries/posts";
 import { IoClose } from "react-icons/io5";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import EditorSettings from "./EditorSettings";
 import TiptapLink from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { toast } from "sonner";
@@ -56,7 +52,6 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import { useCategories } from "@/queries/categories";
 import Image from "next/image";
-import { EditorDateInput } from "../ui/editor-date-input";
 import { EditorCategoryPicker } from "./editor-category-picker";
 import {
   Tooltip,
@@ -95,6 +90,7 @@ type OnSaveData = {
 };
 
 type Props = {
+  loading?: boolean;
   onSave: (data: OnSaveData) => Promise<void>;
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
@@ -105,6 +101,7 @@ type Props = {
 };
 
 export const ZendoEditor = (props: Props) => {
+  const editorLoading = props.loading || false;
   const { register, handleSubmit, setValue, watch, getValues } =
     useForm<FormData>({
       defaultValues: {
@@ -125,10 +122,9 @@ export const ZendoEditor = (props: Props) => {
     useCategories(blogId);
 
   const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
-  console.log(props.tags);
-  const [tags, setTags] = React.useState(props.tags || []);
+  const today = new Date().toISOString();
   const [publishedAt, setPublishedAt] = React.useState<string | undefined>(
-    props.post?.published_at || ""
+    props.post?.published_at || today
   );
 
   const [coverImgUrl, setCoverImgUrl] = React.useState<string | undefined>(
@@ -245,39 +241,6 @@ export const ZendoEditor = (props: Props) => {
     });
   });
 
-  const [hasChanges, setHasChanges] = React.useState(false);
-
-  useEffect(() => {
-    const propsTagsStr = props.tags?.join(",");
-    const tagsStr = tags.join(",");
-
-    setHasChanges(propsTagsStr !== tagsStr);
-    setHasChanges(props.post?.title !== getValues("title"));
-    setHasChanges(props.post?.metadata !== metadata);
-    setHasChanges(props.post?.cover_image !== getValues("cover_image"));
-    setHasChanges(props.post?.published !== published);
-    setHasChanges(props.post?.slug !== getValues("slug"));
-    setHasChanges(props.post?.category_id !== getValues("category_id"));
-    editor?.on("transaction", (ctx) => {
-      const hasChanged = ctx.transaction.docChanged;
-      setHasChanges(hasChanged);
-    });
-  }, [
-    editor,
-    props.tags,
-    tags,
-    props.post?.content,
-    props.post?.title,
-    props.post?.metadata,
-    props.post?.cover_image,
-    props.post?.published,
-    props.post?.slug,
-    props.post?.category_id,
-    getValues,
-    metadata,
-    published,
-  ]);
-
   useEffect(() => {
     // on cmd + enter or cmd + s save the post
     const handleSave = (e: KeyboardEvent) => {
@@ -312,8 +275,17 @@ export const ZendoEditor = (props: Props) => {
 
   const [showPropertyList, setShowPropertyList] = useState(true);
 
+  const [tags, setTags] = useState(props.tags || []);
+
   return (
-    <div className="min-h-screen pb-24">
+    <div className="relative min-h-screen pb-24">
+      {editorLoading && (
+        <div className="absolute inset-0 z-30 bg-zinc-50/50 backdrop-blur-sm">
+          <div className="flex h-screen items-center justify-center">
+            <Loader2 size={32} className="animate-spin text-orange-500" />
+          </div>
+        </div>
+      )}
       <form
         onSubmit={formSubmit}
         className="sticky top-0 z-20 flex w-full items-center justify-end bg-white py-1.5 pl-1.5 pr-3 text-zinc-800 md:justify-between"
@@ -401,60 +373,30 @@ export const ZendoEditor = (props: Props) => {
             )}
           </div>
         </div>
-        <div className="actions">
-          <Checkbox
-            id="published"
-            defaultChecked={published}
-            onCheckedChange={(e) => {
-              setPublished(e as any);
-            }}
-            checked={published}
-          />
-          <Label
-            className="flex cursor-pointer items-center py-1.5 text-xs  font-medium text-zinc-600 transition-all hover:text-zinc-800"
-            htmlFor="published"
-          >
-            Publish
-          </Label>
-          {/* <Sheet>
-            <SheetTrigger asChild>
-              <Button type="button" title="post settings" variant="ghost">
-                <Settings2 size={16} /> Settings
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              hideClose
-              className="overflow-y-auto bg-zinc-50"
-              tabIndex={-1}
+        <div className="flex w-full items-center justify-end gap-2">
+          <div className="flex items-center">
+            <Checkbox
+              id="published"
+              defaultChecked={published}
+              onCheckedChange={(e) => {
+                setPublished(!!e);
+              }}
+              checked={published}
+            />
+            <Label
+              className="flex cursor-pointer items-center p-2  text-xs font-medium text-zinc-600 transition-all hover:text-zinc-800"
+              htmlFor="published"
             >
-              <EditorSettings
-                title={title}
-                metadata={metadata as any}
-                selectedTags={tags}
-                blogEmoji={blogQuery.data?.emoji}
-                blogTitle={blogQuery.data?.title}
-                category_id={getValues("category_id")}
-                published_at={publishedAt}
-                onChange={(data) => {
-                  setMetadata(data.metadata);
-                  setTags(data.tags);
-                  setPublishedAt(data.published_at);
-                  if (data.category_id) {
-                    setValue("category_id", data.category_id);
-                  } else {
-                    setValue("category_id", null);
-                  }
-                }}
-              />
-            </SheetContent>
-          </Sheet> */}
+              Publish
+            </Label>
+          </div>
           <Button type="submit" variant={"default"}>
             <SaveIcon size={16} />
             Save
           </Button>
         </div>
       </form>
-      <div className="mx-auto flex w-full max-w-3xl flex-col rounded-md bg-white px-8 pb-6">
+      <div className="mx-auto flex w-full max-w-3xl flex-col rounded-md bg-white px-2 pb-6 md:px-8">
         {coverImgUrl && (
           <div className="relative mt-2 flex items-center justify-center">
             <button
@@ -471,8 +413,7 @@ export const ZendoEditor = (props: Props) => {
             <img className="w-full rounded-xl" src={coverImgUrl || ""} alt="" />
           </div>
         )}
-
-        <div className="mx-auto w-full max-w-3xl px-8 pb-2">
+        <div className="mx-auto w-full max-w-3xl px-2 pb-2 md:px-8">
           <div className="mt-8 flex w-full items-end justify-between gap-4  transition-all">
             <ImagePicker
               open={showImagePicker}
@@ -519,7 +460,10 @@ export const ZendoEditor = (props: Props) => {
                 transition={{ duration: 0.2, ease: "easeInOut" }}
                 className="mt-6 grid grid-cols-4 gap-2 gap-y-2 overflow-hidden text-zinc-500"
               >
-                <EditorPropLabel tooltip="The slug is a unique identifier for your post, used in the URL.">
+                <EditorPropLabel
+                  className="items-center"
+                  tooltip="The slug is a unique identifier for your post, used in the URL."
+                >
                   Slug
                 </EditorPropLabel>
                 <EditorPropValue>
@@ -527,21 +471,12 @@ export const ZendoEditor = (props: Props) => {
                     <textarea
                       className="field-sizinc w-full resize-none truncate bg-transparent font-mono outline-none"
                       rows={1}
+                      placeholder="a-great-title"
                       value={slug}
                       onChange={(e) => {
                         setValue("slug", e.target.value);
                       }}
                     />
-                    <Button
-                      variant={"ghost"}
-                      size="icon"
-                      onClick={() => {
-                        navigator.clipboard.writeText(slug);
-                        toast.success("Copied to clipboard");
-                      }}
-                    >
-                      <Copy size={16} />
-                    </Button>
                   </div>
                 </EditorPropValue>
                 <EditorPropLabel tooltip="The date your post was published.">
@@ -558,7 +493,7 @@ export const ZendoEditor = (props: Props) => {
                   >
                     <DropdownMenuTrigger className="w-full px-3 py-1 text-left">
                       {publishedAt
-                        ? new Date(publishedAt).toLocaleDateString("en-US", {
+                        ? new Date(publishedAt).toLocaleDateString(undefined, {
                             year: "numeric",
                             month: "long",
                             day: "numeric",
@@ -585,8 +520,9 @@ export const ZendoEditor = (props: Props) => {
                 </EditorPropLabel>
                 <EditorPropValue>
                   <textarea
-                    className="field-size-zinc w-full resize-none bg-transparent px-3 py-1 font-mono text-sm outline-none"
+                    className="field-size-zinc w-full resize-none bg-transparent px-3 py-1 font-mono outline-none"
                     rows={3}
+                    placeholder="A short description of your post. Recommended to be 155 characters or less."
                     onChange={(e) => {
                       setValue("excerpt", e.target.value);
                     }}
@@ -618,7 +554,7 @@ export const ZendoEditor = (props: Props) => {
                   <div className="flex items-center gap-1 py-1 pl-2 pr-3 text-left">
                     <TagPicker
                       allTags={blogTags.data || []}
-                      selectedTags={tags}
+                      selectedTags={tags || []}
                       onChange={(newTags) => {
                         setTags(newTags);
                       }}
@@ -632,22 +568,17 @@ export const ZendoEditor = (props: Props) => {
                       {tags.length === 0 && "Select some tags"}
                       {tags.length > 0 && (
                         <div className="flex flex-wrap items-center gap-1">
-                          {tags.map((tag) => (
+                          {tags?.map((tag) => (
                             <span
                               key={tag.id}
                               className="flex items-center rounded-md bg-zinc-100 font-mono text-xs font-medium"
                             >
-                              <div className="p-1 pl-2 pr-0">
-                                {
-                                  blogTags.data?.find((t) => t.id === tag.id)
-                                    ?.name
-                                }
-                              </div>
+                              <div className="p-1 pl-2 pr-0">{tag.name}</div>
                               <button
                                 tabIndex={-1}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setTags(tags.filter((t) => t.id !== tag.id));
+                                  setTags(tags?.filter((t) => t.id !== tag.id));
                                 }}
                                 className="rounded-full p-1 pr-2"
                               >
@@ -666,7 +597,7 @@ export const ZendoEditor = (props: Props) => {
 
           <Button
             variant={"ghost"}
-            className="px-0 opacity-50 hover:opacity-100"
+            className="mt-4 w-full p-4 px-0 text-center opacity-50 hover:opacity-100 md:w-auto md:text-left"
             onClick={() => setShowPropertyList(!showPropertyList)}
           >
             {showPropertyList ? "Hide properties" : "Show properties"}
@@ -734,12 +665,19 @@ export const ZendoEditor = (props: Props) => {
 function EditorPropLabel({
   children,
   tooltip,
+  className,
 }: {
   children: React.ReactNode;
   tooltip: string;
+  className?: string;
 }) {
   return (
-    <div className="col-span-1 flex items-start gap-1 py-1 font-medium">
+    <div
+      className={cn(
+        "col-span-4 mt-4 flex items-start gap-1 px-3 py-1 font-medium md:col-span-1 md:mt-0 md:px-0",
+        className
+      )}
+    >
       <div className="flex items-center gap-1">
         {children}
         <TooltipProvider>
@@ -769,7 +707,7 @@ function EditorPropValue({
     <div
       onClick={onClick}
       className={cn(
-        "group relative col-span-3 flex cursor-pointer items-center rounded-lg transition-all hover:bg-zinc-100/60 hover:text-zinc-800",
+        "group relative col-span-4 flex cursor-pointer items-center rounded-lg border transition-all focus-within:bg-zinc-100/60 hover:bg-zinc-100/60 hover:text-zinc-800 md:col-span-3 md:border-none",
         className
       )}
     >

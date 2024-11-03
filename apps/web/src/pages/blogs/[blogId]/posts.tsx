@@ -209,68 +209,72 @@ function PostItem({
     <Link
       key={post.slug}
       href={`/blogs/${blogId}/post/${post.slug}`}
-      className="group flex flex-col gap-4 border-b border-zinc-200 p-4  transition-all hover:bg-slate-50 md:flex-row md:items-center"
+      className="group flex flex-col justify-between gap-1 border-b border-zinc-200 p-2 transition-all hover:bg-slate-50 md:flex-row md:items-center md:gap-4 md:p-4"
     >
-      <div className="hidden h-16 w-24 rounded-md bg-zinc-100 md:block ">
-        {post.cover_image ? (
-          <img
-            src={post.cover_image}
-            alt="Cover image"
-            className="h-16 w-24 min-w-24 rounded-md bg-zinc-100 object-cover "
-          />
-        ) : (
-          <div className="flex-center h-full">
-            <ImageIcon size="20" className="text-zinc-400" />
-          </div>
-        )}
-      </div>
+      <div className="flex items-center gap-4">
+        <div className="h-12 w-16 flex-shrink-0 rounded-md border border-zinc-200 bg-zinc-100 md:h-16 md:w-24">
+          {post.cover_image ? (
+            <img
+              src={post.cover_image}
+              alt="Cover image"
+              className="h-16 w-24 rounded-md bg-zinc-100 object-cover "
+            />
+          ) : (
+            <div className="flex-center h-full md:w-24">
+              <ImageIcon size="20" className="text-zinc-400" />
+            </div>
+          )}
+        </div>
 
-      <div className="flex flex-col gap-0.5">
-        <h2 className="ml-1 text-lg">{post.title}</h2>
-        {post.tags && post.tags.length > 0 && (
-          <div className="flex items-center gap-2">
-            {post.tags?.map((tag: any) => (
-              <span
-                key={tag}
-                className="px-1 py-0.5 font-mono text-xs font-semibold text-zinc-400"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )}
+        <div className="flex w-full flex-col gap-0.5">
+          <h2 className="ml-1 md:text-lg">{post.title}</h2>
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex items-center gap-2">
+              {post.tags?.map((tag: any) => (
+                <span
+                  key={tag}
+                  className="px-1 py-0.5 font-mono text-xs font-semibold text-zinc-400"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-      <div className="ml-auto flex flex-col items-end gap-2 text-xs text-zinc-500">
-        <div>
+      <div className="flex items-center justify-between gap-4 justify-self-end">
+        <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
+          <span className="min-w-fit text-right">
+            {formatDate(post.published_at || "")}
+          </span>
           <StatePill published={post.published || false} />
         </div>
-        <span className="font-mono">{formatDate(post.published_at || "")}</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <MoreVertical size="16" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={async (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onDeleteClick();
+              }}
+            >
+              <Trash size="16" />
+              <span className="ml-2">Delete</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant={"ghost"}
-            size={"icon"}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <MoreVertical size="16" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem
-            onClick={async (e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              onDeleteClick();
-            }}
-          >
-            <Trash size="16" />
-            <span className="ml-2">Delete</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </Link>
   );
 }

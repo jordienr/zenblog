@@ -5,7 +5,7 @@ import { usePricesQuery } from "@/queries/prices";
 import { useProductsQuery } from "@/queries/products";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import { useUser } from "@/utils/supabase/browser";
-import { Landmark, Loader } from "lucide-react";
+import { Landmark, Loader, Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { PricingCard } from "../pricing";
@@ -59,7 +59,7 @@ export const SubscribeSection = () => {
   if (loading) {
     return (
       <div className="flex w-full items-center justify-center py-24">
-        <Loader className="animate-spin text-orange-500" size={24} />
+        <Loader2 className="animate-spin text-orange-500" size={24} />
       </div>
     );
   }
@@ -170,7 +170,7 @@ const AccountPage = () => {
         <SectionTitle>Subscription</SectionTitle>
         {subscription.isLoading ? (
           <div className="flex w-full items-center justify-center py-24">
-            <Loader className="animate-spin text-orange-500" size={24} />
+            <Loader2 className="animate-spin text-orange-500" size={24} />
           </div>
         ) : (
           <div className="mt-4 grid max-w-xl grid-cols-2 gap-4">

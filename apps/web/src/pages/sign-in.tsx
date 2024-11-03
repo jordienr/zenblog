@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { CornerUpLeft, Loader } from "lucide-react";
+import { CornerUpLeft, Loader, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -86,7 +86,7 @@ export default function SignIn() {
       </div>
       {loading ? (
         <div className="flex h-[600px] items-center justify-center">
-          <Loader className="animate-spin text-orange-500" size={24} />
+          <Loader2 className="animate-spin text-orange-500" size={24} />
         </div>
       ) : (
         <form className="mt-4 flex flex-col gap-2" onSubmit={onSubmit}>

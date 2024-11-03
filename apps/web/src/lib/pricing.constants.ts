@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const TRIAL_PERIOD_DAYS = 30;
 
-export const PricingPlanId = z.enum(["hobby", "pro", "free"]);
+export const PricingPlanId = z.enum(["hobby", "pro", "agency", "free"]);
 export type PricingPlanId = z.infer<typeof PricingPlanId>;
 export const isPricingPlanId = (value: string): value is PricingPlanId =>
   PricingPlanId.safeParse(value).success;
@@ -32,37 +32,60 @@ export type PricingPlan = {
 export const PRICING_PLANS: PricingPlan[] = [
   {
     id: "free",
-    title: "Zenblog Free Plan",
-    description: "For personal blogs and small projects",
+    title: "Solo",
+    description: "For personal blogs or small projects",
     monthlyPrice: 0,
     yearlyPrice: 0,
-    features: ["1 blog", "100 posts", "50 media files", "Limited API access"],
+    features: [
+      "1 blog",
+      "Unlimited posts",
+      "Limited files",
+      "20k API requests per month",
+    ],
   },
   {
     id: "hobby",
     highlight: true,
-    title: "Zenblog Hobby Plan",
-    description: "For personal blogs and small projects",
+    title: "Small",
+    description: "Perfect for you and your side projects",
     monthlyPrice: 9,
     yearlyPrice: 72, // will be divided by 12 in pricing page
     features: [
+      "$4 per blog",
       "2 blogs",
       "Unlimited posts",
-      "Unlimited API access",
+      "50k API requests per blog per month",
       "Limited media files",
+      "Email support",
     ],
   },
   {
     id: "pro",
-    title: "Zenblog Pro Plan",
+    title: "Pro",
     description: "For professional blogs and projects",
     monthlyPrice: 30,
     yearlyPrice: 300,
     features: [
-      "Unlimited blogs",
+      "$2.5 per blog",
+      "10 blogs",
       "Unlimited posts",
-      "Unlimited API access",
+      "50k API requests per blog per month",
       "Unlimited media files",
+      "Email support",
     ],
   },
+  // {
+  //   id: "agency",
+  //   title: "Agency",
+  //   description: "For professional agencies",
+  //   monthlyPrice: 140,
+  //   yearlyPrice: 1200,
+  //   features: [
+  //     "Unlimited blogs",
+  //     "Unlimited posts",
+  //     "100k API requests per blog per month",
+  //     "Unlimited media files",
+  //     "Priority support",
+  //   ],
+  // },
 ];

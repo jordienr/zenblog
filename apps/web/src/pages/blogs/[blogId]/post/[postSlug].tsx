@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import { useQueryClient } from "@tanstack/react-query";
-import Spinner from "@/components/Spinner";
 import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 import { toast } from "sonner";
 import { usePostQuery } from "@/queries/posts";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { usePostTags } from "@/queries/tags";
+import { Loader2 } from "lucide-react";
 
 export default function Post() {
   const router = useRouter();
@@ -22,23 +22,20 @@ export default function Post() {
     isRefetching,
   } = usePostQuery(postSlug, blogId);
 
-  const tagsQuery = usePostTags({ blogId, postId: post?.data?.id || "" });
-  console.log("tagsquery", tagsQuery.data);
-  const tags =
-    tagsQuery.data?.map((tagRes) => {
-      return {
-        id: tagRes.tags?.id || "",
-        name: tagRes.tags?.name || "",
-        slug: tagRes.tags?.slug || "",
-      };
-    }) || [];
+  const tagsQuery = usePostTags({
+    blog_id: blogId,
+    post_id: post?.data?.id || "",
+  });
 
-  const filteredTags = tags.filter((tag) => tag.id !== undefined);
+  console.log("tagsQuery", tagsQuery.data);
+
+  const tags =
+    tagsQuery.data?.map((t) => t.tags).filter((t) => t !== null) || [];
 
   if (isLoading || tagsQuery.isLoading || isRefetching) {
     return (
       <div className="flex-center p-32">
-        <Spinner />
+        <Loader2 className="animate-spin text-orange-500" size={32} />
       </div>
     );
   }
@@ -106,7 +103,7 @@ export default function Post() {
           }
         }}
         post={post.data}
-        tags={filteredTags || []}
+        tags={tags}
       />
     </div>
   );

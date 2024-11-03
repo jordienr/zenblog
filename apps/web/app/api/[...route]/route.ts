@@ -66,46 +66,6 @@ const getUser = async () => {
 };
 
 const api = new Hono()
-  // Rotates the API key for a blog
-  .post("/blogs/:blogId/api-keys/rotate", async (c) => {
-    const { user } = await getUser();
-    const supabase = createClient();
-
-    if (!user) {
-      return UnauthorizedError(c);
-    }
-
-    // Check that the user is the owner of the blog
-    const { data: blog, error: blogError } = await supabase
-      .from("blogs")
-      .select("id")
-      .eq("id", c.req.param("blogId"))
-      .eq("user_id", user?.id)
-      .single();
-
-    if (blogError || !blog) {
-      return BlogNotFoundError(c);
-    }
-
-    // Create API key
-    const newAPIKey = createId({ type: "blog", secret: true });
-    const hashedAPIKey = await bcrypt.hash(newAPIKey, 10);
-
-    const { data, error } = await supabase
-      .from("blogs")
-      .update({
-        access_token: hashedAPIKey,
-      })
-      .eq("id", blog?.id);
-
-    if (error) {
-      console.log(error);
-      return handleError(c, "ErrorRotatingAPIKey", error);
-    }
-
-    // Return the new API key to the client for use / storage
-    return c.json({ message: "success", apiKey: newAPIKey }, 200);
-  })
   .get(
     "/accounts/:user_id/checkout",
     zValidator(

@@ -20,6 +20,7 @@ import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CreateCategoryDialog } from "@/pages/blogs/[blogId]/categories";
 import { useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 export function EditorCategoryPicker({
   isLoading,
@@ -43,8 +44,8 @@ export function EditorCategoryPicker({
     <>
       <CreateCategoryDialog open={open} setOpen={setOpen} />
       {isLoading ? (
-        <div className="flex items-center justify-center">
-          <Spinner />
+        <div className="flex items-center justify-center px-3">
+          <Skeleton className="h-4 w-[120px]" />
         </div>
       ) : (
         <DropdownMenu modal={false}>

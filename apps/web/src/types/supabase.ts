@@ -810,6 +810,27 @@ export type Database = {
         }
         Returns: Json
       }
+      get_tags_by_post_slug: {
+        Args: {
+          post_slug: string
+        }
+        Returns: {
+          id: string
+          slug: string
+          name: string
+        }[]
+      }
+      get_tags_by_post_slug_and_blog_id: {
+        Args: {
+          post_slug: string
+          blog_id: string
+        }
+        Returns: {
+          id: string
+          slug: string
+          name: string
+        }[]
+      }
       is_blog_owner: {
         Args: {
           blog_id: string

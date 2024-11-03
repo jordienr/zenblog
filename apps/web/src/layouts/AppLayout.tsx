@@ -6,7 +6,7 @@ import Notifications from "@/components/Notifications";
 import Feedback from "@/components/Feedback";
 import Footer from "@/components/Footer";
 import AppChecks from "@/components/LoggedInUserChecks";
-import { Loader } from "lucide-react";
+import { Loader, Loader2 } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -116,7 +116,7 @@ export default function AppLayout({
                       </span>
                       {selectedBlog?.title}
                       {blogsLoading && (
-                        <Loader
+                        <Loader2
                           className="animate-spin text-orange-500"
                           size={16}
                         />
@@ -211,7 +211,7 @@ export default function AppLayout({
           )}
           {loading ? (
             <div className="flex h-[600px] items-center justify-center">
-              <Loader className="animate-spin text-orange-500" size={32} />
+              <Loader2 className="animate-spin text-orange-500" size={32} />
             </div>
           ) : (
             <div className="">

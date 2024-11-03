@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import imageCompression from "browser-image-compression";
-import { ImageIcon, Loader } from "lucide-react";
+import { ImageIcon, Loader, Loader2 } from "lucide-react";
 import { Input } from "../ui/input";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -162,7 +162,7 @@ export const ImageUploader = ({
           <div className="bg-grid-slate-100 flex min-h-[300px] flex-col items-center justify-center overflow-auto rounded-lg border bg-slate-50 p-2">
             {loading && (
               <div className="flex-x-center flex-y-center p-8">
-                <Loader className="animate-spin" />
+                <Loader2 className="animate-spin" />
               </div>
             )}
             {image && (

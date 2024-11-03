@@ -67,27 +67,29 @@ export function TagPicker({
                 No tags yet
               </p>
             )}
-            {allTags.map((tag) => (
-              <button
-                key={tag.id}
-                className={cn(
-                  "rounded-full border border-zinc-200 bg-zinc-50 px-3 py-0.5 font-mono text-sm font-medium tracking-tight text-zinc-500 transition-all",
-                  {
-                    "border-orange-600 bg-orange-500 text-white":
-                      selectedTags.includes(tag),
-                  }
-                )}
-                onClick={() => {
-                  if (selectedTags.includes(tag)) {
-                    onChange(selectedTags.filter((t) => t.id !== tag.id));
-                  } else {
-                    onChange([...selectedTags, tag]);
-                  }
-                }}
-              >
-                {tag.name}
-              </button>
-            ))}
+            {allTags.map((tag) => {
+              return (
+                <button
+                  key={tag.slug}
+                  className={cn(
+                    "rounded-full border border-zinc-200 bg-zinc-50 px-3 py-0.5 font-mono text-sm font-medium tracking-tight text-zinc-500 transition-all",
+                    {
+                      "border-orange-600 bg-orange-500 text-white":
+                        selectedTags.includes(tag),
+                    }
+                  )}
+                  onClick={() => {
+                    if (selectedTags.includes(tag)) {
+                      onChange(selectedTags.filter((t) => t.id !== tag.id));
+                    } else {
+                      onChange([...selectedTags, tag]);
+                    }
+                  }}
+                >
+                  {tag.name}
+                </button>
+              );
+            })}
           </div>
         )}
       </DropdownMenuContent>

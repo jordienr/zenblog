@@ -6,15 +6,13 @@ import {
   DropdownMenuItem,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Bell, Loader } from "lucide-react";
+import { Bell, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 type Props = {};
 
 function useNotifications() {
-  const sb = createSupabaseBrowserClient();
-
   return useQuery({
     queryKey: ["notifications"],
     queryFn: () => {
@@ -29,7 +27,7 @@ const Notifications = (props: Props) => {
   if (isLoading) {
     return (
       <Button variant={"ghost"} size={"icon"} disabled>
-        <Loader className="animate-spin" />
+        <Loader2 className="animate-spin" />
       </Button>
     );
   }
