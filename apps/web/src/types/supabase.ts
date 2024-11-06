@@ -223,6 +223,33 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_steps: {
+        Row: {
+          created_at: string
+          has_blog: boolean
+          has_integrated_api: boolean
+          has_published_post: boolean
+          id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          has_blog?: boolean
+          has_integrated_api?: boolean
+          has_published_post?: boolean
+          id?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          has_blog?: boolean
+          has_integrated_api?: boolean
+          has_published_post?: boolean
+          id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_authors: {
         Row: {
           author_id: string

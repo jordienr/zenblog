@@ -5,11 +5,12 @@ import { usePricesQuery } from "@/queries/prices";
 import { useProductsQuery } from "@/queries/products";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import { useUser } from "@/utils/supabase/browser";
-import { Landmark, Loader, Loader2 } from "lucide-react";
+import { CircleCheckIcon, Landmark, Loader, Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { PricingCard } from "../pricing";
 import { API } from "app/utils/api-client";
+import { getOnboardingItems, useOnboardingQuery } from "@/queries/onboarding";
 
 type Props = {};
 
@@ -103,6 +104,9 @@ const AccountPage = () => {
   const [loading, setLoading] = React.useState(false);
   const user = useUser();
 
+  const onboardingItems = getOnboardingItems("");
+  const { data: onboardingData } = useOnboardingQuery();
+
   async function onManageSubscriptionClick() {
     setLoading(true);
     toast.info("Redirecting to Stripe...");
@@ -164,6 +168,19 @@ const AccountPage = () => {
               {formatDate(user?.created_at || "")}
             </div>
           </div>
+          <div>
+            <h3>Onboarding</h3>
+            <ul className="font-mono">
+              {onboardingItems.map((item) => (
+                <li key={item.id} className="flex items-center gap-2">
+                  {onboardingData?.[item.id] ? (
+                    <CircleCheckIcon className="size-4 text-green-500" />
+                  ) : null}
+                  {item.label}{" "}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </Section>
       <Section className="my-4 rounded-xl border border-b-2 bg-white p-4">
@@ -174,12 +191,14 @@ const AccountPage = () => {
           </div>
         ) : (
           <div className="mt-4 grid max-w-xl grid-cols-2 gap-4">
-            <p className="grid max-w-xl grid-cols-2">Status:</p>
-            <p>{subscription.data?.status || "Free"}</p>
+            <p>Billing status:</p>
+            <p className="font-mono capitalize">
+              {subscription.data?.status || "Free"}
+            </p>
             {subscription.data?.interval ? (
               <>
-                <p className="grid max-w-xl grid-cols-2">Current type:</p>
-                <p>
+                <p className="grid max-w-xl grid-cols-2">Billing interval:</p>
+                <p className="font-mono">
                   {subscription.data?.interval === "month"
                     ? "Monthly"
                     : "Yearly"}

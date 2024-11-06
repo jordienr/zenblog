@@ -23,6 +23,7 @@ import Head from "next/head";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import { ZenblogToolbar } from "@/components/dev/zenblog-toolbar";
 import { IS_DEV } from "@/lib/constants";
+import { OnboardingDropdown } from "@/components/onboarding";
 
 type Props = {
   children?: React.ReactNode;
@@ -191,7 +192,8 @@ export default function AppLayout({
                   Docs
                 </Link>
                 <Feedback />
-                <Notifications />
+                {/* <Notifications /> */}
+                <OnboardingDropdown />
                 <span className="ml-2">
                   <UserButton />
                 </span>
@@ -200,16 +202,18 @@ export default function AppLayout({
           </nav>
           {selectedBlog && (
             <div className="border-b bg-white shadow-sm">
-              <div className="mx-auto flex max-w-5xl items-center px-2">
-                {BlogNavItems.map((item) => (
-                  <NavItem
-                    key={item.href}
-                    href={item.href}
-                    selected={item.href === router.asPath}
-                  >
-                    {item.label}
-                  </NavItem>
-                ))}
+              <div className="mx-auto flex max-w-5xl items-center justify-between pr-4">
+                <div className="flex max-w-5xl items-center px-2">
+                  {BlogNavItems.map((item) => (
+                    <NavItem
+                      key={item.href}
+                      href={item.href}
+                      selected={item.href === router.asPath}
+                    >
+                      {item.label}
+                    </NavItem>
+                  ))}
+                </div>
               </div>
             </div>
           )}
