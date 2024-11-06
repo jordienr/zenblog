@@ -11,6 +11,7 @@ import {
   FaPen,
   FaPencilAlt,
   FaPencilRuler,
+  FaPenFancy,
   FaRocket,
   FaSmile,
   FaWordpress,
@@ -32,6 +33,8 @@ import {
 } from "@/components/ui/accordion";
 import Navigation from "@/components/marketing/Navigation";
 import { CgArrowTopRight } from "react-icons/cg";
+import { CodeBlock } from "@/components/CodeBlock";
+import { CodeBlockComponent } from "@/components/code-block";
 
 const FEATURES = [
   {
@@ -149,6 +152,64 @@ const Home = () => {
                 height={300}
                 alt="The zenblog editor UI"
               />
+            </div>
+
+            <div className="mx-auto mt-24 max-w-4xl rounded-xl bg-slate-950 p-2 font-mono text-white">
+              <div className="mb-3 p-2 px-4">
+                <FaCode className="text-2xl text-emerald-400" />
+                <h2 className="mt-2 text-xl font-medium">Developer friendly</h2>
+                <p className="mt-2 text-balance font-sans text-sm text-slate-300">
+                  Zenblog is very easy to integrate into any stack by using our
+                  HTTP API or our typesafe, typescript API client.
+                </p>
+                <Link
+                  className="mt-2 flex items-center gap-2 text-emerald-400 underline"
+                  href="/docs"
+                >
+                  Go to docs
+                </Link>
+              </div>
+              <CodeBlockComponent
+                filename="blog.tsx"
+                language="typescript"
+                highlightedLines={[]}
+              >
+                {`import { createZenblogClient } from "zenblog";
+
+const client = createZenblogClient({ blogId: "your-blog-id" });
+
+const posts = await client.posts.list();
+const post = await client.posts.get({ slug: "hello-world" });`}
+              </CodeBlockComponent>
+            </div>
+
+            <div className="mx-auto mt-24 max-w-4xl rounded-xl border p-2">
+              <div className="p-2 px-4">
+                <FaPenFancy className="text-2xl text-orange-400" />
+                <h2 className="mt-2 text-2xl font-medium">
+                  <span className="font-serif italic">Wonderful,</span> simple,
+                  writing experience
+                </h2>
+                <p className="mt-2 text-balance font-sans text-sm text-slate-500">
+                  Our editor is designed to be both powerful and simple to use.
+                  You can focus on writing without worrying about the rest.
+                </p>
+                <Link
+                  className="mt-2 flex items-center gap-2 text-orange-600 underline"
+                  href="/sign-up"
+                >
+                  Try it for free
+                </Link>
+              </div>
+              <div className="mt-4">
+                <Image
+                  className="w-full rounded-lg border shadow-sm"
+                  src="/static/editor-screenshot.webp"
+                  width={1200}
+                  height={400}
+                  alt="The zenblog editor UI"
+                />
+              </div>
             </div>
 
             <div className="mx-auto mt-24 max-w-4xl">
