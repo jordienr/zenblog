@@ -19,12 +19,12 @@ export function OnboardingDropdown() {
 
   const items = getOnboardingItems(currentBlogId);
 
-  const { data } = useOnboardingQuery();
+  const { data, isLoading } = useOnboardingQuery();
   const { mutate: markAsDone } = useOnboardingMutation();
 
   const allAreDone = items.every((item) => data?.[item.id]);
 
-  if (allAreDone) return null;
+  if (allAreDone || isLoading) return null;
 
   return (
     <>
