@@ -8,12 +8,12 @@ export const getOnboardingItems = (currentBlogId: string) =>
   [
     {
       id: "has_blog",
-      label: "Create a new blog",
+      label: "Create your blog",
       href: "/blogs/create",
     },
     {
       id: "has_published_post",
-      label: "Create a new post",
+      label: "Publish your first post",
       href: `/blogs/${currentBlogId || "_"}/create`,
     },
     {
