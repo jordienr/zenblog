@@ -43,7 +43,9 @@ export function OnboardingDropdown() {
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       if (data?.[item.id]) return;
                       markAsDone(item.id);
                     }}
