@@ -7,7 +7,7 @@ import { handle } from "hono/vercel";
 import { createClient } from "@/lib/server/supabase";
 import { createId } from "@/lib/create-id";
 import bcrypt from "bcrypt";
-import { axiom, AXIOM_DATASETS } from "lib/axiom";
+import { axiom, AXIOM_DATASETS, getApiUsageForBlog } from "lib/axiom";
 import {
   createOrRetrieveCustomer,
   createStripeClient,
@@ -203,25 +203,38 @@ const api = new Hono()
         { status: 500 }
       );
     }
-  });
+  })
+  .get(
+    "/blogs/:blog_id/usage",
+    zValidator(
+      "query",
+      z.object({
+        start_time: z.string(),
+        end_time: z.string(),
+      })
+    ),
+    async (c) => {
+      const blogId = c.req.param("blog_id");
+      const startTime = c.req.query("start_time");
+      const endTime = c.req.query("end_time");
+
+      if (!blogId || !startTime || !endTime) {
+        return c.json({ error: "Missing parameters" }, { status: 400 });
+      }
+      console.log("🥬 all good so far");
+
+      const res = await getApiUsageForBlog(blogId, startTime, endTime);
+      console.log("🥬 res", res);
+
+      return c.json(res);
+    }
+  );
 
 const app = new Hono()
   .basePath("/api")
   // MIDDLEWARE
   .use("*", logger())
   .use("*", prettyJSON())
-  .use("*", async (c, next) => {
-    const start = Date.now();
-    await next();
-    const duration = Date.now() - start;
-    axiom.ingest(AXIOM_DATASETS.api, {
-      message: "Request completed",
-      duration,
-      method: c.req.method,
-      path: c.req.url,
-      status: c.res.status,
-    });
-  })
   // ROUTES
   .route("/v2", api);
 

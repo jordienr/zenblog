@@ -7,11 +7,31 @@ import { categories, postBySlug, posts, tags } from "./public-api.constants";
 import { PublicApiResponse } from "./public-api.types";
 import { Post } from "@zenblog/types";
 import { throwError } from "./public-api.errors";
+import { trackApiUsage } from "lib/axiom";
 
 const app = new Hono()
   .basePath("/api/public")
   .use("*", logger())
-  .use("*", prettyJSON());
+  .use("*", prettyJSON())
+  .use("*", async (ctx, next) => {
+    // middleware doesnt get the blogId param
+    // so we need to get it from the url
+    const blogId = ctx.req.url.split("/")[6];
+
+    if (!blogId) {
+      await next();
+      return;
+    }
+
+    trackApiUsage({
+      blogId,
+      event: "api-usage",
+      timestamp: new Date().toISOString(),
+      path: ctx.req.url,
+    });
+
+    await next();
+  });
 
 app.get(posts.path, async (c) => {
   const blogId = c.req.param("blogId");

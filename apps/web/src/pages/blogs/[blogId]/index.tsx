@@ -1,17 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import AppLayout from "@/layouts/AppLayout";
+import React from "react";
 
 type Props = {};
 
 const Index = (props: Props) => {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.push(`/blogs`);
-  }, []);
-
-  return <div></div>;
+  return (
+    <AppLayout title="Overview">
+      <div>1. Publish your first Post 2. Integrate into your app</div>
+    </AppLayout>
+  );
 };
 
 export default Index;

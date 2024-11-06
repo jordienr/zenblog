@@ -76,6 +76,10 @@ export default function AppLayout({
       label: "Settings",
       href: `/blogs/${selectedBlog?.id}/settings`,
     },
+    // {
+    //   label: "Usage",
+    //   href: `/blogs/${selectedBlog?.id}/usage`,
+    // },
   ];
 
   return (
