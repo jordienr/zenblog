@@ -38,12 +38,12 @@ export function SidebarLink({
     <Link
       href={href}
       className={cn(
-        "border-l-2 border-slate-200 p-1.5 px-3 text-sm font-medium text-slate-700 hover:border-orange-500 hover:text-slate-900",
-        isActive && "border-orange-500 text-slate-900",
+        "rounded-md p-1.5 px-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900",
+        isActive && "bg-slate-100 text-slate-900",
         className
       )}
     >
-      {children}
+      <div className={cn("flex items-center gap-2")}>{children}</div>
     </Link>
   );
 }
