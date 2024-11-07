@@ -66,6 +66,10 @@ export default function AppLayout({
       href: `/blogs/${selectedBlog?.id}/media`,
     },
     {
+      label: "Authors",
+      href: `/blogs/${selectedBlog?.id}/authors`,
+    },
+    {
       label: "Categories",
       href: `/blogs/${selectedBlog?.id}/categories`,
     },

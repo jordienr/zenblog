@@ -27,7 +27,7 @@ import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
 import {
   useAuthors,
-  useAuthorsWithPostCount,
+  useAuthorsQuery,
   useCreateAuthor,
   useDeleteAuthorMutation,
   useUpdateAuthorMutation,
@@ -60,12 +60,14 @@ export function CreateAuthorDialog() {
             e.stopPropagation();
             const formData = new FormData(e.target as HTMLFormElement);
             const name = formData.get("name") as string;
+            const slug = formData.get("slug") as string;
 
             try {
-              // await createAuthor.mutateAsync({
-              //   name: name,
-              //   blog_id: blogId,
-              // });
+              await createAuthor.mutateAsync({
+                name: name,
+                slug: slug,
+                blog_id: blogId,
+              });
               toast.success("Author created");
               setOpen(false);
             } catch (error) {
@@ -75,13 +77,8 @@ export function CreateAuthorDialog() {
         >
           <Label htmlFor="name">Name</Label>
           <Input id="name" name="name" placeholder="John Doe" />
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            placeholder="john@example.com"
-            type="email"
-          />
+          <Label htmlFor="slug">Slug</Label>
+          <Input id="slug" name="slug" placeholder="john-doe" />
           <div className="flex justify-end">
             <Button type="submit">Create</Button>
           </div>
@@ -94,11 +91,11 @@ export function CreateAuthorDialog() {
 export function AuthorsPage() {
   const blogId = useBlogId();
 
-  const { data: authors, isLoading } = useAuthorsWithPostCount();
+  const { data: authors, isLoading } = useAuthorsQuery();
   const [selectedAuthor, setSelectedAuthor] = useState<{
-    author_id: number | null;
-    author_name: string | null;
-    author_email: string | null;
+    id: number;
+    name: string;
+    slug: string;
   } | null>(null);
 
   const [updateAuthorOpen, setUpdateAuthorOpen] = useState(false);
@@ -119,21 +116,23 @@ export function AuthorsPage() {
             <TableRow>
               <TableHead>Author</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead className="text-right">Posts by author</TableHead>
               <TableHead className="text-right">
                 <div className="sr-only">Action</div>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* {authors?.data?.length === 0 && <div>No authors found</div>}
-            {authors?.data?.map((author) => (
-              <TableRow key={author.author_id}>
-                <TableCell>{author.author_name}</TableCell>
-                <TableCell>{author.author_email}</TableCell>
-                <TableCell className="text-right">
-                  {author.post_count}
+            {authors?.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4} className="p-4 text-center">
+                  No authors found
                 </TableCell>
+              </TableRow>
+            )}
+            {authors?.map((author) => (
+              <TableRow key={author.id}>
+                <TableCell>{author.name}</TableCell>
+                <TableCell>{author.slug}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
@@ -162,7 +161,7 @@ export function AuthorsPage() {
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
-            ))} */}
+            ))}
           </TableBody>
         </Table>
 
@@ -178,7 +177,7 @@ export function AuthorsPage() {
                 const formData = new FormData(e.target as HTMLFormElement);
                 const name = formData.get("name");
                 const email = formData.get("email");
-                if (!selectedAuthor?.author_id) return;
+                if (!selectedAuthor?.id) return;
 
                 // await updateAuthor.mutateAsync({
                 //   id: selectedAuthor.author_id,
@@ -192,7 +191,7 @@ export function AuthorsPage() {
             >
               <Label htmlFor="name">Name</Label>
               <Input
-                defaultValue={selectedAuthor?.author_name ?? ""}
+                defaultValue={selectedAuthor?.id ?? ""}
                 id="name"
                 name="name"
                 placeholder="John Doe"
@@ -201,7 +200,7 @@ export function AuthorsPage() {
                 Email
               </Label>
               <Input
-                defaultValue={selectedAuthor?.author_email ?? ""}
+                defaultValue={selectedAuthor?.id ?? ""}
                 id="email"
                 name="email"
                 placeholder="john@example.com"
@@ -217,8 +216,8 @@ export function AuthorsPage() {
             open={deleteAuthorOpen}
             onOpenChange={setDeleteAuthorOpen}
             onConfirm={() => {
-              if (!selectedAuthor?.author_id) return;
-              deleteAuthor.mutate(selectedAuthor.author_id.toString());
+              if (!selectedAuthor?.id) return;
+              deleteAuthor.mutate(selectedAuthor.id.toString());
               toast.success("Author deleted");
               setDeleteAuthorOpen(false);
             }}

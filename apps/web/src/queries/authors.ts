@@ -6,16 +6,16 @@ const sb = createSupabaseBrowserClient();
 
 export type Author = Database["public"]["Tables"]["authors"]["Row"];
 
-export function useAuthorsWithPostCount() {
+export function useAuthorsQuery() {
   return useQuery({
-    queryKey: ["authors-with-post-count"],
-    queryFn: async () => [],
-    //   await sb
-    //     .from("author_post_count")
-    //     .select(
-    //       "author_id, author_name, author_slug, post_count, created_at"
-    //     )
-    //     .throwOnError(),
+    queryKey: ["blog-authors"],
+    queryFn: async () => {
+      const { data } = await sb
+        .from("authors")
+        .select("id, slug, name, bio, twitter, website")
+        .throwOnError();
+      return data;
+    },
   });
 }
 
@@ -38,8 +38,11 @@ export function useAuthors() {
 export function useCreateAuthor() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (author: Omit<Author, "id" | "created_at">) =>
-      await sb.from("authors").insert(author).throwOnError(),
+    mutationFn: async (author: {
+      name: string;
+      slug: string;
+      blog_id: string;
+    }) => await sb.from("authors").insert(author).throwOnError(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["authors"] });
     },
@@ -77,7 +80,7 @@ export function useUpdateAuthorMutation() {
   const supa = createSupabaseBrowserClient();
 
   return useMutation({
-    mutationFn: async (author: { id: string; name: string; slug: string }) => {
+    mutationFn: async (author: { id: number; name: string; slug: string }) => {
       const res = await supa.from("authors").update(author).eq("id", author.id);
 
       if (res.error) {

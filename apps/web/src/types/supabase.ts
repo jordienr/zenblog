@@ -12,8 +12,9 @@ export type Database = {
       authors: {
         Row: {
           bio: string | null
+          blog_id: string
           created_at: string
-          id: string
+          id: number
           name: string
           slug: string
           twitter: string | null
@@ -22,8 +23,9 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          blog_id: string
           created_at?: string
-          id?: string
+          id?: number
           name: string
           slug: string
           twitter?: string | null
@@ -32,40 +34,16 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          blog_id?: string
           created_at?: string
-          id?: string
+          id?: number
           name?: string
           slug?: string
           twitter?: string | null
           updated_at?: string
           website?: string | null
         }
-        Relationships: []
-      }
-      blog_authors: {
-        Row: {
-          author_id: string
-          blog_id: string
-          id: number
-        }
-        Insert: {
-          author_id: string
-          blog_id: string
-          id?: number
-        }
-        Update: {
-          author_id?: string
-          blog_id?: string
-          id?: number
-        }
         Relationships: [
-          {
-            foreignKeyName: "blog_authors_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "authors"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "blog_authors_blog_id_fkey"
             columns: ["blog_id"]
@@ -252,17 +230,17 @@ export type Database = {
       }
       post_authors: {
         Row: {
-          author_id: string
+          author_id: number
           id: number
           post_id: string
         }
         Insert: {
-          author_id: string
+          author_id: number
           id?: number
           post_id: string
         }
         Update: {
-          author_id?: string
+          author_id?: number
           id?: number
           post_id?: string
         }
