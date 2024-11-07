@@ -8,7 +8,7 @@ export const posts: Endpoint = {
   method: "GET",
   title: "Post list",
   description: "Get posts for a blog",
-  headers: [
+  query: [
     {
       key: "offset",
       required: false,
@@ -48,7 +48,6 @@ export const postBySlug: Endpoint = {
   method: "GET",
   title: "Post detail",
   description: "Get a post by its slug",
-  headers: [],
   response: {
     200: {
       description: "The post",
@@ -72,7 +71,6 @@ export const categories: Endpoint = {
   method: "GET",
   title: "Categories list",
   description: "Get the categories for a blog",
-  headers: [],
   response: {
     200: {
       description: "The categories",
@@ -92,7 +90,6 @@ export const tags: Endpoint = {
   method: "GET",
   title: "Tags list",
   description: "Get the tags for a blog",
-  headers: [],
   response: {
     200: {
       description: "The tags",

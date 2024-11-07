@@ -4,11 +4,18 @@ export type Endpoint = {
   method: string;
   title: string;
   description: string;
-  headers: Header[];
+  headers?: Header[];
+  query?: Query[];
   response: Response;
 };
 
 export type Header = {
+  key: string;
+  required: boolean;
+  description: string;
+};
+
+export type Query = {
   key: string;
   required: boolean;
   description: string;

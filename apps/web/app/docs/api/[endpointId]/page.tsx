@@ -13,6 +13,9 @@ export default function Endpoint() {
 
   const endpoint = endpoints.find((e) => e.id === endpointId);
 
+  const hasQuery = endpoint?.query?.length;
+  const hasHeaders = endpoint?.headers?.length;
+
   if (!endpoint) {
     return <div>Endpoint not found</div>;
   }
@@ -37,20 +40,38 @@ export default function Endpoint() {
             }}
           />
         </div>
-        <div className="mt-4">
-          <h3 className="text-md font-medium">Headers</h3>
-          <ul className="mt-2 list-disc space-y-2 pl-4">
-            {endpoint.headers.map((header) => (
-              <li key={header.key}>
-                <div className="flex gap-2">
-                  <p className="font-medium">{header.key}</p>
-                  <p>{header.required ? "Required" : "Optional"}</p>
-                </div>
-                <p>{header.description}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {hasHeaders && (
+          <div className="mt-4">
+            <h3 className="text-md font-medium">Headers</h3>
+            <ul className="mt-2 list-disc space-y-2 pl-4">
+              {endpoint.headers?.map((header) => (
+                <li key={header.key}>
+                  <div className="flex gap-2">
+                    <p className="font-medium">{header.key}</p>
+                    <p>{header.required ? "Required" : "Optional"}</p>
+                  </div>
+                  <p>{header.description}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {hasQuery && (
+          <div className="mt-4">
+            <h3 className="text-md font-medium">Query</h3>
+            <ul className="mt-2 list-disc space-y-2 pl-4">
+              {endpoint.query?.map((query) => (
+                <li key={query.key}>
+                  <div className="flex gap-2">
+                    <p className="font-medium">{query.key}</p>
+                    <p>{query.required ? "Required" : "Optional"}</p>
+                  </div>
+                  <p>{query.description}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <hr className="-mx-4 my-3" />
         <div className="">
           <h3 className="text-md font-medium">Response</h3>
