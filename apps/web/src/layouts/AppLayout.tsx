@@ -28,7 +28,7 @@ import { OnboardingDropdown } from "@/components/onboarding";
 type Props = {
   children?: React.ReactNode;
   loading?: boolean;
-  title?: string;
+  title?: React.ReactNode;
   actions?: React.ReactNode;
   description?: string;
 };

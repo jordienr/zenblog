@@ -5,34 +5,30 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, MoreVertical, Plus, Trash } from "lucide-react";
-
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
-import {
-  useDeleteMediaMutation,
-  useMediaQuery,
-} from "@/components/Images/Images.queries";
 import { usePostsQuery } from "@/queries/posts";
 import { useBlogQuery } from "@/queries/blogs";
 import { formatDate } from "@/lib/utils";
-import { useState } from "react";
-import { ConfirmDialog } from "@/components/confirm-dialog";
-import {
-  useDeleteTagMutation,
-  useTagsWithUsageQuery,
-  useUpdateTagMutation,
-} from "@/queries/tags";
-import { UpdateTagDialog } from "@/components/Tags/UpdateTagDialog";
-import { Image, ImageSelector } from "@/components/Images/ImagePicker";
-import { useRouterTabs } from "@/hooks/useRouterTabs";
-
-import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -53,42 +49,20 @@ export default function BlogPosts() {
   const router = useRouter();
   const blogId = router.query.blogId as string;
 
-  const { tabValue, onTabChange } = useRouterTabs("tab");
-
-  const [showUploadDialog, setShowUploadDialog] = useState(false);
-  const [updateTagDialogOpen, setUpdateTagDialogOpen] = useState(false);
-  const [deleteTagDialogOpen, setDeleteTagDialogOpen] = useState(false);
-  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
-
   const { data: blog, isLoading: blogLoading } = useBlogQuery(blogId);
+  const [sortBy, setSortBy] = useState<"created" | "published">("created");
 
-  const POST_PAGE_SIZE = 10;
+  const POST_PAGE_SIZE = 15;
   const {
     data: posts,
     isLoading: postsLoading,
     fetchNextPage,
   } = usePostsQuery({
     pageSize: POST_PAGE_SIZE,
+    sortBy,
   });
 
   const isLoading = blogLoading || postsLoading;
-
-  const media = useMediaQuery(blogId, {
-    enabled: tabValue === "media",
-  });
-  const [selectedImages, setSelectedImages] = useState<Image[]>([]);
-  const [selectedTag, setSelectedTag] = useState<{
-    tag_id: string | null;
-    tag_name: string | null;
-    slug: string | null;
-  }>();
-
-  const tags = useTagsWithUsageQuery(
-    { blogId },
-    {
-      enabled: tabValue === "tags",
-    }
-  );
 
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
@@ -109,18 +83,34 @@ export default function BlogPosts() {
     },
   });
 
-  const deleteTagMutation = useDeleteTagMutation(blogId);
-  const updateTagMutation = useUpdateTagMutation(blogId);
-
-  const hostedBlogUrl = getHostedBlogUrl(blog?.slug || "");
-
   const noPosts = posts?.pages.flatMap((page) => page).length === 0;
 
   if (blog && posts) {
     return (
       <AppLayout
         loading={isLoading}
-        title="Posts"
+        title={
+          <div className="flex items-center gap-4">
+            Posts
+            <Select
+              value={sortBy}
+              onValueChange={(value) =>
+                setSortBy(value as "created" | "published")
+              }
+            >
+              <SelectTrigger>
+                <span className="mr-1 text-sm font-medium text-slate-500">
+                  Sorted by
+                </span>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="published">Published at</SelectItem>
+                <SelectItem value="created">Created at</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        }
         actions={
           <>
             <Button asChild>
@@ -230,6 +220,16 @@ function PostItem({
           <h2 className="ml-1 md:text-lg">{post.title}</h2>
           {post.tags && post.tags.length > 0 && (
             <div className="flex items-center gap-2">
+              {post.category_name && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="px-1 text-xs font-medium text-orange-500">
+                      {post.category_name}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>Category</TooltipContent>
+                </Tooltip>
+              )}
               {post.tags?.map((tag: any) => (
                 <span
                   key={tag}
@@ -244,9 +244,14 @@ function PostItem({
       </div>
       <div className="flex items-center justify-between gap-4 justify-self-end">
         <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
-          <span className="min-w-fit text-right">
-            {formatDate(post.published_at || "")}
-          </span>
+          <Tooltip>
+            <TooltipTrigger>
+              <span className="min-w-fit text-right">
+                {formatDate(post.published_at || "")}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>Published at</TooltipContent>
+          </Tooltip>
           <StatePill published={post.published || false} />
         </div>
         <DropdownMenu>

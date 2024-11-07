@@ -9,13 +9,14 @@ import { useRouter } from "next/router";
 
 export const usePostsQuery = ({
   pageSize = 10,
-}: { pageSize?: number } = {}) => {
+  sortBy = "created",
+}: { pageSize?: number; sortBy?: "created" | "published" } = {}) => {
   const sb = createSupabaseBrowserClient();
   const { query } = useRouter();
   const blogId = query.blogId || "";
 
   return useInfiniteQuery({
-    queryKey: ["posts", blogId],
+    queryKey: ["posts", blogId, sortBy, pageSize],
     enabled: !!blogId,
     initialPageParam: 0,
     getNextPageParam: (lastPage: any, pages: any) => {
@@ -28,7 +29,9 @@ export const usePostsQuery = ({
         .eq("blog_id", blogId)
         .eq("deleted", false)
         .range(pageParam, pageParam + pageSize)
-        .order("created_at", { ascending: false });
+        .order(sortBy === "created" ? "created_at" : "published_at", {
+          ascending: false,
+        });
 
       return data;
     },
