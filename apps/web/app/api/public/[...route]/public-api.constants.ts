@@ -1,13 +1,6 @@
 import { Endpoint } from "./public-api.types";
 
 export const BASE_API_URL = "https://zenblog.com/api/public";
-const BASE_HEADERS = [
-  {
-    key: "Authorization",
-    required: true,
-    description: "The API key for the blog",
-  },
-];
 
 export const posts: Endpoint = {
   id: "posts",
@@ -16,7 +9,6 @@ export const posts: Endpoint = {
   title: "Post list",
   description: "Get posts for a blog",
   headers: [
-    ...BASE_HEADERS,
     {
       key: "offset",
       required: false,
@@ -56,7 +48,7 @@ export const postBySlug: Endpoint = {
   method: "GET",
   title: "Post detail",
   description: "Get a post by its slug",
-  headers: [...BASE_HEADERS],
+  headers: [],
   response: {
     200: {
       description: "The post",
@@ -80,7 +72,7 @@ export const categories: Endpoint = {
   method: "GET",
   title: "Categories list",
   description: "Get the categories for a blog",
-  headers: [...BASE_HEADERS],
+  headers: [],
   response: {
     200: {
       description: "The categories",
@@ -100,7 +92,7 @@ export const tags: Endpoint = {
   method: "GET",
   title: "Tags list",
   description: "Get the tags for a blog",
-  headers: [...BASE_HEADERS],
+  headers: [],
   response: {
     200: {
       description: "The tags",
