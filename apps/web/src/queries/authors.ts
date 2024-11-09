@@ -77,7 +77,7 @@ export function useUpdateAuthorMutation() {
   const supa = createSupabaseBrowserClient();
 
   return useMutation({
-    mutationFn: async (author: { id: string; name: string; slug: string }) => {
+    mutationFn: async (author: { id: number; name: string; slug: string }) => {
       const res = await supa.from("authors").update(author).eq("id", author.id);
 
       if (res.error) {
