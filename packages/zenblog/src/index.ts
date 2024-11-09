@@ -74,15 +74,18 @@ export function createZenblogClient({
   };
   return {
     posts: {
-      list: async function (
-        { limit, offset, cache, category }: ReqOpts = {
-          limit: 20,
-          offset: 0,
-          cache: "default",
-        }
-      ): Promise<{ data: Post[] }> {
+      list: async function ({
+        limit = 20,
+        offset = 0,
+        cache = "default",
+        category,
+      }: ReqOpts = {}): Promise<{ data: Post[] }> {
         const data = await fetcher(
-          `posts?${toQueryString({ limit, offset, category })}`,
+          `posts?${toQueryString({
+            limit,
+            offset,
+            ...(category ? { category } : {}),
+          })}`,
           {
             method: "GET",
             cache,

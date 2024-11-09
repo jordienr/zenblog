@@ -40,6 +40,8 @@ app.get(posts.path, async (c) => {
   const category = c.req.query("category");
   const supabase = createClient();
 
+  console.log("🥬", c.req.url);
+
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
   }

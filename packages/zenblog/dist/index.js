@@ -48,12 +48,12 @@ function createZenblogClient({ blogId, _url, _debug, }) {
     }, logger);
     return {
         posts: {
-            list: async function ({ limit, offset, cache } = {
-                limit: 20,
-                offset: 0,
-                cache: "default",
-            }) {
-                const data = await fetcher(`posts?${toQueryString({ limit, offset })}`, {
+            list: async function ({ limit = 20, offset = 0, cache = "default", category, } = {}) {
+                const data = await fetcher(`posts?${toQueryString({
+                    limit,
+                    offset,
+                    ...(category ? { category } : {}),
+                })}`, {
                     method: "GET",
                     cache,
                 });

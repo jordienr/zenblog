@@ -6,10 +6,11 @@ type CreateClientOpts = {
 };
 export declare function createZenblogClient({ blogId, _url, _debug, }: CreateClientOpts): {
     posts: {
-        list: ({ limit, offset, cache }?: {
+        list: ({ limit, offset, cache, category, }?: {
             cache?: RequestInit["cache"];
             limit?: number;
             offset?: number;
+            category?: string;
         }) => Promise<{
             data: Post[];
         }>;
@@ -19,6 +20,7 @@ export declare function createZenblogClient({ blogId, _url, _debug, }: CreateCli
             cache?: RequestInit["cache"];
             limit?: number;
             offset?: number;
+            category?: string;
         }) => Promise<{
             data: PostWithContent;
         }>;
