@@ -37,22 +37,32 @@ app.get(posts.path, async (c) => {
   const blogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
+  const category = c.req.query("category");
   const supabase = createClient();
 
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
   }
 
-  const { data: posts, error } = await supabase
-    .from("posts_v7")
-    .select("title, slug, published_at, excerpt, cover_image, tags, category")
+  let query = supabase
+    .from("posts_v8")
+    .select(
+      "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug"
+    )
     .eq("blog_id", blogId)
     .eq("published", true)
     .eq("deleted", false)
     .order("published_at", { ascending: false })
     .range(offset, offset + limit);
 
+  if (category) {
+    query.eq("category_slug", category);
+  }
+
+  const { data: posts, error } = await query;
+
   if (error) {
+    console.log(error);
     return throwError(c, "NO_POSTS_FOUND");
   }
 
@@ -60,8 +70,21 @@ app.get(posts.path, async (c) => {
     return throwError(c, "NO_POSTS_FOUND");
   }
 
+  const formattedPostsRes = posts.map(
+    ({ category_name, category_slug, ...post }) => {
+      if (!category_name || !category_slug) {
+        return { ...post, category: null };
+      }
+
+      return {
+        ...post,
+        category: { name: category_name, slug: category_slug },
+      };
+    }
+  );
+
   const res: PublicApiResponse<Post[]> = {
-    data: posts as unknown as Post[], // type casting since views return array of Type | null
+    data: formattedPostsRes as unknown as Post[], // type casting since views return array of Type | null
   };
 
   return c.json(res, 200);
