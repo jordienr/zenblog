@@ -693,37 +693,6 @@ export const ZendoEditor = (props: Props) => {
           </div>
         </div>
       </div>
-
-      {/* <Dialog open={publishedDialog} onOpenChange={setPublishedDialog}>
-        <DialogContent className="!max-w-xs">
-          <DialogTitle className="text-lg font-medium">
-            🎉 Post published!
-          </DialogTitle>
-          <Image
-            className="w-full rounded-md border"
-            src={`/api/public/og?title=${title}&emoji=${blogQuery.data?.emoji}&url=${blogQuery.data?.title}`}
-            loading="lazy"
-            blurDataURL="/api/public/og?title=Loading...&emoji=🚀&url=Loading..."
-            alt="og image"
-            width={600}
-            height={300}
-          />
-          <Button
-            variant={"secondary"}
-            onClick={() => {
-              const blogSlug = blogQuery.data?.slug;
-              if (!blogSlug) return;
-              const url = getHostedBlogUrl(blogSlug);
-
-              // open new tab with the blog post
-              const blogPostUrl = `${url}/${slug}`;
-              window.open(blogPostUrl, "_blank", "noopener,noreferrer");
-            }}
-          >
-            View post
-          </Button>
-        </DialogContent>
-      </Dialog> */}
     </div>
   );
 };
