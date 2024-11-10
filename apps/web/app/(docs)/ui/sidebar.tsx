@@ -38,7 +38,7 @@ export function SidebarLink({
     <Link
       href={href}
       className={cn(
-        "rounded-md p-1.5 px-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900",
+        "rounded-md p-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 md:p-1.5 md:px-2",
         isActive && "bg-slate-100 text-slate-900",
         className
       )}

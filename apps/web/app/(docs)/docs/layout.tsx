@@ -1,20 +1,17 @@
 "use client";
 import { ZendoLogo } from "@/components/ZendoLogo";
 import Link from "next/link";
-import { BsGithub } from "react-icons/bs";
 import { SidebarLink, SidebarTitle } from "../ui/sidebar";
 import { endpoints } from "app/api/public/[...route]/public-api.constants";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useState } from "react";
 import { MenuIcon } from "lucide-react";
+
 export default function DocsLayout({
   children,
 }: {
@@ -24,7 +21,8 @@ export default function DocsLayout({
     <div className="flex flex-col">
       <SidebarTitle>Docs</SidebarTitle>
       <SidebarLink href="/docs/getting-started">Getting Started</SidebarLink>
-
+      <SidebarTitle>Framework guides</SidebarTitle>
+      <SidebarLink href="/docs/nextjs">Next.js</SidebarLink>
       <SidebarTitle>API Reference</SidebarTitle>
       {endpoints.map((endpoint) => (
         <SidebarLink

@@ -1,5 +1,6 @@
 import { CodeBlockComponent } from "@/components/code-block";
 import { DocsPageLayout } from "app/ui/docs-page-layout";
+import Link from "next/link";
 
 export default function NextJSGuide() {
   const items = [
@@ -17,25 +18,33 @@ export default function NextJSGuide() {
   return (
     <DocsPageLayout
       tocItems={items as any}
-      title="Getting started"
-      description="Welcome to the Zenblog documentation. To get started, you need to create a blog in the Zenblog dashboard and grab your API key."
+      title="Zenblog with Next.js"
+      description="How to use Zenblog with Next.js."
     >
       <div className="prose prose-headings:font-medium mt-8 max-w-none">
+        <section></section>
         <h2 id={items[0].href}>{items[0].title}</h2>
+        <p>
+          Start by installing the Zenblog package with your preferred package
+          manager. This example uses npm. The zenblog package is a simple
+          typescript package that wraps the Zenblog HTTP API.
+        </p>
         <CodeBlockComponent filename="Terminal" language="sh">
           {`npm install zenblog`}
         </CodeBlockComponent>
 
         <h2 id={items[1].href}>{items[1].title}</h2>
-        <p>Initialize Zenblog with your API key.</p>
+        <p>
+          You can find your blog ID in the Zenblog dashboard under settings.
+        </p>
         <CodeBlockComponent
-          filename="cms/index.tsx"
+          filename="lib/zenblog.ts"
           language="typescript"
           highlightedLines={[]}
         >
           {`import { createZenblogClient } from "zenblog";
 
-const zenblog = createZenblogClient({ blogId: process.env.ZENBLOG_BLOG_ID });`}
+export const zenblog = createZenblogClient({ blogId: process.env.ZENBLOG_BLOG_ID });`}
         </CodeBlockComponent>
 
         <h2 id={items[2].href}>{items[2].title}</h2>
@@ -72,7 +81,7 @@ const posts = await zenblog.posts.list();`}
 
         <h2 id={items[4].href}>{items[4].title}</h2>
         <CodeBlockComponent
-          filename="cms/index.tsx"
+          filename="blog/index.tsx"
           language="tsx"
           highlightedLines={[5]}
         >
@@ -85,7 +94,7 @@ const post = await zenblog.posts.get({ slug: "my-first-post" });`}
 
         <h2 id={items[5].href}>{items[5].title}</h2>
         <p>Render your post in your app. NextJS example.</p>
-        <CodeBlockComponent filename="cms/index.tsx" language="tsx">
+        <CodeBlockComponent filename="blog/index.tsx" language="tsx">
           {`<div>{post.title}</div>
 <div>{post.content}</div>
 <div>{post.publishedAt}</div>
@@ -93,8 +102,11 @@ const post = await zenblog.posts.get({ slug: "my-first-post" });`}
         </CodeBlockComponent>
 
         <p>
-          You can use something like Tailwind Typography to easily style the
-          HTML content.
+          You can use something like{" "}
+          <Link href="https://github.com/tailwindlabs/tailwindcss-typography">
+            Tailwind Typography
+          </Link>{" "}
+          to easily style the HTML content.
         </p>
       </div>
     </DocsPageLayout>

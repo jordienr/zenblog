@@ -1,14 +1,29 @@
-"use client";
-
 import { ObjectRenderer } from "app/(docs)/ui/object-renderer";
 import { useParams } from "next/navigation";
 import {
   BASE_API_URL,
   endpoints,
 } from "app/api/public/[...route]/public-api.constants";
+import { Metadata } from "next";
 
-export default function Endpoint() {
-  const params = useParams<{ endpointId: string }>();
+type Props = {
+  params: Promise<{ endpointId: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const endpointId = (await params).endpointId;
+  const endpoint = endpoints.find((e) => e.id === endpointId);
+  return {
+    title: endpoint?.title,
+    description: endpoint?.description,
+    keywords: ["api", "documentation", "zenblog", "cms", "headless cms"],
+    abstract: endpoint?.description,
+    authors: [{ name: "Zenblog", url: "https://zenblog.com" }],
+  };
+}
+
+export default async function Endpoint(props: Props) {
+  const params = await props.params;
   const endpointId = params?.endpointId;
 
   const endpoint = endpoints.find((e) => e.id === endpointId);
@@ -27,9 +42,9 @@ export default function Endpoint() {
         key={endpoint.path}
         className="m-2 rounded-md p-4 [&_h3]:font-sans"
       >
-        <h2 id={endpoint.id} className="text-xl font-medium">
+        <h1 id={endpoint.id} className="text-xl font-medium">
           {endpoint.title}
-        </h2>
+        </h1>
         <p>{endpoint.description}</p>
 
         <div className="mt-4">

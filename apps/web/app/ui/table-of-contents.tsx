@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useUrlAnchor } from "lib/use-url-anchor";
 import { ChevronRight } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 type Props = {
   items: {
@@ -12,9 +12,9 @@ type Props = {
 };
 
 export function TableOfContents({ items }: Props) {
-  const pathname = usePathname();
+  const hash = useUrlAnchor();
   function isActive(href: string) {
-    return pathname?.includes(href) ?? false;
+    return hash === `#${href}`;
   }
 
   return (
@@ -25,7 +25,7 @@ export function TableOfContents({ items }: Props) {
           <li key={item.href}>
             <a
               href={`#${item.href}`}
-              className={cn("block flex items-center gap-2 p-1", {
+              className={cn("flex items-center gap-2 p-1", {
                 "text-blue-500": isActive(item.href),
               })}
             >
