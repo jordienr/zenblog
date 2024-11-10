@@ -14,12 +14,12 @@ type Props = {
 export function TableOfContents({ items }: Props) {
   const hash = useUrlAnchor();
   function isActive(href: string) {
-    return hash === href;
+    return hash === "#" + href;
   }
 
   return (
     <div className="w-full min-w-[240px] max-w-[240px] p-4 text-sm">
-      <h2 className="font-medium">On this page</h2>
+      <h2 className="font-medium">On this page {hash}</h2>
       <ul className="mt-2">
         {items.map((item) => (
           <li key={item.href}>
