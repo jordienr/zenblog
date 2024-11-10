@@ -14,7 +14,7 @@ type Props = {
 export function TableOfContents({ items }: Props) {
   const hash = useUrlAnchor();
   function isActive(href: string) {
-    return hash === `#${href}`;
+    return hash === href;
   }
 
   return (

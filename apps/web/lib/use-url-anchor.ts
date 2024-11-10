@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 
 export function useUrlAnchor() {
-  const [hash, setHash] = useState(window.location.hash);
+  const getHash = () =>
+    typeof window !== "undefined"
+      ? decodeURIComponent(window.location.hash)
+      : "";
+  const [hash, setHash] = useState(getHash());
 
   useEffect(() => {
     const onHashChange = () => {
-      setHash(window.location.hash);
+      setHash(getHash());
     };
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
