@@ -58,6 +58,13 @@ export default function DocsLayout({
             >
               Home
             </Link>
+            <Link
+              title="blog"
+              href="/blog"
+              className="text-sm font-medium text-slate-800 hover:text-orange-500"
+            >
+              Blog
+            </Link>
           </div>
           <button
             className="p-2 md:hidden"
