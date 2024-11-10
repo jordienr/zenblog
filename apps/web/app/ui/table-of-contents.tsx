@@ -26,10 +26,14 @@ export function TableOfContents({ items }: Props) {
             <a
               href={`#${item.href}`}
               className={cn("flex items-center gap-2 p-1", {
-                "text-blue-500": isActive(item.href),
+                "text-blue-600": isActive(item.href),
               })}
             >
-              <ChevronRight className="h-4 w-4 text-slate-400" />
+              <ChevronRight
+                className={cn("h-4 w-4 text-slate-200", {
+                  "text-blue-400": isActive(item.href),
+                })}
+              />
               {item.title}
             </a>
           </li>
