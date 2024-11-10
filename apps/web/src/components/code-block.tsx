@@ -31,7 +31,7 @@ export function CodeBlockComponent({
   const showLineNumbers = !languagesWithoutLineNumbers.includes(language);
 
   return (
-    <div className="relative rounded-lg border border-slate-700 bg-slate-800">
+    <div className="relative max-w-full overflow-x-auto rounded-lg border border-slate-700 bg-slate-800">
       {filename && (
         <div className="flex items-center justify-between border-b border-slate-700 px-4 py-2">
           <span className="text-sm font-medium text-slate-100">{filename}</span>
@@ -48,7 +48,7 @@ export function CodeBlockComponent({
           </button>
         </div>
       )}
-      <div className="overflow-x-auto">
+      <div className="max-w-full overflow-x-auto">
         <ReactSyntaxHighlighter
           language={language}
           showLineNumbers

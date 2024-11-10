@@ -2,7 +2,7 @@
 import { ZendoLogo } from "@/components/ZendoLogo";
 import Link from "next/link";
 import { BsGithub } from "react-icons/bs";
-import { SidebarLink, SidebarTitle } from "./ui/sidebar";
+import { SidebarLink, SidebarTitle } from "../ui/sidebar";
 import { endpoints } from "app/api/public/[...route]/public-api.constants";
 import {
   Drawer,
@@ -84,7 +84,7 @@ export default function DocsLayout({
           </div>
         </div>
 
-        <main className="mt-6 w-full">{children}</main>
+        <main className="mt-6 w-full max-w-full">{children}</main>
       </div>
       <footer className="mt-12 border-t p-8 text-center text-sm text-slate-400">
         <p>Now go ship something cool</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ObjectRenderer } from "app/docs/ui/object-renderer";
+import { ObjectRenderer } from "app/(docs)/ui/object-renderer";
 import { useParams } from "next/navigation";
 import {
   BASE_API_URL,
