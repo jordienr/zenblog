@@ -1,8 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 import { getBlogClient } from "@/cms";
+import { CustomRenderer } from "app/(blog)/custom-renderer";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import ReactSyntaxHighlighter from "react-syntax-highlighter";
 
 export const dynamic = "force-dynamic";
 type Params = {
@@ -55,12 +57,7 @@ const Post = async ({ params: { slug } }: Params) => {
             />
           )}
         </div>
-        <div>
-          <div
-            dangerouslySetInnerHTML={{ __html: post.html_content }}
-            className="prose mx-auto"
-          ></div>
-        </div>
+        <CustomRenderer html_content={post.html_content} />
       </div>
     </div>
   );
