@@ -9,42 +9,47 @@ export const metadata = {};
 const Blog = async () => {
   const blog = getBlogClient();
   const { data: posts } = await blog.posts.list();
+  const { data: categories } = await blog.categories.list();
 
   const latestPost = posts[0];
   const postsWithoutLatest = posts.slice(1);
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="py-8 text-2xl font-semibold text-slate-800">Blog</h1>
-      </div>
-      <div className="mt-2">
+      <h1 className="text-2xl font-semibold">Blog</h1>
+      <p className="text-lg font-medium text-zinc-500">
+        Tools and insights to help you grow your business with blogging.
+      </p>
+      <div className="mt-12">
         {latestPost && (
           <Link
             href={`/blog/${latestPost.slug}`}
-            className="gap-4 transition-all hover:scale-[1.02] md:flex"
+            className="group shadow-lg transition-all hover:scale-105 hover:shadow-xl md:flex md:rounded-2xl"
           >
             <img
-              className="h-96 w-full rounded-xl object-cover"
-              width={300}
-              height={200}
+              className="h-[400px] w-full rounded-t-2xl object-cover md:w-3/5 md:rounded-l-2xl md:rounded-tr-none"
+              width={600}
+              height={400}
               src={latestPost.cover_image || ""}
               alt=""
             />
-            <div className="m-1 mt-4 flex h-full flex-col md:m-4">
+            <div className="flex flex-col justify-center rounded-b-2xl border-x border-b bg-zinc-50 p-5 transition-all group-hover:bg-white md:rounded-r-2xl md:rounded-bl-none md:border-t">
               <p className="text-sm text-zinc-500">
                 <span className="mr-2 font-medium text-orange-600">New!</span>
-                {new Date(latestPost.published_at).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                <time>
+                  {new Date(latestPost.published_at).toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
+                </time>
               </p>
 
-              <h3 className="mt-2 text-balance text-2xl font-medium">
-                {latestPost.title}
-              </h3>
-              <p className="mt-2 text-zinc-500">{latestPost.excerpt}</p>
+              <h2 className="text-2xl font-medium">{latestPost.title}</h2>
+              <p className="mt-1 text-sm text-zinc-500">{latestPost.excerpt}</p>
             </div>
           </Link>
         )}

@@ -28,7 +28,7 @@ const Post = async ({ params: { slug } }: Params) => {
 
   return (
     <div>
-      <div className="prose mx-auto">
+      <div className="mx-auto max-w-5xl px-6">
         <Link href="/blog" className="flex items-center gap-2">
           <ArrowLeftIcon className="h-4 w-4" />
           All posts
@@ -40,24 +40,24 @@ const Post = async ({ params: { slug } }: Params) => {
             day: "numeric",
           })}
         </p>
-        <h1 className="text-balance text-center text-5xl font-semibold">
+        <h1 className="my-12 text-balance text-center text-5xl font-semibold">
           {post.title}
         </h1>
       </div>
-      <div className="prose mx-auto p-4">
-        <div>
-          {post.cover_image && (
-            <img
-              src={post.cover_image}
-              height="400"
-              width={(16 / 9) * 400}
-              loading="lazy"
-              alt={post.title}
-              className="rounded-xl border"
-            />
-          )}
-        </div>
-        <CustomRenderer html_content={post.html_content} />
+      <div className="px-4">
+        {post.cover_image && (
+          <img
+            src={post.cover_image}
+            height="400"
+            width={(16 / 9) * 400}
+            loading="lazy"
+            alt={post.title}
+            className="mt-12 w-full rounded-xl shadow-xl"
+          />
+        )}
+      </div>
+      <div className="prose prose-lg mx-auto p-4">
+        <div dangerouslySetInnerHTML={{ __html: post.html_content }} />
       </div>
     </div>
   );

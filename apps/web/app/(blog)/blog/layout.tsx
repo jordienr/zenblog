@@ -6,14 +6,16 @@ type Props = {};
 
 const layout = (props: PropsWithChildren<Props>) => {
   return (
-    <div className="mx-auto min-h-screen bg-zinc-50">
-      <div className="mx-auto max-w-5xl ">
+    <>
+      <div className="mx-auto min-h-screen bg-zinc-100">
         <Navigation />
-        {props.children}
-        <div className="h-24"></div>
-        <Footer />
+        <div className="mx-auto max-w-5xl ">
+          {props.children}
+          <div className="h-24"></div>
+          <Footer />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
