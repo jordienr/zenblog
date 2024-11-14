@@ -23,7 +23,7 @@ const buttonVariants = cva(
         white: "bg-white text-zinc-900 hover:text-zinc-900",
       },
       size: {
-        default: "h-10 px-3 py-2",
+        default: "h-9 px-4 py-2",
         sm: "h-[30px] px-3 text-xs",
         xs: "h-6 px-3 text-xs",
         lg: "h-11 px-8",

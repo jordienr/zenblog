@@ -43,69 +43,67 @@ const Navigation = (props: Props) => {
   ];
 
   return (
-    <div className="px-4">
-      <nav className="mx-auto flex w-full max-w-4xl items-center justify-between py-8">
-        <Link href="/" className="">
-          <ZendoLogo className="" size={32} />
-        </Link>
+    <nav className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-8">
+      <Link href="/" className="">
+        <ZendoLogo className="" size={32} />
+      </Link>
 
-        <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500 md:justify-end">
-          <div className="hidden items-center gap-2 md:flex">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                target={link.target}
-                className="rounded-lg px-2 py-1 hover:text-zinc-800"
-                href={link.href}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          {user ? (
-            <div className="ml-2 flex">
-              <Button asChild variant={"secondary"} size="default">
-                <Link href="/blogs">Dashboard</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="ml-2 flex gap-2">
-              <Button asChild variant={"ghost"} size="default">
-                <Link href="/sign-in">Login</Link>
-              </Button>
-              <Button asChild variant={"default"} size="default">
-                <Link href="/sign-up">Sign up</Link>
-              </Button>
-            </div>
-          )}
-          <div className="ml-2 md:hidden">
-            <button
-              className="rounded-lg p-2 hover:bg-zinc-100"
-              onClick={() => setIsOpen(!isOpen)}
+      <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500 md:justify-end">
+        <div className="hidden items-center gap-2 md:flex">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              target={link.target}
+              className="rounded-lg px-2 py-1 hover:text-zinc-800"
+              href={link.href}
             >
-              <HiOutlineMenu size={24} />
-            </button>
-          </div>
-          <Drawer open={isOpen} onOpenChange={setIsOpen}>
-            <DrawerContent>
-              <div className="flex h-full flex-col items-center justify-center py-12">
-                {mobileLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    target={link.target}
-                    className="rounded-lg px-4 py-4 text-xl hover:text-zinc-800"
-                    href={link.href}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </DrawerContent>
-          </Drawer>
+              {link.label}
+            </Link>
+          ))}
         </div>
-      </nav>
-    </div>
+
+        {user ? (
+          <div className="ml-2 flex">
+            <Button asChild variant={"secondary"} size="default">
+              <Link href="/blogs">Dashboard</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="ml-2 flex gap-2">
+            <Button asChild variant={"ghost"} size="default">
+              <Link href="/sign-in">Login</Link>
+            </Button>
+            <Button asChild variant={"default"} size="default">
+              <Link href="/sign-up">Sign up</Link>
+            </Button>
+          </div>
+        )}
+        <div className="ml-2 md:hidden">
+          <button
+            className="rounded-lg p-2 hover:bg-zinc-100"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <HiOutlineMenu size={24} />
+          </button>
+        </div>
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+          <DrawerContent>
+            <div className="flex h-full flex-col items-center justify-center py-12">
+              {mobileLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  target={link.target}
+                  className="rounded-lg px-4 py-4 text-xl font-medium tracking-tight text-zinc-700 hover:text-zinc-800"
+                  href={link.href}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </DrawerContent>
+        </Drawer>
+      </div>
+    </nav>
   );
 };
 

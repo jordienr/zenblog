@@ -2,29 +2,22 @@
 import Head from "next/head";
 import Link from "next/link";
 import {
-  FaBlog,
   FaCheckCircle,
   FaCode,
   FaImage,
   FaNetworkWired,
-  FaPalette,
-  FaPen,
-  FaPencilAlt,
   FaPencilRuler,
   FaPenFancy,
   FaRocket,
   FaSmile,
-  FaWordpress,
 } from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Accordion,
   AccordionContent,
@@ -32,9 +25,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Navigation from "@/components/marketing/Navigation";
-import { CgArrowTopRight } from "react-icons/cg";
-import { CodeBlock } from "@/components/CodeBlock";
 import { CodeBlockComponent } from "@/components/code-block";
+import { Lora } from "next/font/google";
+
+const h1Font = Lora({
+  subsets: ["latin"],
+  variable: "--font-h1",
+});
 
 const FEATURES = [
   {
@@ -118,21 +115,26 @@ const Home = () => {
         <meta name="description" content="Simple, headless, blogging CMS." />
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
-      <div className="">
+      <div className={`${h1Font.variable}`}>
         <div className="flex flex-col">
           <Navigation />
 
           <main className="mt-12 px-6 pb-24 font-sans">
-            <div className="mx-auto max-w-4xl">
+            <div className="mx-auto max-w-5xl px-6 text-center">
+              <span className="rounded-full bg-orange-50 px-3 py-1 font-mono text-xs font-medium text-orange-500">
+                Now in Open beta
+              </span>
               <h1
-                className={`mt-2 text-4xl font-semibold tracking-tight text-slate-800 md:text-5xl`}
+                className={`mt-2 text-4xl tracking-tight text-slate-800 md:text-5xl`}
+                style={{ fontFamily: h1Font.style.fontFamily }}
               >
-                A tiny blogging CMS
+                The hassle-free blogging platform for growing businesses
               </h1>
-              <div className="mt-3 font-medium text-slate-500">
+
+              <div className="mt-3 text-slate-500">
                 <p className="text-balance text-2xl">
-                  Simple, headless blogging CMS that will make you want to write
-                  more
+                  Simple, headless blogging CMS
+                  <br /> that works with any stack.
                 </p>
                 <Link className="mt-8 inline-flex" href="/sign-up">
                   <Button size="default" className="text-sm">
@@ -154,7 +156,7 @@ const Home = () => {
               />
             </div>
 
-            <div className="mx-auto mt-24 max-w-4xl rounded-xl bg-slate-950 p-2 font-mono text-white">
+            <div className="mx-auto mt-24 max-w-5xl rounded-xl bg-slate-950 p-2 font-mono text-white">
               <div className="mb-3 p-2 px-4">
                 <FaCode className="text-2xl text-emerald-400" />
                 <h2 className="mt-2 text-xl font-medium">Developer friendly</h2>
@@ -183,7 +185,7 @@ const post = await client.posts.get({ slug: "hello-world" });`}
               </CodeBlockComponent>
             </div>
 
-            <div className="mx-auto mt-24 max-w-4xl rounded-xl border p-2">
+            <div className="mx-auto mt-24 max-w-5xl rounded-xl border p-2">
               <div className="p-2 px-4">
                 <FaPenFancy className="text-2xl text-orange-400" />
                 <h2 className="mt-2 text-2xl font-medium">
