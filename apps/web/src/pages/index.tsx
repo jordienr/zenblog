@@ -121,11 +121,11 @@ const Home = () => {
 
           <main className="mt-12 px-6 pb-24 font-sans">
             <div className="mx-auto max-w-5xl px-6 text-center">
-              <span className="rounded-full bg-orange-50 px-3 py-1 font-mono text-xs font-medium text-orange-500">
+              <span className="rounded-full bg-gradient-to-br from-orange-100/80 to-orange-50 px-3 py-1 font-mono text-xs font-medium text-orange-500">
                 Now in Open beta
               </span>
               <h1
-                className={`mt-2 text-4xl tracking-tight text-slate-800 md:text-5xl`}
+                className={`mt-2 text-4xl font-medium tracking-tight text-slate-800 md:text-5xl`}
                 style={{ fontFamily: h1Font.style.fontFamily }}
               >
                 The hassle-free blogging platform for growing businesses
