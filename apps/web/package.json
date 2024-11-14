@@ -16,6 +16,7 @@
     "@axiomhq/js": "^1.2.0",
     "@builder.io/react-hydration-overlay": "^0.0.8",
     "@chronark/zod-bird": "^0.3.9",
+    "@docs.plus/extension-hyperlink": "^1.5.2",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
     "@groundcontrolsh/groundcontrol": "^0.3.0",

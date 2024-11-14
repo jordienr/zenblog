@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, ReactNodeViewRenderer, useEditor } from "@tiptap/react";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -48,7 +48,7 @@ import {
   getSlashCommandSuggestions,
 } from "./slash-commands/slash-commands";
 import { EditorMenu } from "./EditorMenu";
-import { Dialog, DialogContent } from "../ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import { useCategories } from "@/queries/categories";
 import Image from "next/image";
@@ -59,6 +59,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { Hyperlink } from "@docs.plus/extension-hyperlink";
+import { useEditorState } from "./Editor.state";
+import { Input } from "../ui/input";
+import { EditorImageNode } from "./editor-image-node";
+import { TrailingNode } from "./trailing-node";
 
 const formSchema = z.object({
   title: z.string(),
@@ -200,19 +205,50 @@ export const ZendoEditor = (props: Props) => {
           levels: [2, 3, 4, 5, 6],
         },
       }),
-      TiptapLink,
+      TiptapLink.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          target: "_blank",
+          rel: "noopener noreferrer",
+        },
+        linkOnPaste: true,
+      }),
       Placeholder.configure({
-        placeholder: "Start writing. `/` for commands",
+        placeholder: "Start writing or use `/` for commands",
       }),
       TiptapImage.extend({
-        addProseMirrorPlugins() {
-          return [UploadImagesPlugin()];
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            src: {
+              default: null,
+              renderHTML: (attributes) => ({
+                src: attributes.src,
+              }),
+            },
+            alt: {
+              default: null,
+              renderHTML: (attributes) => ({
+                alt: attributes.alt,
+              }),
+            },
+          };
+        },
+        addNodeView() {
+          return ReactNodeViewRenderer(EditorImageNode);
+        },
+      }).configure({
+        inline: false,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: "rounded-lg",
         },
       }),
       SlashCommand.configure({
         suggestion: getSlashCommandSuggestions([]),
       }),
       Underline,
+      TrailingNode,
     ],
   });
 
@@ -632,7 +668,9 @@ export const ZendoEditor = (props: Props) => {
 
       <Dialog open={publishedDialog} onOpenChange={setPublishedDialog}>
         <DialogContent className="!max-w-xs">
-          <h2 className="text-lg font-medium">🎉 Post published!</h2>
+          <DialogTitle className="text-lg font-medium">
+            🎉 Post published!
+          </DialogTitle>
           <Image
             className="w-full rounded-md border"
             src={`/api/public/og?title=${title}&emoji=${blogQuery.data?.emoji}&url=${blogQuery.data?.title}`}

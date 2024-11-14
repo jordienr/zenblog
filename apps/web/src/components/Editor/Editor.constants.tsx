@@ -155,8 +155,8 @@ export const TOP_MENU_BUTTONS = [
   CODE_BTN,
   CODE_BLOCK_BTN,
   Separator,
-  LINK_BTN,
   LIST_BTN,
+  LINK_BTN,
   // NUMBERED_LIST_BTN,
 ];
 

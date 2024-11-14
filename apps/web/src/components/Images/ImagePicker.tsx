@@ -14,16 +14,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { cn, formatDate } from "@/lib/utils";
-import { CheckIcon, InfoIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { CheckIcon } from "lucide-react";
 import { useMediaQuery } from "./Images.queries";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
-import { ImageError } from "next/dist/server/image-optimizer";
+import { TooltipProvider } from "../ui/tooltip";
+import { Input } from "../ui/input";
 
 export type Image = {
   id: string;
@@ -56,14 +51,15 @@ export function ImagePicker({
   });
 
   const [tab, setTab] = useState("images");
+  const [imageUrl, setImageUrl] = useState("");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            <h2 className="text-xl font-medium">Upload image</h2>
+          <DialogTitle className="text-xl font-medium">
+            Upload image
           </DialogTitle>
         </DialogHeader>
         <div className="">
@@ -71,6 +67,7 @@ export function ImagePicker({
             <TabsList>
               <TabsTrigger value="images">My images</TabsTrigger>
               <TabsTrigger value="upload">Upload</TabsTrigger>
+              <TabsTrigger value="embed">Embed</TabsTrigger>
             </TabsList>
             <TabsContent value="images">
               <div className="relative">
@@ -168,6 +165,31 @@ export function ImagePicker({
                 }}
                 blogId={blogId}
               />
+            </TabsContent>
+            <TabsContent value="embed">
+              <div className="flex flex-col gap-2 py-8 ">
+                <Input
+                  type="url"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="Enter image URL"
+                />
+                <Button
+                  className="mx-auto max-w-xs"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelect({
+                      id: "embed",
+                      name: "Embedded image",
+                      url: imageUrl,
+                      created_at: new Date().toISOString(),
+                      updated_at: new Date().toISOString(),
+                    });
+                  }}
+                >
+                  Save
+                </Button>
+              </div>
             </TabsContent>
           </Tabs>
         </div>

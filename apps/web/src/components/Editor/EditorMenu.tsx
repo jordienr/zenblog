@@ -8,56 +8,9 @@ import {
   Pilcrow,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "../ui/tooltip";
 import { TOP_MENU_BUTTONS } from "./Editor.constants";
 import Tippy from "@tippyjs/react";
-import { useRef, useState } from "react";
-
-// function EditorMenuButton({
-//   children,
-//   active,
-//   tooltip,
-//   ...props
-// }: {
-//   children: React.ReactNode;
-//   active: boolean;
-//   tooltip?: string;
-// } & React.ComponentPropsWithoutRef<"button">) {
-//   return (
-//     <TooltipProvider>
-//       <Tooltip delayDuration={250}>
-//         <TooltipTrigger asChild>
-//           <Button
-//             tabIndex={-1}
-//             variant={"ghost"}
-//             type="button"
-//             className={cn(
-//               "rounded-md p-2 text-zinc-400",
-//               active ? "bg-zinc-100 text-zinc-800" : "text-zinc-400",
-//               props.disabled ? "" : "hover:bg-zinc-100/80 hover:text-zinc-600"
-//             )}
-//             {...props}
-//           >
-//             {children}
-//           </Button>
-//         </TooltipTrigger>
-//         {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
-//       </Tooltip>
-//     </TooltipProvider>
-//   );
-// }
+import { useState } from "react";
 
 export function EditorMenu({ editor }: { editor: Editor | null }) {
   const SIZE = 14;
@@ -107,6 +60,15 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
             appendTo: "parent",
           }}
           editor={editor}
+          shouldShow={({ editor }) => {
+            // if its in an image, do not show
+            if (editor.isActive("image")) return false;
+
+            // if the user has something selected, show
+            if (editor.view.state.selection.content().size) return true;
+            // otherwise, only show if the cursor is in the last paragraph
+            return false;
+          }}
         >
           <Tippy
             interactive={true}
@@ -146,35 +108,6 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
                 : "Type"}
             </button>
           </Tippy>
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger tabIndex={-1} asChild>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              {menuTypeItems.map(({ icon, label, command }, i) => (
-                <DropdownMenuItem
-                  className="flex gap-1"
-                  key={i + "menu-btn"}
-                  onClick={command}
-                >
-                  <span>{icon}</span>
-                  <span>{label}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-          {/* {menuButtons.map(
-            ({ icon, command, disabled, tooltip, active }, i) => (
-              <EditorMenuButton
-                disabled={disabled}
-                active={active || false}
-                key={i + "menu-btn"}
-                onClick={command}
-                tooltip={tooltip}
-              >
-                {icon}
-              </EditorMenuButton>
-            )
-          )} */}
           {TOP_MENU_BUTTONS.map(
             ({ icon, command, id }, i) =>
               id !== "separator" && (
@@ -192,27 +125,6 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
           )}
         </BubbleMenu>
       )}
-
-      {/* {editor && (
-        <FloatingMenu
-          className="rounded-md bg-zinc-50 p-0.5"
-          tippyOptions={{ duration: 100 }}
-          editor={editor}
-        >
-          {NEW_LINE_BUTTONS.map((item) => {
-            const { icon, label, command } = item;
-            return (
-              <button
-                key={label}
-                onClick={() => command(editor)}
-                className="rounded-md p-0.5 text-xs text-zinc-400 "
-              >
-                {icon}
-              </button>
-            );
-          })}
-        </FloatingMenu>
-      )} */}
     </div>
   );
 }

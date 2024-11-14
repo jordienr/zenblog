@@ -15,6 +15,7 @@ import {
   Heading2,
   Heading3,
   ImageIcon,
+  Link,
   List,
   ListOrdered,
   Minus,
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 import tippy, { GetReferenceClientRect } from "tippy.js";
 import { cn } from "@/lib/utils";
+import { useEditorState } from "../Editor.state";
 
 type SlashCommandItem = {
   title: string;
@@ -146,8 +148,7 @@ const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
     },
   },
   {
-    title: "Blockquote",
-
+    title: "Quote",
     searchTerms: ["quote", "blockquote"],
     icon: <TextQuote className={iconClassNames} />,
     command: ({ editor, range }: CommandProps) => {
@@ -168,6 +169,23 @@ const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
     icon: <Code className={iconClassNames} />,
     command: ({ editor, range }: CommandProps) => {
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
+    },
+  },
+  // {
+  //   title: "Link",
+  //   searchTerms: ["link", "url"],
+  //   icon: <Link className={iconClassNames} />,
+  //   command: ({ editor, range }: CommandProps) => {
+  //     useEditorState.getState().setNewLinkDialogOpen(true);
+  //   },
+  // },
+  {
+    title: "Image",
+    searchTerms: ["image", "img"],
+    icon: <ImageIcon className={iconClassNames} />,
+    command: ({ editor, range }: CommandProps) => {
+      editor.chain().focus().deleteRange(range).run();
+      editor.commands.setImage({ src: "" });
     },
   },
 ];
