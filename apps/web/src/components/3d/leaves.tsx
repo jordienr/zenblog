@@ -82,6 +82,14 @@ function LeafScene() {
 }
 
 export function Leaves() {
+  // Add error boundary state
+  const [hasWebGLError, setHasWebGLError] = React.useState(false);
+
+  // Early return if WebGL error occurs
+  if (hasWebGLError) {
+    return null; // Or return a fallback UI
+  }
+
   return (
     <>
       <div className="absolute right-0 top-0 z-[-1] h-screen w-[60vw] bg-gradient-to-r from-white to-transparent"></div>
@@ -94,6 +102,8 @@ export function Leaves() {
             gl.setClearColor(new Color(1, 1, 1), 1);
           }}
           style={{ width: "60vw", height: "100vh" }}
+          onError={() => setHasWebGLError(true)} // Add error handler
+          fallback={null} // Add fallback
         >
           <OrbitControls />
           <LeafScene />

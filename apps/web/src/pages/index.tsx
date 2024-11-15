@@ -27,6 +27,7 @@ import {
 import Navigation from "@/components/marketing/Navigation";
 import { CodeBlockComponent } from "@/components/code-block";
 import { Lora } from "next/font/google";
+import { Leaves } from "@/components/3d/leaves";
 
 const h1Font = Lora({
   subsets: ["latin"],
@@ -118,7 +119,7 @@ const Home = () => {
       <div className={`${h1Font.variable}`}>
         <div className="flex flex-col">
           <Navigation />
-
+          <Leaves />
           <main className="mt-12 px-6 pb-24 font-sans">
             <div className="mx-auto max-w-5xl px-6 text-center">
               <span className="rounded-full bg-gradient-to-br from-orange-100/80 to-orange-50 px-3 py-1 font-mono text-xs font-medium text-orange-500">
