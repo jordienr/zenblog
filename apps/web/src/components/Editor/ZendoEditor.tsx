@@ -18,7 +18,7 @@ import { ImagePicker } from "../Images/ImagePicker";
 import { BsFillImageFill } from "react-icons/bs";
 import TiptapImage from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
-import UploadImagesPlugin, { startImageUpload } from "./upload-image";
+import { startImageUpload } from "./upload-image";
 import { generateSlug } from "@/lib/utils/slugs";
 import { Label } from "../ui/label";
 import { useRouter } from "next/router";
@@ -59,11 +59,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { Hyperlink } from "@docs.plus/extension-hyperlink";
-import { useEditorState } from "./Editor.state";
-import { Input } from "../ui/input";
 import { EditorImageNode } from "./editor-image-node";
 import { TrailingNode } from "./trailing-node";
+import { Input } from "../ui/input";
+import { useEditorState } from "./Editor.state";
 
 const formSchema = z.object({
   title: z.string(),
@@ -106,6 +105,7 @@ type Props = {
 };
 
 export const ZendoEditor = (props: Props) => {
+  const editorStore = useEditorState();
   const editorLoading = props.loading || false;
   const { register, handleSubmit, setValue, watch, getValues } =
     useForm<FormData>({
@@ -659,8 +659,9 @@ export const ZendoEditor = (props: Props) => {
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 mx-auto -mt-2 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg px-8 py-1.5 font-normal leading-10 tracking-normal transition-all"
+            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 mx-auto -mt-2 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg px-2 py-1.5 font-normal leading-10 tracking-normal transition-all md:px-8"
           >
+            {/* <pre>{JSON.stringify(editor?.getHTML(), null, 2)}</pre> */}
             <EditorContent className="w-full" editor={editor} />
           </div>
         </div>

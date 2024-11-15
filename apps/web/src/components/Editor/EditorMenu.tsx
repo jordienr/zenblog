@@ -1,5 +1,8 @@
 import { BubbleMenu, Editor } from "@tiptap/react";
 import {
+  BanIcon,
+  ChevronDown,
+  ExternalLink,
   Heading2,
   Heading3,
   Heading4,
@@ -10,8 +13,17 @@ import {
 import { cn } from "@/lib/utils";
 import { TOP_MENU_BUTTONS } from "./Editor.constants";
 import Tippy from "@tippyjs/react";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Checkbox } from "../ui/checkbox";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 export function EditorMenu({ editor }: { editor: Editor | null }) {
   const SIZE = 14;
 
@@ -50,8 +62,158 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
 
   const [showTextTypeMenu, setShowTextTypeMenu] = useState(false);
 
+  const link = editor?.getAttributes("link");
+
+  useEffect(() => {
+    editor?.chain().extendMarkRange("link").focus().run();
+  }, [editor]);
+
+  const [showForm, setShowForm] = useState(false);
+
   return (
     <div tabIndex={-1} id="bubble-menu">
+      {/** LINK EDITOR */}
+      {editor && (
+        <BubbleMenu
+          editor={editor}
+          tippyOptions={{
+            duration: 100,
+            appendTo: "parent",
+            placement: "bottom",
+          }}
+          shouldShow={({ editor }) => {
+            return editor.isActive("link");
+          }}
+          className="w-80 max-w-xs divide-y rounded-xl border bg-white shadow-sm"
+        >
+          <button
+            className="flex w-full items-center gap-2 truncate p-2 font-mono text-xs"
+            onClick={() => setShowForm(!showForm)}
+          >
+            <span className="w-full flex-grow truncate text-left">
+              {link?.href}
+            </span>
+            {link?.target === "_blank" && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <ExternalLink
+                      size={14}
+                      className={cn("text-slate-400", {
+                        "text-blue-500": link?.target === "_blank",
+                      })}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>Opens in new tab</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            {link?.rel?.includes("nofollow") && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <BanIcon
+                      size={14}
+                      className={cn("text-slate-400", {
+                        "text-red-500": link?.rel?.includes("nofollow"),
+                      })}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>No follow</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
+            <ChevronDown
+              className={cn("", { "rotate-180": showForm })}
+              size={14}
+            />
+          </button>
+          <AnimatePresence>
+            {showForm && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-2 p-2"
+              >
+                <div className="flex flex-col gap-1">
+                  <Label>URL</Label>
+                  <Input
+                    defaultValue={link?.href}
+                    value={link?.href}
+                    type="url"
+                    name="url"
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-0 font-mono"
+                    onChange={(e) => {
+                      editor
+                        ?.chain()
+                        .extendMarkRange("link")
+                        .updateAttributes("link", {
+                          href: e.target.value,
+                          target: link?.target || "_self",
+                          rel: link?.rel?.includes("nofollow")
+                            ? "noopener noreferrer nofollow"
+                            : "noopener noreferrer",
+                        })
+                        .run();
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="open-in-new-tab"
+                    name="open-in-new-tab"
+                    checked={link?.target === "_blank"}
+                    onCheckedChange={(checked) => {
+                      editor
+                        ?.chain()
+                        .extendMarkRange("link")
+                        .updateAttributes("link", {
+                          href: link?.href,
+                          target: checked ? "_blank" : "_self",
+                          rel: link?.rel?.includes("nofollow")
+                            ? "noopener noreferrer nofollow"
+                            : "noopener noreferrer",
+                        })
+                        .run();
+                    }}
+                  />
+                  <Label className="p-1.5" htmlFor="open-in-new-tab">
+                    Open in new tab
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="no-follow"
+                    name="no-follow"
+                    checked={link?.rel?.includes("nofollow")}
+                    onCheckedChange={(checked) => {
+                      editor
+                        ?.chain()
+                        .extendMarkRange("link")
+                        .updateAttributes("link", {
+                          href: link?.href,
+                          target: link?.target || "_self",
+                          rel: checked
+                            ? "noopener noreferrer nofollow"
+                            : "noopener noreferrer",
+                        })
+                        .run();
+                    }}
+                  />
+                  <Label className="p-1.5" htmlFor="no-follow">
+                    No follow
+                  </Label>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </BubbleMenu>
+      )}
+      {/** BUBBLE EDITOR */}
       {editor && (
         <BubbleMenu
           className="flex items-center gap-1 rounded-xl bg-zinc-800 p-1 text-xs text-white shadow-md"
@@ -61,8 +223,8 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
           }}
           editor={editor}
           shouldShow={({ editor }) => {
-            // if its in an image, do not show
             if (editor.isActive("image")) return false;
+            if (editor.isActive("link")) return false;
 
             // if the user has something selected, show
             if (editor.view.state.selection.content().size) return true;

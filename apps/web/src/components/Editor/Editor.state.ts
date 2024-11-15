@@ -1,30 +1,20 @@
 import { Editor, Range } from "@tiptap/core";
 import { create } from "zustand";
 
-type EditorState = {
+export type EditorStore = {
   editor: Editor | null;
   setEditor: (editor: Editor) => void;
   range: Range | null;
   setRange: (range: Range) => void;
-  newLinkDialogOpen: boolean;
-  setNewLinkDialogOpen: (newLinkDialogOpen: boolean) => void;
-  onNewLinkSubmit: (url: string) => void;
-  newImageDialogOpen: boolean;
-  setNewImageDialogOpen: (newImageDialogOpen: boolean) => void;
-  onNewImageSubmit: (url: string) => void;
+  linkDialogOpen: boolean;
+  setLinkDialogOpen: (linkDialogOpen: boolean) => void;
 };
 
-export const useEditorState = create<EditorState>((set) => ({
+export const useEditorState = create<EditorStore>((set) => ({
   editor: null,
   setEditor: (editor: Editor) => set({ editor }),
   range: null,
   setRange: (range: Range) => set({ range }),
-  newLinkDialogOpen: false,
-  setNewLinkDialogOpen: (newLinkDialogOpen: boolean) =>
-    set({ newLinkDialogOpen }),
-  onNewLinkSubmit: (url: string) => set({ newLinkDialogOpen: false }),
-  newImageDialogOpen: false,
-  setNewImageDialogOpen: (newImageDialogOpen: boolean) =>
-    set({ newImageDialogOpen }),
-  onNewImageSubmit: (url: string) => set({ newImageDialogOpen: false }),
+  linkDialogOpen: false,
+  setLinkDialogOpen: (linkDialogOpen: boolean) => set({ linkDialogOpen }),
 }));

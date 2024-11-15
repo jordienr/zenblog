@@ -19,13 +19,12 @@ import {
   List,
   ListOrdered,
   Minus,
-  SeparatorHorizontal,
   Text,
   TextQuote,
 } from "lucide-react";
 import tippy, { GetReferenceClientRect } from "tippy.js";
 import { cn } from "@/lib/utils";
-import { useEditorState } from "../Editor.state";
+import { EditorStore, useEditorState } from "../Editor.state";
 
 type SlashCommandItem = {
   title: string;
@@ -171,14 +170,14 @@ const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
     },
   },
-  // {
-  //   title: "Link",
-  //   searchTerms: ["link", "url"],
-  //   icon: <Link className={iconClassNames} />,
-  //   command: ({ editor, range }: CommandProps) => {
-  //     useEditorState.getState().setNewLinkDialogOpen(true);
-  //   },
-  // },
+  {
+    title: "Link",
+    searchTerms: ["link", "url"],
+    icon: <Link className={iconClassNames} />,
+    command: ({ editor, range }: CommandProps) => {
+      editor.chain().focus().deleteRange(range).setLink({ href: "" }).run();
+    },
+  },
   {
     title: "Image",
     searchTerms: ["image", "img"],
