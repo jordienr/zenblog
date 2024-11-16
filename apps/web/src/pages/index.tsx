@@ -253,7 +253,7 @@ const post = await client.posts.get({ slug: "hello-world" });`}
                   //   image: "/static/zenblog-astro-template.webp",
                   // },
                 ].map((fw) => (
-                  <article key={fw.id} className="grid grid-cols-2">
+                  <article key={fw.id} className="grid md:grid-cols-2">
                     <div>
                       <Image
                         className="w-full rounded-lg border shadow-sm"
