@@ -4,7 +4,7 @@ import { Editor, NodeViewWrapper } from "@tiptap/react";
 import { useState } from "react";
 import { ImagePicker } from "../Images/ImagePicker";
 import { Button } from "../ui/button";
-import { PencilIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, TrashIcon, XIcon } from "lucide-react";
 import { Input } from "../ui/input";
 
 function AltTextArea({
@@ -76,10 +76,16 @@ export function EditorImageNode({
           </div>
         )}
         {!src && (
-          <div className="mt-4 flex items-center justify-center rounded-md border border-dashed p-4">
+          <div className="realtive mt-4 flex items-center justify-center rounded-md border border-dashed p-4">
             <Button variant="outline" onClick={() => setShowImagePicker(true)}>
               Add Image
             </Button>
+            <button
+              className="absolute right-2 top-2 rounded-full border bg-white p-1"
+              onClick={() => editor.commands.deleteSelection()}
+            >
+              <XIcon className="h-4 w-4" />
+            </button>
           </div>
         )}
         {showImageUrlInput && (
