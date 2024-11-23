@@ -18,7 +18,7 @@ import { ImagePicker } from "../Images/ImagePicker";
 import { BsFillImageFill } from "react-icons/bs";
 import TiptapImage from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
-import { startImageUpload } from "./upload-image";
+import { handleImagePaste, UploadImagesPlugin } from "./upload-image";
 import { generateSlug } from "@/lib/utils/slugs";
 import { Label } from "../ui/label";
 import { useRouter } from "next/router";
@@ -63,6 +63,8 @@ import { EditorImageNode } from "./editor-image-node";
 import { TrailingNode } from "./trailing-node";
 import { Input } from "../ui/input";
 import { useEditorState } from "./Editor.state";
+import { useBlogId } from "@/hooks/use-blog-id";
+import { API } from "app/utils/api-client";
 
 const formSchema = z.object({
   title: z.string(),
@@ -105,7 +107,6 @@ type Props = {
 };
 
 export const ZendoEditor = (props: Props) => {
-  const editorStore = useEditorState();
   const editorLoading = props.loading || false;
   const { register, handleSubmit, setValue, watch, getValues } =
     useForm<FormData>({
@@ -118,7 +119,7 @@ export const ZendoEditor = (props: Props) => {
       },
     });
   const router = useRouter();
-  const blogId = (router.query.blogId as string) || "demo";
+  const blogId = useBlogId();
   const blogTags = useBlogTags({ blogId });
   const [published, setPublished] = React.useState(
     props.post?.published || false
@@ -168,89 +169,111 @@ export const ZendoEditor = (props: Props) => {
     }
   }, [title, props.autoCompleteSlug, setValue]);
 
-  const editor = useEditor({
-    content: (props.post?.content as any) || "",
-    editorProps: {
-      editable: () => !props.readOnly || false,
-      handlePaste: (view, event) => {
-        if (
-          event.clipboardData &&
-          event.clipboardData.files &&
-          event.clipboardData.files[0]
-        ) {
-          event.preventDefault();
-          const file = event.clipboardData.files[0];
-          const pos = view.state.selection.from;
+  async function uploadImage(file: File, blogId: string): Promise<string> {
+    const res = await API().v2.blogs[":blog_id"].images.$post({
+      form: {
+        image: file,
+      },
+      query: {
+        imageName: file.name,
+        convertToWebp: "true",
+      },
+      param: {
+        blog_id: blogId,
+      },
+    });
 
-          startImageUpload(file, view, pos, blogId);
-          return true;
-        }
-        return false;
-      },
-      handleDOMEvents: {
-        keydown: (view, event) => {
-          // if slash command is open, don't handle keydown events
-          if (["ArrowUp", "ArrowDown", "Enter"].includes(event.key)) {
-            const slashCommand = document.querySelector("#slash-command");
-            if (slashCommand) {
-              return true;
+    if (res.status !== 200) {
+      throw new Error("Failed to upload image");
+    }
+
+    const json = await res.json();
+    if ("error" in json) {
+      throw new Error(json.error);
+    }
+    return json.url;
+  }
+
+  const editor = useEditor(
+    {
+      content: (props.post?.content as any) || "",
+      editorProps: {
+        editable: () => !props.readOnly || false,
+        handlePaste: (view, event) =>
+          handleImagePaste(view, event, uploadImage, blogId),
+        handleDOMEvents: {
+          keydown: (view, event) => {
+            // if slash command is open, don't handle keydown events
+            if (["ArrowUp", "ArrowDown", "Enter"].includes(event.key)) {
+              const slashCommand = document.querySelector("#slash-command");
+              if (slashCommand) {
+                return true;
+              }
             }
-          }
+          },
         },
       },
+      extensions: [
+        StarterKit.configure({
+          heading: {
+            levels: [2, 3, 4, 5, 6],
+          },
+        }),
+        TiptapLink.configure({
+          openOnClick: false,
+          HTMLAttributes: {
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+          linkOnPaste: true,
+        }),
+        Placeholder.configure({
+          placeholder: "Start writing or use `/` for commands",
+        }),
+        SlashCommand.configure({
+          suggestion: getSlashCommandSuggestions([]),
+        }),
+        Underline,
+        TrailingNode,
+        TiptapImage.extend({
+          addAttributes() {
+            return {
+              ...this.parent?.(),
+              src: {
+                default: null,
+                renderHTML: (attributes) => ({
+                  src: attributes.src,
+                }),
+              },
+              alt: {
+                default: null,
+                renderHTML: (attributes) => ({
+                  alt: attributes.alt,
+                }),
+              },
+            };
+          },
+          addNodeView() {
+            return ReactNodeViewRenderer(EditorImageNode);
+          },
+          addProseMirrorPlugins() {
+            return [
+              UploadImagesPlugin({
+                imageClass: "opacity-50 border border-red-500",
+              }),
+            ];
+          },
+        }).configure({
+          inline: false,
+          allowBase64: true,
+          HTMLAttributes: {
+            class: "rounded-lg",
+          },
+        }),
+      ],
     },
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [2, 3, 4, 5, 6],
-        },
-      }),
-      TiptapLink.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          target: "_blank",
-          rel: "noopener noreferrer",
-        },
-        linkOnPaste: true,
-      }),
-      Placeholder.configure({
-        placeholder: "Start writing or use `/` for commands",
-      }),
-      TiptapImage.extend({
-        addAttributes() {
-          return {
-            ...this.parent?.(),
-            src: {
-              default: null,
-              renderHTML: (attributes) => ({
-                src: attributes.src,
-              }),
-            },
-            alt: {
-              default: null,
-              renderHTML: (attributes) => ({
-                alt: attributes.alt,
-              }),
-            },
-          };
-        },
-        addNodeView() {
-          return ReactNodeViewRenderer(EditorImageNode);
-        },
-      }).configure({
-        inline: false,
-        allowBase64: true,
-        HTMLAttributes: {
-          class: "rounded-lg",
-        },
-      }),
-      SlashCommand.configure({
-        suggestion: getSlashCommandSuggestions([]),
-      }),
-      Underline,
-      TrailingNode,
-    ],
-  });
+    [blogId]
+  );
 
   const formSubmit = handleSubmit(async (data) => {
     const content = editor?.getJSON() || {};
@@ -449,7 +472,7 @@ export const ZendoEditor = (props: Props) => {
             <img className="w-full rounded-xl" src={coverImgUrl || ""} alt="" />
           </div>
         )}
-        <div className="mx-auto w-full max-w-3xl px-2 pb-2 md:px-8">
+        <div className="group mx-auto w-full max-w-3xl px-2 pb-2 md:px-8">
           <div className="mt-8 flex w-full items-end justify-between gap-4  transition-all">
             <ImagePicker
               open={showImagePicker}
@@ -633,17 +656,17 @@ export const ZendoEditor = (props: Props) => {
 
           <Button
             variant={"ghost"}
-            className="mt-4 w-full p-4 px-0 text-center opacity-50 hover:opacity-100 md:w-auto md:text-left"
+            className="mt-1 flex items-center justify-center px-0 py-4 text-center opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-100 md:w-auto md:text-left"
             onClick={() => setShowPropertyList(!showPropertyList)}
           >
-            {showPropertyList ? "Hide properties" : "Show properties"}
             <ChevronUp
               className={cn(
-                "transition-all",
+                "text-zinc-400",
                 showPropertyList ? "" : "rotate-180"
               )}
-              size={16}
+              size={14}
             />
+            {showPropertyList ? "Hide properties" : "Show properties"}
           </Button>
         </div>
         <div
@@ -652,14 +675,14 @@ export const ZendoEditor = (props: Props) => {
             editor?.commands.focus();
           }}
         >
-          <div className="sticky top-10 z-10 border-b px-3">
+          <div className="sticky top-10 z-10 px-3">
             <EditorMenu editor={editor} />
           </div>
           <div
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 mx-auto -mt-2 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg px-2 py-1.5 font-normal leading-10 tracking-normal transition-all md:px-8"
+            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 mx-auto -mt-4 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg  px-2 font-normal leading-10 tracking-normal transition-all md:px-6"
           >
             {/* <pre>{JSON.stringify(editor?.getHTML(), null, 2)}</pre> */}
             <EditorContent className="w-full" editor={editor} />

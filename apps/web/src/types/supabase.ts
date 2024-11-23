@@ -60,6 +60,51 @@ export type Database = {
           },
         ]
       }
+      blog_images: {
+        Row: {
+          blog_id: string
+          content_type: string | null
+          created_at: string
+          file_name: string
+          file_url: string
+          id: number
+          size_in_bytes: number
+        }
+        Insert: {
+          blog_id: string
+          content_type?: string | null
+          created_at?: string
+          file_name: string
+          file_url: string
+          id?: number
+          size_in_bytes?: number
+        }
+        Update: {
+          blog_id?: string
+          content_type?: string | null
+          created_at?: string
+          file_name?: string
+          file_url?: string
+          id?: number
+          size_in_bytes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_images_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blog_images_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "category_post_count"
+            referencedColumns: ["blog_id"]
+          },
+        ]
+      }
       blogs: {
         Row: {
           access_token: string | null

@@ -1,13 +1,12 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useState, useRef } from "react";
 import { ImageUploader } from "./ImageUploader";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
@@ -17,15 +16,15 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CheckIcon } from "lucide-react";
 import { useMediaQuery } from "./Images.queries";
-import { TooltipProvider } from "../ui/tooltip";
 import { Input } from "../ui/input";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export type Image = {
   id: string;
   name: string;
   url: string;
   created_at: string;
-  updated_at: string;
 };
 
 export function ImagePicker({
@@ -56,12 +55,8 @@ export function ImagePicker({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="text-xl font-medium">
-            Upload image
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-4xl md:max-w-6xl">
+        <DialogTitle className="sr-only">Upload image</DialogTitle>
         <div className="">
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
@@ -71,63 +66,60 @@ export function ImagePicker({
             </TabsList>
             <TabsContent value="images">
               <div className="relative">
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                  {media.data?.length === 0 ? (
-                    <div className="col-span-2 py-24">
-                      <p className="text-center text-sm text-gray-500">
-                        No images uploaded yet
-                      </p>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                  {media.data?.map((image) => (
-                    <button
-                      type="button"
-                      key={image.id}
-                      className={cn(
-                        "group flex flex-col gap-1 rounded-xl text-left transition-all hover:opacity-90"
-                      )}
-                      onClick={() => {
-                        setSelectedImage(image);
-                        onSelect(image);
-                      }}
-                    >
-                      <div className="relative w-full">
-                        <img
-                          className="h-32 w-full rounded-xl object-cover shadow-sm"
-                          width="48"
-                          height="48"
-                          src={image.url}
-                        />
+                <div className="overflow-auto">
+                  <div className="grid grid-cols-2 gap-3 p-2 md:grid-cols-3">
+                    {media.data?.map((image) => (
+                      <button
+                        key={image.id}
+                        type="button"
+                        className={cn(
+                          "group flex flex-col gap-1 rounded-xl text-left transition-all hover:opacity-90"
+                        )}
+                        onClick={() => {
+                          setSelectedImage(image);
+                          onSelect(image);
+                        }}
+                      >
+                        <div className="relative w-full">
+                          <Image
+                            className="h-32 w-full rounded-xl object-cover shadow-sm"
+                            width={240}
+                            height={128}
+                            src={image.url}
+                            alt={image.name}
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0XFyAeIRshGxsdIR4hHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                            loading="lazy"
+                          />
+                          <div
+                            className={cn(
+                              "absolute right-1.5 top-1.5 h-6 w-6 rounded-full border border-zinc-200 bg-zinc-100/50 opacity-0 bg-blend-darken transition-all group-hover:opacity-100",
+                              "flex items-center justify-center",
+                              {
+                                "border-orange-600 bg-orange-600 text-orange-100 opacity-100":
+                                  selectedImage?.id === image.id,
+                              }
+                            )}
+                          >
+                            {selectedImage?.id === image.id && (
+                              <CheckIcon size={12} />
+                            )}
+                          </div>
+                        </div>
                         <div
                           className={cn(
-                            "absolute right-1.5 top-1.5 h-6 w-6 rounded-full border border-zinc-200 bg-zinc-100/50 opacity-0 bg-blend-darken transition-all group-hover:opacity-100",
-                            "flex items-center justify-center",
+                            "line-clamp-1 font-mono text-xs tracking-tight text-zinc-500 transition-all group-hover:text-zinc-900",
                             {
-                              "border-orange-600 bg-orange-600 text-orange-100 opacity-100":
+                              "text-orange-500 group-hover:text-orange-500":
                                 selectedImage?.id === image.id,
                             }
                           )}
                         >
-                          {selectedImage?.id === image.id && (
-                            <CheckIcon size={12} />
-                          )}
+                          {image.name}
                         </div>
-                      </div>
-                      <div
-                        className={cn(
-                          "line-clamp-1 font-mono text-xs tracking-tight text-zinc-500 transition-all group-hover:text-zinc-900",
-                          {
-                            "text-orange-500 group-hover:text-orange-500":
-                              selectedImage?.id === image.id,
-                          }
-                        )}
-                      >
-                        {image.name}
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 {showFooter && (
                   <DialogFooter>
@@ -183,7 +175,6 @@ export function ImagePicker({
                       name: "Embedded image",
                       url: imageUrl,
                       created_at: new Date().toISOString(),
-                      updated_at: new Date().toISOString(),
                     });
                   }}
                 >
@@ -210,50 +201,105 @@ export function ImageSelector({
   selected,
   type,
 }: ImageSelector) {
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
+    null
+  );
+  const [lastSelectionWasDeselect, setLastSelectionWasDeselect] =
+    useState(false);
+
   function isSelected(image: Image) {
     return selected.find((img) => img.id === image.id) !== undefined;
   }
 
-  function onItemClick(image: Image) {
+  function onItemClick(image: Image, index: number, event: React.MouseEvent) {
     if (type === "single") {
       onChange([image]);
+      return;
+    }
+
+    if (event.shiftKey && lastSelectedIndex !== null && type === "multiple") {
+      const start = Math.min(lastSelectedIndex, index);
+      const end = Math.max(lastSelectedIndex, index);
+      const rangeToToggle = images.slice(start, end + 1);
+
+      // If last action was deselect, deselect the range
+      if (lastSelectionWasDeselect) {
+        onChange(
+          selected.filter(
+            (img) => !rangeToToggle.some((rangeImg) => rangeImg.id === img.id)
+          )
+        );
+      } else {
+        // Add the range to selection
+        const combinedSelection = Array.from(
+          new Set([...selected, ...rangeToToggle])
+        );
+        onChange(combinedSelection);
+      }
     } else {
-      if (selected?.find((img) => img.id === image.id)) {
+      // Single click behavior
+      const isCurrentlySelected = isSelected(image);
+      setLastSelectionWasDeselect(isCurrentlySelected);
+
+      if (isCurrentlySelected) {
         onChange(selected.filter((img) => img.id !== image.id));
       } else {
         onChange([...selected, image]);
       }
+      setLastSelectedIndex(index);
     }
   }
 
   return (
-    <TooltipProvider>
+    <>
+      <AnimatePresence>
+        {type === "multiple" && selected.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mb-2 flex items-center justify-end gap-2"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                onChange([]);
+                setLastSelectedIndex(null);
+              }}
+            >
+              Unselect All
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="relative grid grid-cols-2 gap-3 md:grid-cols-4">
-        {images.map((img) => (
-          <ImageItem
-            key={img.id}
-            image={img}
-            selected={isSelected(img)}
-            onClick={onItemClick}
-          />
-        ))}
+        <AnimatePresence>
+          {images.map((img, index) => (
+            <motion.div
+              key={img.id}
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <ImageItem
+                image={img}
+                selected={isSelected(img)}
+                onClick={(image, event) => onItemClick(image, index, event)}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
-    </TooltipProvider>
+    </>
   );
-}
-
-function getImageName(str: string) {
-  if (str.length > 20) {
-    return str.slice(0, 20) + "...";
-  } else {
-    return str;
-  }
 }
 
 type ImageItem = {
   image: Image;
   selected: boolean;
-  onClick: (image: Image) => void;
+  onClick: (image: Image, event: React.MouseEvent) => void;
 };
 export function ImageItem({ image, selected, onClick }: ImageItem) {
   return (
@@ -261,23 +307,27 @@ export function ImageItem({ image, selected, onClick }: ImageItem) {
       type="button"
       key={image.id}
       className={cn(
-        "group flex max-w-[240px] flex-col gap-0.5 rounded-xl text-left transition-all hover:opacity-90"
+        "group flex w-full max-w-[240px] flex-col gap-0.5 rounded-xl text-left transition-all hover:opacity-90"
       )}
-      onClick={() => {
-        onClick(image);
+      onClick={(e) => {
+        onClick(image, e);
       }}
     >
       <div className="relative w-full">
-        <img
+        <Image
           className={cn(
             "h-28 w-full rounded-xl border border-zinc-100 object-cover shadow-sm",
             {
               "opacity-70": selected,
             }
           )}
-          width="32"
-          height="32"
+          width={240}
+          height={112}
           src={image.url}
+          alt={image.name}
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0XFyAeIRshGxsdIR4hHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+          loading="lazy"
         />
 
         <div
@@ -294,21 +344,13 @@ export function ImageItem({ image, selected, onClick }: ImageItem) {
         </div>
       </div>
       <div
-        className={cn(
-          "line-clamp-1 flex items-center font-mono text-xs tracking-tight text-zinc-500 transition-all group-hover:text-zinc-900",
-          {
-            "text-orange-500 group-hover:text-orange-500": selected,
-          }
-        )}
+        className={cn("w-full font-mono text-xs tracking-tight text-zinc-500", {
+          "text-orange-500 group-hover:text-orange-500": selected,
+        })}
       >
-        <div className="flex w-full items-center gap-1.5 overflow-hidden break-words p-1">
-          <p
-            title={image.name}
-            className="line-clamp-1 text-ellipsis text-left"
-          >
-            {getImageName(image.name)}
-          </p>
-        </div>
+        <p title={image.name} className="truncate">
+          {image.name}
+        </p>
       </div>
     </button>
   );

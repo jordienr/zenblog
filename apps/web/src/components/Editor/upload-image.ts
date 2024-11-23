@@ -1,11 +1,9 @@
-import { toast } from "sonner";
-import { EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
-import { Decoration, DecorationSet, EditorView } from "@tiptap/pm/view";
-import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { type EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
+import { Decoration, DecorationSet, type EditorView } from "@tiptap/pm/view";
 
 const uploadKey = new PluginKey("upload-image");
 
-const UploadImagesPlugin = () =>
+export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
   new Plugin({
     key: uploadKey,
     state: {
@@ -13,27 +11,28 @@ const UploadImagesPlugin = () =>
         return DecorationSet.empty;
       },
       apply(tr, set) {
+        console.log("tr", tr);
         set = set.map(tr.mapping, tr.doc);
         // See if the transaction adds or removes any placeholders
-        // @ts-ignore
-        const action = tr.getMeta(this);
-        if (action && action.add) {
+        const action = tr.getMeta(uploadKey);
+
+        if (action?.add) {
+          console.log("action", action);
           const { id, pos, src } = action.add;
 
           const placeholder = document.createElement("div");
           placeholder.setAttribute("class", "img-placeholder");
           const image = document.createElement("img");
-          image.setAttribute(
-            "class",
-            "opacity-40 rounded-lg border border-stone-200"
-          );
+          image.setAttribute("class", imageClass);
           image.src = src;
           placeholder.appendChild(image);
           const deco = Decoration.widget(pos + 1, placeholder, {
             id,
           });
           set = set.add(tr.doc, [deco]);
-        } else if (action && action.remove) {
+        } else if (action?.remove) {
+          console.log('action rm', action)
+          // biome-ignore lint/suspicious/noDoubleEquals: <explanation>
           set = set.remove(
             set.find(
               undefined,
@@ -42,6 +41,7 @@ const UploadImagesPlugin = () =>
             )
           );
         }
+        console.log('set', set)
         return set;
       },
     },
@@ -52,108 +52,153 @@ const UploadImagesPlugin = () =>
     },
   });
 
-export default UploadImagesPlugin;
-
+// biome-ignore lint/complexity/noBannedTypes: <explanation>
 function findPlaceholder(state: EditorState, id: {}) {
-  const decos = uploadKey.getState(state);
-  const found = decos.find(null, null, (spec: any) => spec.id == id);
-  const pos = found.length ? found[0].from : null;
-  return pos;
+  const decos = uploadKey.getState(state) as DecorationSet;
+  // biome-ignore lint/suspicious/noDoubleEquals: <explanation>
+  const found = decos.find(undefined, undefined, (spec) => spec.id == id);
+  console.log("found", found);
+  return found.length ? found[0]?.from : null;
 }
 
-export function startImageUpload(
-  file: File,
-  view: EditorView,
-  pos: number,
-  blogId: string
-) {
-  console.log("startImageUpload");
-  // check if the file is an image
-  if (!file.type.includes("image/")) {
-    toast.error("File type not supported.");
-    return;
+export interface ImageUploadOptions {
+  validateFn?: (file: File) => void;
+  onUpload: (file: File, blogId: string) => Promise<string>;
+}
 
-    // check if the file size is less than 20MB
-  } else if (file.size / 1024 / 1024 > 20) {
-    toast.error("File size too big (max 20MB).");
-    return;
-  }
+export const createImageUpload =
+  ({ validateFn, onUpload }: ImageUploadOptions): UploadFn =>
+  (file, blogId) => {
+    // check if the file is an image
+    const validated = validateFn?.(file);
+    if (!validated) return Promise.resolve('');
 
-  // A fresh object to act as the ID for this upload
-  const id = {};
+    // A fresh object to act as the ID for this upload
+    const id = {};
 
-  // Replace the selection with a placeholder
-  const tr = view.state.tr;
-  if (!tr.selection.empty) tr.deleteSelection();
-
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => {
-    tr.setMeta(uploadKey, {
-      add: {
-        id,
-        pos,
-        src: reader.result,
-      },
+    return new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        resolve(onUpload(file, blogId));
+      };
     });
-    view.dispatch(tr);
   };
 
-  handleImageUpload(file, blogId).then((src) => {
-    console.log("handleImageUpload", src);
-    let pos = findPlaceholder(view.state, id);
-    if (!pos) {
-      console.log("Pos is null");
-      return;
+export type UploadFn = (file: File, blogId: string) => Promise<string>;
+
+export const handleImagePaste = (
+  view: EditorView,
+  event: ClipboardEvent,
+  uploadFn: UploadFn,
+  blogId: string
+) => {
+  if (event.clipboardData?.files.length) {
+    event.preventDefault();
+    const [file] = Array.from(event.clipboardData.files);
+    const pos = view.state.selection.from;
+
+    if (file) {
+      const tr = view.state.tr;
+      if (!tr.selection.empty) tr.deleteSelection();
+
+      // Create a fresh object to act as the ID for this upload
+      const id = {};
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        tr.setMeta(uploadKey, {
+          add: {
+            id,
+            pos,
+            src: reader.result,
+          },
+        });
+        view.dispatch(tr);
+
+        uploadFn(file, blogId).then(
+          (src) => {
+            const { schema } = view.state;
+            const pos = findPlaceholder(view.state, id);
+            if (pos == null) return;
+
+            const node = schema.nodes.image?.create({ src });
+            if (!node) return;
+
+            const transaction = view.state.tr
+              .replaceWith(pos, pos, node)
+              .setMeta(uploadKey, { remove: { id } });
+            view.dispatch(transaction);
+          },
+          () => {
+            const transaction = view.state.tr.setMeta(uploadKey, { remove: { id } });
+            view.dispatch(transaction);
+          }
+        );
+      };
     }
+    return true;
+  }
+  return false;
+};
 
-    if (!src) {
-      console.error("Error uploading image. Removing image...");
-      toast.error("Error uploading image.");
-      const transaction = view.state.tr.delete(pos, pos);
-      view.dispatch(transaction);
-      return;
+export const handleImageDrop = (
+  view: EditorView,
+  event: DragEvent,
+  moved: boolean,
+  uploadFn: UploadFn,
+  blogId: string
+) => {
+  if (!moved && event.dataTransfer?.files.length) {
+    event.preventDefault();
+    const [file] = Array.from(event.dataTransfer.files);
+    const coordinates = view.posAtCoords({
+      left: event.clientX,
+      top: event.clientY,
+    });
+    // here we deduct 1 from the pos or else the image will create an extra node
+    if (file) {
+      const tr = view.state.tr;
+      if (!tr.selection.empty) tr.deleteSelection();
+
+      // Create a fresh object to act as the ID for this upload
+      const id = {};
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        tr.setMeta(uploadKey, {
+          add: {
+            id,
+            pos: coordinates?.pos ?? 0 - 1,
+            src: reader.result,
+          },
+        });
+        view.dispatch(tr);
+
+        uploadFn(file, blogId).then(
+          (src) => {
+            const { schema } = view.state;
+            const pos = findPlaceholder(view.state, id);
+            if (pos == null) return;
+
+            const node = schema.nodes.image?.create({ src });
+            if (!node) return;
+
+            const transaction = view.state.tr
+              .replaceWith(pos, pos, node)
+              .setMeta(uploadKey, { remove: { id } });
+            view.dispatch(transaction);
+          },
+          () => {
+            const transaction = view.state.tr.setMeta(uploadKey, { remove: { id } });
+            view.dispatch(transaction);
+          }
+        );
+      };
     }
-    const { schema } = view.state;
-
-    // Otherwise, insert it at the placeholder's position, and remove
-    // the placeholder
-
-    // When BLOB_READ_WRITE_TOKEN is not valid or unavailable, read
-    // the image locally
-    const imageSrc = typeof src === "object" ? reader.result : src;
-
-    const node = schema.nodes.image?.create({ src: imageSrc });
-    if (!node) return;
-    const transaction = view.state.tr
-      .replaceWith(pos, pos, node)
-      .setMeta(uploadKey, { remove: { id } });
-    view.dispatch(transaction);
-  });
-}
-
-const supa = createSupabaseBrowserClient();
-
-export const handleImageUpload = async (file: File, blogId: string) => {
-  console.log("Uploading image to Supabase storage...");
-  const randomIdFromDate = new Date().getTime();
-  const imageName = randomIdFromDate + file.name;
-
-  const { data, error } = await supa.storage
-    .from(`images/${blogId}`)
-    .upload(imageName, file);
-
-  console.log(data, error);
-
-  if (error) {
-    console.log("Error uploading image to Supabase storage: ", error.message);
-    return null;
+    return true;
   }
-
-  if (data) {
-    const {
-      data: { publicUrl },
-    } = supa.storage.from(`images/${blogId}`).getPublicUrl(imageName);
-    return publicUrl;
-  }
+  return false;
 };

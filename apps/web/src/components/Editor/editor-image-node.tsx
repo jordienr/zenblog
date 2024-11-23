@@ -52,14 +52,14 @@ export function EditorImageNode({
     <NodeViewWrapper>
       <div className="flex flex-col gap-1">
         {src && (
-          <div className="group/img flex flex-col gap-1">
+          <div className="group/img relative mt-8 flex flex-col gap-1">
             <img
-              className="!mb-0 w-full rounded-md border object-contain"
+              className="!my-0 w-full rounded-md border object-contain"
               src={src}
               alt={alt}
             />
             <AltTextArea alt={alt} setAlt={updateAlt} />
-            <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover/img:opacity-100">
+            <div className="absolute right-2 top-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/img:opacity-100">
               <Button
                 tooltip={{
                   delay: 100,
@@ -67,22 +67,10 @@ export function EditorImageNode({
                   side: "bottom",
                 }}
                 size="icon-xs"
-                variant="outline"
+                variant="secondary"
                 onClick={() => editor.commands.deleteSelection()}
               >
                 <TrashIcon className="h-4 w-4" />
-              </Button>
-              <Button
-                tooltip={{
-                  delay: 100,
-                  content: "Edit image",
-                  side: "bottom",
-                }}
-                size="icon-xs"
-                variant="outline"
-                onClick={() => setShowImagePicker(true)}
-              >
-                <PencilIcon className="h-4 w-4" />
               </Button>
             </div>
           </div>

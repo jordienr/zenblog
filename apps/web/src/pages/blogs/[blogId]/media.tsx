@@ -5,9 +5,13 @@ import {
   useMediaQuery,
 } from "@/components/Images/Images.queries";
 import { ImageUploader } from "@/components/Images/ImageUploader";
-import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
 import { TrashIcon, Upload } from "lucide-react";
@@ -44,18 +48,16 @@ export default function MediaPage() {
                 open={confirmDeleteDialogOpen}
                 onOpenChange={setConfirmDeleteDialogOpen}
                 title="Are you sure you want to delete these files?"
-                description="Blog posts that reference these files will be affected. This action cannot be undone."
+                description="If there are still posts using this image, it will show a broken image icon. Make sure to update the post to use a different image first."
                 onConfirm={async () => {
-                  const paths = selectedImages.map(
-                    (img) => `${blogId}/${img.name}`
-                  );
-                  const { error, data } = await deleteMedia.mutateAsync(paths);
+                  const paths = selectedImages.map((img) => ({
+                    path: `${blogId}/${img.name}`,
+                    blog_id: blogId,
+                  }));
+                  const res = await deleteMedia.mutateAsync(paths);
 
-                  if (error) {
-                    toast.error("Failed to delete images");
-                    return;
-                  }
                   toast.success("Images deleted");
+                  setConfirmDeleteDialogOpen(false);
                   setSelectedImages([]);
                 }}
                 dialogBody={
@@ -79,6 +81,7 @@ export default function MediaPage() {
               </Button>
             </DialogTrigger>
             <DialogContent className="md:max-w-sm">
+              <DialogTitle className="sr-only">Upload media</DialogTitle>
               <ImageUploader
                 blogId={blogId}
                 onSuccessfulUpload={() => {

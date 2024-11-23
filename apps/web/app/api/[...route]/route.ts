@@ -5,8 +5,6 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { handle } from "hono/vercel";
 import { createClient } from "@/lib/server/supabase";
-import { createId } from "@/lib/create-id";
-import bcrypt from "bcrypt";
 import { axiom, AXIOM_DATASETS, getApiUsageForBlog } from "lib/axiom";
 import {
   createOrRetrieveCustomer,
@@ -21,6 +19,12 @@ import {
   PricingPlanId,
   TRIAL_PERIOD_DAYS,
 } from "@/lib/pricing.constants";
+import sharp from "sharp";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 
 const UnauthorizedError = (c: Context) => {
   return c.json({ message: "Unauthorized" }, { status: 401 });
@@ -63,6 +67,32 @@ const getUser = async () => {
     user: res.data.user,
     error: res.error,
   };
+};
+
+const getBlogOwnership = async (blogId: string, userId: string) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("user_id")
+    .eq("id", blogId)
+    .single();
+
+  if (error || !data) {
+    return false;
+  }
+
+  return data.user_id === userId;
+};
+
+const createR2Client = () => {
+  return new S3Client({
+    region: "auto",
+    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  });
 };
 
 const api = new Hono()
@@ -228,7 +258,227 @@ const api = new Hono()
 
       return c.json(res);
     }
-  );
+  )
+  .post(
+    "/blogs/:blog_id/images",
+    zValidator(
+      "query",
+      z.object({
+        convertToWebp: z.string().optional(),
+        imageName: z.string().optional(),
+      })
+    ),
+    zValidator(
+      "form",
+      z.object({
+        image: z.instanceof(File),
+      })
+    ),
+    async (c) => {
+      try {
+        const blogId = c.req.param("blog_id");
+
+        // Check if the user owns the blog
+        const { user } = await getUser();
+        if (!user || !user.id) {
+          console.log("🔴 !user || !user.id", user);
+          return c.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const isOwner = await getBlogOwnership(blogId, user.id);
+
+        if (!isOwner) {
+          console.log("🔴 !isOwner", user.id, blogId);
+          return c.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const convertToWebp = c.req.query("convertToWebp") === "true";
+        const providedName = c.req.query("imageName");
+
+        // Get the file from the request
+        const formData = await c.req.formData();
+        const file = formData.get("image") as File;
+
+        if (!file) {
+          return c.json({ error: "No image provided" }, { status: 400 });
+        }
+
+        // Convert file to buffer
+        const buffer = Buffer.from(await file.arrayBuffer());
+
+        // Process image with Sharp
+        let imageProcessor = sharp(buffer)
+          .resize(2560, 2560, {
+            // Max dimensions
+            fit: "inside",
+            withoutEnlargement: true, // Don't upscale
+          })
+          .jpeg({ quality: 80 }); // Compress
+
+        if (convertToWebp) {
+          imageProcessor = imageProcessor.webp({ quality: 80 });
+        }
+
+        const processedImage = await imageProcessor.toBuffer();
+
+        // Upload to R2
+        const r2 = createR2Client();
+        const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+        const baseName = providedName
+          ? providedName
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, "-") // Replace non-alphanumeric with hyphens
+              .replace(/-+/g, "-") // Replace multiple hyphens with single
+              .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
+          : "image";
+
+        const fileName = `${baseName}-${timestamp}.${
+          convertToWebp ? "webp" : "jpg"
+        }`;
+
+        try {
+          await r2.send(
+            new PutObjectCommand({
+              Bucket: process.env.R2_IMAGES_BUCKET_NAME,
+              Key: fileName,
+              Body: processedImage,
+              ContentType: convertToWebp ? "image/webp" : "image/jpeg",
+              Metadata: {
+                blog_id: blogId,
+                uploaded_at: new Date().toISOString(),
+              },
+            })
+          );
+
+          // Construct the public URL
+          const publicUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/${fileName}`;
+
+          // Insert record into blog_images table
+          const supabase = createClient();
+          const { error: dbError } = await supabase.from("blog_images").insert({
+            blog_id: blogId,
+            file_name: fileName,
+            file_url: publicUrl,
+            size_in_bytes: processedImage.length,
+            content_type: convertToWebp ? "image/webp" : "image/jpeg",
+          });
+
+          if (dbError) {
+            console.error("Database insert error:", dbError);
+            // Attempt to clean up the R2 upload
+            try {
+              await r2.send(
+                new DeleteObjectCommand({
+                  Bucket: process.env.R2_IMAGES_BUCKET_NAME,
+                  Key: fileName,
+                })
+              );
+              return c.json(
+                { error: "Failed to save image metadata" },
+                { status: 500 }
+              );
+            } catch (deleteError) {
+              // Log both errors for investigation
+              console.error("Failed to delete orphaned R2 image:", deleteError);
+              axiom.ingest(AXIOM_DATASETS.api, {
+                message: "Orphaned R2 image",
+                fileName,
+                blogId,
+                dbError,
+                deleteError,
+                error: true,
+              });
+              return c.json(
+                { error: "Failed to process image completely" },
+                { status: 500 }
+              );
+            }
+          }
+
+          return c.json(
+            {
+              url: publicUrl,
+              fileName: fileName,
+            },
+            { status: 200 }
+          );
+        } catch (error) {
+          console.error("R2 upload error:", error);
+          return c.json({ error: "Failed to upload image" }, { status: 500 });
+        }
+      } catch (error) {
+        console.error("Image upload error:", error);
+        return c.json(
+          { error: "Error processing or uploading image" },
+          { status: 500 }
+        );
+      }
+    }
+  )
+  .delete("/blogs/:blog_id/images/:file_name", async (c) => {
+    try {
+      const blogId = c.req.param("blog_id");
+      const fileName = c.req.param("file_name");
+
+      // Check if the user owns the blog
+      const { user } = await getUser();
+      if (!user || !user.id) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const isOwner = await getBlogOwnership(blogId, user.id);
+      if (!isOwner) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      // Delete from Supabase first
+      const supabase = createClient();
+      const { error: dbError } = await supabase
+        .from("blog_images")
+        .delete()
+        .match({
+          blog_id: blogId,
+          file_url: `${process.env.R2_BASE_URL}/${fileName}`,
+        });
+
+      if (dbError) {
+        console.error("Database delete error:", dbError);
+        return c.json(
+          { error: "Failed to delete image metadata" },
+          { status: 500 }
+        );
+      }
+
+      // Delete from R2
+      const r2 = createR2Client();
+      try {
+        await r2.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.R2_IMAGES_BUCKET_NAME,
+            Key: fileName,
+          })
+        );
+      } catch (r2Error) {
+        console.error("R2 delete error:", r2Error);
+        axiom.ingest(AXIOM_DATASETS.api, {
+          message: "Failed to delete R2 image",
+          fileName,
+          blogId,
+          error: true,
+          r2Error,
+        });
+        return c.json(
+          { error: "Failed to delete image from storage" },
+          { status: 500 }
+        );
+      }
+
+      return c.json({ message: "Image deleted successfully" }, { status: 200 });
+    } catch (error) {
+      console.error("Image deletion error:", error);
+      return c.json({ error: "Error deleting image" }, { status: 500 });
+    }
+  });
 
 const app = new Hono()
   .basePath("/api")

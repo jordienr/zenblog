@@ -112,14 +112,12 @@ export default function BlogPosts() {
           </div>
         }
         actions={
-          <>
-            <Button asChild>
-              <Link href={`/blogs/${blog.id}/create`}>
-                <Plus size="16" />
-                New post
-              </Link>
-            </Button>
-          </>
+          <Button asChild>
+            <Link href={`/blogs/${blog.id}/create`}>
+              <Plus size="16" />
+              New post
+            </Link>
+          </Button>
         }
       >
         <Section className="overflow-hidden py-0">

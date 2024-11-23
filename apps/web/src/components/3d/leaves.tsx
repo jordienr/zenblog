@@ -101,7 +101,7 @@ export function Leaves() {
           onCreated={({ gl }) => {
             gl.setClearColor(new Color(1, 1, 1), 1);
           }}
-          style={{ width: "60vw", height: "100vh" }}
+          style={{ width: "60vw", height: "160vh" }}
           onError={() => setHasWebGLError(true)} // Add error handler
           fallback={null} // Add fallback
         >

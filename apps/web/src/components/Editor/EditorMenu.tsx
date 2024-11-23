@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import Link from "next/link";
 export function EditorMenu({ editor }: { editor: Editor | null }) {
   const SIZE = 14;
 
@@ -90,9 +91,13 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
             className="flex w-full items-center gap-2 truncate p-2 font-mono text-xs"
             onClick={() => setShowForm(!showForm)}
           >
-            <span className="w-full flex-grow truncate text-left">
+            <Link
+              href={link?.href ?? ""}
+              target="_blank"
+              className="w-full flex-grow truncate text-left no-underline hover:underline"
+            >
               {link?.href}
-            </span>
+            </Link>
             {link?.target === "_blank" && (
               <TooltipProvider>
                 <Tooltip>

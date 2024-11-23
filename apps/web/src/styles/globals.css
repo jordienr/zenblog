@@ -52,6 +52,13 @@ p div {
   content: "";
 }
 
+.ProseMirror .node-image.ProseMirror-selectednode {
+  @apply rounded-lg ring-1 ring-orange-300 ring-offset-2;
+}
+.node-image {
+  margin: 0 !important;
+}
+
 .section {
   @apply rounded-xl border border-zinc-200 bg-white;
 }

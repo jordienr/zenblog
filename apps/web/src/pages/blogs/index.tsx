@@ -3,8 +3,7 @@ import { useBlogsQuery } from "@/queries/blogs";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
-import { PiPencilLine } from "react-icons/pi";
-import { Paintbrush, Plus, Settings } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
 import { useState } from "react";
 import {
@@ -16,7 +15,7 @@ import { FaPencilAlt } from "react-icons/fa";
 
 export default function Dashboard() {
   const user = useUser();
-  const { data, error, isLoading } = useBlogsQuery({ enabled: !!user });
+  const { data, isLoading } = useBlogsQuery({ enabled: !!user });
   const router = useRouter();
   const [hovering, setHovering] = useState("");
 
@@ -55,7 +54,7 @@ export default function Dashboard() {
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border bg-white p-1 transition-all hover:border-zinc-300"
+                  className="group rounded-xl border bg-white/50 p-1 transition-all hover:border-zinc-300 hover:bg-white hover:shadow-sm"
                   key={blog.id}
                   onMouseEnter={() => setHovering(blog.id)}
                   onMouseLeave={() => setHovering("")}
@@ -109,9 +108,7 @@ export default function Dashboard() {
                         <TooltipContent>Settings</TooltipContent>
                       </Tooltip>
                       <Button
-                        variant={
-                          hovering === blog.id ? "secondary" : "secondary"
-                        }
+                        variant={"secondary"}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();

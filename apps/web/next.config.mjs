@@ -8,5 +8,11 @@ await import("./src/env.mjs");
 const config = {
   reactStrictMode: true,
   transpilePackages: [ "react-syntax-highlighter" ],
+  images: {
+    remotePatterns: [
+      { hostname: "images.zenblog.com", protocol: "https", port: "", pathname: "/**" },
+      { hostname: "ppfseefimhneysnokffx.supabase.co", protocol: "https", port: "", pathname: "/**" },
+    ],
+  },
 };
 export default config;

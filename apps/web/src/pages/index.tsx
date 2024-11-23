@@ -28,6 +28,7 @@ import Navigation from "@/components/marketing/Navigation";
 import { CodeBlockComponent } from "@/components/code-block";
 import { Lora } from "next/font/google";
 import { Leaves } from "@/components/3d/leaves";
+import { motion } from "framer-motion";
 
 const h1Font = Lora({
   subsets: ["latin"],
@@ -119,8 +120,19 @@ const Home = () => {
       <div className={`${h1Font.variable}`}>
         <div className="flex flex-col">
           <Navigation />
-          <Leaves />
-          <main className="mt-12 px-6 pb-24 font-sans">
+          <motion.div
+            initial={{ opacity: 0, y: 10, filter: "blur(12px)", scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+            transition={{ duration: 3, delay: 0.5 }}
+          >
+            <Leaves />
+          </motion.div>
+          <motion.main
+            className="mt-12 px-6 pb-24 font-sans"
+            initial={{ opacity: 0, y: 10, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="mx-auto max-w-5xl px-6 text-center">
               <span className="rounded-full bg-gradient-to-br from-orange-100/80 to-orange-50 px-3 py-1 font-mono text-xs font-medium text-orange-500">
                 Now in Open beta
@@ -343,7 +355,7 @@ const post = await client.posts.get({ slug: "hello-world" });`}
                 </Accordion>
               </div>
             </section>
-          </main>
+          </motion.main>
         </div>
         <Footer />
       </div>

@@ -15,7 +15,7 @@ import {
   Strikethrough,
   Underline,
 } from "lucide-react";
-import { PiCodeBlock, PiListNumbers } from "react-icons/pi";
+import { PiCodeBlock, PiListNumbers, PiQuotes } from "react-icons/pi";
 
 const SIZE = 14;
 
@@ -147,6 +147,13 @@ const HEADING6_BTN = {
     editor?.chain().focus().setHeading({ level: 6 }).run(),
 };
 
+const QUOTE_BTN = {
+  id: "quote",
+  icon: <PiQuotes size={SIZE} />,
+  label: "Quote",
+  command: (editor: Editor) => editor?.chain().focus().toggleBlockquote().run(),
+};
+
 export const TOP_MENU_BUTTONS = [
   BOLD_BTN,
   ITALIC_BTN,
@@ -157,6 +164,7 @@ export const TOP_MENU_BUTTONS = [
   Separator,
   LIST_BTN,
   LINK_BTN,
+  QUOTE_BTN,
   // NUMBERED_LIST_BTN,
 ];
 
