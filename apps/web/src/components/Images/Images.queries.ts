@@ -113,6 +113,7 @@ export function useDeleteMediaMutation() {
       }[]
     ) => {
       // Split items into Supabase and R2 hosted images
+      console.log("items", items);
       const supabaseItems = items
         .filter((item) => item.supabase_hosted)
         .map((item) => item.path);

@@ -52,6 +52,7 @@ export default function MediaPage() {
                 onConfirm={async () => {
                   const paths = selectedImages.map((img) => ({
                     path: `${blogId}/${img.name}`,
+                    supabase_hosted: img.supabase_hosted,
                     blog_id: blogId,
                   }));
                   const res = await deleteMedia.mutateAsync(paths);
