@@ -116,6 +116,11 @@ export function useDeleteMediaMutation() {
       const supabaseItems = items
         .filter((item) => item.supabase_hosted)
         .map((item) => item.path);
+      const blogId = items[0]?.blog_id;
+
+      if (!blogId) {
+        throw new Error("Blog ID is required");
+      }
 
       const r2Items = items.filter((item) => !item.supabase_hosted);
 
@@ -127,30 +132,29 @@ export function useDeleteMediaMutation() {
         }
       }
 
+      const r2FileNames: string[] = [];
       // Handle R2/Cloudflare deletions
       for (const item of r2Items) {
-        console.log("item", item);
         const file_name = item.path.split("/").pop();
-        console.log("file_name", file_name);
         if (!item.blog_id || !file_name) {
           throw new Error("Blog ID is required");
         }
-        const res = await api.v2.blogs[":blog_id"].images[":file_name"].$delete(
-          {
-            param: {
-              blog_id: item.blog_id,
-              file_name,
-            },
-          }
-        );
+        r2FileNames.push(file_name);
+      }
 
-        if (res.status !== 200) {
-          const error = await res.json();
-          console.error(error);
-          throw new Error("Failed to delete image");
-        }
+      const res = await api.v2.blogs[":blog_id"].images.$delete({
+        param: {
+          blog_id: blogId,
+        },
+        json: {
+          fileNames: r2FileNames,
+        },
+      });
 
-        return;
+      if (res.status !== 200) {
+        const error = await res.json();
+        console.error(error);
+        throw new Error("Failed to delete image");
       }
 
       return { message: "Successfully deleted images" };

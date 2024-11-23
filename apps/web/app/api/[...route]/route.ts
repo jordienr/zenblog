@@ -415,70 +415,96 @@ const api = new Hono()
       }
     }
   )
-  .delete("/blogs/:blog_id/images/:file_name", async (c) => {
-    try {
-      const blogId = c.req.param("blog_id");
-      const fileName = c.req.param("file_name");
-
-      // Check if the user owns the blog
-      const { user } = await getUser();
-      if (!user || !user.id) {
-        return c.json({ error: "Unauthorized" }, { status: 401 });
-      }
-
-      const isOwner = await getBlogOwnership(blogId, user.id);
-      if (!isOwner) {
-        return c.json({ error: "Unauthorized" }, { status: 401 });
-      }
-
-      // Delete from Supabase first
-      const supabase = createClient();
-      const { error: dbError } = await supabase
-        .from("blog_images")
-        .delete()
-        .match({
-          blog_id: blogId,
-          file_url: `${process.env.R2_BASE_URL}/${fileName}`,
-        });
-
-      if (dbError) {
-        console.error("Database delete error:", dbError);
-        return c.json(
-          { error: "Failed to delete image metadata" },
-          { status: 500 }
-        );
-      }
-
-      // Delete from R2
-      const r2 = createR2Client();
+  .delete(
+    "/blogs/:blog_id/images",
+    zValidator(
+      "json",
+      z.object({
+        fileNames: z.array(z.string()),
+      })
+    ),
+    async (c) => {
       try {
-        await r2.send(
-          new DeleteObjectCommand({
-            Bucket: process.env.R2_IMAGES_BUCKET_NAME,
-            Key: fileName,
+        const blogId = c.req.param("blog_id");
+        const { fileNames } = await c.req.json();
+
+        // Check if the user owns the blog
+        const { user } = await getUser();
+        if (!user || !user.id) {
+          return c.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const isOwner = await getBlogOwnership(blogId, user.id);
+        if (!isOwner) {
+          return c.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // Delete from Supabase first
+        const supabase = createClient();
+        const fileUrls = fileNames.map(
+          (fileName: string) => `${process.env.R2_BASE_URL}/${fileName}`
+        );
+        const { error: dbError } = await supabase
+          .from("blog_images")
+          .delete()
+          .match({ blog_id: blogId })
+          .in("file_url", fileUrls);
+
+        if (dbError) {
+          console.error("Database delete error:", dbError);
+          return c.json(
+            { error: "Failed to delete image metadata" },
+            { status: 500 }
+          );
+        }
+
+        // Delete from R2
+        const r2 = createR2Client();
+        const deleteErrors: { fileName: string; error: unknown }[] = [];
+
+        // Process deletions in parallel
+        await Promise.all(
+          fileNames.map(async (fileName: string) => {
+            try {
+              await r2.send(
+                new DeleteObjectCommand({
+                  Bucket: process.env.R2_IMAGES_BUCKET_NAME,
+                  Key: fileName,
+                })
+              );
+            } catch (r2Error) {
+              console.error("R2 delete error:", r2Error);
+              deleteErrors.push({ fileName, error: r2Error });
+            }
           })
         );
-      } catch (r2Error) {
-        console.error("R2 delete error:", r2Error);
-        axiom.ingest(AXIOM_DATASETS.api, {
-          message: "Failed to delete R2 image",
-          fileName,
-          blogId,
-          error: true,
-          r2Error,
-        });
-        return c.json(
-          { error: "Failed to delete image from storage" },
-          { status: 500 }
-        );
-      }
 
-      return c.json({ message: "Image deleted successfully" }, { status: 200 });
-    } catch (error) {
-      console.error("Image deletion error:", error);
-      return c.json({ error: "Error deleting image" }, { status: 500 });
+        if (deleteErrors.length > 0) {
+          axiom.ingest(AXIOM_DATASETS.api, {
+            message: "Failed to delete some R2 images",
+            blogId,
+            error: true,
+            deleteErrors,
+          });
+          return c.json(
+            {
+              error: "Failed to delete some images from storage",
+              deleteErrors,
+            },
+            { status: 500 }
+          );
+        }
+
+        return c.json(
+          { message: "Images deleted successfully" },
+          { status: 200 }
+        );
+      } catch (error) {
+        console.error("Image deletion error:", error);
+        return c.json({ error: "Error deleting images" }, { status: 500 });
+      }
     }
-  });
+  );
 
 const app = new Hono()
   .basePath("/api")
