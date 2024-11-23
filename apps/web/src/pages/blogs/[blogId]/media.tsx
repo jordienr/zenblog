@@ -63,11 +63,11 @@ export default function MediaPage() {
                 dialogBody={
                   <div>
                     <h2 className="font-medium">Files to delete:</h2>
-                    <ul className="font-mono text-red-500">
+                    <pre className="grid max-h-48 max-w-full gap-2 overflow-x-auto overflow-y-auto rounded-md bg-slate-100 p-2 font-mono">
                       {selectedImages.map((img) => (
-                        <li key={img.name}>{img.name}</li>
+                        <code key={img.name}>{img.name}</code>
                       ))}
-                    </ul>
+                    </pre>
                   </div>
                 }
               />

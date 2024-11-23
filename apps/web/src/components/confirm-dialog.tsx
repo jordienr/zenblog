@@ -26,7 +26,7 @@ export function ConfirmDialog({
 }: PropsWithChildren<Props>) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xs md:w-[400px]">
+      <DialogContent className="">
         <DialogHeader>
           <h2 className="font-medium">{title ? title : "Are you sure?"}</h2>
           <p className="text-zinc-600">
