@@ -99,6 +99,7 @@ export const ImageUploader = ({
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true);
 
     if (!image) return;
 
@@ -115,6 +116,8 @@ export const ImageUploader = ({
     } catch (error) {
       console.error(error);
       toast.error("Error uploading image");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -138,12 +141,11 @@ export const ImageUploader = ({
       <form onSubmit={onSubmit}>
         {image && (
           <div className="flex min-h-[300px] flex-col items-center justify-center overflow-auto rounded-lg border p-2">
-            {loading && (
-              <div className="flex-x-center flex-y-center p-8">
+            {loading ? (
+              <div className="flex-x-center flex-y-center p-12">
                 <Loader2 className="animate-spin" />
               </div>
-            )}
-            {image && (
+            ) : (
               <img
                 className="max-h-80 w-full rounded-lg border bg-white object-cover shadow-sm"
                 src={createObjectURL || ""}
@@ -180,6 +182,11 @@ export const ImageUploader = ({
         {!image && (
           <div>
             <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                document.getElementById("file")?.click();
+              }}
               className="flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-2 text-center font-medium"
               onDragOver={(e) => {
                 e.preventDefault();
@@ -202,6 +209,7 @@ export const ImageUploader = ({
             </div>
             <Input
               className="mt-2"
+              id="file"
               type="file"
               name="file"
               onChange={uploadToClient}
@@ -226,10 +234,11 @@ export const ImageUploader = ({
                   setCreateObjectURL(null);
                   setImageInfo(null);
                 }}
+                disabled={loading}
               >
                 Remove
               </Button>
-              <Button variant="default" type="submit">
+              <Button variant="default" type="submit" disabled={loading}>
                 Upload
               </Button>
             </>
