@@ -690,7 +690,7 @@ export const ZendoEditor = (props: Props) => {
         </div>
       </div>
 
-      <Dialog open={publishedDialog} onOpenChange={setPublishedDialog}>
+      {/* <Dialog open={publishedDialog} onOpenChange={setPublishedDialog}>
         <DialogContent className="!max-w-xs">
           <DialogTitle className="text-lg font-medium">
             🎉 Post published!
@@ -719,7 +719,7 @@ export const ZendoEditor = (props: Props) => {
             View post
           </Button>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };
