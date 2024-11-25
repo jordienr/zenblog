@@ -21,14 +21,14 @@ export default function DocsLayout({
     <div className="flex flex-col">
       <SidebarTitle>Docs</SidebarTitle>
       <SidebarLink href="/docs/getting-started">Getting Started</SidebarLink>
-      <SidebarLink href="/docs/fetching-posts">Fetching posts</SidebarLink>
+      {/* <SidebarLink href="/docs/fetching-posts">Fetching posts</SidebarLink>
       <SidebarLink href="/docs/fetching-a-post">Fetching a post</SidebarLink>
       <SidebarLink href="/docs/rendering-a-post">Rendering a post</SidebarLink>
       <SidebarLink href="/docs/fetching-categories">
         Fetching categories
-      </SidebarLink>
+      </SidebarLink> */}
       <SidebarTitle>Guides</SidebarTitle>
-      <SidebarLink href="/docs/typescript">TypeScript client</SidebarLink>
+      {/* <SidebarLink href="/docs/typescript">TypeScript client</SidebarLink> */}
       <SidebarLink href="/docs/nextjs">Next.js</SidebarLink>
       <SidebarTitle>API Reference</SidebarTitle>
       {endpoints.map((endpoint) => (

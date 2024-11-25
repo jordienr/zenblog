@@ -264,7 +264,7 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        `relative flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-50 md:px-2 md:py-1`,
+        `relative flex items-center gap-1 rounded-t-md px-3 py-2 text-sm font-medium text-zinc-600 transition-all hover:bg-zinc-100/70 md:px-2 md:py-1`,
         {
           "text-zinc-950": selected,
           "after:absolute after:inset-x-0 after:bottom-[-1px] after:z-10 after:h-[2px] after:w-full after:bg-orange-500 after:content-['']":
