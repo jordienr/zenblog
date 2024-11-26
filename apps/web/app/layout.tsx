@@ -1,5 +1,6 @@
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import PlausibleProvider from "next-plausible";
 
 export const metadata = {
   title: "Zenblog blog",
@@ -35,6 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <PlausibleProvider domain="zenblog.com" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
