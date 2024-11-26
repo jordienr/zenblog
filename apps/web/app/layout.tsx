@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata = {
   title: "Zenblog blog",
   description: "A simple headless blogging CMS",
+  icons: {
+    icon: "/static/favicon.ico",
+  },
   openGraph: {
     title: "Zenblog blog",
     description: "A simple headless blogging CMS",

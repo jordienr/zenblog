@@ -116,6 +116,12 @@ const Home = () => {
         <title>Zenblog - A tiny blogging CMS</title>
         <meta name="description" content="Simple, headless, blogging CMS." />
         <link rel="icon" href="/static/favicon.ico" />
+        <meta property="og:title" content="Zenblog" />
+        <meta
+          property="og:description"
+          content="Simple, headless, blogging CMS."
+        />
+        <meta property="og:image" content="/static/og.jpg" />
       </Head>
       <div className={`${h1Font.variable}`}>
         <div className="flex flex-col">
