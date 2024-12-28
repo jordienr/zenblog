@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, Loader2 } from "lucide-react";
 import { useMediaQuery } from "./Images.queries";
 import { Input } from "../ui/input";
 import { motion, AnimatePresence } from "framer-motion";
@@ -69,6 +69,16 @@ export function ImagePicker({
               <div className="relative">
                 <div className="overflow-auto">
                   <div className="grid grid-cols-2 gap-3 p-2 md:grid-cols-3">
+                    {media?.isLoading ? (
+                      <div className="col-span-full flex flex-col items-center justify-center py-28">
+                        <Loader2 size={24} className="animate-spin" />
+                      </div>
+                    ) : null}
+                    {media?.data?.length === 0 ? (
+                      <div className="col-span-full flex flex-col items-center justify-center py-28">
+                        <p className="text-sm text-zinc-500">No images found</p>
+                      </div>
+                    ) : null}
                     {media.data?.map((image) => (
                       <button
                         key={image.id}
