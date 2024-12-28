@@ -40,8 +40,6 @@ app.get(posts.path, async (c) => {
   const category = c.req.query("category");
   const supabase = createClient();
 
-  console.log("🥬", c.req.url);
-
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
   }
@@ -55,7 +53,7 @@ app.get(posts.path, async (c) => {
     .eq("published", true)
     .eq("deleted", false)
     .order("published_at", { ascending: false })
-    .range(offset, offset + limit);
+    .range(offset, offset + limit - 1);
 
   if (category) {
     query.eq("category_slug", category);

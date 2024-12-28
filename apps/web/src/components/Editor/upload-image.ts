@@ -16,7 +16,6 @@ export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
         const action = tr.getMeta(uploadKey);
 
         if (action?.add) {
-          console.log("action", action);
           const { id, pos, src } = action.add;
 
           const placeholder = document.createElement("div");
@@ -30,7 +29,6 @@ export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
           });
           set = set.add(tr.doc, [deco]);
         } else if (action?.remove) {
-          console.log("action rm", action);
           // biome-ignore lint/suspicious/noDoubleEquals: <explanation>
           set = set.remove(
             set.find(
