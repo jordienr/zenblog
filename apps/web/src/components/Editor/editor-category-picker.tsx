@@ -39,7 +39,7 @@ export function EditorCategoryPicker({
 }) {
   const [open, setOpen] = useState(false);
   const hasCategory = value !== null;
-  const selectedCategory = categories.find((c) => c.id === value);
+  const selectedCategory = categories?.find?.((c) => c.id === value);
   return (
     <>
       <CreateCategoryDialog open={open} setOpen={setOpen} />
@@ -74,7 +74,7 @@ export function EditorCategoryPicker({
                   <Plus />
                 </Button>
               </DropdownMenuLabel>
-              {categories?.map((category) => (
+              {categories?.map?.((category) => (
                 <DropdownMenuItem
                   className={cn(
                     value === category.id && "bg-zinc-100 text-orange-500"

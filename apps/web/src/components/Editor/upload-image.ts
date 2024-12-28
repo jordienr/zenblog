@@ -11,7 +11,6 @@ export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
         return DecorationSet.empty;
       },
       apply(tr, set) {
-        console.log("tr", tr);
         set = set.map(tr.mapping, tr.doc);
         // See if the transaction adds or removes any placeholders
         const action = tr.getMeta(uploadKey);
@@ -31,7 +30,7 @@ export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
           });
           set = set.add(tr.doc, [deco]);
         } else if (action?.remove) {
-          console.log('action rm', action)
+          console.log("action rm", action);
           // biome-ignore lint/suspicious/noDoubleEquals: <explanation>
           set = set.remove(
             set.find(
@@ -41,7 +40,7 @@ export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
             )
           );
         }
-        console.log('set', set)
+        console.log("set", set);
         return set;
       },
     },
@@ -71,7 +70,7 @@ export const createImageUpload =
   (file, blogId) => {
     // check if the file is an image
     const validated = validateFn?.(file);
-    if (!validated) return Promise.resolve('');
+    if (!validated) return Promise.resolve("");
 
     // A fresh object to act as the ID for this upload
     const id = {};
@@ -132,7 +131,9 @@ export const handleImagePaste = (
             view.dispatch(transaction);
           },
           () => {
-            const transaction = view.state.tr.setMeta(uploadKey, { remove: { id } });
+            const transaction = view.state.tr.setMeta(uploadKey, {
+              remove: { id },
+            });
             view.dispatch(transaction);
           }
         );
@@ -192,7 +193,9 @@ export const handleImageDrop = (
             view.dispatch(transaction);
           },
           () => {
-            const transaction = view.state.tr.setMeta(uploadKey, { remove: { id } });
+            const transaction = view.state.tr.setMeta(uploadKey, {
+              remove: { id },
+            });
             view.dispatch(transaction);
           }
         );

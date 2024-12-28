@@ -50,10 +50,6 @@ export function ImagePicker({
     enabled: open,
   });
 
-  console.log("media", media);
-  console.log("media", media);
-  console.log("media", media);
-
   const [tab, setTab] = useState("images");
   const [imageUrl, setImageUrl] = useState("");
 
