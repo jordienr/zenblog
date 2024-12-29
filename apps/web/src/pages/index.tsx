@@ -158,13 +158,12 @@ const Home = () => {
                 className={`mt-2 text-4xl font-medium tracking-tight text-slate-800 md:text-5xl`}
                 style={{ fontFamily: h1Font.style.fontFamily }}
               >
-                The hassle-free blogging platform for growing businesses
+                The hassle-free blogging CMS for growing businesses
               </h1>
 
               <div className="mt-3 text-slate-500">
                 <p className="text-balance text-2xl">
-                  Simple, headless blogging CMS
-                  <br /> that works with any stack.
+                  Notion-like writing experience, with a simple headless API
                 </p>
                 <Link className="mt-8 inline-flex" href="/sign-up">
                   <Button size="default" className="text-sm">
