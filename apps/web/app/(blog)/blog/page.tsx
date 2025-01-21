@@ -24,17 +24,17 @@ const Blog = async () => {
         {latestPost && (
           <Link
             href={`/blog/${latestPost.slug}`}
-            className="group shadow-lg transition-all hover:scale-105 hover:shadow-xl md:flex md:rounded-2xl"
+            className="group transition-all hover:scale-105 md:flex"
           >
             <img
-              className="h-[400px] w-full rounded-t-2xl object-cover md:w-3/5 md:rounded-l-2xl md:rounded-tr-none"
+              className="h-[400px] w-full rounded-2xl object-cover md:w-3/5"
               width={600}
               height={400}
               src={latestPost.cover_image || ""}
               alt=""
             />
-            <div className="flex flex-col justify-center rounded-b-2xl border-x border-b bg-zinc-50 p-5 transition-all group-hover:bg-white md:rounded-r-2xl md:rounded-bl-none md:border-t">
-              <p className="text-sm text-zinc-500">
+            <div className="flex w-full flex-col justify-center p-5 pb-8 transition-all">
+              <p className="w-full text-sm text-zinc-500">
                 <span className="mr-2 font-medium text-orange-600">New!</span>
                 <time>
                   {new Date(latestPost.published_at).toLocaleDateString(
@@ -48,7 +48,9 @@ const Blog = async () => {
                 </time>
               </p>
 
-              <h2 className="text-2xl font-medium">{latestPost.title}</h2>
+              <h2 className="text-2xl font-medium md:text-3xl">
+                {latestPost.title}
+              </h2>
               <p className="mt-1 text-sm text-zinc-500">{latestPost.excerpt}</p>
             </div>
           </Link>
