@@ -41,14 +41,14 @@ const Footer = (props: Props) => {
   ];
 
   return (
-    <footer className="mt-6 border-t bg-zinc-50 p-6 text-zinc-700 md:p-12">
-      <div className="mx-auto flex max-w-3xl justify-between font-mono">
+    <footer className="mt-6 border-t bg-slate-50/80 p-6 text-slate-700 md:p-12">
+      <div className="mx-auto flex max-w-3xl justify-between text-sm font-medium">
         <div>
           <ZendoLogo />
-          <ul className="mt-4 flex gap-4 text-zinc-400">
+          <ul className="mt-4 flex gap-4 text-slate-400">
             <li>
               <Link
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 px-1"
                 href="https://twitter.com/zenbloghq"
               >
                 <IoLogoTwitter size="18" />

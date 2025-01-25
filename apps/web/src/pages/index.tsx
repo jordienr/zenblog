@@ -138,6 +138,7 @@ const Home = () => {
         <div className="flex flex-col">
           <Navigation />
           <motion.div
+            className="hidden md:block"
             initial={{ opacity: 0, y: 10, filter: "blur(12px)", scale: 0.9 }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
             transition={{ duration: 3, delay: 0.5 }}
@@ -150,23 +151,26 @@ const Home = () => {
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.5 }}
           >
-            <div className="mx-auto max-w-5xl px-6 text-center">
-              <span className="rounded-full bg-gradient-to-br from-orange-100/80 to-orange-50 px-3 py-1 font-mono text-xs font-medium text-orange-500">
+            <div className="mx-auto mt-20 max-w-5xl px-6 text-center md:mt-12">
+              <span className="rounded-full bg-gradient-to-br from-orange-100/80 to-orange-50 px-3 py-1 text-xs font-medium text-orange-500">
                 Now in Open beta
               </span>
               <h1
-                className={`mt-2 text-4xl font-medium tracking-tight text-slate-800 md:text-5xl`}
+                className={`mt-4 text-4xl font-medium tracking-tight text-slate-800 md:text-5xl`}
                 style={{ fontFamily: h1Font.style.fontFamily }}
               >
                 The hassle-free blogging CMS for growing businesses
               </h1>
 
-              <div className="mt-3 text-slate-500">
-                <p className="text-balance text-2xl">
+              <div className="mt-4 text-slate-500">
+                <p className="text-balance text-xl md:text-2xl">
                   Notion-like writing experience, with a simple headless API
                 </p>
-                <Link className="mt-8 inline-flex" href="/sign-up">
-                  <Button size="default" className="text-sm">
+                <Link className="mt-6 inline-flex" href="/sign-up">
+                  <Button
+                    size="default"
+                    className="h-12 rounded-xl text-lg font-medium"
+                  >
                     Start blogging for free
                   </Button>
                 </Link>
@@ -174,13 +178,13 @@ const Home = () => {
             </div>
             <div className="mx-auto mt-24 max-w-6xl rounded-xl shadow-xl">
               <Image
-                className="w-full rounded-lg border border-zinc-200 shadow-sm transition-all"
+                className="aspect-square w-full rounded-lg border border-zinc-200 object-cover shadow-sm transition-all md:aspect-video"
                 src="/static/zenblog-ui.webp"
                 loading="lazy"
                 blurDataURL="/static/zenblog-ui.webp"
                 placeholder="blur"
                 width={1200}
-                height={300}
+                height={600}
                 alt="The zenblog editor UI"
               />
             </div>
