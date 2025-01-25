@@ -159,12 +159,13 @@ const Home = () => {
                 className={`mt-4 text-4xl font-medium tracking-tight text-slate-800 md:text-5xl`}
                 style={{ fontFamily: h1Font.style.fontFamily }}
               >
-                The hassle-free blogging CMS for growing businesses
+                Notion-like writing experience
+                <br /> with a simple headless API
               </h1>
 
               <div className="mt-4 text-slate-500">
                 <p className="text-balance text-xl md:text-2xl">
-                  Notion-like writing experience, with a simple headless API
+                  A simple blogging CMS for devs and marketers
                 </p>
                 <Link className="mt-6 inline-flex" href="/sign-up">
                   <Button
@@ -218,7 +219,7 @@ const post = await client.posts.get({ slug: "hello-world" });`}
               </CodeBlockComponent>
             </div>
 
-            <div className="mx-auto mt-24 max-w-5xl rounded-xl border p-2">
+            <div className="mx-auto mt-24 max-w-5xl rounded-xl border bg-white/80 p-2 backdrop-blur-lg">
               <div className="p-2 px-4">
                 <FaPenFancy className="text-2xl text-orange-400" />
                 <h2 className="mt-2 text-2xl font-medium">
