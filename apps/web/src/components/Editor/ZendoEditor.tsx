@@ -158,8 +158,8 @@ export const ZendoEditor = (props: Props) => {
   }, [router.query.pub]);
 
   useEffect(() => {
-    // When a user writes a space, change it for a dash
-    const newSlug = slug.replace(/\s/g, "-");
+    // When a user writes a space or a '/', change it for a dash
+    const newSlug = slug.replace(/\s/g, "-").replace(/\//g, "-");
     setValue("slug", newSlug);
   }, [slug, setValue]);
 
