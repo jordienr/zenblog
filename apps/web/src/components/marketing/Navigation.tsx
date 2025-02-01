@@ -71,9 +71,9 @@ const Navigation = (props: Props) => {
         ) : (
           <div className="ml-2 flex gap-2">
             <Button asChild variant={"ghost"} size="default">
-              <Link href="/sign-in">Login</Link>
+              <Link href="/sign-in">Sign in</Link>
             </Button>
-            <Button asChild variant={"default"} size="default">
+            <Button asChild variant={"ghost"} size="default">
               <Link href="/sign-up">Sign up</Link>
             </Button>
           </div>
