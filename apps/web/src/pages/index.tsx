@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   FaCheckCircle,
   FaCode,
+  FaCopy,
   FaImage,
   FaNetworkWired,
   FaPencilRuler,
@@ -29,6 +30,7 @@ import { CodeBlockComponent } from "@/components/code-block";
 import { Lora } from "next/font/google";
 import { Leaves } from "@/components/3d/leaves";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const h1Font = Lora({
   subsets: ["latin"],
@@ -152,29 +154,35 @@ const Home = () => {
             transition={{ duration: 0.5 }}
           >
             <div className="mx-auto mt-20 max-w-5xl px-6 text-center md:mt-12">
-              <span className="rounded-full bg-gradient-to-br from-orange-100/80 to-orange-50 px-3 py-1 text-xs font-medium text-orange-500">
-                Now in Open beta
-              </span>
               <h1
-                className={`mt-4 text-4xl font-medium tracking-tight text-slate-800 md:text-5xl`}
-                style={{ fontFamily: h1Font.style.fontFamily }}
+                className={`mt-4 text-balance text-4xl font-semibold tracking-tight text-slate-800 md:text-5xl`}
               >
-                Notion-like writing experience
-                <br /> with a simple headless API
+                Notion-like editor with <br />a simple headless API
               </h1>
 
               <div className="mt-4 text-slate-500">
-                <p className="text-balance text-xl md:text-2xl">
+                <p className="text-balance text-lg font-medium md:text-2xl">
                   A simple blogging CMS for devs and marketers
                 </p>
                 <Link className="mt-6 inline-flex" href="/sign-up">
                   <Button
                     size="default"
-                    className="h-12 rounded-xl text-lg font-medium"
+                    className="h-10 rounded-xl font-medium"
                   >
                     Start blogging for free
                   </Button>
                 </Link>
+                <div>
+                  <code
+                    className="mt-4 inline-block cursor-copy rounded-lg px-3 py-1.5 text-sm text-zinc-600 transition-all hover:bg-zinc-100"
+                    onClick={() => {
+                      navigator.clipboard.writeText("npm i zenblog");
+                      toast.success("Copied to clipboard");
+                    }}
+                  >
+                    npm i zenblog
+                  </code>
+                </div>
               </div>
             </div>
             <div className="mx-auto mt-24 max-w-6xl rounded-xl shadow-xl">
