@@ -55,6 +55,11 @@ p div {
 .ProseMirror .node-image.ProseMirror-selectednode {
   @apply rounded-lg ring-1 ring-orange-300 ring-offset-2;
 }
+
+.ProseMirror li p {
+  @apply m-0;
+}
+
 .node-image {
   margin: 0 !important;
 }

@@ -469,7 +469,11 @@ export const ZendoEditor = (props: Props) => {
               <IoClose />
             </button>
 
-            <img className="w-full rounded-xl" src={coverImgUrl || ""} alt="" />
+            <img
+              className="w-full rounded-xl object-contain shadow-lg"
+              src={coverImgUrl || ""}
+              alt=""
+            />
           </div>
         )}
         <div className="group mx-auto w-full max-w-3xl px-2 pb-2 md:px-8">
@@ -682,7 +686,7 @@ export const ZendoEditor = (props: Props) => {
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 mx-auto -mt-4 min-h-[700px] w-full max-w-3xl cursor-text rounded-lg  px-2 font-normal leading-10 tracking-normal transition-all md:px-6"
+            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 prose-li:[&_p]:my-1 mx-auto -mt-4 min-h-[700px] w-full max-w-3xl cursor-text  rounded-lg px-2 font-normal leading-10 tracking-normal transition-all md:px-6"
           >
             {/* <pre>{JSON.stringify(editor?.getHTML(), null, 2)}</pre> */}
             <EditorContent className="w-full" editor={editor} />
