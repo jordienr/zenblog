@@ -6,18 +6,6 @@ const sb = createSupabaseBrowserClient();
 
 export type Author = Database["public"]["Tables"]["authors"]["Row"];
 
-<<<<<<< HEAD
-export function useAuthorsWithPostCount() {
-  return useQuery({
-    queryKey: ["authors-with-post-count"],
-    queryFn: async () => [],
-    //   await sb
-    //     .from("author_post_count")
-    //     .select(
-    //       "author_id, author_name, author_slug, post_count, created_at"
-    //     )
-    //     .throwOnError(),
-=======
 const keys = {
   authors: ["blog-authors"],
 };
@@ -32,7 +20,6 @@ export function useAuthorsQuery() {
         .throwOnError();
       return data;
     },
->>>>>>> 98a92c6 (wip)
   });
 }
 

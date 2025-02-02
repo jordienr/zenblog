@@ -7,18 +7,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -26,17 +20,12 @@ import {
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
 import {
-<<<<<<< HEAD
   useAuthors,
-  useAuthorsWithPostCount,
-=======
-  useAuthorsQuery,
->>>>>>> 98a92c6 (wip)
   useCreateAuthor,
   useDeleteAuthorMutation,
   useUpdateAuthorMutation,
 } from "@/queries/authors";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -98,7 +87,7 @@ export function CreateAuthorDialog() {
 export function AuthorsPage() {
   const blogId = useBlogId();
 
-  const { data: authors, isLoading } = useAuthorsWithPostCount();
+  const { data: authors, isLoading } = useAuthors();
   const [selectedAuthor, setSelectedAuthor] = useState<{
     author_id: number | null;
     author_name: string | null;
