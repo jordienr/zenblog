@@ -720,7 +720,7 @@ function EditorPropLabel({
             <TooltipTrigger asChild>
               <Info
                 size={15}
-                className="text-zinc-400 opacity-0 transition-opacity group-hover/label:opacity-100"
+                className="mt-0.5 text-zinc-400 opacity-0 transition-opacity group-hover/label:opacity-100"
               />
             </TooltipTrigger>
             <TooltipContent className="max-w-xs text-xs">
