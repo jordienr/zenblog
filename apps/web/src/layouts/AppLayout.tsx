@@ -56,6 +56,8 @@ export default function AppLayout({
 
   const selectedBlog = blogs?.find((blog) => blog.id === router.query.blogId);
 
+  const isDev = IS_DEV;
+
   const BlogNavItems = [
     {
       label: "Posts",
@@ -65,6 +67,14 @@ export default function AppLayout({
       label: "Media",
       href: `/blogs/${selectedBlog?.id}/media`,
     },
+    ...(isDev
+      ? [
+          {
+            label: "Authors",
+            href: `/blogs/${selectedBlog?.id}/authors`,
+          },
+        ]
+      : []),
     {
       label: "Categories",
       href: `/blogs/${selectedBlog?.id}/categories`,

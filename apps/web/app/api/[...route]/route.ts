@@ -504,6 +504,174 @@ const api = new Hono()
         return c.json({ error: "Error deleting images" }, { status: 500 });
       }
     }
+  )
+  .post(
+    "/blogs/:blog_id/authors",
+    zValidator(
+      "form",
+      z.object({
+        name: z.string(),
+        slug: z.string(),
+        image: z.instanceof(File).optional(),
+        twitter: z.string().optional(),
+        website: z.string().optional(),
+        bio: z.string().optional(),
+      })
+    ),
+    async (c) => {
+      console.log("🥬 CREATING AUTHOR---", c.req.formData());
+
+      const blogId = c.req.param("blog_id");
+      const formData = await c.req.formData();
+      const name = formData.get("name") as string;
+      const image = formData.get("image") as File | null;
+      const slug = formData.get("slug") as string;
+      const twitter = formData.get("twitter") as string;
+      const website = formData.get("website") as string;
+      const bio = formData.get("bio") as string;
+      const { user } = await getUser();
+
+      if (!user || !user.id) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const isOwner = await getBlogOwnership(blogId, user.id);
+
+      if (!isOwner) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      // Upload author image to R2 if exists
+      // validate slug is url friendly
+      // Create author in supabase
+
+      const r2 = createR2Client();
+
+      let imageUrl = "";
+
+      if (image) {
+        console.log("🥬 IMAGE EXISTS---", image);
+        const buffer = Buffer.from(await image.arrayBuffer());
+        const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+        const fileName = `${slug}-${timestamp}.${image.type.split("/")[1]}`;
+        await r2.send(
+          new PutObjectCommand({
+            Bucket: process.env.R2_IMAGES_BUCKET_NAME,
+            Key: `authors/${fileName}`,
+            Body: buffer,
+            ContentType: image.type,
+            Metadata: {
+              blog_id: blogId,
+              uploaded_at: new Date().toISOString(),
+              name,
+              slug,
+            },
+          })
+        );
+
+        imageUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/authors/${fileName}`;
+      }
+
+      const supabase = createClient();
+      const { error } = await supabase.from("authors").insert({
+        name,
+        blog_id: blogId,
+        slug,
+        image_url: imageUrl,
+        twitter,
+        website,
+        bio,
+      });
+
+      if (error) {
+        console.error("Database insert error:", error);
+        return c.json({ error: "Failed to create author" }, { status: 500 });
+      }
+
+      return c.json({ message: "Author created" }, { status: 200 });
+    }
+  )
+  .patch(
+    "/blogs/:blog_id/authors/:author_slug",
+    zValidator(
+      "form",
+      z.object({
+        name: z.string().optional(),
+        slug: z.string().optional(),
+        image: z.instanceof(File).optional(),
+        twitter: z.string().optional(),
+        website: z.string().optional(),
+        bio: z.string().optional(),
+      })
+    ),
+    async (c) => {
+      const blogId = c.req.param("blog_id");
+      const authorSlug = c.req.param("author_slug");
+      const formData = await c.req.formData();
+
+      // Check authorization
+      const { user } = await getUser();
+      if (!user || !user.id) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const isOwner = await getBlogOwnership(blogId, user.id);
+      if (!isOwner) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      // Handle image upload if provided
+      const image = formData.get("image") as File | null;
+      let imageUrl: string | undefined;
+
+      if (image && image.size > 0) {
+        const r2 = createR2Client();
+        const buffer = Buffer.from(await image.arrayBuffer());
+        const timestamp = Date.now().toString().slice(-6);
+        const fileName = `${authorSlug}-${timestamp}.${
+          image.type.split("/")[1]
+        }`;
+
+        await r2.send(
+          new PutObjectCommand({
+            Bucket: process.env.R2_IMAGES_BUCKET_NAME,
+            Key: `authors/${fileName}`,
+            Body: buffer,
+            ContentType: image.type,
+            Metadata: {
+              blog_id: blogId,
+              uploaded_at: new Date().toISOString(),
+              slug: authorSlug,
+            },
+          })
+        );
+
+        imageUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/authors/${fileName}`;
+      }
+
+      // Prepare update data
+      const updateData: Record<string, any> = {};
+      if (formData.get("name")) updateData.name = formData.get("name");
+      if (formData.get("slug")) updateData.slug = formData.get("slug");
+      if (formData.get("twitter")) updateData.twitter = formData.get("twitter");
+      if (formData.get("website")) updateData.website = formData.get("website");
+      if (formData.get("bio")) updateData.bio = formData.get("bio");
+      if (imageUrl) updateData.image_url = imageUrl;
+
+      // Update author in database
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("authors")
+        .update(updateData)
+        .match({ blog_id: blogId, slug: authorSlug });
+
+      if (error) {
+        console.error("Database update error:", error);
+        return c.json({ error: "Failed to update author" }, { status: 500 });
+      }
+
+      return c.json({ message: "Author updated" }, { status: 200 });
+    }
   );
 
 const app = new Hono()

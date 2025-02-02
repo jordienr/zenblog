@@ -15,6 +15,7 @@ export type Database = {
           blog_id: string
           created_at: string
           id: number
+          image_url: string | null
           name: string
           slug: string
           twitter: string | null
@@ -26,6 +27,7 @@ export type Database = {
           blog_id: string
           created_at?: string
           id?: number
+          image_url?: string | null
           name: string
           slug: string
           twitter?: string | null
@@ -37,6 +39,7 @@ export type Database = {
           blog_id?: string
           created_at?: string
           id?: number
+          image_url?: string | null
           name?: string
           slug?: string
           twitter?: string | null

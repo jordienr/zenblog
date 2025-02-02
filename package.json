@@ -6,6 +6,7 @@
     "build:web": "turbo run build --filter=web",
     "build:api": "turbo run build --filter=api",
     "build:zenblog": "turbo run build --filter=zenblog",
+    "test": "vitest",
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=web",
     "dev:docs": "turbo run dev --filter=docs",
@@ -32,7 +33,8 @@
     "eslint": "^7.32.0",
     "prettier": "^2.5.1",
     "shiki": "^1.5.1",
-    "turbo": "^2.0.3"
+    "turbo": "^2.0.3",
+    "vitest": "^3.0.4"
   },
   "workspaces": [
     "apps/*",

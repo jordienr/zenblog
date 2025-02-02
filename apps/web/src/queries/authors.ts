@@ -1,10 +1,14 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { Database } from "@/types/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { API } from "app/utils/api-client";
 
 const sb = createSupabaseBrowserClient();
 
-export type Author = Database["public"]["Tables"]["authors"]["Row"];
+export type Author = Omit<
+  Database["public"]["Tables"]["authors"]["Row"],
+  "id" | "created_at" | "updated_at" | "blog_id"
+>;
 
 const keys = {
   authors: ["blog-authors"],
@@ -29,8 +33,10 @@ export function useAuthors() {
     queryFn: async () => {
       const { data, error } = await sb
         .from("authors")
-        .select("id, slug, name, created_at, bio, twitter, website")
+        .select("id, slug, name, created_at, bio, twitter, website, image_url")
         .throwOnError();
+
+      console.log("🥬 AUTHORS---", data);
       if (error) {
         throw error;
       }
@@ -39,11 +45,15 @@ export function useAuthors() {
   });
 }
 
+const api = API();
+const createAuthor = api.v2.blogs[":blog_id"].authors.$post;
+export type CreateAuthorInput = Parameters<typeof createAuthor>[0];
+
 export function useCreateAuthor() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (author: Omit<Author, "id" | "created_at">) =>
-      await sb.from("authors").insert(author).throwOnError(),
+    mutationFn: async (author: CreateAuthorInput) => await createAuthor(author),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: keys.authors });
     },
@@ -78,14 +88,24 @@ export function useDeleteAuthorMutation(blogId: string) {
 
 export function useUpdateAuthorMutation() {
   const queryClient = useQueryClient();
-  const supa = createSupabaseBrowserClient();
 
   return useMutation({
-    mutationFn: async (author: { id: number; name: string; slug: string }) => {
-      const res = await supa.from("authors").update(author).eq("id", author.id);
+    mutationFn: async (payload: {
+      form: CreateAuthorInput["form"];
+      param: { blog_id: string; author_slug: string };
+    }) => {
+      const res = await api.v2.blogs[":blog_id"].authors[":author_slug"].$patch(
+        {
+          form: payload.form,
+          param: {
+            blog_id: payload.param.blog_id,
+            author_slug: payload.param.author_slug,
+          },
+        }
+      );
 
-      if (res.error) {
-        throw new Error(res.error.message);
+      if (!res.ok) {
+        throw new Error(res.statusText);
       }
 
       return res;
