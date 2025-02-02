@@ -740,12 +740,15 @@ function EditorPropLabel({
         className
       )}
     >
-      <div className="flex items-center gap-1">
+      <div className="group flex items-center gap-1">
         {children}
         <TooltipProvider>
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Info size={15} className="text-zinc-400" />
+              <Info
+                size={14}
+                className="mt-0.5 text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100"
+              />
             </TooltipTrigger>
             <TooltipContent className="max-w-xs text-xs">
               {tooltip}
@@ -769,7 +772,7 @@ function EditorPropValue({
     <div
       onClick={onClick}
       className={cn(
-        "group relative col-span-4 flex cursor-pointer items-center rounded-lg border transition-all focus-within:bg-zinc-100/60 hover:bg-zinc-100/60 hover:text-zinc-800 md:col-span-3 md:border-none",
+        "relative col-span-4 flex cursor-pointer items-center rounded-lg border border-b transition-all focus-within:bg-zinc-100/60 hover:bg-zinc-100/60 hover:text-zinc-800 md:col-span-3 md:border-none",
         className
       )}
     >
