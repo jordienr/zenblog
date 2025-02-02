@@ -6,6 +6,7 @@ const sb = createSupabaseBrowserClient();
 
 export type Author = Database["public"]["Tables"]["authors"]["Row"];
 
+<<<<<<< HEAD
 export function useAuthorsWithPostCount() {
   return useQuery({
     queryKey: ["authors-with-post-count"],
@@ -16,12 +17,28 @@ export function useAuthorsWithPostCount() {
     //       "author_id, author_name, author_slug, post_count, created_at"
     //     )
     //     .throwOnError(),
+=======
+const keys = {
+  authors: ["blog-authors"],
+};
+
+export function useAuthorsQuery() {
+  return useQuery({
+    queryKey: keys.authors,
+    queryFn: async () => {
+      const { data } = await sb
+        .from("authors")
+        .select("id, slug, name, bio, twitter, website")
+        .throwOnError();
+      return data;
+    },
+>>>>>>> 98a92c6 (wip)
   });
 }
 
 export function useAuthors() {
   return useQuery({
-    queryKey: ["authors"],
+    queryKey: keys.authors,
     queryFn: async () => {
       const { data, error } = await sb
         .from("authors")
@@ -41,7 +58,7 @@ export function useCreateAuthor() {
     mutationFn: async (author: Omit<Author, "id" | "created_at">) =>
       await sb.from("authors").insert(author).throwOnError(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["authors"] });
+      queryClient.invalidateQueries({ queryKey: keys.authors });
     },
   });
 }
@@ -66,7 +83,7 @@ export function useDeleteAuthorMutation(blogId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["authors-with-post-count"],
+        queryKey: keys.authors,
       });
     },
   });
@@ -88,7 +105,7 @@ export function useUpdateAuthorMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["authors-with-post-count"],
+        queryKey: keys.authors,
       });
     },
   });

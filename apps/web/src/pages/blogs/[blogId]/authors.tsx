@@ -26,8 +26,12 @@ import {
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
 import {
+<<<<<<< HEAD
   useAuthors,
   useAuthorsWithPostCount,
+=======
+  useAuthorsQuery,
+>>>>>>> 98a92c6 (wip)
   useCreateAuthor,
   useDeleteAuthorMutation,
   useUpdateAuthorMutation,

@@ -713,14 +713,23 @@ function EditorPropLabel({
         className
       )}
     >
+<<<<<<< HEAD
       <div className="group flex items-center gap-1">
+=======
+      <div className="group/label flex items-center gap-1">
+>>>>>>> 98a92c6 (wip)
         {children}
         <TooltipProvider>
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
               <Info
+<<<<<<< HEAD
                 size={14}
                 className="mt-0.5 text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100"
+=======
+                size={15}
+                className="text-zinc-400 opacity-0 transition-opacity group-hover/label:opacity-100"
+>>>>>>> 98a92c6 (wip)
               />
             </TooltipTrigger>
             <TooltipContent className="max-w-xs text-xs">
