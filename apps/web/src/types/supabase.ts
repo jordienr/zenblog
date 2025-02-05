@@ -835,6 +835,43 @@ export type Database = {
           },
         ]
       }
+      posts_v9: {
+        Row: {
+          blog_id: string | null
+          category_name: string | null
+          category_slug: string | null
+          content: Json | null
+          cover_image: string | null
+          created_at: string | null
+          deleted: boolean | null
+          excerpt: string | null
+          html_content: string | null
+          metadata: Json[] | null
+          published: boolean | null
+          published_at: string | null
+          slug: string | null
+          subscription_status: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "category_post_count"
+            referencedColumns: ["blog_id"]
+          },
+        ]
+      }
       tag_usage_count_v2: {
         Row: {
           blog_id: string | null

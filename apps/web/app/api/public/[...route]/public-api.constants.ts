@@ -19,6 +19,18 @@ export const posts: Endpoint = {
       required: false,
       description: "The limit for the posts",
     },
+    {
+      key: "category",
+      required: false,
+      description:
+        "The category slug to filter posts by. Example: &category=news",
+    },
+    {
+      key: "tags",
+      required: false,
+      description:
+        "The tags to filter posts by. Ex: &tags=random,test. Multiple tags are possible.",
+    },
   ],
   response: {
     200: {

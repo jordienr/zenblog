@@ -38,6 +38,7 @@ app.get(posts.path, async (c) => {
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
   const category = c.req.query("category");
+  const tags = c.req.query("tags")?.split(",");
   const supabase = createClient();
 
   if (!blogId) {
@@ -45,7 +46,7 @@ app.get(posts.path, async (c) => {
   }
 
   let query = supabase
-    .from("posts_v8")
+    .from("posts_v9")
     .select(
       "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug"
     )
@@ -57,6 +58,25 @@ app.get(posts.path, async (c) => {
 
   if (category) {
     query.eq("category_slug", category);
+  }
+
+  const blogTagsQuery = supabase
+    .from("tags")
+    .select("slug, name")
+    .eq("blog_id", blogId);
+
+  let blogTags: { slug: string; name: string }[] = [];
+
+  if (tags) {
+    // Fetch all blog tags to add name + slug later
+    const blogTagsRes = await blogTagsQuery;
+    if (blogTagsRes.data) {
+      blogTags = blogTagsRes.data;
+    }
+
+    // Filter posts query by tags in request
+    console.log("🐸🐸🐸", tags);
+    query = query.overlaps("tags", tags);
   }
 
   const { data: posts, error } = await query;
@@ -76,9 +96,17 @@ app.get(posts.path, async (c) => {
         return { ...post, category: null };
       }
 
+      if (!post.tags) {
+        return {
+          ...post,
+          category: { name: category_name, slug: category_slug },
+        };
+      }
+
       return {
         ...post,
         category: { name: category_name, slug: category_slug },
+        tags: blogTags.filter((tag) => post.tags?.includes(tag.slug)),
       };
     }
   );
