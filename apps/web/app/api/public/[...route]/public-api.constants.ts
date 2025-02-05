@@ -37,7 +37,7 @@ export const posts: Endpoint = {
       description: "The posts",
       type: "object",
       example: `{
-  posts: { 
+  data: [{ 
     title: "string",
     html_content: "string",
     slug: "string",
@@ -46,10 +46,7 @@ export const posts: Endpoint = {
     tags: "object",
     excerpt: "string", // nullable
     published_at: "string",
-  },
-  total: "number", // The total number of posts
-  offset: "number", // The offset
-  limit: "number", // The limit
+  }]
 }`,
     },
   },
