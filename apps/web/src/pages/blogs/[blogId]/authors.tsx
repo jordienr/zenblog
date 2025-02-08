@@ -82,7 +82,13 @@ const AuthorForm = ({
     >
       <div>
         <Label htmlFor="image">Image</Label>
-        <Input id="image" name="image" type="file" required accept="image/*" />
+        <Input
+          id="image"
+          name="image"
+          type="file"
+          required={!author} // only required if creating a new author
+          accept="image/*"
+        />
         <p className="-mt-2 px-2 text-xs text-gray-500">
           Recommended size is 400x400px
         </p>
