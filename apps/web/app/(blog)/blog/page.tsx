@@ -52,6 +52,21 @@ const Blog = async () => {
                 {latestPost.title}
               </h2>
               <p className="mt-1 text-sm text-zinc-500">{latestPost.excerpt}</p>
+
+              <div className="mt-4 flex items-center gap-2">
+                {latestPost.authors?.map((author) => (
+                  <div className="flex items-center gap-2" key={author.slug}>
+                    <img
+                      className="h-8 w-8 rounded-full object-cover"
+                      src={author.image_url || ""}
+                      alt={author.name}
+                      width={40}
+                      height={40}
+                    />
+                    <p className="font-medium text-slate-500">{author.name}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </Link>
         )}
