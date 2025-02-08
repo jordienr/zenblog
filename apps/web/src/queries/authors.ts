@@ -155,10 +155,15 @@ export function useAddPostAuthorMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: { post_id: string; author_id: number }) => {
+    mutationFn: async (payload: {
+      post_id: string;
+      author_id: number;
+      blog_id: string;
+    }) => {
       const res = await sb.from("post_authors").insert({
         post_id: payload.post_id,
         author_id: payload.author_id,
+        blog_id: payload.blog_id,
       });
       return res;
     },
