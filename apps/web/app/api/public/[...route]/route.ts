@@ -43,9 +43,9 @@ app.get(posts.path, async (c) => {
   const blogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const category = c.req.query("category");
-  const tags = c.req.query("tags")?.split(",");
-  const author = c.req.query("author");
+  const categoryFilter = c.req.query("category");
+  const tagsFilter = c.req.query("tags")?.split(",");
+  const authorFilter = c.req.query("author");
   const supabase = createClient();
 
   if (!blogId) {
@@ -63,43 +63,27 @@ app.get(posts.path, async (c) => {
     .order("published_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  if (category) {
-    postsQuery.eq("category_slug", category);
+  if (categoryFilter) {
+    postsQuery.eq("category_slug", categoryFilter);
   }
 
-  const blogTagsQuery = supabase
+  const blogTagsQuery = await supabase
     .from("tags")
     .select("slug, name")
     .eq("blog_id", blogId);
 
-  let blogTags: { slug: string; name: string }[] = [];
-
-  if (tags) {
-    // Fetch all blog tags to add name + slug later
-    const blogTagsRes = await blogTagsQuery;
-    if (blogTagsRes.data) {
-      blogTags = blogTagsRes.data;
-    }
-
+  if (tagsFilter && tagsFilter.length > 0) {
     // Filter posts query by tags in request
-    postsQuery = postsQuery.overlaps("tags", tags);
+    postsQuery = postsQuery.overlaps("tags", tagsFilter);
   }
 
-  const authorsQuery = supabase
+  const authorsQuery = await supabase
     .from("authors")
     .select("id, slug, name, image_url, bio, website, twitter")
     .eq("blog_id", blogId);
 
-  let blogAuthors: { id: number; slug: string; name: string }[] = [];
-
-  if (author) {
-    // Fetch the author data to add name + slug later
-    const authorsRes = await authorsQuery;
-    if (authorsRes.data) {
-      blogAuthors = authorsRes.data;
-    }
-
-    const authorData = blogAuthors.find((a) => a.slug === author);
+  if (authorFilter) {
+    const authorData = authorsQuery.data?.find((a) => a.slug === authorFilter);
 
     postsQuery = postsQuery.overlaps("authors", [authorData?.id]);
   }
@@ -132,16 +116,20 @@ app.get(posts.path, async (c) => {
         return {
           ...post,
           category: { name: category_name, slug: category_slug },
-          tags: blogTags.filter((tag) => post.tags?.includes(tag.slug)),
+          tags: blogTagsQuery.data?.filter((tag) =>
+            post.tags?.includes(tag.slug)
+          ),
         };
       }
 
       return {
         ...post,
         category: { name: category_name, slug: category_slug },
-        tags: blogTags.filter((tag) => post.tags?.includes(tag.slug)),
-        authors: blogAuthors
-          .filter((author) => post.authors?.includes(author.id))
+        tags: blogTagsQuery.data?.filter((tag) =>
+          post.tags?.includes(tag.slug)
+        ),
+        authors: authorsQuery.data
+          ?.filter((author) => post.authors?.includes(author.id))
           .map(({ id, ...author }) => author),
       };
     }
