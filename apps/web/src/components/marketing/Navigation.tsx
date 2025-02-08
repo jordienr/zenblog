@@ -57,7 +57,7 @@ const Navigation = (props: Props) => {
         </div>
 
         {user ? (
-          <div className="ml-2 flex">
+          <div className="ml-2 flex w-full justify-end">
             <Button asChild variant={"secondary"} size="default">
               <Link href="/blogs">Dashboard</Link>
             </Button>
