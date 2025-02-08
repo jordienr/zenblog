@@ -54,7 +54,7 @@ export default function Dashboard() {
             {data?.map((blog) => {
               return (
                 <li
-                  className="group rounded-xl border bg-white/50 p-1 transition-all hover:border-zinc-300 hover:bg-white hover:shadow-sm"
+                  className="group rounded-xl border bg-white p-1 transition-all hover:border-zinc-300 hover:bg-white hover:shadow-sm"
                   key={blog.id}
                   onMouseEnter={() => setHovering(blog.id)}
                   onMouseLeave={() => setHovering("")}
@@ -75,20 +75,6 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="mt-auto flex justify-end gap-1 justify-self-end align-bottom">
-                      {/* <Button
-                        size={"icon"}
-                        variant={"white"}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          router.push(`/blogs/${blog.id}/customise`);
-                        }}
-                        title="Customise"
-                        aria-label="Customise"
-                        className="text-zinc-400 opacity-0 transition-all group-hover:opacity-100"
-                      >
-                        <Paintbrush size="24" />
-                      </Button> */}
                       <Tooltip delayDuration={0}>
                         <TooltipTrigger asChild>
                           <Button

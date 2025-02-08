@@ -24,7 +24,7 @@ export const usePostsQuery = ({
     },
     queryFn: async ({ pageParam = 0 }) => {
       const { data, error } = await sb
-        .from("posts_v5")
+        .from("posts_v10")
         .select("*")
         .eq("blog_id", blogId)
         .eq("deleted", false)

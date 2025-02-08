@@ -27,11 +27,6 @@ const Navigation = (props: Props) => {
       label: "Blog",
       href: "/blog",
     },
-    {
-      label: <FaTwitter />,
-      href: "https://twitter.com/zenbloghq",
-      target: "_blank",
-    },
   ];
 
   const mobileLinks = [
@@ -44,17 +39,16 @@ const Navigation = (props: Props) => {
 
   return (
     <nav className="sticky top-0 z-20 mx-auto flex w-full max-w-5xl items-center justify-between border-b bg-white px-6 py-4 md:relative md:border-none md:py-8">
-      <Link href="/" className="">
-        <ZendoLogo className="" size={32} />
+      <Link href="/">
+        <ZendoLogo size={27} />
       </Link>
 
-      <div className="flex flex-grow items-center justify-end gap-1 font-medium text-zinc-500 md:justify-end">
-        <div className="hidden items-center gap-2 md:flex">
+      <div className="flex w-full gap-2 font-medium text-slate-700">
+        <div className="hidden w-full flex-grow items-center justify-center gap-2 md:flex">
           {links.map((link) => (
             <Link
               key={link.href}
-              target={link.target}
-              className="rounded-lg px-2 py-1 hover:text-zinc-800"
+              className="rounded-lg px-2 py-1 text-sm font-semibold hover:text-slate-800"
               href={link.href}
             >
               {link.label}
@@ -69,7 +63,7 @@ const Navigation = (props: Props) => {
             </Button>
           </div>
         ) : (
-          <div className="ml-2 flex gap-2">
+          <div className="ml-2 flex">
             <Button asChild variant={"ghost"} size="default">
               <Link href="/sign-in">Sign in</Link>
             </Button>
@@ -80,7 +74,7 @@ const Navigation = (props: Props) => {
         )}
         <div className="ml-2 md:hidden">
           <button
-            className="rounded-lg p-2 hover:bg-zinc-100"
+            className="rounded-lg p-2 hover:bg-slate-100"
             onClick={() => setIsOpen(!isOpen)}
           >
             <HiOutlineMenu size={24} />
@@ -92,8 +86,7 @@ const Navigation = (props: Props) => {
               {mobileLinks.map((link) => (
                 <Link
                   key={link.href}
-                  target={link.target}
-                  className="rounded-lg px-4 py-4 text-xl font-medium tracking-tight text-zinc-700 hover:text-zinc-800"
+                  className="rounded-lg px-4 py-4 text-xl font-medium tracking-tight text-slate-700 hover:text-slate-800"
                   href={link.href}
                 >
                   {link.label}

@@ -31,6 +31,11 @@ export const posts: Endpoint = {
       description:
         "The tags to filter posts by. Ex: &tags=random,test. Multiple tags are possible.",
     },
+    {
+      key: "author",
+      required: false,
+      description: "The author slug to filter posts by. Ex: &author=carpincho",
+    },
   ],
   response: {
     200: {
@@ -41,11 +46,12 @@ export const posts: Endpoint = {
     title: "string",
     html_content: "string",
     slug: "string",
-    category_name: "string", // nullable
-    category_slug: "string", // nullable
-    tags: "object",
-    excerpt: "string", // nullable
+    category_name?: "string",
+    category_slug?: "string",
+    tags?: "object",
+    excerpt?: "string",
     published_at: "string",
+    authors?: "object",
   }]
 }`,
     },
@@ -113,4 +119,28 @@ export const tags: Endpoint = {
   },
 };
 
-export const endpoints = [posts, postBySlug, categories, tags];
+export const authors: Endpoint = {
+  id: "authors",
+  path: "/blogs/:blogId/authors",
+  method: "GET",
+  title: "Authors list",
+  description: "Get the authors for a blog",
+  response: {
+    200: {
+      description: "The authors",
+      type: "object",
+      example: `{ data: [
+  {
+    name: "string",
+    slug: "string",
+    image_url?: "string",
+    twitter?: "string",
+    website?: "string",
+    bio?: "string",
+  }
+]}`,
+    },
+  },
+};
+
+export const endpoints = [posts, postBySlug, categories, tags, authors];

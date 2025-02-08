@@ -65,6 +65,8 @@ import { Input } from "../ui/input";
 import { useEditorState } from "./Editor.state";
 import { useBlogId } from "@/hooks/use-blog-id";
 import { API } from "app/utils/api-client";
+import { useAuthors } from "@/queries/authors";
+import { Skeleton } from "../ui/skeleton";
 
 const formSchema = z.object({
   title: z.string(),
@@ -93,6 +95,7 @@ type OnSaveData = {
     slug: string;
   }[];
   published_at?: string;
+  authors?: number[];
 };
 
 type Props = {
@@ -101,6 +104,7 @@ type Props = {
   readOnly?: boolean;
   post?: Database["public"]["Tables"]["posts"]["Row"];
   tags?: { id: string; name: string; slug: string }[];
+  authors?: { id: number; name: string; image_url: string | null }[];
   autoCompleteSlug?: boolean;
   showPublishedDialog?: boolean;
   categories?: { id: number; name: string }[];
@@ -126,6 +130,15 @@ export const ZendoEditor = (props: Props) => {
   );
   const { data: categories, isLoading: isCategoriesLoading } =
     useCategories(blogId);
+
+  /**
+   * Authors State
+   */
+  console.log("authors: ", props.authors);
+  const { data: authors, isLoading: isAuthorsLoading } = useAuthors({ blogId });
+  const [selectedAuthors, setSelectedAuthors] = React.useState<number[]>(
+    props.authors?.map((a) => a.id) || []
+  );
 
   const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
   const today = new Date().toISOString();
@@ -297,6 +310,7 @@ export const ZendoEditor = (props: Props) => {
       tags,
       excerpt: data.excerpt,
       category_id,
+      authors: selectedAuthors,
     });
   });
 
@@ -415,7 +429,7 @@ export const ZendoEditor = (props: Props) => {
                   {postsQuery.data?.pages
                     .flatMap((page) => page)
                     .map((post) => (
-                      <DropdownMenuItem key={post?.post_id} asChild>
+                      <DropdownMenuItem key={post?.slug} asChild>
                         <Link
                           href={`/blogs/${blogId}/post/${post?.slug}`}
                           className="flex gap-2 px-2 py-1 hover:bg-zinc-100"
@@ -532,7 +546,7 @@ export const ZendoEditor = (props: Props) => {
                 <EditorPropValue>
                   <div className="flex w-full items-center gap-1 py-1 pl-3 pr-1">
                     <textarea
-                      className="field-sizinc w-full resize-none truncate bg-transparent font-mono outline-none"
+                      className="field-sizinc w-full resize-none truncate bg-transparent font-mono text-xs font-semibold outline-none"
                       rows={1}
                       placeholder="a-great-title"
                       value={slug}
@@ -541,6 +555,19 @@ export const ZendoEditor = (props: Props) => {
                       }}
                     />
                   </div>
+                </EditorPropValue>
+                <EditorPropLabel tooltip="One or more authors can be assigned to a post.">
+                  Authors
+                </EditorPropLabel>
+                <EditorPropValue>
+                  <AuthorSelector
+                    authors={authors || []}
+                    value={selectedAuthors}
+                    onChange={(authors) => {
+                      setSelectedAuthors(authors);
+                    }}
+                    isLoading={isAuthorsLoading}
+                  />
                 </EditorPropValue>
                 <EditorPropLabel tooltip="The date your post was published.">
                   Published at
@@ -554,7 +581,7 @@ export const ZendoEditor = (props: Props) => {
                     open={showPublishedAtDropdown}
                     modal={false}
                   >
-                    <DropdownMenuTrigger className="w-full px-3 py-1 text-left">
+                    <DropdownMenuTrigger className="w-full px-3 py-1 text-left text-xs font-semibold">
                       {publishedAt
                         ? new Date(publishedAt).toLocaleDateString(undefined, {
                             year: "numeric",
@@ -583,7 +610,7 @@ export const ZendoEditor = (props: Props) => {
                 </EditorPropLabel>
                 <EditorPropValue>
                   <textarea
-                    className="field-size-zinc w-full resize-none bg-transparent px-3 py-1 font-mono outline-none"
+                    className="field-size-zinc w-full resize-none bg-transparent px-3 py-1 font-mono text-xs font-semibold outline-none"
                     rows={3}
                     placeholder="A short description of your post. Recommended to be 155 characters or less."
                     onChange={(e) => {
@@ -628,7 +655,9 @@ export const ZendoEditor = (props: Props) => {
                       <span className="mt-6"></span>
                     </TagPicker>
                     <div className="-mr-2">
-                      {tags.length === 0 && "Select some tags"}
+                      <span className="text-xs font-semibold">
+                        {tags.length === 0 && "Select some tags"}
+                      </span>
                       {tags.length > 0 && (
                         <div className="flex flex-wrap items-center gap-1">
                           {tags?.map((tag) => (
@@ -751,5 +780,96 @@ function EditorPropValue({
     >
       {children}
     </div>
+  );
+}
+
+export function AuthorSelector({
+  authors,
+  onChange,
+  value,
+  isLoading,
+}: {
+  authors: { id: number; name: string; image_url: string | null }[]; // author ids
+  onChange: (authors: number[]) => void;
+  value: number[];
+  isLoading: boolean;
+}) {
+  const getAuthorFromValue = (id: number) => {
+    return authors.find((author) => author.id === id);
+  };
+  const AuthorsLabel = () => {
+    if (value.length === 0) {
+      return <span className="text-xs font-semibold">Select authors</span>;
+    }
+
+    return (
+      <span className="flex items-center gap-2 text-xs font-semibold">
+        {isLoading ? (
+          <span className="flex items-center gap-1">
+            <div className="h-4 w-4 rounded-full bg-zinc-200"></div>
+            <Skeleton />
+          </span>
+        ) : (
+          value.map((author) => (
+            <span key={author} className="flex items-center gap-1">
+              {getAuthorFromValue(author)?.image_url ? (
+                <img
+                  src={getAuthorFromValue(author)?.image_url || ""}
+                  alt={getAuthorFromValue(author)?.name || ""}
+                  className="h-6 w-6 rounded-full border object-cover"
+                />
+              ) : (
+                <div className="h-4 w-4 rounded-full bg-zinc-200"></div>
+              )}
+              {getAuthorFromValue(author)?.name}
+            </span>
+          ))
+        )}
+      </span>
+    );
+  };
+
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button variant={"ghost"} className="">
+          <AuthorsLabel />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="space-y-px">
+        {authors.map((author) => (
+          <DropdownMenuItem
+            key={author.id}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (value.includes(author.id)) {
+                onChange(value.filter((id) => id !== author.id));
+              } else {
+                onChange([...value, author.id]);
+              }
+            }}
+            className={cn(
+              value.includes(author.id) && "bg-slate-100 text-slate-800"
+            )}
+          >
+            <div className="flex items-center gap-2">
+              {author.image_url ? (
+                <img
+                  src={author.image_url || ""}
+                  alt={author.name}
+                  className="h-5 w-5 rounded-full"
+                />
+              ) : (
+                <div className="h-5 w-5 rounded-full bg-slate-200"></div>
+              )}
+              <span>{author.name}</span>
+            </div>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

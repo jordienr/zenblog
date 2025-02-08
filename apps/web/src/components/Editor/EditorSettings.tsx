@@ -206,7 +206,10 @@ const EditorSettings = (props: Props) => {
             >
               <div className="flex items-center gap-2">
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue
+                    className="text-xs font-semibold"
+                    placeholder="Select a category"
+                  />
                 </SelectTrigger>
                 <div>
                   <Button

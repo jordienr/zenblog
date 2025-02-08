@@ -35,17 +35,21 @@ import {
   useDeleteAuthorMutation,
   useUpdateAuthorMutation,
 } from "@/queries/authors";
+import { useSubscriptionQuery } from "@/queries/subscription";
 import { slugify } from "app/utils/slugify";
 import { MoreHorizontal, Plus } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const AuthorForm = ({
   onSubmit,
   author,
+  isLoading,
 }: {
   onSubmit: (data: CreateAuthorInput["form"]) => void;
   author?: Author;
+  isLoading?: boolean;
 }) => {
   const [name, setName] = useState(author?.name ?? "");
   const [slug, setSlug] = useState(author?.slug ?? "");
@@ -78,7 +82,7 @@ const AuthorForm = ({
     >
       <div>
         <Label htmlFor="image">Image</Label>
-        <Input id="image" name="image" type="file" />
+        <Input id="image" name="image" type="file" required accept="image/*" />
         <p className="-mt-2 px-2 text-xs text-gray-500">
           Recommended size is 400x400px
         </p>
@@ -126,16 +130,22 @@ const AuthorForm = ({
         defaultValue={author?.bio ?? ""}
       />
       <div className="flex justify-end">
-        <Button type="submit">{author ? "Update" : "Create"}</Button>
+        <Button type="submit" isLoading={isLoading}>
+          {author ? "Update" : "Create"}
+        </Button>
       </div>
     </form>
   );
 };
 
 export function CreateAuthorDialog() {
+  const subscription = useSubscriptionQuery();
   const createAuthor = useCreateAuthor();
   const blogId = useBlogId();
+  const { data: authors } = useAuthors({ blogId });
   const [open, setOpen] = useState(false);
+  const isFreePlan = subscription?.data?.plan === "free";
+  const hasReachedAuthorLimit = isFreePlan && authors?.length === 1;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -149,27 +159,42 @@ export function CreateAuthorDialog() {
         <DialogHeader>
           <DialogTitle>Create author</DialogTitle>
         </DialogHeader>
-        <AuthorForm
-          onSubmit={async (data) => {
-            try {
-              const res = await createAuthor.mutateAsync({
-                form: data,
-                param: {
-                  blog_id: blogId,
-                },
-              });
-              if (!res.ok) {
-                console.error(res);
-                return;
+        {hasReachedAuthorLimit ? (
+          <>
+            <p className="text-sm text-slate-500">
+              You have reached the author limit for your plan. Please upgrade to
+              create more authors.
+            </p>
+            <div className="flex justify-end">
+              <Button asChild>
+                <Link href="/account">Upgrade now</Link>
+              </Button>
+            </div>
+          </>
+        ) : (
+          <AuthorForm
+            isLoading={createAuthor.isPending}
+            onSubmit={async (data) => {
+              try {
+                const res = await createAuthor.mutateAsync({
+                  form: data,
+                  param: {
+                    blog_id: blogId,
+                  },
+                });
+                if (!res.ok) {
+                  console.error(res);
+                  return;
+                }
+                toast.success("Author created");
+                setOpen(false);
+              } catch (error) {
+                console.error(error);
+                toast.error("Failed to create author.");
               }
-              toast.success("Author created");
-              setOpen(false);
-            } catch (error) {
-              console.error(error);
-              toast.error("Failed to create author.");
-            }
-          }}
-        />
+            }}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -194,6 +219,7 @@ export function UpdateAuthorDialog({
           <DialogTitle>Edit author</DialogTitle>
         </DialogHeader>
         <AuthorForm
+          isLoading={updateAuthor.isPending}
           author={author}
           onSubmit={async (data) => {
             try {
@@ -235,7 +261,7 @@ export function UpdateAuthorDialog({
 export function AuthorsPage() {
   const blogId = useBlogId();
 
-  const { data: authors, isLoading } = useAuthors();
+  const { data: authors, isLoading } = useAuthors({ blogId });
   const [selectedAuthor, setSelectedAuthor] = useState<{
     id: number;
     name: string;
@@ -243,10 +269,15 @@ export function AuthorsPage() {
   } | null>(null);
 
   const [updateAuthorOpen, setUpdateAuthorOpen] = useState(false);
-  const updateAuthor = useUpdateAuthorMutation();
 
   const [deleteAuthorOpen, setDeleteAuthorOpen] = useState(false);
   const deleteAuthor = useDeleteAuthorMutation(blogId);
+
+  const subscription = useSubscriptionQuery();
+
+  const isFreePlan = subscription?.data?.plan === "free";
+
+  const hasReachedAuthorLimit = isFreePlan && authors?.length === 1;
 
   return (
     <AppLayout
@@ -258,11 +289,12 @@ export function AuthorsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-20">
-                <div className="sr-only">Author image</div>
-              </TableHead>
-              <TableHead>Author</TableHead>
+              <TableHead className="w-20">Image</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Slug</TableHead>
               <TableHead>Bio</TableHead>
+              <TableHead>Twitter</TableHead>
+              <TableHead>Website</TableHead>
 
               <TableHead className="text-right">
                 <div className="sr-only">Action</div>
@@ -272,7 +304,10 @@ export function AuthorsPage() {
           <TableBody>
             {authors?.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-slate-500">
+                <TableCell
+                  colSpan={7}
+                  className="py-8 text-center text-slate-500"
+                >
                   No authors found
                 </TableCell>
               </TableRow>
@@ -280,7 +315,7 @@ export function AuthorsPage() {
             {authors?.map((author) => (
               <TableRow key={author.id}>
                 <TableCell>
-                  {author.image_url && (
+                  {author.image_url ? (
                     <img
                       src={author.image_url}
                       alt={author.name}
@@ -288,11 +323,20 @@ export function AuthorsPage() {
                       height={40}
                       className="h-10 w-10 rounded-full object-cover"
                     />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
                   )}
                 </TableCell>
                 <TableCell>{author.name}</TableCell>
+                <TableCell>{author.slug}</TableCell>
                 <TableCell className="truncate text-sm text-slate-500">
                   {author.bio}
+                </TableCell>
+                <TableCell className="truncate font-mono text-xs text-slate-500">
+                  {author.twitter}
+                </TableCell>
+                <TableCell className="truncate font-mono text-xs text-slate-500">
+                  {author.website}
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu modal={false}>
@@ -343,9 +387,9 @@ export function AuthorsPage() {
         <ConfirmDialog
           open={deleteAuthorOpen}
           onOpenChange={setDeleteAuthorOpen}
-          onConfirm={() => {
+          onConfirm={async () => {
             if (!selectedAuthor?.id) return;
-            deleteAuthor.mutate(selectedAuthor.id.toString());
+            await deleteAuthor.mutateAsync(selectedAuthor.id);
             toast.success("Author deleted");
             setDeleteAuthorOpen(false);
           }}

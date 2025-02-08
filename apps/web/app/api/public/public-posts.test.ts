@@ -1,6 +1,15 @@
 import { expect, test } from "vitest";
 import { z } from "zod";
 
+const authorsSchema = z.object({
+  name: z.string(),
+  slug: z.string(),
+  image_url: z.string().optional(),
+  twitter: z.string().optional(),
+  website: z.string().optional(),
+  bio: z.string().optional(),
+});
+
 const postSchema = z.object({
   title: z.string(),
   slug: z.string(),
@@ -8,11 +17,16 @@ const postSchema = z.object({
   excerpt: z.string(),
   cover_image: z.string(),
   tags: z.array(z.object({ name: z.string(), slug: z.string() })),
+  authors: z.array(authorsSchema),
   category: z.object({ name: z.string(), slug: z.string() }),
 });
 
-const responseSchema = z.object({
+const postsResponseSchema = z.object({
   data: z.array(postSchema),
+});
+
+const authorsResponseSchema = z.object({
+  data: z.array(authorsSchema),
 });
 
 // const apiget = GET;
@@ -24,7 +38,7 @@ test("posts endpoint returns correct data", async () => {
   const response = await fetch(`${BASE_URL}/posts`);
   const data = await response.json();
 
-  const parsedData = responseSchema.parse(data);
+  const parsedData = postsResponseSchema.parse(data);
 
   expect(parsedData.data.length).toBeGreaterThan(0);
 });
@@ -39,7 +53,7 @@ test("posts limit and offset", async () => {
 
   const data = await response.json();
 
-  const parsedData = responseSchema.parse(data);
+  const parsedData = postsResponseSchema.parse(data);
 
   expect(parsedData.data.length).toBe(limit);
 });
@@ -51,9 +65,7 @@ test("posts endpoint filter by category", async () => {
 
   const data = await response.json();
 
-  console.log(data);
-
-  const parsedData = responseSchema.parse(data);
+  const parsedData = postsResponseSchema.parse(data);
 
   expect(parsedData.data.length).toBeGreaterThan(0);
 
@@ -67,7 +79,7 @@ test("posts endpoint filter by tag", async () => {
 
   const data = await response.json();
 
-  const parsedData = responseSchema.parse(data);
+  const parsedData = postsResponseSchema.parse(data);
 
   expect(parsedData.data.length).toBeGreaterThan(0);
 
@@ -80,18 +92,39 @@ test("posts endpoint filter by tag", async () => {
 
 test("posts endpoint accepts multiple configuration of query params", async () => {
   const queries = [
-    "category=news&tags=random,test",
-    "tags=random,test&category=news",
-    "tags=random,test&category=news&limit=4&offset=0",
+    "category=hiking&tags=random,test",
+    "tags=test,random&category=hiking",
+    "tags=random,test&category=hiking&limit=4&offset=0",
     "limit=4&offset=2",
     "tags=random,test",
-    "category=news",
+    "category=hiking",
   ];
 
   queries.forEach(async (query) => {
     const response = await fetch(`${BASE_URL}/posts?${query}`);
     const data = await response.json();
-    const parsedData = responseSchema.parse(data);
+    const parsedData = postsResponseSchema.parse(data);
     expect(parsedData.data.length).toBeGreaterThan(0);
   });
+});
+
+test("posts endpoint filters by author correctly", async () => {
+  const authorSlug = "carpincho";
+  const response = await fetch(`${BASE_URL}/posts?author=${authorSlug}`);
+  const data = await response.json();
+  const parsedData = postsResponseSchema.parse(data);
+  expect(parsedData.data.length).toBeGreaterThan(0);
+
+  parsedData.data.forEach((post) => {
+    post.authors.forEach((author) => {
+      expect(author.slug).toBe(authorSlug);
+    });
+  });
+});
+
+test("authors endpoint returns correct data", async () => {
+  const response = await fetch(`${BASE_URL}/authors`);
+  const data = await response.json();
+  const parsedData = authorsResponseSchema.parse(data);
+  expect(parsedData.data.length).toBeGreaterThan(0);
 });

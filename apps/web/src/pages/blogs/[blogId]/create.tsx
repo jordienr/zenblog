@@ -18,9 +18,8 @@ export default function CreatePost() {
         loading={loading}
         onSave={async (content) => {
           setLoading(true);
-          const { tags, ...post } = content;
+          const { tags, authors, ...post } = content;
           try {
-            console.log("category", post.category_id);
             if (post.category_id === 0) {
               // remove category_id from post
               post.category_id = null;
@@ -37,7 +36,6 @@ export default function CreatePost() {
 
             // If there are tags, create the associations and wait for completion
             if (tags && tags.length > 0) {
-              console.log("new post tags: ", tags);
               const newTags = tags.map((tag) => ({
                 tag_id: tag.id,
                 blog_id: blogId,
@@ -49,6 +47,20 @@ export default function CreatePost() {
                 .insert(newTags);
 
               if (tagError) throw tagError;
+            }
+
+            if (authors && authors.length > 0) {
+              const { error: authorError } = await supa
+                .from("post_authors")
+                .insert(
+                  authors.map((author) => ({
+                    author_id: author,
+                    post_id: newPost.id,
+                    blog_id: blogId,
+                  }))
+                );
+
+              if (authorError) throw authorError;
             }
 
             // Only redirect after both operations complete successfully

@@ -50,12 +50,12 @@ export function EditorCategoryPicker({
       ) : (
         <DropdownMenu modal={false}>
           <div className="flex items-center">
-            <DropdownMenuTrigger className="w-full py-1 pl-3 pr-1 text-left">
+            <DropdownMenuTrigger className="w-full py-1 pl-3 pr-1 text-left text-xs font-semibold">
               {hasCategory ? selectedCategory?.name : "Select a category"}
             </DropdownMenuTrigger>
             {hasCategory && (
               <button
-                className="p-1 text-zinc-500 hover:text-zinc-700"
+                className="p-1 text-slate-500 hover:text-slate-700"
                 onClick={() => onChange(null)}
               >
                 <X size={15} />
@@ -77,7 +77,7 @@ export function EditorCategoryPicker({
               {categories?.map?.((category) => (
                 <DropdownMenuItem
                   className={cn(
-                    value === category.id && "bg-zinc-100 text-orange-500"
+                    value === category.id && "bg-slate-100 text-orange-500"
                   )}
                   key={category.id + "-category"}
                   onClick={() => onChange(category.id)}

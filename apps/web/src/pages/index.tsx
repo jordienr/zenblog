@@ -28,7 +28,6 @@ import {
 import Navigation from "@/components/marketing/Navigation";
 import { CodeBlockComponent } from "@/components/code-block";
 import { Lora } from "next/font/google";
-import { Leaves } from "@/components/3d/leaves";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -139,16 +138,8 @@ const Home = () => {
       <div className={`${h1Font.variable}`}>
         <div className="flex flex-col">
           <Navigation />
-          <motion.div
-            className="hidden md:block"
-            initial={{ opacity: 0, y: 10, filter: "blur(12px)", scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
-            transition={{ duration: 3, delay: 0.5 }}
-          >
-            <Leaves />
-          </motion.div>
           <motion.main
-            className="mt-12 px-6 pb-24 font-sans"
+            className="mt-12 px-6 pb-24"
             initial={{ opacity: 0, y: 10, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.5 }}
@@ -161,7 +152,7 @@ const Home = () => {
               </h1>
 
               <div className="mt-4 text-slate-500">
-                <p className="text-balance text-lg font-medium md:text-2xl">
+                <p className="text-balance text-lg">
                   A simple blogging CMS for devs and marketers
                 </p>
                 <Link className="mt-6 inline-flex" href="/sign-up">

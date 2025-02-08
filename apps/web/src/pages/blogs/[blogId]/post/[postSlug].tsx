@@ -6,6 +6,7 @@ import { usePostQuery } from "@/queries/posts";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { usePostTags } from "@/queries/tags";
 import { Loader2 } from "lucide-react";
+import { usePostAuthorsQuery } from "@/queries/authors";
 
 export default function Post() {
   const router = useRouter();
@@ -31,6 +32,20 @@ export default function Post() {
 
   const filteredTags = tags?.filter((t) => t !== null) || [];
 
+  const authorsQuery = usePostAuthorsQuery({
+    blogId,
+    postId: post?.data?.id || "",
+  });
+
+  const authors =
+    authorsQuery.data
+      ?.map((a) => ({
+        id: a.author_id,
+        name: a.author?.name || "",
+        image_url: a.author?.image_url || null,
+      }))
+      .filter((a) => a !== null) || [];
+
   if (isLoading || tagsQuery.isLoading || isRefetching) {
     return (
       <div className="flex-center p-32">
@@ -51,7 +66,7 @@ export default function Post() {
     <div className="">
       <ZendoEditor
         onSave={async (data) => {
-          const { tags, ...newData } = data;
+          const { tags, authors, ...newData } = data;
           try {
             // TO DO: move this to an rfc
             const { error } = await sb
@@ -80,6 +95,20 @@ export default function Post() {
               });
             }
 
+            if (authors) {
+              await sb
+                .from("post_authors")
+                .delete()
+                .match({ post_id: post.data.id, blog_id: blogId });
+              await sb.from("post_authors").upsert(
+                authors.map((author) => ({
+                  author_id: author,
+                  post_id: post.data.id,
+                  blog_id: blogId,
+                }))
+              );
+            }
+
             queryClient.invalidateQueries({
               queryKey: ["posts", "post", blogId, postSlug, "tags"],
             });
@@ -102,7 +131,8 @@ export default function Post() {
           }
         }}
         post={post.data}
-        tags={filteredTags as any} // typescript cant infer properly, breaks build.
+        tags={filteredTags} // typescript cant infer properly, breaks build.
+        authors={authors}
       />
     </div>
   );

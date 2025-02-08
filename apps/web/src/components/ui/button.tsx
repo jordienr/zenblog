@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./tooltip";
+import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-offset-2 focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible focus-visible:border-orange-700  disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-zinc-950 ring-1 ring-transparent antialiased dark:focus-visible:ring-zinc-300 gap-1.5 [&>svg]:w-4 leading-none [&>svg]:opacity-60 active:scale-95 border border-transparent",
@@ -52,11 +53,15 @@ export interface ButtonProps
     content: string;
     side?: "top" | "bottom" | "left" | "right";
   };
+  isLoading?: boolean;
   asChild?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ tooltip, className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    { tooltip, isLoading, className, variant, size, asChild = false, ...props },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button";
 
     if (tooltip) {
@@ -64,11 +69,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <TooltipProvider>
           <Tooltip delayDuration={tooltip.delay || 0}>
             <TooltipTrigger asChild>
-              <Comp
-                className={cn(buttonVariants({ variant, size, className }))}
-                ref={ref}
-                {...props}
-              />
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin cursor-not-allowed" />
+              ) : (
+                <Comp
+                  disabled={isLoading || props.disabled}
+                  className={cn(buttonVariants({ variant, size, className }))}
+                  ref={ref}
+                  {...props}
+                />
+              )}
             </TooltipTrigger>
             <TooltipContent side={tooltip.side}>
               {tooltip.content}
@@ -80,6 +90,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <Comp
+        disabled={isLoading || props.disabled}
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}

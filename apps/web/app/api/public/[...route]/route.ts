@@ -3,7 +3,13 @@ import { createClient } from "@/lib/server/supabase";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { Hono } from "hono";
-import { categories, postBySlug, posts, tags } from "./public-api.constants";
+import {
+  categories,
+  postBySlug,
+  posts,
+  tags,
+  authors,
+} from "./public-api.constants";
 import { PublicApiResponse } from "./public-api.types";
 import { Post } from "@zenblog/types";
 import { throwError } from "./public-api.errors";
@@ -39,16 +45,19 @@ app.get(posts.path, async (c) => {
   const limit = parseInt(c.req.query("limit") || "30");
   const category = c.req.query("category");
   const tags = c.req.query("tags")?.split(",");
+  const author = c.req.query("author");
   const supabase = createClient();
+
+  console.log("🐸", author);
 
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
   }
 
-  let query = supabase
-    .from("posts_v9")
+  let postsQuery = supabase
+    .from("posts_v10")
     .select(
-      "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug"
+      "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug, authors"
     )
     .eq("blog_id", blogId)
     .eq("published", true)
@@ -57,7 +66,7 @@ app.get(posts.path, async (c) => {
     .range(offset, offset + limit - 1);
 
   if (category) {
-    query.eq("category_slug", category);
+    postsQuery.eq("category_slug", category);
   }
 
   const blogTagsQuery = supabase
@@ -75,11 +84,29 @@ app.get(posts.path, async (c) => {
     }
 
     // Filter posts query by tags in request
-    console.log("🐸🐸🐸", tags);
-    query = query.overlaps("tags", tags);
+    postsQuery = postsQuery.overlaps("tags", tags);
   }
 
-  const { data: posts, error } = await query;
+  const authorsQuery = supabase
+    .from("authors")
+    .select("id, slug, name, image_url, bio, website, twitter")
+    .eq("blog_id", blogId);
+
+  let blogAuthors: { id: number; slug: string; name: string }[] = [];
+
+  if (author) {
+    // Fetch the author data to add name + slug later
+    const authorsRes = await authorsQuery;
+    if (authorsRes.data) {
+      blogAuthors = authorsRes.data;
+    }
+
+    const authorData = blogAuthors.find((a) => a.slug === author);
+
+    postsQuery = postsQuery.overlaps("authors", [authorData?.id]);
+  }
+
+  const { data: posts, error } = await postsQuery;
 
   if (error) {
     console.log(error);
@@ -103,10 +130,23 @@ app.get(posts.path, async (c) => {
         };
       }
 
+      if (!post.authors) {
+        return {
+          ...post,
+          category: { name: category_name, slug: category_slug },
+          tags: blogTags.filter((tag) => post.tags?.includes(tag.slug)),
+        };
+      }
+
+      console.log("🐸🐸🐸", blogAuthors);
+
       return {
         ...post,
         category: { name: category_name, slug: category_slug },
         tags: blogTags.filter((tag) => post.tags?.includes(tag.slug)),
+        authors: blogAuthors
+          .filter((author) => post.authors?.includes(author.id))
+          .map(({ id, ...author }) => author),
       };
     }
   );
@@ -181,6 +221,28 @@ app.get(tags.path, async (c) => {
   }
 
   return c.json({ data: tags });
+});
+
+app.get(authors.path, async (c) => {
+  const blogId = c.req.param("blogId");
+  const supabase = createClient();
+
+  if (!blogId) {
+    return throwError(c, "MISSING_BLOG_ID");
+  }
+
+  const { data: authors, error } = await supabase
+    .from("authors")
+    .select("name, slug, image_url, twitter, website, bio")
+    .eq("blog_id", blogId);
+
+  if (error) {
+    return throwError(c, "NO_AUTHORS_FOUND");
+  }
+
+  console.log("🐸🐸🐸", authors);
+
+  return c.json({ data: authors });
 });
 
 export const GET = handle(app);

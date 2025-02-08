@@ -94,7 +94,9 @@ export default function AppLayout({
   ];
 
   return (
-    <div className={`flex min-h-screen flex-col border-b bg-zinc-50 font-sans`}>
+    <div
+      className={`flex min-h-screen flex-col border-b bg-slate-50 font-sans`}
+    >
       {IS_DEV && <ZenblogToolbar />}
       <Head>
         <title>Zenblog</title>
@@ -129,10 +131,10 @@ export default function AppLayout({
                 {selectedBlog && (
                   <DropdownMenu>
                     <DropdownMenuTrigger
-                      className="flex items-center gap-2 rounded-lg py-1 pr-3 text-sm font-medium hover:bg-zinc-50 focus-visible:ring-0"
+                      className="flex items-center gap-2 rounded-lg py-1 pr-3 text-sm font-medium hover:bg-slate-50 focus-visible:ring-0"
                       disabled={blogsLoading}
                     >
-                      <span className="mx-1 flex h-7 w-7 items-center justify-center rounded-full border bg-zinc-50 text-lg">
+                      <span className="mx-1 flex h-7 w-7 items-center justify-center rounded-full border bg-slate-50 text-lg">
                         {selectedBlog?.emoji}
                       </span>
                       {selectedBlog?.title}
@@ -192,7 +194,7 @@ export default function AppLayout({
                 className="
               sr-only px-4
               py-2 text-sm font-medium text-orange-600 hover:text-orange-700 focus:not-sr-only
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-200 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50
             "
                 href="#main"
               >
@@ -280,10 +282,10 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        `relative flex items-center gap-1 rounded-t-md px-3 py-2 text-sm font-medium text-zinc-600 transition-all hover:bg-zinc-100/70 md:px-2 md:py-1`,
+        `relative mb-2 flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-all hover:bg-slate-100/70 hover:text-slate-800 md:px-2 md:py-1`,
         {
-          "text-zinc-950": selected,
-          "after:absolute after:inset-x-0 after:bottom-[-1px] after:z-10 after:h-[2px] after:w-full after:bg-orange-500 after:content-['']":
+          "text-slate-950": selected,
+          "after:absolute after:inset-x-0 after:bottom-[-9px] after:z-10 after:h-[2px] after:w-full after:rounded-full after:bg-orange-500 after:content-['']":
             selected,
         }
       )}
@@ -324,5 +326,5 @@ export function SectionDescription({
 }: {
   children: React.ReactNode;
 }) {
-  return <p className="text-sm text-zinc-500">{children}</p>;
+  return <p className="text-sm text-slate-500">{children}</p>;
 }
