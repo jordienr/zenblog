@@ -216,7 +216,7 @@ export default function AppLayout({
           </nav>
           {selectedBlog && (
             <div className="border-b bg-white shadow-sm">
-              <div className="mx-auto flex max-w-5xl items-center justify-between pr-4">
+              <div className="mx-auto flex max-w-5xl items-center justify-between overflow-x-auto">
                 <div className="flex max-w-5xl items-center px-2">
                   {BlogNavItems.map((item) => (
                     <NavItem
