@@ -38,64 +38,97 @@ const Navigation = (props: Props) => {
   ];
 
   return (
-    <nav className="sticky top-0 z-20 mx-auto flex w-full max-w-5xl items-center justify-between border-b bg-white px-6 py-4 md:relative md:border-none md:py-8">
+    <nav className="sticky top-0 z-20 mx-auto grid w-full max-w-5xl grid-cols-3 bg-white px-6 py-4 md:relative md:py-8">
       <Link href="/">
         <ZendoLogo size={27} />
       </Link>
 
-      <div className="flex w-full justify-end gap-2 font-medium text-slate-700">
-        <div className="hidden w-full flex-grow items-center justify-end gap-2 md:flex">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              className="rounded-lg px-2 py-1 text-sm font-semibold hover:text-slate-800"
-              href={link.href}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+      <div className="flex items-center justify-center gap-2">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            className="hidden rounded-lg px-2 py-1 text-sm font-semibold hover:text-slate-800 md:block"
+            href={link.href}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
 
-        {user ? (
-          <div className="ml-2 flex w-full justify-end">
-            <Button asChild variant={"secondary"} size="default">
-              <Link href="/blogs">Dashboard</Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="ml-2 flex">
-            <Button asChild variant={"ghost"} size="default">
-              <Link href="/sign-in">Sign in</Link>
-            </Button>
-            <Button asChild variant={"ghost"} size="default">
-              <Link href="/sign-up">Sign up</Link>
-            </Button>
-          </div>
-        )}
-        <div className="ml-2 md:hidden">
+      <div className="flex items-center justify-end gap-2">
+        <div className="hidden md:block">
+          {user ? (
+            <div className="ml-2 flex w-full justify-end">
+              <Button asChild variant={"secondary"} size="default">
+                <Link href="/blogs">Dashboard</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="ml-2 flex">
+              <Button asChild variant={"ghost"} size="default">
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+              <Button asChild variant={"ghost"} size="default">
+                <Link href="/sign-up">Sign up</Link>
+              </Button>
+            </div>
+          )}
+        </div>
+        <div className="md:hidden">
           <button
-            className="rounded-lg p-2 hover:bg-slate-100"
+            className="rounded-lg p-1.5 hover:bg-zinc-100"
             onClick={() => setIsOpen(!isOpen)}
           >
             <HiOutlineMenu size={24} />
           </button>
         </div>
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
-          <DrawerContent>
-            <div className="flex h-full flex-col items-center justify-center py-12">
-              {mobileLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  className="rounded-lg px-4 py-4 text-xl font-medium tracking-tight text-slate-700 hover:text-slate-800"
-                  href={link.href}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </DrawerContent>
-        </Drawer>
       </div>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerContent>
+          <div className="flex h-full flex-col items-center justify-center py-12">
+            {mobileLinks.map((link) => (
+              <Link
+                key={link.href}
+                className="rounded-lg px-4 py-4 text-xl font-medium tracking-tight text-slate-700 hover:text-slate-800"
+                href={link.href}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="flex w-full flex-col gap-2 px-4">
+              {user ? (
+                <Button
+                  className="w-full"
+                  asChild
+                  variant={"secondary"}
+                  size="default"
+                >
+                  <Link href="/blogs">Dashboard</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    className="w-full"
+                    asChild
+                    variant={"ghost"}
+                    size="default"
+                  >
+                    <Link href="/sign-in">Sign in</Link>
+                  </Button>
+                  <Button
+                    className="w-full"
+                    asChild
+                    variant={"ghost"}
+                    size="default"
+                  >
+                    <Link href="/sign-up">Sign up</Link>
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </nav>
   );
 };

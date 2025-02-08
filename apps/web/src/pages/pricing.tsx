@@ -24,13 +24,17 @@ export default function Pricing() {
         <link rel="icon" href="/static/favicon.ico" />
       </Head>
       <Navigation />
-      <main className="mx-auto max-w-4xl px-4">
-        <h1 className="text-2xl font-medium">Zenblog Pricing</h1>
-        <p className="mt-2 text-slate-500">
-          Simple pricing, cancel anytime, no questions asked.
-        </p>
+      <main className="mx-auto mt-8 max-w-4xl px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-medium">
+            Start for free, upgrade when you need it
+          </h1>
+          <p className="mt-2 text-slate-500">
+            Simple pricing, cancel anytime, no questions asked.
+          </p>
+        </div>
         <div className="mt-8">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center justify-center gap-1">
             <Button
               variant={subscriptionType === "month" ? "secondary" : "ghost"}
               onClick={() => setSubscriptionType("month")}
@@ -151,10 +155,7 @@ export function PricingCard({
   };
 
   function getButtonVariant() {
-    if (highlight) {
-      return "default";
-    }
-    return "outline";
+    return "default";
   }
 
   return (
@@ -183,11 +184,7 @@ export function PricingCard({
               Try it free for {TRIAL_PERIOD_DAYS} days!
             </div>
           )}
-          <Button
-            className="w-full"
-            variant={getButtonVariant()}
-            onClick={onClick}
-          >
+          <Button className="w-full" onClick={onClick}>
             Get started
           </Button>
         </div>
