@@ -43,8 +43,8 @@ const Navigation = (props: Props) => {
         <ZendoLogo size={27} />
       </Link>
 
-      <div className="flex w-full gap-2 font-medium text-slate-700">
-        <div className="hidden w-full flex-grow items-center justify-center gap-2 md:flex">
+      <div className="flex w-full justify-end gap-2 font-medium text-slate-700">
+        <div className="hidden w-full flex-grow items-center justify-end gap-2 md:flex">
           {links.map((link) => (
             <Link
               key={link.href}

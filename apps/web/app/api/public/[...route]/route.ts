@@ -48,8 +48,6 @@ app.get(posts.path, async (c) => {
   const author = c.req.query("author");
   const supabase = createClient();
 
-  console.log("🐸", author);
-
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
   }
@@ -137,8 +135,6 @@ app.get(posts.path, async (c) => {
           tags: blogTags.filter((tag) => post.tags?.includes(tag.slug)),
         };
       }
-
-      console.log("🐸🐸🐸", blogAuthors);
 
       return {
         ...post,
@@ -239,8 +235,6 @@ app.get(authors.path, async (c) => {
   if (error) {
     return throwError(c, "NO_AUTHORS_FOUND");
   }
-
-  console.log("🐸🐸🐸", authors);
 
   return c.json({ data: authors });
 });

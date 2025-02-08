@@ -83,6 +83,14 @@ function createZenblogClient({ blogId, _url, _debug, }) {
                 return data;
             },
         },
+        authors: {
+            list: async function () {
+                const data = await fetcher(`authors`, {
+                    method: "GET",
+                });
+                return data;
+            },
+        },
     };
 }
 //# sourceMappingURL=index.js.map

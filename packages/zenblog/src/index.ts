@@ -1,5 +1,5 @@
 import { createLogger, throwError } from "./lib";
-import { Category, Post, PostWithContent, Tag } from "@zenblog/types";
+import { Author, Category, Post, PostWithContent, Tag } from "@zenblog/types";
 function toQueryString(obj: Record<string, any>) {
   const params = new URLSearchParams(obj);
   return params.toString();
@@ -122,6 +122,15 @@ export function createZenblogClient({
         });
 
         return data as { data: Tag[] };
+      },
+    },
+    authors: {
+      list: async function (): Promise<{ data: Author[] }> {
+        const data = await fetcher(`authors`, {
+          method: "GET",
+        });
+
+        return data as { data: Author[] };
       },
     },
   };

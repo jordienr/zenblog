@@ -1,4 +1,4 @@
-import { Category, Post, PostWithContent, Tag } from "@zenblog/types";
+import { Author, Category, Post, PostWithContent, Tag } from "@zenblog/types";
 type CreateClientOpts = {
     blogId: string;
     _url?: string;
@@ -33,6 +33,11 @@ export declare function createZenblogClient({ blogId, _url, _debug, }: CreateCli
     tags: {
         list: () => Promise<{
             data: Tag[];
+        }>;
+    };
+    authors: {
+        list: () => Promise<{
+            data: Author[];
         }>;
     };
 };

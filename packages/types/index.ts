@@ -6,6 +6,7 @@ export type Post = {
   excerpt?: string;
   tags: Tag[];
   category: Category | null;
+  authors: Author[];
 };
 
 export type PostWithContent = Post & {
@@ -20,4 +21,13 @@ export type Category = {
 export type Tag = {
   slug: string;
   name: string;
+};
+
+export type Author = {
+  name: string;
+  slug: string;
+  image_url: string;
+  bio?: string;
+  twitter_url?: string;
+  website_url?: string;
 };
