@@ -237,9 +237,9 @@ function PostItem({
             )}
             {post.tags && post.tags.length > 0 && (
               <div className="flex items-center gap-2">
-                {post.tags?.map((tag: any) => (
+                {post.tags?.map((tag: string, index: number) => (
                   <span
-                    key={tag}
+                    key={index + tag}
                     className="px-1 py-0.5 text-xs font-semibold text-zinc-400"
                   >
                     #{tag}

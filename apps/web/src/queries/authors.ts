@@ -145,7 +145,6 @@ export function usePostAuthorsQuery({
         .eq("post_id", postId)
         .eq("blog_id", blogId);
 
-      console.log("🥬 AUTHORS---", data);
       return data;
     },
   });

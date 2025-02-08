@@ -134,7 +134,6 @@ export const ZendoEditor = (props: Props) => {
   /**
    * Authors State
    */
-  console.log("authors: ", props.authors);
   const { data: authors, isLoading: isAuthorsLoading } = useAuthors({ blogId });
   const [selectedAuthors, setSelectedAuthors] = React.useState<number[]>(
     props.authors?.map((a) => a.id) || []

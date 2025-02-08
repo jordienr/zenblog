@@ -38,7 +38,6 @@ export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
             )
           );
         }
-        console.log("set", set);
         return set;
       },
     },

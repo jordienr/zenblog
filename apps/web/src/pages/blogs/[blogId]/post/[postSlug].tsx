@@ -7,6 +7,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { usePostTags } from "@/queries/tags";
 import { Loader2 } from "lucide-react";
 import { usePostAuthorsQuery } from "@/queries/authors";
+import { useMemo } from "react";
 
 export default function Post() {
   const router = useRouter();
@@ -37,16 +38,26 @@ export default function Post() {
     postId: post?.data?.id || "",
   });
 
-  const authors =
-    authorsQuery.data
-      ?.map((a) => ({
-        id: a.author_id,
-        name: a.author?.name || "",
-        image_url: a.author?.image_url || null,
-      }))
-      .filter((a) => a !== null) || [];
+  const postAuthors = useMemo(
+    () =>
+      authorsQuery.data
+        ?.map((a) => ({
+          id: a.author_id,
+          name: a.author?.name || "",
+          image_url: a.author?.image_url || null,
+        }))
+        .filter((a) => a !== null) || [],
+    [authorsQuery.data]
+  );
 
-  if (isLoading || tagsQuery.isLoading || isRefetching) {
+  console.log("postAuthors: ", postAuthors);
+
+  if (
+    isLoading ||
+    tagsQuery.isLoading ||
+    isRefetching ||
+    authorsQuery.isFetching
+  ) {
     return (
       <div className="flex-center p-32">
         <Loader2 className="animate-spin text-orange-500" size={32} />
@@ -132,7 +143,7 @@ export default function Post() {
         }}
         post={post.data}
         tags={filteredTags} // typescript cant infer properly, breaks build.
-        authors={authors}
+        authors={postAuthors}
       />
     </div>
   );
