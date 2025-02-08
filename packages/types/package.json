@@ -1,14 +1,14 @@
 {
   "name": "@zenblog/types",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "types": "index.ts",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "publish:public": "npm publish --access public"
+    "publish:prod": "npm publish --access public"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "Types for zenblog, a headless blogging CMS."
 }

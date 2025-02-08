@@ -1,4 +1,4 @@
-import { Author, Category, Post, PostWithContent, Tag } from "@zenblog/types";
+import { Author, Category, Post, PostWithContent, Tag } from "./types";
 type CreateClientOpts = {
     blogId: string;
     _url?: string;
@@ -6,11 +6,14 @@ type CreateClientOpts = {
 };
 export declare function createZenblogClient({ blogId, _url, _debug, }: CreateClientOpts): {
     posts: {
-        list: ({ limit, offset, cache, category, }?: {
+        list: ({ limit, offset, cache, category, tags, author, }?: {
             cache?: RequestInit["cache"];
             limit?: number;
             offset?: number;
+        } & {
             category?: string;
+            tags?: string[];
+            author?: string;
         }) => Promise<{
             data: Post[];
         }>;
@@ -20,7 +23,6 @@ export declare function createZenblogClient({ blogId, _url, _debug, }: CreateCli
             cache?: RequestInit["cache"];
             limit?: number;
             offset?: number;
-            category?: string;
         }) => Promise<{
             data: PostWithContent;
         }>;

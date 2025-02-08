@@ -1,5 +1,8 @@
 import { createLogger, throwError } from "./lib";
-import { Author, Category, Post, PostWithContent, Tag } from "@zenblog/types";
+import { Author, Category, Post, PostWithContent, Tag } from "./types";
+
+// 0.7.2
+// - Added authors to the client
 function toQueryString(obj: Record<string, any>) {
   const params = new URLSearchParams(obj);
   return params.toString();
@@ -70,7 +73,12 @@ export function createZenblogClient({
     cache?: RequestInit["cache"];
     limit?: number;
     offset?: number;
+  };
+
+  type PostListOpts = ReqOpts & {
     category?: string;
+    tags?: string[];
+    author?: string;
   };
   return {
     posts: {
@@ -79,12 +87,16 @@ export function createZenblogClient({
         offset = 0,
         cache = "default",
         category,
-      }: ReqOpts = {}): Promise<{ data: Post[] }> {
+        tags,
+        author,
+      }: PostListOpts = {}): Promise<{ data: Post[] }> {
         const data = await fetcher(
           `posts?${toQueryString({
             limit,
             offset,
             ...(category ? { category } : {}),
+            ...(tags ? { tags: tags.join(",") } : {}),
+            ...(author ? { author } : {}),
           })}`,
           {
             method: "GET",

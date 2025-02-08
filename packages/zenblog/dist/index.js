@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createZenblogClient = createZenblogClient;
 const lib_1 = require("./lib");
+// 0.7.2
+// - Added authors to the client
 function toQueryString(obj) {
     const params = new URLSearchParams(obj);
     return params.toString();
@@ -48,11 +50,13 @@ function createZenblogClient({ blogId, _url, _debug, }) {
     }, logger);
     return {
         posts: {
-            list: async function ({ limit = 20, offset = 0, cache = "default", category, } = {}) {
+            list: async function ({ limit = 20, offset = 0, cache = "default", category, tags, author, } = {}) {
                 const data = await fetcher(`posts?${toQueryString({
                     limit,
                     offset,
                     ...(category ? { category } : {}),
+                    ...(tags ? { tags: tags.join(",") } : {}),
+                    ...(author ? { author } : {}),
                 })}`, {
                     method: "GET",
                     cache,

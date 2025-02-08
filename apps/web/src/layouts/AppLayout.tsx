@@ -67,14 +67,10 @@ export default function AppLayout({
       label: "Media",
       href: `/blogs/${selectedBlog?.id}/media`,
     },
-    ...(isDev
-      ? [
-          {
-            label: "Authors",
-            href: `/blogs/${selectedBlog?.id}/authors`,
-          },
-        ]
-      : []),
+    {
+      label: "Authors",
+      href: `/blogs/${selectedBlog?.id}/authors`,
+    },
     {
       label: "Categories",
       href: `/blogs/${selectedBlog?.id}/categories`,

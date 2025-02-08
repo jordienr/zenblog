@@ -1,6 +1,6 @@
 {
   "name": "zenblog",
-  "version": "0.7.0",
+  "version": "0.7.5",
   "description": "The typescript client for zenblog",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "test": "npm test",
     "build": "tsc",
     "dev": "tsc -w",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm i && npm run build",
     "publish:prod": "npm publish --access public",
     "publish:beta": "npm publish --access public --tag beta"
   },
@@ -29,7 +29,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "^20.17.6",
-    "@zenblog/types": "*"
+    "@zenblog/types": "^1.0.0"
   },
   "devDependencies": {
     "typescript": "^5.6.3"
