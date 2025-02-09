@@ -550,7 +550,6 @@ const api = new Hono()
       let imageUrl = "";
 
       if (image) {
-        console.log("🥬 IMAGE EXISTS---", image);
         const buffer = Buffer.from(await image.arrayBuffer());
         const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
         const fileName = `${slug}-${timestamp}.${image.type.split("/")[1]}`;

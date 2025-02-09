@@ -26,7 +26,7 @@ export function ZenblogToolbar() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="absolute left-2 top-2 h-8 w-8"
+          className="absolute bottom-3 left-3 h-8 w-8"
           size="icon"
         >
           <Settings size={16} />

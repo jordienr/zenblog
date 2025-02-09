@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export const TRIAL_PERIOD_DAYS = 30;
+export const TRIAL_PERIOD_DAYS = 14;
 
-export const PricingPlanId = z.enum(["hobby", "pro", "agency", "free"]);
+export const PricingPlanId = z.enum(["hobby", "pro", "free"]);
 export type PricingPlanId = z.infer<typeof PricingPlanId>;
 export const isPricingPlanId = (value: string): value is PricingPlanId =>
   PricingPlanId.safeParse(value).success;
@@ -30,62 +30,56 @@ export type PricingPlan = {
  * ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
  */
 export const PRICING_PLANS: PricingPlan[] = [
+  // ALWAYS KEEP FREE PLAN FIRST IN THE ARRAY
   {
     id: "free",
-    title: "Solo",
+    title: "Free",
     description: "For personal blogs or small projects",
     monthlyPrice: 0,
     yearlyPrice: 0,
     features: [
       "1 blog",
+      "1 author",
       "Unlimited posts",
       "Limited files",
-      "20k API requests per month",
-    ],
-  },
-  {
-    id: "hobby",
-    highlight: true,
-    title: "Small",
-    description: "Perfect for you and your side projects",
-    monthlyPrice: 9,
-    yearlyPrice: 72, // will be divided by 12 in pricing page
-    features: [
-      "$4 per blog",
-      "2 blogs",
-      "Unlimited posts",
-      "50k API requests per blog per month",
+      "40k API requests per month",
       "Limited media files",
       "Email support",
     ],
   },
   {
-    id: "pro",
-    title: "Pro",
-    description: "For professional blogs and projects",
-    monthlyPrice: 30,
-    yearlyPrice: 300,
+    id: "hobby",
+    highlight: false,
+    title: "Starter",
+    description: "Perfect for small teams",
+    monthlyPrice: 29,
+    yearlyPrice: 288, // will be divided by 12 in pricing page
     features: [
-      "$2.5 per blog",
-      "10 blogs",
+      "2 blogs",
+      "3 authors",
       "Unlimited posts",
-      "50k API requests per blog per month",
+      "Unlimited categories",
+      "Unlimited tags",
+      "Unlimited API requests",
       "Unlimited media files",
       "Email support",
     ],
   },
-  // {
-  //   id: "agency",
-  //   title: "Agency",
-  //   description: "For professional agencies",
-  //   monthlyPrice: 140,
-  //   yearlyPrice: 1200,
-  //   features: [
-  //     "Unlimited blogs",
-  //     "Unlimited posts",
-  //     "100k API requests per blog per month",
-  //     "Unlimited media files",
-  //     "Priority support",
-  //   ],
-  // },
+  {
+    id: "pro",
+    title: "Professional",
+    description: "For growing teams",
+    monthlyPrice: 59,
+    yearlyPrice: 576,
+    features: [
+      "Unlimited blogs",
+      "Unlimited authors",
+      "Unlimited posts",
+      "Unlimited categories",
+      "Unlimited tags",
+      "Unlimited API requests",
+      "Unlimited media files",
+      "Email support",
+    ],
+  },
 ];

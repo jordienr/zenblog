@@ -37,7 +37,7 @@ export default function Dashboard() {
           {data?.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="text-slate-500">
-                <FaPencilAlt size="48" />
+                <FaPencilAlt size="24" />
               </div>
               <h2 className="mt-4 text-xl font-medium">
                 Start by creating a blog

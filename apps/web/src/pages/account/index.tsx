@@ -1,16 +1,35 @@
 import { Button } from "@/components/ui/button";
 import AppLayout, { Section, SectionTitle } from "@/layouts/AppLayout";
-import { PRICING_PLANS, PricingPlan } from "@/lib/pricing.constants";
+import {
+  PRICING_PLANS,
+  PricingPlan,
+  PricingPlanId,
+  TRIAL_PERIOD_DAYS,
+} from "@/lib/pricing.constants";
 import { usePricesQuery } from "@/queries/prices";
 import { useProductsQuery } from "@/queries/products";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import { useUser } from "@/utils/supabase/browser";
-import { CircleCheckIcon, Landmark, Loader, Loader2 } from "lucide-react";
-import React, { useState } from "react";
+import {
+  Check,
+  CheckCircle,
+  CircleCheckIcon,
+  KeyRound,
+  Landmark,
+  Loader,
+  Loader2,
+} from "lucide-react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PricingCard } from "../pricing";
 import { API } from "app/utils/api-client";
 import { getOnboardingItems, useOnboardingQuery } from "@/queries/onboarding";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Toggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/router";
 
 type Props = {};
 
@@ -66,31 +85,32 @@ export const SubscribeSection = () => {
   }
 
   return (
-    <div>
-      <h2 className="text-lg font-medium">Pick a plan</h2>
-      <p className="font-mono text-sm text-zinc-500">Cancel anytime</p>
-      <div className="mt-4 flex gap-2">
-        <Button
-          variant={interval === "month" ? "default" : "outline"}
-          onClick={() => setInterval("month")}
-        >
-          Monthly
-        </Button>
-        <Button
-          variant={interval === "year" ? "default" : "outline"}
-          onClick={() => setInterval("year")}
-        >
-          Yearly
-        </Button>
+    <div className="flex flex-col items-center">
+      <h2 className="text-lg font-medium">Upgrade your plan</h2>
+      <p className="text-sm font-medium text-zinc-500">
+        Try it free for {TRIAL_PERIOD_DAYS} days. Cancel anytime.
+      </p>
+      <div className="mt-4 flex items-center gap-2">
+        <Switch
+          id="yearly"
+          checked={interval === "year"}
+          onCheckedChange={(checked) => setInterval(checked ? "year" : "month")}
+        />
+        <Label htmlFor="yearly" className="text-sm font-medium">
+          Pay yearly{" "}
+          <span className="rounded-full bg-emerald-100 p-1 text-xs font-medium text-emerald-600">
+            2 months free!
+          </span>
+        </Label>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-4">
-        {PRICING_PLANS.map((plan) => (
+      <div className="mx-auto mt-4 grid w-full max-w-lg grid-cols-1 items-center justify-center gap-4 md:grid-cols-2">
+        {PRICING_PLANS.filter((plan) => plan.id !== "free").map((plan) => (
           <div key={plan.title}>
             <PricingCard
               {...plan}
               type={interval}
-              isCurrentPlan={subscription.data?.plan === plan.id}
+              isCurrentPlan={false}
               onClick={() => openCheckoutPage(plan)}
             />
           </div>
@@ -103,9 +123,11 @@ export const SubscribeSection = () => {
 const AccountPage = () => {
   const [loading, setLoading] = React.useState(false);
   const user = useUser();
+  const router = useRouter();
 
-  const onboardingItems = getOnboardingItems("");
-  const { data: onboardingData } = useOnboardingQuery();
+  const isSuccess = router.query.success === "true";
+
+  const activeSubscriptions = ["free", "trialing", "active", "incomplete"];
 
   async function onManageSubscriptionClick() {
     setLoading(true);
@@ -139,6 +161,10 @@ const AccountPage = () => {
 
   const subscription = useSubscriptionQuery();
 
+  const isActiveSubscription = activeSubscriptions.includes(
+    subscription.data?.status || ""
+  );
+
   function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
@@ -149,6 +175,17 @@ const AccountPage = () => {
     });
   }
 
+  const planIdToTitle = (planId: PricingPlanId) => {
+    return PRICING_PLANS.find((plan) => plan.id === planId)?.title || "Free";
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Subscription updated successfully");
+      router.replace("/account", undefined, { shallow: true });
+    }
+  }, [isSuccess]);
+
   return (
     <AppLayout
       loading={loading || subscription.isLoading}
@@ -157,70 +194,160 @@ const AccountPage = () => {
     >
       <Section className="px-4">
         <SectionTitle>Account</SectionTitle>
-        <div className="mt-4 max-w-xl divide-y *:grid *:grid-cols-2 *:p-2">
-          <div>
-            <div>Email</div>
-            <div className="font-mono">{user?.email}</div>
-          </div>
-          <div>
-            <div>Created at</div>
-            <div className="font-mono">
-              {formatDate(user?.created_at || "")}
-            </div>
-          </div>
-          <div>
-            <h3>Onboarding</h3>
-            <ul className="font-mono">
-              {onboardingItems.map((item) => (
-                <li key={item.id} className="flex items-center gap-2">
-                  {onboardingData?.[item.id] ? (
-                    <CircleCheckIcon className="size-4 text-green-500" />
-                  ) : null}
-                  {item.label}{" "}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <AccountList>
+          <AccountListItem label="Email" value={user?.email} />
+          <AccountListItem
+            label="Created at"
+            value={formatDate(user?.created_at || "")}
+          />
+          <AccountListItem
+            label="Reset password"
+            value={
+              <Button variant="outline" asChild>
+                <Link href="/reset-password">
+                  <KeyRound />
+                  Reset password
+                </Link>
+              </Button>
+            }
+          />
+        </AccountList>
       </Section>
-      <Section className="my-4 rounded-xl border border-b-2 bg-white p-4">
+      <Section className="my-4 px-4">
         <SectionTitle>Subscription</SectionTitle>
         {subscription.isLoading ? (
           <div className="flex w-full items-center justify-center py-24">
             <Loader2 className="animate-spin text-orange-500" size={24} />
           </div>
         ) : (
-          <div className="mt-4 grid max-w-xl grid-cols-2 gap-4">
-            <p>Billing status:</p>
-            <p className="font-mono capitalize">
-              {subscription.data?.status || "Free"}
-            </p>
-            {subscription.data?.interval ? (
+          <AccountList>
+            <AccountListItem
+              label="Status"
+              valueClassName="capitalize"
+              value={subscription.data?.status || "Free"}
+            />
+            {isActiveSubscription && (
               <>
-                <p className="grid max-w-xl grid-cols-2">Billing interval:</p>
-                <p className="font-mono">
-                  {subscription.data?.interval === "month"
-                    ? "Monthly"
-                    : "Yearly"}
-                </p>
+                <AccountListItem
+                  label="Plan"
+                  valueClassName="capitalize"
+                  value={planIdToTitle(subscription.data?.plan || "free")}
+                />
+                {subscription.data?.subscription?.cancel_at_period_end &&
+                  subscription.data?.status !== "canceled" && (
+                    <AccountListItem
+                      label="Cancel at period end"
+                      value={
+                        <div className="rounded-md bg-emerald-50 p-2 text-sm font-medium text-emerald-600">
+                          Your subscription will be canceled at the end of the
+                          current period and you will not be billed again.
+                        </div>
+                      }
+                    />
+                  )}
+                {subscription.data?.subscription?.items?.data?.[0]?.plan
+                  ?.amount && (
+                  <AccountListItem
+                    label="Price"
+                    value={
+                      `$${(
+                        subscription.data?.subscription?.items?.data?.[0]?.plan
+                          ?.amount / 100
+                      ).toFixed(2)} per ${
+                        subscription.data?.subscription?.items?.data?.[0]?.plan
+                          ?.interval
+                      }` || "Free"
+                    }
+                  />
+                )}
+                {subscription.data?.subscription?.created && (
+                  <AccountListItem
+                    label="Started at"
+                    value={formatDate(
+                      new Date(
+                        (subscription.data?.subscription?.created || 0) * 1000
+                      ).toISOString()
+                    )}
+                  />
+                )}
+                {subscription.data?.subscription.trial_end &&
+                  subscription.data?.status === "trialing" && (
+                    <AccountListItem
+                      label="Trial ends at"
+                      value={formatDate(
+                        new Date(
+                          (subscription.data?.subscription?.trial_end || 0) *
+                            1000
+                        ).toISOString()
+                      )}
+                    />
+                  )}
+                {subscription.data?.subscription?.current_period_end && (
+                  <AccountListItem
+                    label="Next billing date"
+                    value={formatDate(
+                      new Date(
+                        (subscription.data?.subscription?.current_period_end ||
+                          0) * 1000
+                      ).toISOString()
+                    )}
+                  />
+                )}
+                <AccountListItem
+                  label="Manage subscription"
+                  value={
+                    <Button
+                      variant="outline"
+                      onClick={onManageSubscriptionClick}
+                    >
+                      <Landmark />
+                      Customer portal
+                    </Button>
+                  }
+                ></AccountListItem>
               </>
-            ) : null}
-            {subscription.data?.status && (
-              <Button variant="outline" onClick={onManageSubscriptionClick}>
-                <Landmark />
-                Manage subscription
-              </Button>
             )}
-          </div>
+
+            {/* <pre className="max-h-40 overflow-y-auto text-xs">
+              {JSON.stringify(subscription.data?.subscription, null, 2)}
+            </pre> */}
+          </AccountList>
         )}
       </Section>
 
-      {subscription.data?.status !== "active" && (
-        <Section className="my-4 px-4 pb-4">
-          <SubscribeSection />
-        </Section>
-      )}
+      {subscription.data?.status !== "active" &&
+        subscription.data?.status !== "trialing" &&
+        subscription.data?.status !== "incomplete" && (
+          <section className="my-4 px-4 py-8">
+            <SubscribeSection />
+          </section>
+        )}
     </AppLayout>
+  );
+};
+
+const AccountList = ({ children }: { children: ReactNode }) => {
+  return <div className="mt-4 grid max-w-xl divide-y">{children}</div>;
+};
+
+const AccountListItem = ({
+  label,
+  value,
+  className,
+  labelClassName,
+  valueClassName,
+}: {
+  label: string;
+  value: ReactNode;
+  className?: string;
+  labelClassName?: string;
+  valueClassName?: string;
+}) => {
+  return (
+    <div className={cn("grid grid-cols-2 p-2", className)}>
+      <div className={cn("text-sm font-medium", labelClassName)}>{label}</div>
+      <div className={cn("text-sm font-medium", valueClassName)}>{value}</div>
+    </div>
   );
 };
 

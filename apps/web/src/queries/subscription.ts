@@ -46,6 +46,7 @@ export function useSubscriptionQuery() {
         interval,
         status,
         isValidSubscription,
+        subscription: res,
       };
     },
   });

@@ -150,7 +150,9 @@ export function CreateAuthorDialog() {
   const blogId = useBlogId();
   const { data: authors } = useAuthors({ blogId });
   const [open, setOpen] = useState(false);
-  const isFreePlan = subscription?.data?.plan === "free";
+  const isFreePlan =
+    subscription?.data?.plan === "free" ||
+    !subscription?.data?.isValidSubscription;
   const hasReachedAuthorLimit = isFreePlan && authors?.length === 1;
 
   return (

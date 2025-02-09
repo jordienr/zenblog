@@ -93,7 +93,7 @@ export default function AppLayout({
     <div
       className={`flex min-h-screen flex-col border-b bg-slate-50 font-sans`}
     >
-      {IS_DEV && <ZenblogToolbar />}
+      {/* {IS_DEV && <ZenblogToolbar />} */}
       <Head>
         <title>Zenblog</title>
         <meta name="description" content="Simple, headless, blogging CMS." />
@@ -140,7 +140,12 @@ export default function AppLayout({
                           size={16}
                         />
                       )}
-                      {sub?.plan === "hobby" && (
+                      {!sub?.isValidSubscription && (
+                        <div className="rounded-full text-xs font-medium text-emerald-500">
+                          Free
+                        </div>
+                      )}
+                      {sub?.isValidSubscription && sub?.plan === "hobby" && (
                         <Link
                           title="Upgrade to Pro"
                           href="/account"
@@ -149,7 +154,7 @@ export default function AppLayout({
                           Hobby
                         </Link>
                       )}
-                      {sub?.plan === "pro" && (
+                      {sub?.isValidSubscription && sub?.plan === "pro" && (
                         <div className="rounded-full text-xs font-medium text-blue-500">
                           Pro
                         </div>
