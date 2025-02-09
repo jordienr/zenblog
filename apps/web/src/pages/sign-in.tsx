@@ -18,42 +18,16 @@ export default function SignIn() {
   const router = useRouter();
 
   useEffect(() => {
-    setLoading(true);
     if (user) {
       router.push("/blogs");
-      setLoading(false);
       return;
     }
     supabase.auth.getSession().then((res) => {
       if (res.data.session?.user) {
         router.push("/blogs");
       }
-      setLoading(false);
     });
   }, [router, supabase, user]);
-
-  async function onSubmitMagicLink(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    setLoading(true);
-    const form = e.currentTarget;
-    const email = form.email.value;
-
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: window.location.origin + "/blogs",
-      },
-    });
-
-    if (error) {
-      alert(error.message);
-    } else {
-      alert("Check your email for the login link!");
-    }
-
-    setLoading(false);
-  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -70,11 +44,10 @@ export default function SignIn() {
 
     if (error) {
       alert(error.message);
+      setLoading(false);
     } else {
-      window.location.pathname = "/blogs";
+      await router.push("/blogs");
     }
-
-    setLoading(false);
   }
 
   return (
