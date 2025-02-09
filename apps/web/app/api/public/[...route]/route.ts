@@ -55,7 +55,8 @@ app.get(posts.path, async (c) => {
   let postsQuery = supabase
     .from("posts_v10")
     .select(
-      "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug, authors"
+      "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug, authors",
+      { count: "exact" }
     )
     .eq("blog_id", blogId)
     .eq("published", true)
@@ -88,7 +89,7 @@ app.get(posts.path, async (c) => {
     postsQuery = postsQuery.overlaps("authors", [authorData?.id]);
   }
 
-  const { data: posts, error } = await postsQuery;
+  const { data: posts, error, count } = await postsQuery;
 
   if (error) {
     console.log(error);
@@ -136,7 +137,10 @@ app.get(posts.path, async (c) => {
   );
 
   const res: PublicApiResponse<Post[]> = {
-    data: formattedPostsRes as unknown as Post[], // type casting since views return array of Type | null
+    data: formattedPostsRes as unknown as Post[],
+    total: count || 0,
+    offset,
+    limit,
   };
 
   return c.json(res, 200);
@@ -169,62 +173,104 @@ app.get(postBySlug.path, async (c) => {
 
 app.get(categories.path, async (c) => {
   const blogId = c.req.param("blogId");
+  const offset = parseInt(c.req.query("offset") || "0");
+  const limit = parseInt(c.req.query("limit") || "30");
   const supabase = createClient();
 
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
   }
 
-  const { data: categories, error } = await supabase
+  const {
+    data: categories,
+    error,
+    count,
+  } = await supabase
     .from("categories")
-    .select("name, slug")
-    .eq("blog_id", blogId);
+    .select("name, slug", { count: "exact" })
+    .eq("blog_id", blogId)
+    .range(offset, offset + limit - 1);
 
   if (error) {
     return throwError(c, "NO_CATEGORIES_FOUND");
   }
 
-  return c.json({ data: categories });
+  const res: PublicApiResponse<typeof categories> = {
+    data: categories,
+    total: count || 0,
+    offset,
+    limit,
+  };
+
+  return c.json(res);
 });
 
 app.get(tags.path, async (c) => {
   const blogId = c.req.param("blogId");
+  const offset = parseInt(c.req.query("offset") || "0");
+  const limit = parseInt(c.req.query("limit") || "30");
   const supabase = createClient();
 
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
   }
 
-  const { data: tags, error } = await supabase
+  const {
+    data: tags,
+    error,
+    count,
+  } = await supabase
     .from("tags")
-    .select("name, slug")
-    .eq("blog_id", blogId);
+    .select("name, slug", { count: "exact" })
+    .eq("blog_id", blogId)
+    .range(offset, offset + limit - 1);
 
   if (error) {
     return throwError(c, "NO_TAGS_FOUND");
   }
 
-  return c.json({ data: tags });
+  const res: PublicApiResponse<typeof tags> = {
+    data: tags,
+    total: count || 0,
+    offset,
+    limit,
+  };
+
+  return c.json(res);
 });
 
 app.get(authors.path, async (c) => {
   const blogId = c.req.param("blogId");
+  const offset = parseInt(c.req.query("offset") || "0");
+  const limit = parseInt(c.req.query("limit") || "30");
   const supabase = createClient();
 
   if (!blogId) {
     return throwError(c, "MISSING_BLOG_ID");
   }
 
-  const { data: authors, error } = await supabase
+  const {
+    data: authors,
+    error,
+    count,
+  } = await supabase
     .from("authors")
-    .select("name, slug, image_url, twitter, website, bio")
-    .eq("blog_id", blogId);
+    .select("name, slug, image_url, twitter, website, bio", { count: "exact" })
+    .eq("blog_id", blogId)
+    .range(offset, offset + limit - 1);
 
   if (error) {
     return throwError(c, "NO_AUTHORS_FOUND");
   }
 
-  return c.json({ data: authors });
+  const res: PublicApiResponse<typeof authors> = {
+    data: authors,
+    total: count || 0,
+    offset,
+    limit,
+  };
+
+  return c.json(res);
 });
 
 export const GET = handle(app);

@@ -52,7 +52,10 @@ export const posts: Endpoint = {
     excerpt?: "string",
     published_at: "string",
     authors?: "object",
-  }]
+  }],
+  total?: number,
+  offset?: number,
+  limit?: number,
 }`,
     },
   },
@@ -90,12 +93,17 @@ export const categories: Endpoint = {
     200: {
       description: "The categories",
       type: "object",
-      example: `[
+      example: `{
+  data: [
   {
     name: "string",
     slug: "string",
   }
-]`,
+],
+  total?: number,
+  offset?: number,
+  limit?: number,
+}`,
     },
   },
 };
@@ -109,12 +117,17 @@ export const tags: Endpoint = {
     200: {
       description: "The tags",
       type: "object",
-      example: `[
+      example: `{
+  data: [
   {
     name: "string",
     slug: "string",
   }
-]`,
+],
+  total?: number,
+  offset?: number,
+  limit?: number,
+}`,
     },
   },
 };
@@ -138,7 +151,11 @@ export const authors: Endpoint = {
     website?: "string",
     bio?: "string",
   }
-]}`,
+],
+  total?: number,
+  offset?: number,
+  limit?: number,
+}`,
     },
   },
 };
