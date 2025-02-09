@@ -2,8 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createZenblogClient = createZenblogClient;
 const lib_1 = require("./lib");
-// 0.7.2
-// - Added authors to the client
 function toQueryString(obj) {
     const params = new URLSearchParams(obj);
     return params.toString();

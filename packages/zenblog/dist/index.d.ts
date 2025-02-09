@@ -1,4 +1,12 @@
 import { Author, Category, Post, PostWithContent, Tag } from "./types";
+type ApiResponse<T> = {
+    data: T;
+};
+type PaginatedApiResponse<T> = ApiResponse<T> & {
+    total: number;
+    offset: number;
+    limit: number;
+};
 type CreateClientOpts = {
     blogId: string;
     _url?: string;
@@ -14,33 +22,23 @@ export declare function createZenblogClient({ blogId, _url, _debug, }: CreateCli
             category?: string;
             tags?: string[];
             author?: string;
-        }) => Promise<{
-            data: Post[];
-        }>;
+        }) => Promise<PaginatedApiResponse<Post[]>>;
         get: ({ slug }: {
             slug: string;
         }, opts?: {
             cache?: RequestInit["cache"];
             limit?: number;
             offset?: number;
-        }) => Promise<{
-            data: PostWithContent;
-        }>;
+        }) => Promise<ApiResponse<PostWithContent>>;
     };
     categories: {
-        list: () => Promise<{
-            data: Category[];
-        }>;
+        list: () => Promise<PaginatedApiResponse<Category[]>>;
     };
     tags: {
-        list: () => Promise<{
-            data: Tag[];
-        }>;
+        list: () => Promise<PaginatedApiResponse<Tag[]>>;
     };
     authors: {
-        list: () => Promise<{
-            data: Author[];
-        }>;
+        list: () => Promise<PaginatedApiResponse<Author[]>>;
     };
 };
 export {};

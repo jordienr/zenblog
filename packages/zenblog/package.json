@@ -1,6 +1,6 @@
 {
   "name": "zenblog",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "The typescript client for zenblog",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,10 +15,10 @@
     "src"
   ],
   "scripts": {
-    "test": "npm test",
+    "test": "vitest",
     "build": "tsc",
     "dev": "tsc -w",
-    "prepublishOnly": "npm i && npm run build",
+    "prepublishOnly": "npm i && npm run test && npm run build",
     "publish:prod": "npm publish --access public",
     "publish:beta": "npm publish --access public --tag beta"
   },
@@ -32,6 +32,7 @@
     "@zenblog/types": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^3.0.5"
   }
 }

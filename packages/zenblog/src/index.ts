@@ -1,8 +1,16 @@
 import { createLogger, throwError } from "./lib";
 import { Author, Category, Post, PostWithContent, Tag } from "./types";
 
-// 0.7.2
-// - Added authors to the client
+type ApiResponse<T> = {
+  data: T;
+};
+
+type PaginatedApiResponse<T> = ApiResponse<T> & {
+  total: number;
+  offset: number;
+  limit: number;
+};
+
 function toQueryString(obj: Record<string, any>) {
   const params = new URLSearchParams(obj);
   return params.toString();
@@ -89,7 +97,7 @@ export function createZenblogClient({
         category,
         tags,
         author,
-      }: PostListOpts = {}): Promise<{ data: Post[] }> {
+      }: PostListOpts = {}): Promise<PaginatedApiResponse<Post[]>> {
         const data = await fetcher(
           `posts?${toQueryString({
             limit,
@@ -104,45 +112,45 @@ export function createZenblogClient({
           }
         );
 
-        return data as { data: Post[] };
+        return data as PaginatedApiResponse<Post[]>;
       },
       get: async function (
         { slug }: { slug: string },
         opts?: ReqOpts
-      ): Promise<{ data: PostWithContent }> {
+      ): Promise<ApiResponse<PostWithContent>> {
         const post = await fetcher(`posts/${slug}`, {
           method: "GET",
           cache: opts?.cache || "default",
         });
 
-        return post as { data: PostWithContent };
+        return post as ApiResponse<PostWithContent>;
       },
     },
     categories: {
-      list: async function (): Promise<{ data: Category[] }> {
+      list: async function (): Promise<PaginatedApiResponse<Category[]>> {
         const data = await fetcher(`categories`, {
           method: "GET",
         });
 
-        return data as { data: Category[] };
+        return data as PaginatedApiResponse<Category[]>;
       },
     },
     tags: {
-      list: async function (): Promise<{ data: Tag[] }> {
+      list: async function (): Promise<PaginatedApiResponse<Tag[]>> {
         const data = await fetcher(`tags`, {
           method: "GET",
         });
 
-        return data as { data: Tag[] };
+        return data as PaginatedApiResponse<Tag[]>;
       },
     },
     authors: {
-      list: async function (): Promise<{ data: Author[] }> {
+      list: async function (): Promise<PaginatedApiResponse<Author[]>> {
         const data = await fetcher(`authors`, {
           method: "GET",
         });
 
-        return data as { data: Author[] };
+        return data as PaginatedApiResponse<Author[]>;
       },
     },
   };
