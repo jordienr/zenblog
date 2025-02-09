@@ -2,7 +2,7 @@ import AppLayout from "@/layouts/AppLayout";
 import { generateSlug } from "@/lib/utils/slugs";
 import { useBlogsQuery, useCreateBlogMutation } from "@/queries/blogs";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,27 +25,18 @@ export default function CreateBlog() {
     description?: string;
     slug: string;
   };
-  const { register, handleSubmit, watch, setValue, control, setError } =
-    useForm<FormData>();
+  const { register, handleSubmit } = useForm<FormData>();
 
   const router = useRouter();
-  const watchTitle = watch("title");
-  const slug = watch("slug");
-
-  useEffect(() => {
-    if (watchTitle) {
-      if (watchTitle.length >= 3) {
-        const slug = generateSlug(watchTitle);
-        setValue("slug", slug);
-      }
-    }
-  }, [watchTitle, setValue]);
 
   const createBlog = useCreateBlogMutation();
   const blogsQuery = useBlogsQuery({ enabled: true });
   const totalBlogs = blogsQuery.data?.length || 0;
 
+  const [submitting, setSubmitting] = useState(false);
+
   const onSubmit = async (data: FormData) => {
+    setSubmitting(true);
     const res = await createBlog.mutateAsync({
       title: data.title,
       description: data.description || "",
@@ -64,13 +55,15 @@ export default function CreateBlog() {
       await router.push(`/blogs/${res.data.id}/posts`);
     }
 
+    setSubmitting(false);
+
     if (createBlog.isError) {
       console.error(createBlog.error);
       alert("Error creating blog, please try again");
     }
   };
 
-  if (isLoading || createBlog.isPending) {
+  if (isLoading || createBlog.isPending || submitting) {
     return <AppLayout loading={true} />;
   }
 
@@ -79,7 +72,7 @@ export default function CreateBlog() {
     totalBlogs >= 1
   ) {
     return (
-      <AppLayout loading={createBlog.isPending}>
+      <AppLayout loading={createBlog.isPending || submitting}>
         <div className="section mx-auto my-12 max-w-4xl px-4 py-12">
           <h2 className="mt-2">
             <div className="flex justify-center">
