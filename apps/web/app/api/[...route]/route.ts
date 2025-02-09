@@ -149,6 +149,9 @@ const api = new OpenAPIHono()
       method: "get",
       path: "/accounts/:user_id/checkout",
       request: {
+        params: z.object({
+          user_id: z.string().openapi({ description: "TODO" })
+        }),
         query: z.object({
           plan: PricingPlanId.openapi({
             description: "TODO",
@@ -477,15 +480,14 @@ const api = new OpenAPIHono()
         const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
         const baseName = providedName
           ? providedName
-              .toLowerCase()
-              .replace(/[^a-z0-9]/g, "-") // Replace non-alphanumeric with hyphens
-              .replace(/-+/g, "-") // Replace multiple hyphens with single
-              .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "-") // Replace non-alphanumeric with hyphens
+            .replace(/-+/g, "-") // Replace multiple hyphens with single
+            .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
           : "image";
 
-        const fileName = `${baseName}-${timestamp}.${
-          convertToWebp ? "webp" : "jpg"
-        }`;
+        const fileName = `${baseName}-${timestamp}.${convertToWebp ? "webp" : "jpg"
+          }`;
 
         try {
           await r2.send(
@@ -860,9 +862,8 @@ const api = new OpenAPIHono()
         const r2 = createR2Client();
         const buffer = Buffer.from(await image.arrayBuffer());
         const timestamp = Date.now().toString().slice(-6);
-        const fileName = `${authorSlug}-${timestamp}.${
-          image.type.split("/")[1]
-        }`;
+        const fileName = `${authorSlug}-${timestamp}.${image.type.split("/")[1]
+          }`;
 
         await r2.send(
           new PutObjectCommand({
