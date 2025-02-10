@@ -29,6 +29,13 @@ export type PricingPlan = {
  * ! Changing these values will change the pricing of the plans in Stripe.
  * ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
  */
+
+export const MAX_BLOGS_PER_PLAN: Record<PricingPlanId, number> = {
+  free: 1,
+  hobby: 3,
+  pro: 100,
+};
+
 export const PRICING_PLANS: PricingPlan[] = [
   // ALWAYS KEEP FREE PLAN FIRST IN THE ARRAY
   {
@@ -55,7 +62,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     monthlyPrice: 29,
     yearlyPrice: 288, // will be divided by 12 in pricing page
     features: [
-      "2 blogs",
+      `${MAX_BLOGS_PER_PLAN.hobby} blogs`,
       "3 authors",
       "Unlimited posts",
       "Unlimited categories",

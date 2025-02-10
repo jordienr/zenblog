@@ -1,19 +1,17 @@
 import AppLayout from "@/layouts/AppLayout";
-import { generateSlug } from "@/lib/utils/slugs";
 import { useBlogsQuery, useCreateBlogMutation } from "@/queries/blogs";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Smile } from "lucide-react";
-import { RESERVED_SLUGS } from "@/lib/constants";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import { SubscribeSection } from "../account";
+import { MAX_BLOGS_PER_PLAN } from "@/lib/pricing.constants";
 
 export default function CreateBlog() {
   const DEFAULT_EMOJI = "📝";
@@ -67,56 +65,52 @@ export default function CreateBlog() {
     return <AppLayout loading={true} />;
   }
 
-  if (
-    (subscription?.plan === "free" || !subscription?.isValidSubscription) &&
-    totalBlogs >= 1
-  ) {
-    return (
-      <AppLayout loading={createBlog.isPending || submitting}>
-        <div className="section mx-auto my-12 max-w-4xl px-4 py-12">
-          <h2 className="mt-2">
-            <div className="flex justify-center">
-              <Smile size={24} className="mb-2 text-orange-500" />
-            </div>
-            <span className="block text-center text-lg font-semibold">
-              You have reached the blog limit for your plan.
-            </span>
-          </h2>
-          <div className="text-center">
-            <p className="text-zinc-500">
-              Update your plan to create more blogs.
-            </p>
-          </div>
-          <hr className="my-8" />
-          <div className="mt-8">
-            <SubscribeSection />
-          </div>
-        </div>
-      </AppLayout>
-    );
-  }
+  // if (
+  //   (subscription?.plan === "free" || !subscription?.isValidSubscription) &&
+  //   totalBlogs >= 1
+  // ) {
+  //   return (
+  //     <AppLayout loading={createBlog.isPending || submitting}>
+  //       <div className="section mx-auto my-12 max-w-4xl px-4 py-12">
+  //         <h2 className="mt-2">
+  //           <div className="flex justify-center">
+  //             <Smile size={24} className="mb-2 text-orange-500" />
+  //           </div>
+  //           <span className="block text-center text-lg font-semibold">
+  //             You have reached the blog limit for your plan.
+  //           </span>
+  //         </h2>
+  //         <div className="text-center">
+  //           <p className="text-zinc-500">
+  //             Update your plan to create more blogs.
+  //           </p>
+  //         </div>
+  //         <hr className="my-8" />
+  //         <div className="mt-8">
+  //           <SubscribeSection />
+  //         </div>
+  //       </div>
+  //     </AppLayout>
+  //   );
+  // }
 
   if (
-    subscription?.plan === "hobby" &&
-    subscription?.isValidSubscription &&
-    totalBlogs >= 2
+    subscription?.plan &&
+    totalBlogs >= MAX_BLOGS_PER_PLAN[subscription.plan]
   ) {
     return (
       <AppLayout loading={createBlog.isPending}>
-        <div className="section mx-auto my-12 max-w-3xl px-4 py-12">
-          <h2 className="mt-2">
+        <div className="section mx-auto my-12 max-w-3xl px-4 py-8">
+          <h2 className="my-8">
             <div className="flex justify-center">
               <Smile size={32} className="mb-2 text-orange-500" />
             </div>
             <span className="block text-center text-lg font-semibold">
-              The Hobby plan can only create 2 blogs
+              The {subscription.plan} plan can only create{" "}
+              {MAX_BLOGS_PER_PLAN[subscription.plan]}{" "}
+              {MAX_BLOGS_PER_PLAN[subscription.plan] === 1 ? "blog" : "blogs"}
             </span>
           </h2>
-          <div className="text-center">
-            <p className="text-zinc-500">
-              Subscribe to the Pro Plan to create more blogs.
-            </p>
-          </div>
           <SubscribeSection />
         </div>
       </AppLayout>
