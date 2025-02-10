@@ -15,6 +15,7 @@ const ERROR_MAP: Record<string, ErrorItem> = {
   INVALID_API_KEY: { message: "Invalid API key", status: 401 },
   NO_CATEGORIES_FOUND: { message: "No categories found", status: 404 },
   NO_TAGS_FOUND: { message: "No tags found", status: 404 },
+  AUTHOR_NOT_FOUND: { message: "Author not found", status: 404 },
 };
 
 export const throwError = (ctx: Context, error: keyof typeof ERROR_MAP) => {

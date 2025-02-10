@@ -160,4 +160,35 @@ export const authors: Endpoint = {
   },
 };
 
-export const endpoints = [posts, postBySlug, categories, tags, authors];
+export const authorBySlug: Endpoint = {
+  id: "authorBySlug",
+  path: "/blogs/:blogId/authors/:slug",
+  method: "GET",
+  title: "Author detail",
+  description: "Get an author by their slug",
+  response: {
+    200: {
+      description: "The author",
+      type: "object",
+      example: `{
+  data: {
+    name: "string",
+    slug: "string",
+    image_url?: "string",
+    twitter?: "string",
+    website?: "string",
+    bio?: "string",
+  }
+}`,
+    },
+  },
+};
+
+export const endpoints = [
+  posts,
+  postBySlug,
+  categories,
+  tags,
+  authors,
+  authorBySlug,
+];

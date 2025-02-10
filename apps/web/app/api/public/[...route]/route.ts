@@ -9,6 +9,7 @@ import {
   posts,
   tags,
   authors,
+  authorBySlug,
 } from "./public-api.constants";
 import { PublicApiResponse } from "./public-api.types";
 import { Post, PostWithContent } from "@zenblog/types";
@@ -310,6 +311,37 @@ app.get(authors.path, async (c) => {
   };
 
   return c.json(res);
+});
+
+app.get(authorBySlug.path, async (c) => {
+  const blogId = c.req.param("blogId");
+  const slug = c.req.param("slug");
+  const supabase = createClient();
+
+  if (!blogId || !slug) {
+    return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
+  }
+
+  const { data: author, error } = await supabase
+    .from("authors")
+    .select("name, slug, image_url, twitter, website, bio")
+    .eq("blog_id", blogId)
+    .eq("slug", slug)
+    .single();
+
+  if (error || !author) {
+    return throwError(c, "AUTHOR_NOT_FOUND");
+  }
+
+  return c.json({
+    data: {
+      ...author,
+      image_url: author.image_url || "",
+      bio: author.bio || "",
+      website: author.website || "",
+      twitter: author.twitter || "",
+    },
+  });
 });
 
 export const GET = handle(app);
