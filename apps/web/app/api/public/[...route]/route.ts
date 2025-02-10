@@ -102,37 +102,30 @@ app.get(posts.path, async (c) => {
 
   const formattedPostsRes = posts.map(
     ({ category_name, category_slug, ...post }) => {
-      if (!category_name || !category_slug) {
-        return { ...post, category: null };
-      }
-
-      if (!post.tags) {
-        return {
-          ...post,
-          category: { name: category_name, slug: category_slug },
-        };
-      }
-
-      if (!post.authors) {
-        return {
-          ...post,
-          category: { name: category_name, slug: category_slug },
-          tags: blogTagsQuery.data?.filter((tag) =>
-            post.tags?.includes(tag.slug)
-          ),
-        };
-      }
-
-      return {
+      const basePost = {
         ...post,
-        category: { name: category_name, slug: category_slug },
-        tags: blogTagsQuery.data?.filter((tag) =>
-          post.tags?.includes(tag.slug)
-        ),
-        authors: authorsQuery.data
-          ?.filter((author) => post.authors?.includes(author.id))
-          .map(({ id, ...author }) => author),
+        category:
+          category_name && category_slug
+            ? { name: category_name, slug: category_slug }
+            : null,
+        tags: post.tags
+          ? blogTagsQuery.data?.filter((tag) => post.tags?.includes(tag.slug))
+          : [],
+        authors:
+          post.authors && authorsQuery.data
+            ? authorsQuery.data
+                .filter((author) => post.authors?.includes(author.id))
+                .map(({ id, ...author }) => ({
+                  ...author,
+                  image_url: author.image_url || "",
+                  bio: author.bio || undefined,
+                  website_url: author.website || undefined,
+                  twitter_url: author.twitter || undefined,
+                }))
+            : [],
       };
+
+      return basePost;
     }
   );
 
