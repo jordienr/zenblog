@@ -11,7 +11,7 @@ import {
   authors,
 } from "./public-api.constants";
 import { PublicApiResponse } from "./public-api.types";
-import { Post } from "@zenblog/types";
+import { Post, PostWithContent } from "@zenblog/types";
 import { throwError } from "./public-api.errors";
 import { trackApiUsage } from "lib/axiom";
 
@@ -156,19 +156,65 @@ app.get(postBySlug.path, async (c) => {
   }
 
   const { data: post, error } = await supabase
-    .from("posts_v7")
+    .from("posts_v10")
     .select(
-      "title, slug, published_at, excerpt, cover_image, tags, category, html_content"
+      "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug, html_content, authors"
     )
     .eq("blog_id", blogId)
     .eq("slug", slug)
     .single();
 
-  if (error) {
-    return throwError(c, "POST_NOT_FOUND");
+  if (error || !post) {
+    return throwError(c, "NO_POSTS_FOUND");
   }
 
-  return c.json({ data: post });
+  // Fetch tags data
+  const { data: tagsData } = await supabase
+    .from("tags")
+    .select("slug, name")
+    .eq("blog_id", blogId)
+    .in("slug", post.tags || []);
+
+  // Create initial formatted post with correct tags
+  let formattedPost: PostWithContent = {
+    title: post.title || "",
+    slug: post.slug || "",
+    published_at: post.published_at || "",
+    excerpt: post.excerpt || "",
+    cover_image: post.cover_image || "",
+    tags: tagsData || [],
+    category:
+      !post.category_name || !post.category_slug
+        ? null
+        : {
+            name: post.category_name,
+            slug: post.category_slug,
+          },
+    authors: [],
+    html_content: post.html_content || "",
+  };
+
+  if (post.authors && post.authors.length > 0) {
+    const { data: authorsData } = await supabase
+      .from("authors")
+      .select("id, slug, name, image_url, bio, website, twitter")
+      .eq("blog_id", blogId)
+      .in("id", post.authors);
+    if (authorsData) {
+      formattedPost = {
+        ...formattedPost, // Spread the existing formattedPost to keep the correct tags
+        authors: authorsData.map(({ id, ...author }) => ({
+          ...author,
+          image_url: author.image_url || "",
+          bio: author.bio || undefined,
+          website_url: author.website || undefined,
+          twitter_url: author.twitter || undefined,
+        })),
+      };
+    }
+  }
+
+  return c.json({ data: formattedPost });
 });
 
 app.get(categories.path, async (c) => {

@@ -1,11 +1,12 @@
 import { Context } from "hono";
+import { StatusCode } from "hono/utils/http-status";
 import { axiom, AXIOM_DATASETS } from "lib/axiom";
 
 const ERROR_TABLE = "zenblog-errors";
 
 type ErrorItem = {
   message: string;
-  status: number;
+  status: StatusCode;
 };
 const ERROR_MAP: Record<string, ErrorItem> = {
   MISSING_BLOG_ID: { message: "No blogId provided", status: 400 },
@@ -21,6 +22,10 @@ export const throwError = (ctx: Context, error: keyof typeof ERROR_MAP) => {
   axiom.ingest(AXIOM_DATASETS.api, {
     error: ERROR_MAP[error]?.message,
     request: ctx.req,
+    status: ERROR_MAP[error]?.status,
   });
-  return ctx.json({ message: ERROR_MAP[error] }, 400);
+  return ctx.json(
+    { message: ERROR_MAP[error]?.message },
+    ERROR_MAP[error]?.status
+  );
 };

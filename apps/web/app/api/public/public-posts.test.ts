@@ -18,7 +18,7 @@ const postSchema = z.object({
   cover_image: z.string(),
   tags: z.array(z.object({ name: z.string(), slug: z.string() })),
   authors: z.array(authorsSchema),
-  category: z.object({ name: z.string(), slug: z.string() }),
+  category: z.object({ name: z.string(), slug: z.string() }).nullable(),
 });
 
 const postsResponseSchema = z.object({
@@ -29,7 +29,13 @@ const authorsResponseSchema = z.object({
   data: z.array(authorsSchema),
 });
 
-// const apiget = GET;
+const postWithContentSchema = postSchema.extend({
+  html_content: z.string(),
+});
+
+const postBySlugResponseSchema = z.object({
+  data: postWithContentSchema,
+});
 
 const BASE_URL =
   "http://localhost:8082/api/public/blogs/53a970ef-cc74-40ac-ac53-c322cd4848cb";
@@ -127,4 +133,46 @@ test("authors endpoint returns correct data", async () => {
   const data = await response.json();
   const parsedData = authorsResponseSchema.parse(data);
   expect(parsedData.data.length).toBeGreaterThan(0);
+});
+
+test("postBySlug endpoint returns correct data with tags", async () => {
+  const slug = "test";
+  const response = await fetch(`${BASE_URL}/posts/${slug}`);
+  const data = await response.json();
+
+  const parsedData = postBySlugResponseSchema.parse(data);
+
+  // Verify basic post data exists
+  expect(parsedData.data.title).toBeDefined();
+  expect(parsedData.data.html_content).toBeDefined();
+
+  // Verify tags are not duplicated and have correct structure
+  const uniqueTags = new Set(parsedData.data.tags.map((tag) => tag.slug));
+  expect(uniqueTags.size).toBe(parsedData.data.tags.length);
+
+  // Each tag should have both name and slug
+  parsedData.data.tags.forEach((tag) => {
+    expect(tag.name).toBeDefined();
+    expect(tag.slug).toBeDefined();
+    expect(typeof tag.name).toBe("string");
+    expect(typeof tag.slug).toBe("string");
+  });
+});
+
+// test("postBySlug endpoint handles missing category correctly", async () => {
+//   const slug = "post-without-category";
+//   const response = await fetch(`${BASE_URL}/posts/${slug}`);
+//   const data = await response.json();
+
+//   const parsedData = postBySlugResponseSchema.parse(data);
+
+//   // Verify that category can be null
+//   expect(parsedData.data.category).toBeNull();
+// });
+
+test("postBySlug endpoint returns 404 for non-existent post", async () => {
+  const slug = "non-existent-post";
+  const response = await fetch(`${BASE_URL}/posts/${slug}`);
+
+  expect(response.status).toBe(404);
 });
