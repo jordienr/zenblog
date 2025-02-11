@@ -43,6 +43,7 @@
   ],
   "dependencies": {
     "@ai-sdk/openai": "^0.0.24",
+    "@hono/zod-openapi": "^0.18.4",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@supabase/ssr": "^0.5.0",
     "@types/inquirer": "^9.0.3",
