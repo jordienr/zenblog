@@ -145,15 +145,6 @@ export default function AppLayout({
                           Free
                         </div>
                       )}
-                      {sub?.isValidSubscription && sub?.plan === "hobby" && (
-                        <Link
-                          title="Upgrade to Pro"
-                          href="/account"
-                          className=" rounded-full p-1 text-center text-xs font-medium text-emerald-500"
-                        >
-                          Hobby
-                        </Link>
-                      )}
                       {sub?.isValidSubscription && sub?.plan === "pro" && (
                         <div className="rounded-full text-xs font-medium text-blue-500">
                           Pro
