@@ -30,6 +30,8 @@ import { CodeBlockComponent } from "@/components/code-block";
 import { Lora } from "next/font/google";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { Marquee } from "@/components/magicui/marquee";
+import { cn } from "@/lib/utils";
 
 const h1Font = Lora({
   subsets: ["latin"],
@@ -187,6 +189,16 @@ const Home = () => {
                 height={600}
                 alt="The zenblog editor UI"
               />
+            </div>
+
+            <div className="relative mx-auto mt-12 max-w-5xl">
+              <Marquee pauseOnHover className="[--duration:30s]">
+                {tweets.map((tweet) => (
+                  <TweetItem key={tweet.username} {...tweet} />
+                ))}
+              </Marquee>
+              <div className="from-background pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r"></div>
+              <div className="from-background pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l"></div>
             </div>
 
             <div className="mx-auto mt-24 max-w-5xl rounded-xl bg-slate-950 p-2 font-mono text-white">
@@ -450,5 +462,94 @@ function PricingItem({
     </div>
   );
 }
+
+const tweets = [
+  {
+    content:
+      "By the way, the CMS is @zenbloghq. A brilliant CMS that simply works. Integrating it with the website didn't take 5 minutes.",
+    name: "Narix Hine",
+    username: "leximory",
+    image: "/static/tweets/leximory.jpg",
+  },
+  {
+    content:
+      "Just tried @zenbloghq last night and i started a blog and connected to my website with some help from cursor.The site is coming together, time for a real domain I think https://jesselawrence.replit.app/blog",
+    name: "Jesse",
+    username: "lawrencejessej",
+    image: "/static/tweets/lawrencejessej.jpg",
+  },
+  {
+    content:
+      "I started using @zenbloghq yesterday. I literally got it running on my Astro site in 10 minutes. Really great product",
+    name: "Alvaro",
+    username: "metasurfero",
+    image: "/static/tweets/metasurfero.jpg",
+  },
+  {
+    content: "i use zenblog to manage the blog in zenblog",
+    name: "jordi",
+    username: "jordienr",
+    image: "/static/tweets/jordienr.jpg",
+  },
+  {
+    content: "zenblog gud",
+    name: "william",
+    username: "williamhzo",
+    image: "/static/tweets/williamhzo.jpg",
+  },
+];
+
+const TweetItem = ({
+  content,
+  name,
+  username,
+  image,
+  isThread = false,
+  isLast = false,
+}: {
+  content: string;
+  name: string;
+  username: string;
+  image: string;
+  isThread?: boolean;
+  isLast?: boolean;
+}) => {
+  return (
+    <div
+      className={cn(
+        "relative flex w-96 flex-col gap-2 rounded-xl p-4  hover:bg-slate-100/70",
+        {
+          "min-h-32": !isThread,
+        }
+      )}
+    >
+      <div className="flex items-center gap-2">
+        {isThread && !isLast ? (
+          <div className="absolute left-[36px] top-[70px] h-full w-px bg-slate-200"></div>
+        ) : null}
+        <Image
+          src={image}
+          alt={name}
+          width={40}
+          height={40}
+          className="z-10 rounded-full border border-slate-100"
+        />
+        <div className={cn("flex flex-col")}>
+          <p className="text-sm font-medium">{name}</p>
+          <p className="text-xs font-medium text-zinc-500">{username}</p>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <p
+          className={cn("text-sm", {
+            "ml-12": isThread,
+          })}
+        >
+          {content}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export default Home;

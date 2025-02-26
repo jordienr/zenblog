@@ -48,7 +48,7 @@ export default function Pricing() {
               Yearly (Save money!)
             </Button>
           </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {PRICING_PLANS.map((plan) => (
               <PricingCard
                 key={plan.title}
@@ -146,7 +146,7 @@ export function PricingCard({
           $
         </span>
         <span className="text-2xl font-medium text-slate-900">
-          {yearlyToMonth}
+          {yearlyToMonth.toFixed(2)}
         </span>{" "}
         per month <br />
         billed ${yearlyPrice} yearly

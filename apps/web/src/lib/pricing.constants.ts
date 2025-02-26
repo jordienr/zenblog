@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const TRIAL_PERIOD_DAYS = 14;
 
-export const PricingPlanId = z.enum(["hobby", "pro", "free"]);
+export const PricingPlanId = z.enum(["pro", "free"]);
 export type PricingPlanId = z.infer<typeof PricingPlanId>;
 export const isPricingPlanId = (value: string): value is PricingPlanId =>
   PricingPlanId.safeParse(value).success;
@@ -32,8 +32,7 @@ export type PricingPlan = {
 
 export const MAX_BLOGS_PER_PLAN: Record<PricingPlanId, number> = {
   free: 1,
-  hobby: 3,
-  pro: 100,
+  pro: 999,
 };
 
 export const PRICING_PLANS: PricingPlan[] = [
@@ -55,29 +54,11 @@ export const PRICING_PLANS: PricingPlan[] = [
     ],
   },
   {
-    id: "hobby",
-    highlight: false,
-    title: "Starter",
-    description: "Perfect for small teams",
-    monthlyPrice: 29,
-    yearlyPrice: 288, // will be divided by 12 in pricing page
-    features: [
-      `${MAX_BLOGS_PER_PLAN.hobby} blogs`,
-      "3 authors",
-      "Unlimited posts",
-      "Unlimited categories",
-      "Unlimited tags",
-      "Unlimited API requests",
-      "Unlimited media files",
-      "Email support",
-    ],
-  },
-  {
     id: "pro",
-    title: "Professional",
+    title: "Pro",
     description: "For growing teams",
-    monthlyPrice: 59,
-    yearlyPrice: 576,
+    monthlyPrice: 20,
+    yearlyPrice: 200,
     features: [
       "Unlimited blogs",
       "Unlimited authors",
