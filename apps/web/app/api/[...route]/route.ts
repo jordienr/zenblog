@@ -1,5 +1,6 @@
 import { Context, Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+
 import { z } from "zod";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
@@ -95,16 +96,87 @@ const createR2Client = () => {
   });
 };
 
-const api = new Hono()
-  .get(
-    "/accounts/:user_id/checkout",
-    zValidator(
-      "query",
-      z.object({
-        plan: PricingPlanId,
-        interval: PricingPlanInterval,
-      })
-    ),
+const commonErrorResponses = {
+  400: {
+    description: "TODO",
+    content: {
+      "application/json": {
+        schema: z.object({
+          error: z.string().openapi({
+            description: "The error that occured",
+          }),
+        }),
+      },
+    },
+  },
+  401: {
+    description: "TODO",
+    content: {
+      "application/json": {
+        schema: z.object({
+          error: z.string().openapi({
+            description: "The error that occured",
+          }),
+        }),
+      },
+    },
+  },
+  500: {
+    description: "Internal Server Errorr",
+    content: {
+      "application/json": {
+        schema: z.object({
+          error: z.string().openapi({
+            description: "The error that occured",
+          }),
+        }),
+      },
+    },
+  },
+} as const;
+
+const api = new OpenAPIHono()
+  .doc("/openapi.json", {
+    openapi: "3.0.0",
+    info: {
+      title: "Zenblog API",
+      version: "1.0.0",
+    },
+    servers: [{ url: "https://api.zenblog.com", description: "Production" }],
+  })
+  .openapi(
+    createRoute({
+      method: "get",
+      path: "/accounts/:user_id/checkout",
+      request: {
+        params: z.object({
+          user_id: z.string().openapi({ description: "TODO" })
+        }),
+        query: z.object({
+          plan: PricingPlanId.openapi({
+            description: "TODO",
+          }),
+          interval: PricingPlanInterval.openapi({
+            description: "TODO",
+          }),
+        }),
+      },
+      responses: {
+        200: {
+          description: "TODO",
+          content: {
+            "application/json": {
+              schema: z.object({
+                url: z.string().openapi({
+                  description: "A stripe checkout url",
+                }),
+              }),
+            },
+          },
+        },
+        ...commonErrorResponses,
+      },
+    }),
     async (c) => {
       try {
         const stripe = createStripeClient();
@@ -122,6 +194,7 @@ const api = new Hono()
           });
           return c.json(
             {
+              url: "",
               error: "Error loading checkout session. Please contact support.",
             },
             { status: 500 }
@@ -130,12 +203,15 @@ const api = new Hono()
 
         if (!isPricingPlanId(plan)) {
           console.log("🔴 !isPricingPlanId", plan);
-          return c.json({ error: "Invalid plan" }, { status: 400 });
+          return c.json({ url: "", error: "Invalid plan" }, { status: 400 });
         }
 
         if (!isPricingPlanInterval(interval)) {
           console.log("🔴 !isPricingPlanInterval", interval);
-          return c.json({ error: "Invalid interval" }, { status: 400 });
+          return c.json(
+            { url: "", error: "Invalid interval" },
+            { status: 400 }
+          );
         }
 
         const customer = await createOrRetrieveCustomer({
@@ -147,7 +223,7 @@ const api = new Hono()
 
         if (!selectedPlan) {
           console.log("🔴 !selectedPlan", selectedPlan);
-          return c.json({ error: "Invalid plan" }, { status: 400 });
+          return c.json({ url: "", error: "Invalid plan" }, { status: 400 });
         }
 
         const price =
@@ -185,7 +261,10 @@ const api = new Hono()
 
         if (!session.url) {
           console.log("🔴 !session.url", session.url);
-          return c.json({ error: "Error creating session" }, { status: 500 });
+          return c.json(
+            { url: "", error: "Error creating session" },
+            { status: 500 }
+          );
         }
 
         console.log("session", session);
@@ -196,53 +275,104 @@ const api = new Hono()
         console.error(error);
 
         return c.json(
-          { errorMessage: "Error creating session", error },
+          { url: "", errorMessage: "Error creating session", error },
           { status: 500 }
         );
       }
     }
   )
-  .get("/accounts/:user_id/customer-portal", async (c) => {
-    try {
-      const stripe = createStripeClient();
-      const { user } = await getUser();
+  .openapi(
+    createRoute({
+      method: "get",
+      path: "/accounts/:user_id/customer-portal",
+      request: {
+        params: z.object({
+          user_id: z.string().openapi({
+            description: "TODO",
+          }),
+        }),
+      },
+      responses: {
+        200: {
+          description: "TODO",
+          content: {
+            "application/json": {
+              schema: z.any().openapi({
+                description: "I don't know what this returns",
+              }),
+            },
+          },
+        },
+        ...commonErrorResponses,
+      },
+    }),
+    async (c) => {
+      try {
+        const stripe = createStripeClient();
+        const { user } = await getUser();
 
-      if (!user) {
-        return c.json({ error: "Unauthorized" }, { status: 401 });
+        if (!user) {
+          return c.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        if (!user.email) {
+          return c.json({ error: "User email not found" }, { status: 400 });
+        }
+
+        const customer = await createOrRetrieveCustomer({
+          userId: user.id,
+          email: user.email,
+        });
+
+        const session = await stripe.billingPortal.sessions.create({
+          customer: customer.id,
+          return_url: process.env.NEXT_PUBLIC_BASE_URL + "/account",
+        });
+
+        return c.json({ url: session.url }, { status: 200 });
+      } catch (error) {
+        console.error(error);
+        return c.json(
+          { error: "Error creating customer portal" },
+          { status: 500 }
+        );
       }
-
-      if (!user.email) {
-        return c.json({ error: "User email not found" }, { status: 400 });
-      }
-
-      const customer = await createOrRetrieveCustomer({
-        userId: user.id,
-        email: user.email,
-      });
-
-      const session = await stripe.billingPortal.sessions.create({
-        customer: customer.id,
-        return_url: process.env.NEXT_PUBLIC_BASE_URL + "/account",
-      });
-
-      return c.json({ url: session.url }, { status: 200 });
-    } catch (error) {
-      console.error(error);
-      return c.json(
-        { error: "Error creating customer portal" },
-        { status: 500 }
-      );
     }
-  })
-  .get(
-    "/blogs/:blog_id/usage",
-    zValidator(
-      "query",
-      z.object({
-        start_time: z.string(),
-        end_time: z.string(),
-      })
-    ),
+  )
+  .openapi(
+    createRoute({
+      method: "get",
+      path: "/blogs/:blog_id/usage",
+      request: {
+        params: z.object({
+          blog_id: z.string().openapi({
+            description: "TODO",
+          }),
+        }),
+        query: z.object({
+          start_time: z.string().openapi({
+            description: "TODO",
+          }),
+          end_time: z.string().openapi({
+            description: "TODO",
+          }),
+        }),
+      },
+      responses: {
+        200: {
+          description: "TODO",
+          content: {
+            "application/json": {
+              schema: z.any().openapi({
+                description: "I don't know what this returns.",
+              }),
+            },
+          },
+        },
+        ...commonErrorResponses,
+      },
+    }),
+
     async (c) => {
       const blogId = c.req.param("blog_id");
       const startTime = c.req.query("start_time");
@@ -259,21 +389,45 @@ const api = new Hono()
       return c.json(res);
     }
   )
-  .post(
-    "/blogs/:blog_id/images",
-    zValidator(
-      "query",
-      z.object({
-        convertToWebp: z.string().optional(),
-        imageName: z.string().optional(),
-      })
-    ),
-    zValidator(
-      "form",
-      z.object({
-        image: z.instanceof(File),
-      })
-    ),
+  .openapi(
+    createRoute({
+      method: "post",
+      path: "/blogs/:blog_id/images",
+      request: {
+        params: z.object({
+          blog_id: z.string().openapi({
+            description: "TODO",
+          }),
+        }),
+        query: z.object({
+          convertToWebp: z.string().optional(),
+          imageName: z.string().optional(),
+        }),
+        body: {
+          content: {
+            "application/x-www-form-urlencoded": {
+              schema: z.object({
+                image: z.instanceof(File).openapi({ description: "TODO" }),
+              }),
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "TODO",
+          content: {
+            "application/json": {
+              schema: z.any().openapi({
+                description: "I don't know what this returns.",
+              }),
+            },
+          },
+        },
+        ...commonErrorResponses,
+      },
+    }),
+
     async (c) => {
       try {
         const blogId = c.req.param("blog_id");
@@ -326,15 +480,14 @@ const api = new Hono()
         const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
         const baseName = providedName
           ? providedName
-              .toLowerCase()
-              .replace(/[^a-z0-9]/g, "-") // Replace non-alphanumeric with hyphens
-              .replace(/-+/g, "-") // Replace multiple hyphens with single
-              .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "-") // Replace non-alphanumeric with hyphens
+            .replace(/-+/g, "-") // Replace multiple hyphens with single
+            .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
           : "image";
 
-        const fileName = `${baseName}-${timestamp}.${
-          convertToWebp ? "webp" : "jpg"
-        }`;
+        const fileName = `${baseName}-${timestamp}.${convertToWebp ? "webp" : "jpg"
+          }`;
 
         try {
           await r2.send(
@@ -415,14 +568,43 @@ const api = new Hono()
       }
     }
   )
-  .delete(
-    "/blogs/:blog_id/images",
-    zValidator(
-      "json",
-      z.object({
-        fileNames: z.array(z.string()),
-      })
-    ),
+  .openapi(
+    createRoute({
+      method: "delete",
+      path: "/blogs/:blog_id/images",
+      request: {
+        params: z.object({
+          blog_id: z.string().openapi({
+            description: "TODO",
+          }),
+        }),
+        body: {
+          content: {
+            "application/json": {
+              schema: z.object({
+                fileNames: z.array(z.string()).openapi({
+                  description: "TODO",
+                }),
+              }),
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "TODO",
+          content: {
+            "application/json": {
+              schema: z.object({
+                /* TODO */
+              }),
+            },
+          },
+        },
+        ...commonErrorResponses,
+      },
+    }),
+
     async (c) => {
       try {
         const blogId = c.req.param("blog_id");
@@ -505,19 +687,52 @@ const api = new Hono()
       }
     }
   )
-  .post(
-    "/blogs/:blog_id/authors",
-    zValidator(
-      "form",
-      z.object({
-        name: z.string(),
-        slug: z.string(),
-        image: z.instanceof(File).optional(),
-        twitter: z.string().optional(),
-        website: z.string().optional(),
-        bio: z.string().optional(),
-      })
-    ),
+  .openapi(
+    createRoute({
+      method: "post",
+      path: "/blogs/:blog_id/authors",
+      request: {
+        params: z.object({
+          blog_id: z.string().openapi({
+            description: "TODO",
+          }),
+        }),
+        form: z.object({
+          name: z.string().openapi({
+            description: "TODO",
+          }),
+          slug: z.string().openapi({
+            description: "TODO",
+          }),
+          image: z.instanceof(File).optional().openapi({
+            description: "TODO",
+          }),
+          twitter: z.string().optional().openapi({
+            description: "TODO",
+          }),
+          website: z.string().optional().openapi({
+            description: "TODO",
+          }),
+          bio: z.string().optional().openapi({
+            description: "TODO",
+          }),
+        }),
+      },
+      responses: {
+        200: {
+          description: "TODO",
+          content: {
+            "application/json": {
+              schema: z.object({
+                /* TODO */
+              }),
+            },
+          },
+        },
+        ...commonErrorResponses,
+      },
+    }),
+
     async (c) => {
       console.log("🥬 CREATING AUTHOR---", c.req.formData());
 
@@ -590,19 +805,38 @@ const api = new Hono()
       return c.json({ message: "Author created" }, { status: 200 });
     }
   )
-  .patch(
-    "/blogs/:blog_id/authors/:author_slug",
-    zValidator(
-      "form",
-      z.object({
-        name: z.string().optional(),
-        slug: z.string().optional(),
-        image: z.instanceof(File).optional(),
-        twitter: z.string().optional(),
-        website: z.string().optional(),
-        bio: z.string().optional(),
-      })
-    ),
+  .openapi(
+    createRoute({
+      method: "patch",
+      path: "/blogs/:blog_id/authors/:author_slug",
+      request: {
+        params: z.object({
+          blog_id: z.string().openapi({ description: "TODO" }),
+          author_slug: z.string().openapi({ description: "TODO" }),
+        }),
+        form: z.object({
+          name: z.string().optional(),
+          slug: z.string().optional(),
+          image: z.instanceof(File).optional(),
+          twitter: z.string().optional(),
+          website: z.string().optional(),
+          bio: z.string().optional(),
+        }),
+      },
+      responses: {
+        200: {
+          description: "TODO",
+          content: {
+            "application/json": {
+              schema: z.object({
+                /* TODO */
+              }),
+            },
+          },
+        },
+        ...commonErrorResponses,
+      },
+    }),
     async (c) => {
       const blogId = c.req.param("blog_id");
       const authorSlug = c.req.param("author_slug");
@@ -627,9 +861,8 @@ const api = new Hono()
         const r2 = createR2Client();
         const buffer = Buffer.from(await image.arrayBuffer());
         const timestamp = Date.now().toString().slice(-6);
-        const fileName = `${authorSlug}-${timestamp}.${
-          image.type.split("/")[1]
-        }`;
+        const fileName = `${authorSlug}-${timestamp}.${image.type.split("/")[1]
+          }`;
 
         await r2.send(
           new PutObjectCommand({
