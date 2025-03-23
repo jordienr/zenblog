@@ -58,7 +58,9 @@ export const zenblog = createZenblogClient({ blogId: process.env.ZENBLOG_BLOG_ID
 
 const zenblog = createZenblogClient({ blogId: process.env.ZENBLOG_BLOG_ID });
         
-const posts = await zenblog.posts.list();`}
+const allPosts = await zenblog.posts.list();
+
+const posts = allPosts.data;`}
         </CodeBlockComponent>
 
         <h2 id={items[3].href}>{items[3].title}</h2>
