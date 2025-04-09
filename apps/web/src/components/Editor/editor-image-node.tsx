@@ -38,6 +38,12 @@ export function EditorImageNode({
   const [showImageUrlInput, setShowImageUrlInput] = useState(false);
   const [alt, setAlt] = useState(node.attrs.alt || "");
   const [imageUrl, setImageUrl] = useState("");
+  const [videoDimensions, setVideoDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(
+    node.attrs.videoDimensions ? JSON.parse(node.attrs.videoDimensions) : null
+  );
 
   function setImageSrc(src: string) {
     const isVideo = videoFormats.some((format) => src?.endsWith(`.${format}`));
@@ -57,18 +63,52 @@ export function EditorImageNode({
     node.attrs.isVideo === "true" ||
     videoFormats.some((format) => src?.endsWith(`.${format}`));
 
+  const handleVideoLoad = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.target as HTMLVideoElement;
+    const dimensions = {
+      width: video.videoWidth,
+      height: video.videoHeight,
+    };
+    setVideoDimensions(dimensions);
+    editor.commands.updateAttributes("image", {
+      videoDimensions: JSON.stringify(dimensions),
+    });
+  };
+
   return (
     <NodeViewWrapper>
       <div className="flex flex-col gap-1">
         {src && (
           <div className="group/img relative flex flex-col gap-1">
             {isVideo ? (
-              <video
-                className="!my-0 w-full rounded-md border object-contain"
-                src={src}
-                controls
-                playsInline
-              />
+              <>
+                <video
+                  className="!my-0 w-full rounded-md border object-contain"
+                  src={src}
+                  controls
+                  playsInline
+                  onLoadedMetadata={handleVideoLoad}
+                  style={{
+                    aspectRatio: videoDimensions
+                      ? `${videoDimensions.width} / ${videoDimensions.height}`
+                      : undefined,
+                  }}
+                />
+                {videoDimensions && (
+                  <div className="flex items-center justify-end gap-2 text-xs text-zinc-500">
+                    <span>
+                      {videoDimensions.width} × {videoDimensions.height}
+                    </span>
+                    <span className="text-zinc-400">|</span>
+                    <span>
+                      {Math.round(
+                        (videoDimensions.width / videoDimensions.height) * 100
+                      ) / 100}
+                      :1
+                    </span>
+                  </div>
+                )}
+              </>
             ) : (
               <img
                 className="!my-0 w-full rounded-md border object-contain"

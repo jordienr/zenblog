@@ -267,6 +267,12 @@ export const ZendoEditor = (props: Props) => {
                   "data-is-video": attributes.isVideo,
                 }),
               },
+              videoDimensions: {
+                default: null,
+                renderHTML: (attributes) => ({
+                  "data-video-dimensions": attributes.videoDimensions,
+                }),
+              },
             };
           },
           renderHTML({ HTMLAttributes, node }) {
@@ -276,12 +282,20 @@ export const ZendoEditor = (props: Props) => {
             );
 
             if (isVideo) {
+              const videoDimensions = node.attrs.videoDimensions
+                ? JSON.parse(node.attrs.videoDimensions)
+                : null;
               return [
                 "video",
                 {
                   ...HTMLAttributes,
                   controls: true,
                   playsInline: true,
+                  width: videoDimensions?.width || undefined,
+                  height: videoDimensions?.height || undefined,
+                  style: videoDimensions
+                    ? `aspect-ratio: ${videoDimensions.width} / ${videoDimensions.height}; width: 100%; max-width: 100%;`
+                    : undefined,
                 },
               ];
             }
