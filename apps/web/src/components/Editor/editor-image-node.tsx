@@ -40,7 +40,11 @@ export function EditorImageNode({
   const [imageUrl, setImageUrl] = useState("");
 
   function setImageSrc(src: string) {
-    editor.commands.updateAttributes("image", { src });
+    const isVideo = videoFormats.some((format) => src?.endsWith(`.${format}`));
+    editor.commands.updateAttributes("image", {
+      src,
+      isVideo: isVideo.toString(),
+    });
   }
 
   function updateAlt(newAlt: string) {
@@ -48,22 +52,36 @@ export function EditorImageNode({
     editor.commands.updateAttributes("image", { alt: newAlt });
   }
 
+  const videoFormats = ["mp4", "webm", "ogg"];
+  const isVideo =
+    node.attrs.isVideo === "true" ||
+    videoFormats.some((format) => src?.endsWith(`.${format}`));
+
   return (
     <NodeViewWrapper>
       <div className="flex flex-col gap-1">
         {src && (
-          <div className="group/img relative mt-8 flex flex-col gap-1">
-            <img
-              className="!my-0 w-full rounded-md border object-contain"
-              src={src}
-              alt={alt}
-            />
-            <AltTextArea alt={alt} setAlt={updateAlt} />
+          <div className="group/img relative flex flex-col gap-1">
+            {isVideo ? (
+              <video
+                className="!my-0 w-full rounded-md border object-contain"
+                src={src}
+                controls
+                playsInline
+              />
+            ) : (
+              <img
+                className="!my-0 w-full rounded-md border object-contain"
+                src={src}
+                alt={alt}
+              />
+            )}
+            {isVideo ? null : <AltTextArea alt={alt} setAlt={updateAlt} />}
             <div className="absolute right-2 top-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/img:opacity-100">
               <Button
                 tooltip={{
                   delay: 100,
-                  content: "Delete image",
+                  content: "Remove media",
                   side: "bottom",
                 }}
                 size="icon-xs"
@@ -78,7 +96,7 @@ export function EditorImageNode({
         {!src && (
           <div className="realtive mt-4 flex items-center justify-center rounded-md border border-dashed p-4">
             <Button variant="outline" onClick={() => setShowImagePicker(true)}>
-              Add Image
+              Add Media
             </Button>
             <button
               className="absolute right-2 top-2 rounded-full border bg-white p-1"

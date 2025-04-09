@@ -52,12 +52,15 @@ export const ImageUploader = ({
   }, []);
 
   async function uploadImageToBlogAndGetURL(file: File) {
+    const isVideo = file.type.startsWith("video/");
+    console.log("🥬 isVideo", isVideo);
+
     const res = await API().v2.blogs[":blog_id"].images.$post({
       param: {
         blog_id: blogId,
       },
       query: {
-        convertToWebp: "true",
+        convertToWebp: isVideo ? "false" : "true",
         imageName: editableFileName,
       },
       form: {

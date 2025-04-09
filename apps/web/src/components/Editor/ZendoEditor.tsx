@@ -48,10 +48,7 @@ import {
   getSlashCommandSuggestions,
 } from "./slash-commands/slash-commands";
 import { EditorMenu } from "./EditorMenu";
-import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
-import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import { useCategories } from "@/queries/categories";
-import Image from "next/image";
 import { EditorCategoryPicker } from "./editor-category-picker";
 import {
   Tooltip,
@@ -61,8 +58,6 @@ import {
 } from "../ui/tooltip";
 import { EditorImageNode } from "./editor-image-node";
 import { TrailingNode } from "./trailing-node";
-import { Input } from "../ui/input";
-import { useEditorState } from "./Editor.state";
 import { useBlogId } from "@/hooks/use-blog-id";
 import { API } from "app/utils/api-client";
 import { useAuthors } from "@/queries/authors";
@@ -182,13 +177,16 @@ export const ZendoEditor = (props: Props) => {
   }, [title, props.autoCompleteSlug, setValue]);
 
   async function uploadImage(file: File, blogId: string): Promise<string> {
+    const isVideo = file.type.startsWith("video/");
+
     const res = await API().v2.blogs[":blog_id"].images.$post({
       form: {
         image: file,
       },
       query: {
+        isVideo: isVideo ? "true" : "false",
         imageName: file.name,
-        convertToWebp: "true",
+        convertToWebp: isVideo ? "false" : "true",
       },
       param: {
         blog_id: blogId,
@@ -263,7 +261,37 @@ export const ZendoEditor = (props: Props) => {
                   alt: attributes.alt,
                 }),
               },
+              isVideo: {
+                default: false,
+                renderHTML: (attributes) => ({
+                  "data-is-video": attributes.isVideo,
+                }),
+              },
             };
+          },
+          renderHTML({ HTMLAttributes, node }) {
+            const videoFormats = ["mp4", "webm", "ogg"];
+            const isVideo = videoFormats.some((format) =>
+              node.attrs.src?.endsWith(`.${format}`)
+            );
+
+            if (isVideo) {
+              return [
+                "video",
+                {
+                  ...HTMLAttributes,
+                  controls: true,
+                  playsInline: true,
+                },
+              ];
+            }
+
+            return [
+              "img",
+              {
+                ...HTMLAttributes,
+              },
+            ];
           },
           addNodeView() {
             return ReactNodeViewRenderer(EditorImageNode);
@@ -714,7 +742,7 @@ export const ZendoEditor = (props: Props) => {
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 prose-li:[&_p]:my-1 mx-auto -mt-4 min-h-[700px] w-full max-w-3xl cursor-text  rounded-lg px-2 font-normal leading-10 tracking-normal transition-all md:px-6"
+            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 prose-li:[&_p]:my-1 mx-auto mt-4 min-h-[700px] w-full max-w-3xl  cursor-text rounded-lg px-2 font-normal leading-10 tracking-normal transition-all md:px-6"
           >
             {/* <pre>{JSON.stringify(editor?.getHTML(), null, 2)}</pre> */}
             <EditorContent className="w-full" editor={editor} />
