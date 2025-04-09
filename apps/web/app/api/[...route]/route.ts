@@ -264,6 +264,7 @@ const api = new Hono()
     zValidator(
       "query",
       z.object({
+        isVideo: z.string().optional(),
         convertToWebp: z.string().optional(),
         imageName: z.string().optional(),
       })
@@ -293,6 +294,7 @@ const api = new Hono()
         }
 
         const convertToWebp = c.req.query("convertToWebp") === "true";
+        const isVideo = c.req.query("isVideo") === "true";
         const providedName = c.req.query("imageName");
 
         // Get the file from the request
@@ -300,26 +302,38 @@ const api = new Hono()
         const file = formData.get("image") as File;
 
         if (!file) {
-          return c.json({ error: "No image provided" }, { status: 400 });
+          return c.json({ error: "No file provided" }, { status: 400 });
         }
 
         // Convert file to buffer
         const buffer = Buffer.from(await file.arrayBuffer());
+        let processedBuffer: Buffer;
+        let contentType: string;
+        let fileExtension: string;
 
-        // Process image with Sharp
-        let imageProcessor = sharp(buffer)
-          .resize(2560, 2560, {
-            // Max dimensions
-            fit: "inside",
-            withoutEnlargement: true, // Don't upscale
-          })
-          .jpeg({ quality: 80 }); // Compress
+        if (isVideo) {
+          // For videos, we don't process with Sharp
+          processedBuffer = buffer;
+          contentType = file.type;
+          fileExtension = file.name.split(".").pop() || "mp4";
+        } else {
+          // Process image with Sharp
+          let imageProcessor = sharp(buffer)
+            .resize(2560, 2560, {
+              // Max dimensions
+              fit: "inside",
+              withoutEnlargement: true, // Don't upscale
+            })
+            .jpeg({ quality: 80 }); // Compress
 
-        if (convertToWebp) {
-          imageProcessor = imageProcessor.webp({ quality: 80 });
+          if (convertToWebp) {
+            imageProcessor = imageProcessor.webp({ quality: 80 });
+          }
+
+          processedBuffer = await imageProcessor.toBuffer();
+          contentType = convertToWebp ? "image/webp" : "image/jpeg";
+          fileExtension = convertToWebp ? "webp" : "jpg";
         }
-
-        const processedImage = await imageProcessor.toBuffer();
 
         // Upload to R2
         const r2 = createR2Client();
@@ -330,22 +344,23 @@ const api = new Hono()
               .replace(/[^a-z0-9]/g, "-") // Replace non-alphanumeric with hyphens
               .replace(/-+/g, "-") // Replace multiple hyphens with single
               .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
+          : isVideo
+          ? "video"
           : "image";
 
-        const fileName = `${baseName}-${timestamp}.${
-          convertToWebp ? "webp" : "jpg"
-        }`;
+        const fileName = `${baseName}-${timestamp}.${fileExtension}`;
 
         try {
           await r2.send(
             new PutObjectCommand({
               Bucket: process.env.R2_IMAGES_BUCKET_NAME,
               Key: fileName,
-              Body: processedImage,
-              ContentType: convertToWebp ? "image/webp" : "image/jpeg",
+              Body: processedBuffer,
+              ContentType: contentType,
               Metadata: {
                 blog_id: blogId,
                 uploaded_at: new Date().toISOString(),
+                is_video: isVideo.toString(),
               },
             })
           );
@@ -359,8 +374,9 @@ const api = new Hono()
             blog_id: blogId,
             file_name: fileName,
             file_url: publicUrl,
-            size_in_bytes: processedImage.length,
-            content_type: convertToWebp ? "image/webp" : "image/jpeg",
+            size_in_bytes: processedBuffer.length,
+            content_type: contentType,
+            is_video: isVideo,
           });
 
           if (dbError) {
