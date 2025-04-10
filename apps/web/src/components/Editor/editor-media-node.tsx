@@ -26,7 +26,7 @@ function AltTextArea({
   );
 }
 
-export function EditorImageNode({
+export function EditorMediaNode({
   node,
   editor,
 }: {
@@ -36,8 +36,11 @@ export function EditorImageNode({
   const { src } = node.attrs;
   const [showImagePicker, setShowImagePicker] = useState(src ? false : true);
   const [showImageUrlInput, setShowImageUrlInput] = useState(false);
+  const [showYoutubeInput, setShowYoutubeInput] = useState(false);
   const [alt, setAlt] = useState(node.attrs.alt || "");
   const [imageUrl, setImageUrl] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+
   const [videoDimensions, setVideoDimensions] = useState<{
     width: number;
     height: number;
@@ -50,7 +53,28 @@ export function EditorImageNode({
     editor.commands.updateAttributes("image", {
       src,
       isVideo: isVideo.toString(),
+      isYoutube: "false",
     });
+  }
+
+  function setYoutubeVideo(url: string) {
+    const videoId = getYoutubeVideoId(url);
+    if (videoId) {
+      // Replace the current image with the youtube video
+      editor.commands.updateAttributes("image", {
+        src: `https://www.youtube.com/embed/${videoId}`,
+        isVideo: "true",
+        isYoutube: "true",
+      });
+    }
+  }
+
+  function getYoutubeVideoId(url: string): string | null {
+    if (!url) return null;
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2]?.length === 11 ? match[2] : null;
   }
 
   function updateAlt(newAlt: string) {
@@ -59,9 +83,10 @@ export function EditorImageNode({
   }
 
   const videoFormats = ["mp4", "webm", "ogg"];
-  const isVideo =
-    node.attrs.isVideo === "true" ||
-    videoFormats.some((format) => src?.endsWith(`.${format}`));
+  const isVideo = node.attrs.isVideo === "true";
+  const isYoutube = node.attrs.isYoutube === "true";
+
+  console.log("🔴 isYoutube", node.attrs);
 
   const handleVideoLoad = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.target as HTMLVideoElement;
@@ -80,7 +105,20 @@ export function EditorImageNode({
       <div className="flex flex-col gap-1">
         {src && (
           <div className="group/img relative flex flex-col gap-1">
-            {isVideo ? (
+            {isYoutube ? (
+              <div className="relative aspect-video w-full overflow-hidden rounded-md border">
+                <iframe
+                  className="absolute inset-0 h-full w-full"
+                  src={src}
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+                <div className="absolute bottom-2 right-2 flex items-center gap-2 rounded-md bg-black/50 px-2 py-1 text-xs text-white">
+                  <span>YouTube</span>
+                </div>
+              </div>
+            ) : isVideo ? (
               <>
                 <video
                   className="!my-0 w-full rounded-md border object-contain"
@@ -116,7 +154,7 @@ export function EditorImageNode({
                 alt={alt}
               />
             )}
-            {isVideo ? null : <AltTextArea alt={alt} setAlt={updateAlt} />}
+            {!isVideo && <AltTextArea alt={alt} setAlt={updateAlt} />}
             <div className="absolute right-2 top-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/img:opacity-100">
               <Button
                 tooltip={{
@@ -134,10 +172,15 @@ export function EditorImageNode({
           </div>
         )}
         {!src && (
-          <div className="realtive mt-4 flex items-center justify-center rounded-md border border-dashed p-4">
-            <Button variant="outline" onClick={() => setShowImagePicker(true)}>
-              Add Media
-            </Button>
+          <div className="realtive mt-4 flex flex-col items-center justify-center gap-2 rounded-md border border-dashed p-4">
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowImagePicker(true)}
+              >
+                Add Media
+              </Button>
+            </div>
             <button
               className="absolute right-2 top-2 rounded-full border bg-white p-1"
               onClick={() => editor.commands.deleteSelection()}
@@ -147,7 +190,7 @@ export function EditorImageNode({
           </div>
         )}
         {showImageUrlInput && (
-          <div className="mt-4 flex items-center justify-center rounded-xl border border-dashed p-4">
+          <div className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-dashed p-4">
             <Input
               placeholder="Enter image URL"
               value={imageUrl}
@@ -163,10 +206,34 @@ export function EditorImageNode({
             </Button>
           </div>
         )}
+        {showYoutubeInput && (
+          <div className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-dashed p-4">
+            <Input
+              placeholder="Enter YouTube URL"
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+            />
+            <Button
+              onClick={() => {
+                setYoutubeVideo(youtubeUrl);
+                setShowYoutubeInput(false);
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        )}
 
         <ImagePicker
           onSelect={(image) => {
-            setImageSrc(image.url);
+            console.log("🔴 onSelect", image);
+            if (image.isYoutube) {
+              setYoutubeVideo(image.url);
+              setShowYoutubeInput(false);
+            } else {
+              setImageSrc(image.url);
+              setShowImagePicker(false);
+            }
             setShowImagePicker(false);
           }}
           onCancel={() => {

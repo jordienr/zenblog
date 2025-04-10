@@ -26,6 +26,7 @@ export type Image = {
   url: string;
   created_at: string;
   supabase_hosted?: boolean;
+  isYoutube?: boolean;
 };
 
 export function ImagePicker({
@@ -52,8 +53,12 @@ export function ImagePicker({
 
   const [tab, setTab] = useState("images");
   const [imageUrl, setImageUrl] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
 
   const isVideo = (url: string) => {
+    if (url.includes("youtube.com")) {
+      return true;
+    }
     const videoFormats = ["mp4", "webm", "ogg"];
     return videoFormats.some((format) => url.endsWith(`.${format}`));
   };
@@ -61,7 +66,7 @@ export function ImagePicker({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-4xl md:max-w-6xl">
+      <DialogContent className="max-w-3xl">
         <DialogTitle className="sr-only">Upload image</DialogTitle>
         <div className="">
           <Tabs value={tab} onValueChange={setTab}>
@@ -187,27 +192,70 @@ export function ImagePicker({
               />
             </TabsContent>
             <TabsContent value="embed">
-              <div className="flex flex-col gap-2 py-8 ">
-                <Input
-                  type="url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="Enter image URL"
-                />
-                <Button
-                  className="mx-auto max-w-xs"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onSelect({
-                      id: "embed",
-                      name: "Embedded image",
-                      url: imageUrl,
-                      created_at: new Date().toISOString(),
-                    });
-                  }}
-                >
-                  Save
-                </Button>
+              <div className="mx-auto flex max-w-xl flex-col gap-4 py-12">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-zinc-700">
+                    Image URL
+                  </label>
+                  <Input
+                    type="url"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="Enter image URL"
+                  />
+                </div>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-zinc-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-2 text-zinc-500">Or</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-zinc-700">
+                    YouTube URL
+                  </label>
+                  <Input
+                    type="url"
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    placeholder="Enter YouTube URL (e.g., https://youtube.com/watch?v=...)"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    className="max-w-xs"
+                    onClick={(e) => {
+                      e.preventDefault();
+
+                      if (youtubeUrl) {
+                        const videoId = getYoutubeVideoId(youtubeUrl);
+                        if (videoId) {
+                          onSelect({
+                            id: "youtube",
+                            name: "YouTube video",
+                            url: `https://www.youtube.com/embed/${videoId}`,
+                            created_at: new Date().toISOString(),
+                            isYoutube: true,
+                          });
+                        } else {
+                          toast.error("Invalid YouTube URL");
+                          return;
+                        }
+                      } else if (imageUrl) {
+                        onSelect({
+                          id: "embed",
+                          name: "Embedded image",
+                          url: imageUrl,
+                          created_at: new Date().toISOString(),
+                        });
+                      }
+                    }}
+                  >
+                    Save
+                  </Button>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
@@ -380,4 +428,11 @@ export function ImageItem({ image, selected, onClick }: ImageItem) {
       </div>
     </button>
   );
+}
+
+function getYoutubeVideoId(url: string): string | null {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2]?.length === 11 ? match[2] : null;
 }

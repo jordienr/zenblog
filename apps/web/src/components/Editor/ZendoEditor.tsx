@@ -56,7 +56,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { EditorImageNode } from "./editor-image-node";
+import { EditorMediaNode } from "./editor-media-node";
 import { TrailingNode } from "./trailing-node";
 import { useBlogId } from "@/hooks/use-blog-id";
 import { API } from "app/utils/api-client";
@@ -267,6 +267,12 @@ export const ZendoEditor = (props: Props) => {
                   "data-is-video": attributes.isVideo,
                 }),
               },
+              isYoutube: {
+                default: false,
+                renderHTML: (attributes) => ({
+                  "data-is-youtube": attributes.isYoutube,
+                }),
+              },
               videoDimensions: {
                 default: null,
                 renderHTML: (attributes) => ({
@@ -276,10 +282,30 @@ export const ZendoEditor = (props: Props) => {
             };
           },
           renderHTML({ HTMLAttributes, node }) {
-            const videoFormats = ["mp4", "webm", "ogg"];
-            const isVideo = videoFormats.some((format) =>
-              node.attrs.src?.endsWith(`.${format}`)
-            );
+            const isVideo = node.attrs.isVideo === "true";
+            const isYoutube = node.attrs.isYoutube === "true";
+
+            if (isYoutube) {
+              console.log("🔴 isYoutube", node);
+              return [
+                "div",
+                {
+                  class:
+                    "relative aspect-video w-full overflow-hidden rounded-md border",
+                },
+                [
+                  "iframe",
+                  {
+                    ...HTMLAttributes,
+                    class: "absolute inset-0 h-full w-full",
+                    title: "YouTube video player",
+                    allow:
+                      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+                    allowFullScreen: true,
+                  },
+                ],
+              ];
+            }
 
             if (isVideo) {
               const videoDimensions = node.attrs.videoDimensions
@@ -308,7 +334,7 @@ export const ZendoEditor = (props: Props) => {
             ];
           },
           addNodeView() {
-            return ReactNodeViewRenderer(EditorImageNode);
+            return ReactNodeViewRenderer(EditorMediaNode);
           },
           addProseMirrorPlugins() {
             return [
