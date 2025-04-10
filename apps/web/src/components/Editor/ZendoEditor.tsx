@@ -300,6 +300,11 @@ export const ZendoEditor = (props: Props) => {
                     allow:
                       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
                     allowFullScreen: true,
+                    style: {
+                      width: "100%",
+                      height: "100%",
+                      aspectRatio: "16/9",
+                    },
                   },
                 ],
               ];
