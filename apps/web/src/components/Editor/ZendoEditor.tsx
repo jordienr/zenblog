@@ -286,18 +286,16 @@ export const ZendoEditor = (props: Props) => {
             const isYoutube = node.attrs.isYoutube === "true";
 
             if (isYoutube) {
-              console.log("🔴 isYoutube", node);
               return [
                 "div",
                 {
-                  class:
-                    "relative aspect-video w-full overflow-hidden rounded-md border",
+                  class: "",
                 },
                 [
                   "iframe",
                   {
                     ...HTMLAttributes,
-                    class: "absolute inset-0 h-full w-full",
+                    class: "zb-youtube-iframe",
                     title: "YouTube video player",
                     allow:
                       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
