@@ -144,12 +144,20 @@ const AuthorForm = ({
   );
 };
 
-export function CreateAuthorDialog() {
+export function CreateAuthorDialog({
+  hideTrigger,
+  open,
+  setOpen,
+}: {
+  hideTrigger?: boolean;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
   const subscription = useSubscriptionQuery();
   const createAuthor = useCreateAuthor();
   const blogId = useBlogId();
   const { data: authors } = useAuthors({ blogId });
-  const [open, setOpen] = useState(false);
+
   const isFreePlan =
     subscription?.data?.plan === "free" ||
     !subscription?.data?.isValidSubscription;
@@ -157,12 +165,14 @@ export function CreateAuthorDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant={"outline"}>
-          <Plus size={16} />
-          <div>Create author</div>
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button size="sm" variant={"outline"}>
+            <Plus size={16} />
+            <div>Create author</div>
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="!max-w-sm">
         <DialogHeader>
           <DialogTitle>Create author</DialogTitle>
@@ -285,13 +295,18 @@ export function AuthorsPage() {
 
   const isFreePlan = subscription?.data?.plan === "free";
 
-  const hasReachedAuthorLimit = isFreePlan && authors?.length === 1;
+  const [createAuthorOpen, setCreateAuthorOpen] = useState(false);
 
   return (
     <AppLayout
       title="Authors"
       loading={isLoading}
-      actions={<CreateAuthorDialog />}
+      actions={
+        <CreateAuthorDialog
+          open={createAuthorOpen}
+          setOpen={setCreateAuthorOpen}
+        />
+      }
     >
       <Section>
         <Table>

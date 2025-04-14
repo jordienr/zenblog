@@ -11,6 +11,7 @@ import {
   ChevronUp,
   Info,
   Loader2,
+  Plus,
 } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -62,6 +63,9 @@ import { useBlogId } from "@/hooks/use-blog-id";
 import { API } from "app/utils/api-client";
 import { useAuthors } from "@/queries/authors";
 import { Skeleton } from "../ui/skeleton";
+import GlobalDragHandle from "tiptap-extension-global-drag-handle";
+import AutoJoiner from "tiptap-extension-auto-joiner";
+import { CreateAuthorDialog } from "@/pages/blogs/[blogId]/authors";
 
 const formSchema = z.object({
   title: z.string(),
@@ -349,6 +353,7 @@ export const ZendoEditor = (props: Props) => {
             class: "rounded-lg",
           },
         }),
+        AutoJoiner,
       ],
     },
     [blogId]
@@ -781,7 +786,7 @@ export const ZendoEditor = (props: Props) => {
             onClick={() => {
               editor?.commands.focus();
             }}
-            className="prose prose-p:text-lg prose-headings:font-medium !prose-code:p-0 prose-li:[&_p]:my-1 mx-auto mt-4 min-h-[700px] w-full max-w-3xl  cursor-text rounded-lg px-2 font-normal leading-10 tracking-normal transition-all md:px-6"
+            className="prose prose-p:text-lg prose-headings:font-medium prose-headings:mt-6 !prose-code:p-0 prose-li:[&_p]:my-1 mx-auto mt-4 min-h-[500px] w-full max-w-3xl  cursor-text rounded-lg px-2 font-normal tracking-normal transition-all md:px-6"
           >
             {/* <pre>{JSON.stringify(editor?.getHTML(), null, 2)}</pre> */}
             <EditorContent className="w-full" editor={editor} />
@@ -897,45 +902,74 @@ export function AuthorSelector({
 
   const [open, setOpen] = React.useState(false);
 
+  const [createAuthorOpen, setCreateAuthorOpen] = React.useState(false);
+
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button variant={"ghost"} className="">
-          <AuthorsLabel />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="space-y-px">
-        {authors.map((author) => (
-          <DropdownMenuItem
-            key={author.id}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (value.includes(author.id)) {
-                onChange(value.filter((id) => id !== author.id));
-              } else {
-                onChange([...value, author.id]);
-              }
-            }}
-            className={cn(
-              value.includes(author.id) && "bg-slate-100 text-slate-800"
-            )}
-          >
-            <div className="flex items-center gap-2">
-              {author.image_url ? (
-                <img
-                  src={author.image_url || ""}
-                  alt={author.name}
-                  className="h-5 w-5 rounded-full"
-                />
-              ) : (
-                <div className="h-5 w-5 rounded-full bg-slate-200"></div>
+    <>
+      <CreateAuthorDialog
+        hideTrigger
+        open={createAuthorOpen}
+        setOpen={setCreateAuthorOpen}
+      />
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button variant={"ghost"} className="">
+            <AuthorsLabel />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="min-w-[200px] space-y-px">
+          <div className="flex items-center justify-between">
+            <span className="px-2 text-xs font-semibold">Authors</span>
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setCreateAuthorOpen(true);
+                setOpen(false);
+              }}
+            >
+              <Plus size={14} />
+            </Button>
+          </div>
+          {authors.length === 0 && (
+            <DropdownMenuItem className="text-xs font-semibold">
+              No authors found
+            </DropdownMenuItem>
+          )}
+          {authors.map((author) => (
+            <DropdownMenuItem
+              key={author.id}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (value.includes(author.id)) {
+                  onChange(value.filter((id) => id !== author.id));
+                } else {
+                  onChange([...value, author.id]);
+                }
+              }}
+              className={cn(
+                value.includes(author.id) && "bg-slate-100 text-slate-800"
               )}
-              <span>{author.name}</span>
-            </div>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+            >
+              <div className="flex items-center gap-2">
+                {author.image_url ? (
+                  <img
+                    src={author.image_url || ""}
+                    alt={author.name}
+                    className="h-5 w-5 rounded-full"
+                  />
+                ) : (
+                  <div className="h-5 w-5 rounded-full bg-slate-200"></div>
+                )}
+                <span>{author.name}</span>
+              </div>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }

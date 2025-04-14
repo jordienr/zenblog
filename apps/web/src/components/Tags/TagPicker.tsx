@@ -40,7 +40,7 @@ export function TagPicker({
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent className="w-[280px] rounded-xl p-1" align="start">
         <div className="flex w-full items-center justify-between pb-3">
-          <h3 className="px-3 text-xs font-medium text-zinc-500">Tags</h3>
+          <h3 className="px-3 text-xs font-semibold">Tags</h3>
           <Button
             onClick={() => {
               setShowCreateTag(!showCreateTag);
