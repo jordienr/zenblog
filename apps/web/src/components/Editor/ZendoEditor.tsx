@@ -63,8 +63,6 @@ import { useBlogId } from "@/hooks/use-blog-id";
 import { API } from "app/utils/api-client";
 import { useAuthors } from "@/queries/authors";
 import { Skeleton } from "../ui/skeleton";
-import GlobalDragHandle from "tiptap-extension-global-drag-handle";
-import AutoJoiner from "tiptap-extension-auto-joiner";
 import { CreateAuthorDialog } from "@/pages/blogs/[blogId]/authors";
 
 const formSchema = z.object({
@@ -353,7 +351,6 @@ export const ZendoEditor = (props: Props) => {
             class: "rounded-lg",
           },
         }),
-        AutoJoiner,
       ],
     },
     [blogId]
