@@ -46,9 +46,13 @@ export function TagPicker({
               setShowCreateTag(!showCreateTag);
             }}
             variant={"ghost"}
-            className={cn({ "px-2": !showCreateTag })}
+            className="px-2"
           >
-            {showCreateTag ? "Tags" : <Plus />}
+            <Plus
+              className={cn("transition-transform", {
+                "rotate-45": showCreateTag,
+              })}
+            />
           </Button>
         </div>
         {showCreateTag ? (
