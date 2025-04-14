@@ -614,7 +614,7 @@ export const ZendoEditor = (props: Props) => {
                 <EditorPropValue>
                   <div className="flex w-full items-center gap-1 py-1 pl-3 pr-1">
                     <textarea
-                      className="field-sizinc w-full resize-none truncate bg-transparent font-mono text-xs font-semibold outline-none"
+                      className="field-sizinc w-full resize-none truncate bg-transparent text-xs font-semibold outline-none"
                       rows={1}
                       placeholder="a-great-title"
                       value={slug}
@@ -678,7 +678,7 @@ export const ZendoEditor = (props: Props) => {
                 </EditorPropLabel>
                 <EditorPropValue>
                   <textarea
-                    className="field-size-zinc w-full resize-none bg-transparent px-3 py-1 font-mono text-xs font-semibold outline-none"
+                    className="field-size-zinc w-full resize-none bg-transparent px-3 py-1 text-xs font-semibold outline-none"
                     rows={3}
                     placeholder="A short description of your post. Recommended to be 155 characters or less."
                     onChange={(e) => {
@@ -731,7 +731,7 @@ export const ZendoEditor = (props: Props) => {
                           {tags?.map((tag) => (
                             <span
                               key={tag.id}
-                              className="flex items-center rounded-md bg-zinc-100 font-mono text-xs font-medium"
+                              className="flex items-center rounded-md bg-zinc-100  text-xs font-medium"
                             >
                               <div className="p-1 pl-2 pr-0">{tag.name}</div>
                               <button
