@@ -61,7 +61,7 @@ const posts = await zenblog.posts.list();`}
         >
           {`
 <div>
-  {posts.map((post) => (
+  {posts.data.map((post) => (
     <a href={\`/blog/\${post.slug}\`} key={post.id}>
       {post.title}
     </a>
