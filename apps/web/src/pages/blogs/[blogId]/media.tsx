@@ -1,5 +1,5 @@
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { Image, ImageSelector } from "@/components/Images/ImagePicker";
+import { Media, ImageSelector } from "@/components/Images/ImagePicker";
 import {
   useDeleteMediaMutation,
   useMediaQuery,
@@ -21,7 +21,7 @@ import { toast } from "sonner";
 export default function MediaPage() {
   const blogId = useBlogId();
   const media = useMediaQuery(blogId, { enabled: true });
-  const [selectedImages, setSelectedImages] = useState<Image[]>([]);
+  const [selectedImages, setSelectedImages] = useState<Media[]>([]);
   const deleteMedia = useDeleteMediaMutation();
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
@@ -108,7 +108,7 @@ export default function MediaPage() {
         ) : (
           <div className="flex flex-col gap-2 px-3 pt-1">
             <ImageSelector
-              images={media.data || []}
+              media={media.data || []}
               onChange={(imgs) => {
                 setSelectedImages(imgs);
               }}

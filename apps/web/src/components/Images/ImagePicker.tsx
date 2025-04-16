@@ -13,14 +13,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, getMediaType } from "@/lib/utils";
 import { CheckIcon, Loader2 } from "lucide-react";
 import { useMediaQuery } from "./Images.queries";
 import { Input } from "../ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
-export type Image = {
+export type Media = {
   id: string;
   name: string;
   url: string;
@@ -37,7 +37,7 @@ export function ImagePicker({
   onOpenChange,
   showFooter = true,
 }: PropsWithChildren<{
-  onSelect: (image: Image) => void;
+  onSelect: (media: Media) => void;
   onCancel: () => void;
   open: boolean;
   ref?: any;
@@ -46,7 +46,7 @@ export function ImagePicker({
 }>) {
   const router = useRouter();
   const { blogId } = router.query as any;
-  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
+  const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const media = useMediaQuery(blogId, {
     enabled: open,
   });
@@ -89,24 +89,24 @@ export function ImagePicker({
                         <p className="text-sm text-zinc-500">No images found</p>
                       </div>
                     ) : null}
-                    {media.data?.map((image) => (
+                    {media.data?.map((item) => (
                       <button
-                        key={image.id}
+                        key={item.id}
                         type="button"
                         className={cn(
                           "group flex flex-col gap-1 rounded-xl text-left transition-all hover:opacity-90"
                         )}
                         onClick={() => {
-                          setSelectedImage(image);
-                          onSelect(image);
+                          setSelectedMedia(item);
+                          onSelect(item);
                         }}
                       >
                         <div className="relative w-full">
-                          {isVideo(image.url) ? (
+                          {getMediaType(item.url) === "video" ? (
                             <div className="relative h-32 w-full overflow-hidden rounded-xl">
                               <video
                                 className="h-32 w-full rounded-xl object-cover shadow-sm"
-                                src={image.url}
+                                src={item.url}
                               />
                               <div className="absolute bottom-2 left-2 rounded-md bg-black/50 p-1 text-sm text-white">
                                 Video
@@ -117,10 +117,10 @@ export function ImagePicker({
                               className="h-32 w-full rounded-xl object-cover shadow-sm"
                               width={240}
                               height={128}
-                              src={image.url}
-                              alt={image.name}
+                              src={item.url}
+                              alt={item.name}
                               placeholder="blur"
-                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0XFyAeIRshGxsdIR4hHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0XFyAeIRshGxsdIR4hHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                               loading="lazy"
                             />
                           )}
@@ -130,11 +130,11 @@ export function ImagePicker({
                               "flex items-center justify-center",
                               {
                                 "border-orange-600 bg-orange-600 text-orange-100 opacity-100":
-                                  selectedImage?.id === image.id,
+                                  selectedMedia?.id === item.id,
                               }
                             )}
                           >
-                            {selectedImage?.id === image.id && (
+                            {selectedMedia?.id === item.id && (
                               <CheckIcon size={12} />
                             )}
                           </div>
@@ -144,11 +144,11 @@ export function ImagePicker({
                             "line-clamp-1 font-mono text-xs tracking-tight text-zinc-500 transition-all group-hover:text-zinc-900",
                             {
                               "text-orange-500 group-hover:text-orange-500":
-                                selectedImage?.id === image.id,
+                                selectedMedia?.id === item.id,
                             }
                           )}
                         >
-                          {image.name}
+                          {item.name}
                         </div>
                       </button>
                     ))}
@@ -167,10 +167,10 @@ export function ImagePicker({
                       <Button
                         type="button"
                         onClick={() => {
-                          if (!selectedImage) {
+                          if (!selectedMedia) {
                             return;
                           }
-                          onSelect(selectedImage);
+                          onSelect(selectedMedia);
                         }}
                       >
                         Save
@@ -246,7 +246,7 @@ export function ImagePicker({
                       } else if (imageUrl) {
                         onSelect({
                           id: "embed",
-                          name: "Embedded image",
+                          name: "Embedded media",
                           url: imageUrl,
                           created_at: new Date().toISOString(),
                         });
@@ -266,13 +266,13 @@ export function ImagePicker({
 }
 
 type ImageSelector = {
-  images: Image[];
-  onChange: (image: Image[]) => void;
-  selected: Image[];
+  media: Media[];
+  onChange: (media: Media[]) => void;
+  selected: Media[];
   type: "single" | "multiple";
 };
 export function ImageSelector({
-  images,
+  media,
   onChange,
   selected,
   type,
@@ -283,26 +283,27 @@ export function ImageSelector({
   const [lastSelectionWasDeselect, setLastSelectionWasDeselect] =
     useState(false);
 
-  function isSelected(image: Image) {
-    return selected.find((img) => img.id === image.id) !== undefined;
+  function isSelected(item: Media) {
+    return selected.find((m) => m.id === item.id) !== undefined;
   }
 
-  function onItemClick(image: Image, index: number, event: React.MouseEvent) {
+  function onItemClick(item: Media, index: number, event: React.MouseEvent) {
     if (type === "single") {
-      onChange([image]);
+      onChange([item]);
       return;
     }
 
     if (event.shiftKey && lastSelectedIndex !== null && type === "multiple") {
       const start = Math.min(lastSelectedIndex, index);
       const end = Math.max(lastSelectedIndex, index);
-      const rangeToToggle = images.slice(start, end + 1);
+      const rangeToToggle = media.slice(start, end + 1);
 
       // If last action was deselect, deselect the range
       if (lastSelectionWasDeselect) {
         onChange(
           selected.filter(
-            (img) => !rangeToToggle.some((rangeImg) => rangeImg.id === img.id)
+            (selItem) =>
+              !rangeToToggle.some((rangeItem) => rangeItem.id === selItem.id)
           )
         );
       } else {
@@ -314,13 +315,13 @@ export function ImageSelector({
       }
     } else {
       // Single click behavior
-      const isCurrentlySelected = isSelected(image);
+      const isCurrentlySelected = isSelected(item);
       setLastSelectionWasDeselect(isCurrentlySelected);
 
       if (isCurrentlySelected) {
-        onChange(selected.filter((img) => img.id !== image.id));
+        onChange(selected.filter((selItem) => selItem.id !== item.id));
       } else {
-        onChange([...selected, image]);
+        onChange([...selected, item]);
       }
       setLastSelectedIndex(index);
     }
@@ -351,18 +352,20 @@ export function ImageSelector({
       </AnimatePresence>
       <div className="relative grid grid-cols-2 gap-3 md:grid-cols-4">
         <AnimatePresence>
-          {images.map((img, index) => (
+          {media.map((item, index) => (
             <motion.div
-              key={img.id}
+              key={item.id}
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
               <ImageItem
-                image={img}
-                selected={isSelected(img)}
-                onClick={(image, event) => onItemClick(image, index, event)}
+                item={item}
+                selected={isSelected(item)}
+                onClick={(clickedItem, event) =>
+                  onItemClick(clickedItem, index, event)
+                }
               />
             </motion.div>
           ))}
@@ -373,40 +376,60 @@ export function ImageSelector({
 }
 
 type ImageItem = {
-  image: Image;
+  item: Media;
   selected: boolean;
-  onClick: (image: Image, event: React.MouseEvent) => void;
+  onClick: (item: Media, event: React.MouseEvent) => void;
 };
-export function ImageItem({ image, selected, onClick }: ImageItem) {
+export function ImageItem({ item, selected, onClick }: ImageItem) {
+  const mediaType = getMediaType(item.url);
+
   return (
     <button
       type="button"
-      key={image.id}
+      key={item.id}
       className={cn(
         "group flex w-full max-w-[240px] flex-col gap-0.5 rounded-xl text-left transition-all hover:opacity-90"
       )}
       onClick={(e) => {
-        onClick(image, e);
+        onClick(item, e);
       }}
     >
       <div className="relative w-full">
-        <img
-          className={cn(
-            "h-28 w-full rounded-lg border border-zinc-200 object-cover shadow-sm",
-            {
-              "border-orange-500 opacity-70": selected,
-            }
-          )}
-          width={240}
-          height={112}
-          src={image.url}
-          alt={image.name}
-          loading="lazy"
-        />
+        {mediaType === "video" ? (
+          <video
+            className={cn(
+              "h-28 w-full rounded-lg border border-zinc-200 object-cover shadow-sm",
+              {
+                "border-orange-500 opacity-70": selected,
+              }
+            )}
+            src={item.url}
+          />
+        ) : (
+          <img
+            className={cn(
+              "h-28 w-full rounded-lg border border-zinc-200 object-cover shadow-sm",
+              {
+                "border-orange-500 opacity-70": selected,
+              }
+            )}
+            width={240}
+            height={112}
+            src={item.url}
+            alt={item.name}
+            loading="lazy"
+          />
+        )}
 
+        {/* Media Type Pill */}
+        <div className="absolute left-1.5 top-1.5 rounded-full bg-black/50 px-1.5 py-0.5 text-xs font-medium text-white">
+          {mediaType === "video" ? "video" : "img"}
+        </div>
+
+        {/* Selection Checkmark - slightly adjusted positioning if needed */}
         <div
           className={cn(
-            "absolute right-1.5 top-1.5 h-6 w-6 rounded-full border border-zinc-200 bg-zinc-100/50 opacity-0 bg-blend-darken transition-all group-hover:opacity-100",
+            "absolute right-1.5 top-1.5 h-6 w-6 rounded-full border border-zinc-200 bg-zinc-100/50 opacity-0 bg-blend-darken transition-all group-hover:opacity-100", // Adjusted top position slightly
             "flex items-center justify-center",
             {
               "border-orange-600 bg-orange-600 text-orange-100 opacity-100":
@@ -422,8 +445,8 @@ export function ImageItem({ image, selected, onClick }: ImageItem) {
           "text-orange-500 group-hover:text-orange-500": selected,
         })}
       >
-        <p title={image.name} className="truncate">
-          {image.name}
+        <p title={item.name} className="truncate">
+          {item.name}
         </p>
       </div>
     </button>
