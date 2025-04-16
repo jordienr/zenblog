@@ -65,6 +65,7 @@ import { useAuthors } from "@/queries/authors";
 import { Skeleton } from "../ui/skeleton";
 import { CreateAuthorDialog } from "@/pages/blogs/[blogId]/authors";
 import { useSubscriptionQuery } from "@/queries/subscription";
+import Head from "next/head";
 
 const formSchema = z.object({
   title: z.string(),
@@ -471,6 +472,10 @@ export const ZendoEditor = (props: Props) => {
 
   return (
     <div className="relative min-h-screen pb-24">
+      <Head>
+        <title>{props.post?.title || title || "Zenblog - New post"}</title>
+        <link rel="icon" href="/static/favicon.ico" />
+      </Head>
       {editorLoading && (
         <div className="absolute inset-0 z-30 bg-zinc-50/50 backdrop-blur-sm">
           <div className="flex h-screen items-center justify-center">
