@@ -4,7 +4,7 @@ import { Editor, NodeViewWrapper } from "@tiptap/react";
 import { useState } from "react";
 import { ImagePicker } from "../Images/ImagePicker";
 import { Button } from "../ui/button";
-import { PencilIcon, TrashIcon, XIcon } from "lucide-react";
+import { TrashIcon, XIcon } from "lucide-react";
 import { Input } from "../ui/input";
 
 function AltTextArea({
@@ -85,8 +85,6 @@ export function EditorMediaNode({
   const videoFormats = ["mp4", "webm", "ogg"];
   const isVideo = node.attrs.isVideo === "true";
   const isYoutube = node.attrs.isYoutube === "true";
-
-  console.log("🔴 isYoutube", node.attrs);
 
   const handleVideoLoad = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.target as HTMLVideoElement;
@@ -226,13 +224,20 @@ export function EditorMediaNode({
 
         <ImagePicker
           onSelect={(image) => {
-            console.log("🔴 onSelect", image);
             if (image.isYoutube) {
-              setYoutubeVideo(image.url);
-              setShowYoutubeInput(false);
+              if (image.url) {
+                setYoutubeVideo(image.url);
+                setShowYoutubeInput(false);
+              } else {
+                console.error("Cannot set YouTube video without a URL");
+              }
             } else {
-              setImageSrc(image.url);
-              setShowImagePicker(false);
+              if (image.url) {
+                setImageSrc(image.url);
+                setShowImagePicker(false);
+              } else {
+                console.error("Cannot set image source without a URL");
+              }
             }
             setShowImagePicker(false);
           }}

@@ -23,9 +23,10 @@ import Image from "next/image";
 export type Media = {
   id: string;
   name: string;
-  url: string;
+  url: string | null;
   created_at: string;
   supabase_hosted?: boolean;
+  size_in_bytes?: number | null;
   isYoutube?: boolean;
 };
 
@@ -102,27 +103,35 @@ export function ImagePicker({
                         }}
                       >
                         <div className="relative w-full">
-                          {getMediaType(item.url) === "video" ? (
+                          {/* Handle null URL for getMediaType */}
+                          {getMediaType(item.url ?? "") === "video" ? (
                             <div className="relative h-32 w-full overflow-hidden rounded-xl">
                               <video
                                 className="h-32 w-full rounded-xl object-cover shadow-sm"
-                                src={item.url}
+                                // Handle null URL for src
+                                src={item.url ?? undefined}
                               />
                               <div className="absolute bottom-2 left-2 rounded-md bg-black/50 p-1 text-sm text-white">
                                 Video
                               </div>
                             </div>
-                          ) : (
+                          ) : // Handle null URL for Image component: Render placeholder if null
+                          item.url ? (
                             <Image
                               className="h-32 w-full rounded-xl object-cover shadow-sm"
                               width={240}
                               height={128}
-                              src={item.url}
+                              src={item.url} // URL is guaranteed string here
                               alt={item.name}
                               placeholder="blur"
-                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0XFyAeIRshGxsdIR4hHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                               loading="lazy"
                             />
+                          ) : (
+                            // Placeholder for null URL
+                            <div className="flex h-32 w-full items-center justify-center rounded-xl border bg-zinc-100 text-zinc-400">
+                              No Preview
+                            </div>
                           )}
                           <div
                             className={cn(
@@ -381,7 +390,9 @@ type ImageItem = {
   onClick: (item: Media, event: React.MouseEvent) => void;
 };
 export function ImageItem({ item, selected, onClick }: ImageItem) {
-  const mediaType = getMediaType(item.url);
+  // Handle null URL for getMediaType
+  const mediaType = getMediaType(item.url ?? "");
+  const displaySize = formatBytes(item.size_in_bytes);
 
   return (
     <button
@@ -403,9 +414,10 @@ export function ImageItem({ item, selected, onClick }: ImageItem) {
                 "border-orange-500 opacity-70": selected,
               }
             )}
-            src={item.url}
+            // Handle null URL for src: Render placeholder if null
+            src={item.url ?? undefined}
           />
-        ) : (
+        ) : item.url ? (
           <img
             className={cn(
               "h-28 w-full rounded-lg border border-zinc-200 object-cover shadow-sm",
@@ -415,10 +427,15 @@ export function ImageItem({ item, selected, onClick }: ImageItem) {
             )}
             width={240}
             height={112}
-            src={item.url}
+            // Handle null URL for img tag: Render placeholder if null
+            src={item.url} // URL is guaranteed string here
             alt={item.name}
             loading="lazy"
           />
+        ) : (
+          <div className="flex h-28 w-full items-center justify-center rounded-lg border border-zinc-200 bg-zinc-100 text-zinc-400">
+            No Preview
+          </div>
         )}
 
         {/* Media Type Pill */}
@@ -448,9 +465,24 @@ export function ImageItem({ item, selected, onClick }: ImageItem) {
         <p title={item.name} className="truncate">
           {item.name}
         </p>
+        {item.size_in_bytes && (
+          <span className="text-xs text-zinc-400">{displaySize}</span>
+        )}
       </div>
     </button>
   );
+}
+
+function formatBytes(bytes?: number | null, decimals = 1) {
+  if (!bytes || bytes === 0) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
 
 function getYoutubeVideoId(url: string): string | null {

@@ -91,7 +91,6 @@ export function createForm(schema: z.ZodObject<any>) {
 
   const formNodes = schemaProperties.map(([key, value]: [string, any]) => {
     const { typeName, label, placeholder } = value._def;
-    console.log({ key, value });
 
     const isOptional = typeName === "ZodOptional";
     const finalTypeName = isOptional

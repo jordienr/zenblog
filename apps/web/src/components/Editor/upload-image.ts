@@ -1,7 +1,14 @@
 import { type EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet, type EditorView } from "@tiptap/pm/view";
+import { toast } from "sonner";
+import { formatBytes } from "@/lib/utils";
 
 const uploadKey = new PluginKey("upload-image");
+
+// Define size constants
+const MAX_FREE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const MAX_IMAGE_WARNING_SIZE_BYTES = 2 * 1024 * 1024; // 2MB Warning threshold
+const MAX_VIDEO_WARNING_SIZE_BYTES = 5 * 1024 * 1024; // 5MB Video warning threshold
 
 export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
   new Plugin({
@@ -18,12 +25,16 @@ export const UploadImagesPlugin = ({ imageClass }: { imageClass: string }) =>
         if (action?.add) {
           const { id, pos, src } = action.add;
 
+          // Create a generic loading placeholder div
           const placeholder = document.createElement("div");
-          placeholder.setAttribute("class", "img-placeholder");
-          const image = document.createElement("img");
-          image.setAttribute("class", imageClass);
-          image.src = src;
-          placeholder.appendChild(image);
+          placeholder.setAttribute(
+            "class",
+            // Add some basic styling for the placeholder
+            "zb-media-upload-placeholder motion-safe:animate-pulse flex items-center justify-center border border-dashed rounded-lg bg-zinc-100 text-zinc-500 text-sm min-h-[100px] min-w-[100px]"
+          );
+          placeholder.textContent = "Uploading..."; // Simple text indicator
+          // Optional: Add a spinner SVG or use CSS for a visual spinner
+
           const deco = Decoration.widget(pos + 1, placeholder, {
             id,
           });
@@ -87,7 +98,8 @@ export const handleImagePaste = (
   view: EditorView,
   event: ClipboardEvent,
   uploadFn: UploadFn,
-  blogId: string
+  blogId: string,
+  isProPlan: boolean
 ) => {
   if (event.clipboardData?.files.length) {
     event.preventDefault();
@@ -95,6 +107,42 @@ export const handleImagePaste = (
     const pos = view.state.selection.from;
 
     if (file) {
+      const fileSizeFormatted = formatBytes(file.size);
+      const isVideo = file.type.startsWith("video/");
+      const isImage = file.type.startsWith("image/");
+
+      // --- Perform Checks BEFORE Upload ---
+
+      // 1. Image Size Warning (> 2MB)
+      if (isImage && file.size > MAX_IMAGE_WARNING_SIZE_BYTES) {
+        const proceed = window.confirm(
+          `This image is larger than 2MB (${fileSizeFormatted}). Large images can impact performance. Consider compressing it before uploading.\n\nDo you want to proceed anyway?`
+        );
+        if (!proceed) {
+          return false; // Stop processing
+        }
+      }
+
+      // 2. Video Size Warning (> 5MB)
+      if (isVideo && file.size > MAX_VIDEO_WARNING_SIZE_BYTES) {
+        const proceed = window.confirm(
+          `This video is larger than 5MB (${fileSizeFormatted}). Uploading large videos can take time.\n\nDo you want to proceed anyway?`
+        );
+        if (!proceed) {
+          return false; // Stop processing
+        }
+      }
+
+      // 3. Free Plan Limit (> 5MB)
+      if (!isProPlan && file.size > MAX_FREE_SIZE_BYTES) {
+        toast.error(
+          `File size (${fileSizeFormatted}) exceeds 5MB limit for free plan. Upgrade to Pro for larger uploads.`
+        );
+        return false; // Stop processing
+      }
+
+      // --- Checks Passed - Proceed with Upload ---
+
       const tr = view.state.tr;
       if (!tr.selection.empty) tr.deleteSelection();
 
@@ -119,7 +167,14 @@ export const handleImagePaste = (
             const pos = findPlaceholder(view.state, id);
             if (pos == null) return;
 
-            const node = schema.nodes.image?.create({ src });
+            // Check if the uploaded file is a video
+            const isVideo = file.type.startsWith("video/");
+
+            // Create node with correct attributes (including isVideo)
+            const node = schema.nodes.image?.create({
+              src,
+              isVideo: isVideo.toString(),
+            });
             if (!node) return;
 
             const transaction = view.state.tr
@@ -127,7 +182,9 @@ export const handleImagePaste = (
               .setMeta(uploadKey, { remove: { id } });
             view.dispatch(transaction);
           },
-          () => {
+          (error) => {
+            console.error("Upload failed:", error);
+            toast.error(`Upload failed: ${error.message || "Unknown error"}`);
             const transaction = view.state.tr.setMeta(uploadKey, {
               remove: { id },
             });
@@ -146,7 +203,8 @@ export const handleImageDrop = (
   event: DragEvent,
   moved: boolean,
   uploadFn: UploadFn,
-  blogId: string
+  blogId: string,
+  isProPlan: boolean
 ) => {
   if (!moved && event.dataTransfer?.files.length) {
     event.preventDefault();
@@ -155,8 +213,44 @@ export const handleImageDrop = (
       left: event.clientX,
       top: event.clientY,
     });
-    // here we deduct 1 from the pos or else the image will create an extra node
+
     if (file) {
+      const fileSizeFormatted = formatBytes(file.size);
+      const isVideo = file.type.startsWith("video/");
+      const isImage = file.type.startsWith("image/");
+
+      // --- Perform Checks BEFORE Upload ---
+
+      // 1. Image Size Warning (> 2MB)
+      if (isImage && file.size > MAX_IMAGE_WARNING_SIZE_BYTES) {
+        const proceed = window.confirm(
+          `This image is larger than 2MB (${fileSizeFormatted}). Large images can impact performance. Consider compressing it before uploading.\n\nDo you want to proceed anyway?`
+        );
+        if (!proceed) {
+          return false; // Stop processing
+        }
+      }
+
+      // 2. Video Size Warning (> 5MB)
+      if (isVideo && file.size > MAX_VIDEO_WARNING_SIZE_BYTES) {
+        const proceed = window.confirm(
+          `This video is larger than 5MB (${fileSizeFormatted}). Uploading large videos can take time.\n\nDo you want to proceed anyway?`
+        );
+        if (!proceed) {
+          return false; // Stop processing
+        }
+      }
+
+      // 3. Free Plan Limit (> 5MB)
+      if (!isProPlan && file.size > MAX_FREE_SIZE_BYTES) {
+        toast.error(
+          `File size (${fileSizeFormatted}) exceeds 5MB limit for free plan. Upgrade to Pro for larger uploads.`
+        );
+        return false; // Stop processing
+      }
+
+      // --- Checks Passed - Proceed with Upload ---
+
       const tr = view.state.tr;
       if (!tr.selection.empty) tr.deleteSelection();
 
@@ -181,7 +275,14 @@ export const handleImageDrop = (
             const pos = findPlaceholder(view.state, id);
             if (pos == null) return;
 
-            const node = schema.nodes.image?.create({ src });
+            // Check if the uploaded file is a video
+            const isVideo = file.type.startsWith("video/");
+
+            // Create node with correct attributes (including isVideo)
+            const node = schema.nodes.image?.create({
+              src,
+              isVideo: isVideo.toString(),
+            });
             if (!node) return;
 
             const transaction = view.state.tr
@@ -189,7 +290,9 @@ export const handleImageDrop = (
               .setMeta(uploadKey, { remove: { id } });
             view.dispatch(transaction);
           },
-          () => {
+          (error) => {
+            console.error("Upload failed:", error);
+            toast.error(`Upload failed: ${error.message || "Unknown error"}`);
             const transaction = view.state.tr.setMeta(uploadKey, {
               remove: { id },
             });

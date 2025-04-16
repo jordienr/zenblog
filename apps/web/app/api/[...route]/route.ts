@@ -25,6 +25,7 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const UnauthorizedError = (c: Context) => {
   return c.json({ message: "Unauthorized" }, { status: 401 });
@@ -259,6 +260,139 @@ const api = new Hono()
       return c.json(res);
     }
   )
+  .get(
+    "/blogs/:blog_id/media/upload-url",
+    zValidator(
+      "query",
+      z.object({
+        original_file_name: z.string(),
+        size_in_bytes: z.coerce.number(),
+        content_type: z.string(),
+      })
+    ),
+    async (c) => {
+      const MAX_FREE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB - Define limit on backend
+      const blogId = c.req.param("blog_id");
+      const { user } = await getUser();
+      const { original_file_name, size_in_bytes, content_type } = c.req.query();
+
+      if (!user || !user.id) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      if (!original_file_name || !size_in_bytes || !content_type) {
+        return c.json({ error: "Missing parameters" }, { status: 400 });
+      }
+
+      const isOwner = await getBlogOwnership(blogId, user.id);
+
+      if (!isOwner) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      // Fetch user's subscription plan
+      const supabase = createClient();
+      const { data: subscriptionData, error: subError } = await supabase
+        .from("subscriptions")
+        .select("plan, status")
+        .eq("user_id", user.id)
+        .in("status", ["active", "trialing", "past_due"]) // Check for valid statuses
+        .maybeSingle(); // Use maybeSingle as user might not have a subscription row
+
+      if (subError) {
+        console.error(
+          "🔴 Error fetching subscription for size check:",
+          subError
+        );
+        // Fail safe - potentially deny or allow based on policy?
+        // For now, let's return an internal error.
+        return c.json(
+          { error: "Could not verify subscription status" },
+          { status: 500 }
+        );
+      }
+
+      // Use 'plan' from subscription data
+      const userPlan = subscriptionData?.plan || "free";
+      const isProPlan = userPlan === "pro"; // Replace 'pro' if needed
+
+      // Ensure size_in_bytes is treated as number for comparison
+      if (!isProPlan && Number(size_in_bytes) > MAX_FREE_SIZE_BYTES) {
+        console.log(
+          `🚫 User ${user.id} on plan '${userPlan}' exceeded size limit: ${size_in_bytes} > ${MAX_FREE_SIZE_BYTES}`
+        );
+        return c.json(
+          // Ensure size_in_bytes is treated as number for calculation
+          {
+            error: `File size (${(
+              Number(size_in_bytes) /
+              (1024 * 1024)
+            ).toFixed(
+              1
+            )}MB) exceeds 5MB limit for your current plan. Upgrade to Pro for larger uploads.`,
+          },
+          { status: 400 } // Use 400 Bad Request or 413 Payload Too Large
+        );
+      }
+
+      const fileExtension = original_file_name.split(".").pop() || "";
+      const baseName = original_file_name
+        .replace(/\.[^/.]+$/, "") // Remove extension
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-") // Replace non-alphanumeric with hyphens
+        .replace(/-+/g, "-") // Replace multiple hyphens with single
+        .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+      const timestamp = Date.now().toString().slice(-6);
+      const uniqueFilename = `${baseName}-${timestamp}${
+        fileExtension ? "." + fileExtension : ""
+      }`;
+
+      const { error: dbError } = await supabase.from("blog_images").insert({
+        blog_id: blogId,
+        file_name: uniqueFilename,
+        size_in_bytes: Number(size_in_bytes),
+        content_type: content_type,
+        upload_status: "pending",
+        is_video: content_type.startsWith("video/"),
+      });
+
+      if (dbError) {
+        console.error("🔴 dbError inserting pending record:", dbError);
+        return c.json(
+          { error: "Error storing file metadata" },
+          { status: 500 }
+        );
+      }
+
+      const r2 = createR2Client();
+      const command = new PutObjectCommand({
+        Bucket: process.env.R2_IMAGES_BUCKET_NAME,
+        Key: uniqueFilename,
+        ContentType: content_type,
+        Metadata: {
+          "original-filename": original_file_name,
+          "user-id": user.id,
+        },
+      });
+
+      try {
+        const signedUrl = await getSignedUrl(r2, command, {
+          expiresIn: 60 * 15,
+        });
+        return c.json({ signedUrl, uniqueFilename }, { status: 200 });
+      } catch (signError) {
+        console.error("🔴 Error generating signed URL:", signError);
+        await supabase
+          .from("blog_images")
+          .delete()
+          .match({ blog_id: blogId, file_name: uniqueFilename });
+        return c.json(
+          { error: "Error generating upload URL" },
+          { status: 500 }
+        );
+      }
+    }
+  )
   .post(
     "/blogs/:blog_id/images",
     zValidator(
@@ -455,19 +589,26 @@ const api = new Hono()
           return c.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Delete from Supabase first
+        // Re-added: Delete from Supabase DB first, matching on file_name
         const supabase = createClient();
-        const fileUrls = fileNames.map(
-          (fileName: string) => `${process.env.R2_BASE_URL}/${fileName}`
-        );
         const { error: dbError } = await supabase
           .from("blog_images")
           .delete()
-          .match({ blog_id: blogId })
-          .in("file_url", fileUrls);
+          // Match on blog_id and the specific file names (R2 keys)
+          .eq("blog_id", blogId)
+          .in("file_name", fileNames);
 
         if (dbError) {
           console.error("Database delete error:", dbError);
+          // Log error, but maybe proceed to R2 deletion attempt anyway?
+          // For now, we stop if DB delete fails.
+          axiom.ingest(AXIOM_DATASETS.api, {
+            message: "Failed to delete image metadata from DB",
+            blogId,
+            fileNames,
+            dbError,
+            error: true,
+          });
           return c.json(
             { error: "Failed to delete image metadata" },
             { status: 500 }
@@ -686,6 +827,73 @@ const api = new Hono()
       }
 
       return c.json({ message: "Author updated" }, { status: 200 });
+    }
+  )
+  .post(
+    "/blogs/:blog_id/media/confirm-upload",
+    zValidator(
+      "json",
+      z.object({
+        fileName: z.string(), // The final name/key of the file in R2
+        contentType: z.string(),
+        sizeInBytes: z.number(),
+      })
+    ),
+    async (c) => {
+      const blogId = c.req.param("blog_id");
+      const { fileName, contentType, sizeInBytes } = await c.req.json();
+      const { user } = await getUser();
+
+      if (!user || !user.id) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const isOwner = await getBlogOwnership(blogId, user.id);
+      if (!isOwner) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      // TODO: Optionally add R2 HeadObjectCommand check here to verify file existence
+
+      const supabase = createClient();
+      const publicUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/${fileName}`;
+
+      // Update the existing pending record
+      const { error: updateError } = await supabase
+        .from("blog_images")
+        .update({
+          upload_status: "uploaded",
+          file_url: publicUrl,
+          file_name: fileName,
+          content_type: contentType,
+          size_in_bytes: sizeInBytes,
+          is_video: contentType.startsWith("video/"),
+        })
+        .match({
+          blog_id: blogId,
+          file_name: fileName,
+          upload_status: "pending",
+        });
+
+      if (updateError) {
+        console.error("Database update error on confirm:", updateError);
+        // If the update failed, maybe the record wasn't 'pending' or didn't exist?
+        // Consider adding cleanup logic for R2 object if needed
+        axiom.ingest(AXIOM_DATASETS.api, {
+          message: "Failed to confirm upload in DB",
+          fileName,
+          blogId,
+          userId: user.id,
+          updateError,
+          error: true,
+        });
+        return c.json({ error: "Failed to confirm upload" }, { status: 500 });
+      }
+
+      return c.json(
+        { message: "Upload confirmed", url: publicUrl },
+        { status: 200 }
+      );
     }
   );
 

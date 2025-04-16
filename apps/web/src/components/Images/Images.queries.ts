@@ -19,7 +19,7 @@ export const useMediaQuery = (
     queryFn: async () => {
       const { data: blogImages } = await supa
         .from("blog_images")
-        .select("file_url, file_name, created_at")
+        .select("id, file_url, file_name, created_at, size_in_bytes")
         .eq("blog_id", blogId);
 
       const res = await supa.storage.from("images").list(blogId, {
@@ -45,19 +45,32 @@ export const useMediaQuery = (
 
         type Image = {
           id: string;
-          url: string;
+          url: string | null;
           name: string;
           created_at: string;
+          size_in_bytes?: number | null;
+          supabase_hosted?: boolean;
         };
 
         const formattedBlogImages = blogImages?.map((image) => ({
           ...image,
-          id: image.file_url,
+          id: image.id.toString(),
           url: image.file_url,
           name: image.file_name,
+          size_in_bytes: image.size_in_bytes,
         }));
 
-        const allImages: Image[] = [...data, ...(formattedBlogImages || [])];
+        const allImages: Image[] = [
+          ...data.map((item) => ({
+            ...item,
+            id: item.id,
+            url: item.url,
+            name: item.name,
+            created_at: item.created_at,
+            supabase_hosted: true,
+          })),
+          ...(formattedBlogImages || []),
+        ];
 
         return allImages.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
       }

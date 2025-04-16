@@ -2,18 +2,23 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { ImageIcon, Loader, Loader2 } from "lucide-react";
+import { ImageIcon, Loader2 } from "lucide-react";
 import { Input } from "../ui/input";
-import { createSupabaseBrowserClient } from "@/lib/supabase";
-import { cn } from "@/lib/utils";
+import { cn, formatBytes } from "@/lib/utils";
 import { API } from "app/utils/api-client";
 import { toast } from "sonner";
+import { useSubscriptionQuery } from "@/queries/subscription";
 
 type Props = {
   blogId: string;
   onSuccessfulUpload?: () => void;
   className?: string;
 };
+
+const MAX_FREE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB Hard limit for free plan
+const MAX_IMAGE_WARNING_SIZE_BYTES = 2 * 1024 * 1024; // 2MB Image warning threshold
+const MAX_VIDEO_WARNING_SIZE_BYTES = 5 * 1024 * 1024; // 5MB Video warning threshold
+
 export const ImageUploader = ({
   blogId,
   onSuccessfulUpload,
@@ -24,6 +29,12 @@ export const ImageUploader = ({
   const [imageInfo, setImageInfo] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [editableFileName, setEditableFileName] = useState<string>("");
+  const subscription = useSubscriptionQuery();
+
+  console.log("subscription", subscription);
+
+  const isProPlan = subscription.data?.plan === "pro";
+  const uploadsDisabled = subscription.isLoading;
 
   useEffect(() => {
     // on mount, listen for paste events
@@ -52,31 +63,31 @@ export const ImageUploader = ({
   }, []);
 
   async function uploadImageToBlogAndGetURL(file: File) {
-    const isVideo = file.type.startsWith("video/");
-    console.log("🥬 isVideo", isVideo);
+    const file_size = file.size; // Use original file size
 
-    const res = await API().v2.blogs[":blog_id"].images.$post({
+    const res = await API().v2.blogs[":blog_id"].media["upload-url"].$get({
       param: {
         blog_id: blogId,
       },
       query: {
-        convertToWebp: isVideo ? "false" : "true",
-        imageName: editableFileName,
-      },
-      form: {
-        image: new File([file], editableFileName, {
-          type: file.type,
-        }),
+        // Send original filename to backend for unique name generation
+        original_file_name: file.name,
+        size_in_bytes: file_size.toString(), // API expects string, convert number
+        content_type: file.type,
       },
     });
 
-    if (res.status !== 200) {
-      throw new Error("Error uploading image");
+    if (!res.ok) {
+      const errorData = await res.json();
+      // Assert the type for error handling
+      throw new Error(
+        (errorData as { error: string }).error || "Failed to get upload URL"
+      );
     }
 
-    const url = res.url;
-
-    return url;
+    const data = await res.json();
+    // Expect signedUrl and uniqueFilename from backend
+    return data as { signedUrl: string; uniqueFilename: string };
   }
 
   function getImageInfo(file: File) {
@@ -104,13 +115,98 @@ export const ImageUploader = ({
     e.preventDefault();
     setLoading(true);
 
-    if (!image) return;
+    if (!image || uploadsDisabled) {
+      setLoading(false);
+      return;
+    }
+
+    if (!isProPlan && image.size > MAX_FREE_SIZE_BYTES) {
+      toast.error(
+        `File size exceeds 5MB limit for free plan. Upgrade to Pro for larger uploads.`
+      );
+      setLoading(false);
+      return;
+    }
 
     try {
-      const URL = await uploadImageToBlogAndGetURL(image);
+      // 1. Get the signed URL and unique filename from the backend
+      const { signedUrl, uniqueFilename } = await uploadImageToBlogAndGetURL(
+        image
+      );
 
-      if (!URL) return;
+      if (!signedUrl || !uniqueFilename) {
+        toast.error("Could not get upload URL or filename.");
+        setLoading(false);
+        return;
+      }
 
+      // 2. Upload the file directly to R2 using the signed URL
+      const uploadResponse = await fetch(signedUrl, {
+        method: "PUT",
+        body: image,
+        headers: {
+          "Content-Type": image.type,
+          // Add Content-Length if required by R2/S3, often it's inferred
+          // 'Content-Length': image.size.toString(),
+        },
+      });
+
+      if (!uploadResponse.ok) {
+        // Attempt to get error details from R2/S3 response if available
+        let errorBody = "Upload failed. Please try again.";
+        try {
+          const text = await uploadResponse.text();
+          // R2/S3 often returns XML errors
+          if (text.includes("<Error>")) {
+            const codeMatch = text.match(/<Code>(.*?)<\/Code>/);
+            const messageMatch = text.match(/<Message>(.*?)<\/Message>/);
+            if (codeMatch && messageMatch) {
+              errorBody = `Upload Error: ${codeMatch[1]} - ${messageMatch[1]}`;
+            } else {
+              errorBody = `Upload Error: ${text.substring(0, 100)}...`; // Truncate long errors
+            }
+          } else {
+            errorBody = text || errorBody;
+          }
+        } catch (parseError) {
+          console.error("Error parsing upload error response:", parseError);
+        }
+        throw new Error(errorBody);
+      }
+
+      // 3. Call backend to confirm upload and finalize
+      const confirmRes = await API().v2.blogs[":blog_id"].media[
+        "confirm-upload"
+      ].$post({
+        param: {
+          blog_id: blogId,
+        },
+        json: {
+          // Send the uniqueFilename received from /upload-url
+          fileName: uniqueFilename,
+          contentType: image.type,
+          sizeInBytes: image.size,
+        },
+      });
+
+      if (!confirmRes.ok) {
+        const confirmError = await confirmRes.json();
+        // Should we attempt to delete the R2 object if confirmation fails?
+        toast.error(
+          `Failed to confirm upload: ${
+            (confirmError as { error: string }).error || "Unknown error"
+          }`
+        );
+        // Don't clear state if confirmation failed?
+        setLoading(false);
+        return;
+      }
+
+      const confirmData = await confirmRes.json();
+      console.log("Upload confirmed by backend:", confirmData);
+      toast.success("Media uploaded and confirmed!");
+
+      // Clear state and trigger callback
       setImage(null);
       setCreateObjectURL(null);
       setImageInfo(null);
@@ -127,6 +223,45 @@ export const ImageUploader = ({
   const uploadToClient = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const imageFile = e.target.files[0];
+      const fileSizeFormatted = formatBytes(imageFile.size);
+      const isVideo = imageFile.type.startsWith("video/");
+      const isImage = imageFile.type.startsWith("image/");
+
+      // --- Add Image Size Warning (> 2MB) ---
+      if (isImage && imageFile.size > MAX_IMAGE_WARNING_SIZE_BYTES) {
+        const proceed = window.confirm(
+          `This image is larger than 2MB (${fileSizeFormatted}). Large images can impact performance. Consider compressing it before uploading.\n\nDo you want to proceed anyway?`
+        );
+        if (!proceed) {
+          e.target.value = ""; // Clear the file input
+          return; // Stop processing
+        }
+      }
+      // --- End Image Size Warning ---
+
+      // --- Add Video Size Warning (> 5MB) ---
+      if (isVideo && imageFile.size > MAX_VIDEO_WARNING_SIZE_BYTES) {
+        const proceed = window.confirm(
+          `This video is larger than 5MB (${fileSizeFormatted}). Uploading large videos can take time.\n\nDo you want to proceed anyway?`
+        );
+        if (!proceed) {
+          e.target.value = ""; // Clear the file input
+          return; // Stop processing
+        }
+      }
+      // --- End Video Size Warning ---
+
+      // --- Free Plan Limit Check (> 5MB) ---
+      // This check remains the same and applies to ALL file types
+      if (!isProPlan && imageFile.size > MAX_FREE_SIZE_BYTES) {
+        toast.error(
+          `File size (${fileSizeFormatted}) exceeds 5MB limit for free plan. Upgrade to Pro for larger uploads.`
+        );
+        e.target.value = "";
+        return;
+      }
+      // --- End Free Plan Limit Check ---
+
       setImage(imageFile);
       setEditableFileName(imageFile.name.replace(/\.[^/.]+$/, ""));
       const imageInfo = await getImageInfo(imageFile);
@@ -190,8 +325,12 @@ export const ImageUploader = ({
                 e.stopPropagation();
                 document.getElementById("file")?.click();
               }}
-              className="flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-2 text-center font-medium"
+              className={cn(
+                "flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-2 text-center font-medium",
+                uploadsDisabled && "cursor-not-allowed opacity-50"
+              )}
               onDragOver={(e) => {
+                if (uploadsDisabled) return;
                 e.preventDefault();
                 e.currentTarget.classList.add("border-orange-500");
               }}
@@ -199,8 +338,56 @@ export const ImageUploader = ({
                 e.currentTarget.classList.remove("border-orange-500");
               }}
               onDrop={(e) => {
+                if (uploadsDisabled) return;
                 e.preventDefault();
                 e.currentTarget.classList.remove("border-orange-500");
+
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  const droppedFile = e.dataTransfer.files[0];
+                  const droppedFileSizeFormatted = formatBytes(
+                    droppedFile.size
+                  );
+                  const isDroppedVideo = droppedFile.type.startsWith("video/");
+                  const isDroppedImage = droppedFile.type.startsWith("image/");
+
+                  // --- Add Image Size Warning on Drop (> 2MB) ---
+                  if (
+                    isDroppedImage &&
+                    droppedFile.size > MAX_IMAGE_WARNING_SIZE_BYTES
+                  ) {
+                    const proceed = window.confirm(
+                      `This image is larger than 2MB (${droppedFileSizeFormatted}). Large images can impact performance. Consider compressing it before uploading.\n\nDo you want to proceed anyway?`
+                    );
+                    if (!proceed) {
+                      return; // Stop processing the drop
+                    }
+                  }
+                  // --- End Image Size Warning on Drop ---
+
+                  // --- Add Video Size Warning on Drop (> 5MB) ---
+                  if (
+                    isDroppedVideo &&
+                    droppedFile.size > MAX_VIDEO_WARNING_SIZE_BYTES
+                  ) {
+                    const proceed = window.confirm(
+                      `This video is larger than 5MB (${droppedFileSizeFormatted}). Uploading large videos can take time.\n\nDo you want to proceed anyway?`
+                    );
+                    if (!proceed) {
+                      return; // Stop processing the drop
+                    }
+                  }
+                  // --- End Video Size Warning on Drop ---
+
+                  // --- Free Plan Limit Check on Drop (> 5MB) ---
+                  // This check remains the same and applies to ALL file types
+                  if (!isProPlan && droppedFile.size > MAX_FREE_SIZE_BYTES) {
+                    toast.error(
+                      `File size (${droppedFileSizeFormatted}) exceeds 5MB limit for free plan. Upgrade to Pro for larger uploads.`
+                    );
+                    return;
+                  }
+                  // --- End Free Plan Limit Check ---
+                }
 
                 uploadToClient({
                   target: { files: e.dataTransfer.files },
@@ -217,6 +404,7 @@ export const ImageUploader = ({
               name="file"
               onChange={uploadToClient}
               multiple
+              disabled={uploadsDisabled}
             />
           </div>
         )}
@@ -237,11 +425,18 @@ export const ImageUploader = ({
                   setCreateObjectURL(null);
                   setImageInfo(null);
                 }}
-                disabled={loading}
+                disabled={loading || uploadsDisabled}
               >
                 Remove
               </Button>
-              <Button variant="default" type="submit" disabled={loading}>
+              <Button
+                variant="default"
+                type="submit"
+                disabled={loading || uploadsDisabled}
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
                 Upload
               </Button>
             </>
