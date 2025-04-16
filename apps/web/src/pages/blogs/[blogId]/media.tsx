@@ -106,7 +106,7 @@ export default function MediaPage() {
             </div>
           </>
         ) : (
-          <div className="mt-3 flex flex-col gap-2 px-3">
+          <div className="flex flex-col gap-2 px-3 pt-1">
             <ImageSelector
               images={media.data || []}
               onChange={(imgs) => {

@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, MoreVertical, Plus, Trash } from "lucide-react";
+import { ImageIcon, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
 import { usePostsQuery } from "@/queries/posts";
@@ -296,7 +296,7 @@ function PostItem({
                 e.stopPropagation();
               }}
             >
-              <MoreVertical size="16" />
+              <MoreHorizontal size="16" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

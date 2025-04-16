@@ -68,7 +68,7 @@ export function ImagePicker({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-3xl">
         <DialogTitle className="sr-only">Upload image</DialogTitle>
-        <div className="">
+        <div>
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
               <TabsTrigger value="images">My images</TabsTrigger>
@@ -392,9 +392,9 @@ export function ImageItem({ image, selected, onClick }: ImageItem) {
       <div className="relative w-full">
         <img
           className={cn(
-            "h-28 w-full rounded-xl border border-zinc-100 object-cover shadow-sm",
+            "h-28 w-full rounded-lg border border-zinc-200 object-cover shadow-sm",
             {
-              "opacity-70": selected,
+              "border-orange-500 opacity-70": selected,
             }
           )}
           width={240}
