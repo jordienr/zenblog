@@ -50,8 +50,6 @@ export default function Post() {
     [authorsQuery.data]
   );
 
-  console.log("postAuthors: ", postAuthors);
-
   if (
     isLoading ||
     tagsQuery.isLoading ||

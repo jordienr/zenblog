@@ -7,7 +7,7 @@ type Props = {
   label?: string;
   trigger?: JSX.Element;
   title?: string;
-  description?: string;
+  description?: string | JSX.Element;
   onConfirm: () => void;
   onCancel?: () => void;
   dialogBody?: JSX.Element;
@@ -29,9 +29,9 @@ export function ConfirmDialog({
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <h2 className="font-medium">{title ? title : "Are you sure?"}</h2>
-          <p className="text-slate-600">
+          <div className="text-slate-600">
             {description ? description : "Are you sure you want to continue?"}
-          </p>
+          </div>
         </DialogHeader>
         {dialogBody}
         <div className="flex items-center justify-end gap-2">

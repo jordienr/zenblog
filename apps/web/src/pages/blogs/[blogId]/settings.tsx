@@ -5,7 +5,6 @@ import AppLayout, {
 } from "@/layouts/AppLayout";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { EmojiPicker } from "@/components/EmojiPicker";
 import { Input } from "@/components/ui/input";
@@ -16,12 +15,8 @@ import {
   useDeleteBlogMutation,
   useUpdateBlogMutation,
 } from "@/queries/blogs";
-import { AlertCircle, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
-import { getHostedBlogUrl } from "@/utils/get-hosted-blog-url";
 import { Textarea } from "@/components/ui/textarea";
-import { createId } from "@/lib/create-id";
-import { API } from "app/utils/api-client";
 import { useState } from "react";
 import {
   Dialog,
@@ -31,7 +26,6 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { Separator } from "@radix-ui/react-select";
 
 export default function BlogSettings() {
   type FormData = {
@@ -74,9 +68,6 @@ export default function BlogSettings() {
     }
   });
 
-  const hostedBlogUrl = getHostedBlogUrl(blog?.slug || "");
-
-  const queryClient = useQueryClient();
   const { mutateAsync: deleteBlogMutation } = useDeleteBlogMutation();
 
   async function deleteBlog() {

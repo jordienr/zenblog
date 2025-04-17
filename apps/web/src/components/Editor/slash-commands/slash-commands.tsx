@@ -180,7 +180,7 @@ const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
   },
   {
     title: "Media",
-    searchTerms: ["image", "img", "video", "media"],
+    searchTerms: ["image", "img", "video", "media", "youtube", "ytb"],
     icon: <ImageIcon className={iconClassNames} />,
     command: ({ editor, range }: CommandProps) => {
       editor.chain().focus().deleteRange(range).run();

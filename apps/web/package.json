@@ -13,7 +13,8 @@
     "db:typegen": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.693.0",
+    "@aws-sdk/client-s3": "3.782.0",
+    "@aws-sdk/s3-request-presigner": "3.782.0",
     "@axiomhq/js": "^1.2.0",
     "@builder.io/react-hydration-overlay": "^0.0.8",
     "@chronark/zod-bird": "^0.3.9",

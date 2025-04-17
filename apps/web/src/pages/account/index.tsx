@@ -104,7 +104,7 @@ export const SubscribeSection = () => {
         </Label>
       </div>
 
-      <div className="mx-auto mt-4 grid w-full max-w-lg grid-cols-1 items-center justify-center gap-4 md:grid-cols-2">
+      <div className="mx-auto mt-4 grid w-full max-w-lg grid-cols-1 items-center justify-center gap-4">
         {PRICING_PLANS.filter((plan) => plan.id !== "free").map((plan) => (
           <div key={plan.title}>
             <PricingCard

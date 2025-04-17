@@ -64,6 +64,8 @@ import { API } from "app/utils/api-client";
 import { useAuthors } from "@/queries/authors";
 import { Skeleton } from "../ui/skeleton";
 import { CreateAuthorDialog } from "@/pages/blogs/[blogId]/authors";
+import { useSubscriptionQuery } from "@/queries/subscription";
+import Head from "next/head";
 
 const formSchema = z.object({
   title: z.string(),
@@ -153,6 +155,10 @@ export const ZendoEditor = (props: Props) => {
 
   const blogQuery = useBlogQuery(blogId);
 
+  // Get subscription status
+  const subscription = useSubscriptionQuery();
+  const isProPlan = subscription.data?.plan === "pro";
+
   const title = watch("title");
   const slug = watch("slug");
 
@@ -181,29 +187,75 @@ export const ZendoEditor = (props: Props) => {
   async function uploadImage(file: File, blogId: string): Promise<string> {
     const isVideo = file.type.startsWith("video/");
 
-    const res = await API().v2.blogs[":blog_id"].images.$post({
-      form: {
-        image: file,
-      },
-      query: {
-        isVideo: isVideo ? "true" : "false",
-        imageName: file.name,
-        convertToWebp: isVideo ? "false" : "true",
-      },
+    // 1. Get Signed URL from backend
+    const signedUrlRes = await API().v2.blogs[":blog_id"].media[
+      "upload-url"
+    ].$get({
       param: {
         blog_id: blogId,
       },
+      query: {
+        original_file_name: file.name,
+        size_in_bytes: file.size.toString(),
+        content_type: file.type,
+      },
     });
 
-    if (res.status !== 200) {
-      throw new Error("Failed to upload image");
+    if (!signedUrlRes.ok) {
+      const errorData = await signedUrlRes.json();
+      throw new Error(
+        (errorData as { error: string }).error || "Failed to get upload URL"
+      );
     }
 
-    const json = await res.json();
-    if ("error" in json) {
-      throw new Error(json.error);
+    // Assert type after checking res.ok
+    const { signedUrl, uniqueFilename } = (await signedUrlRes.json()) as {
+      signedUrl: string;
+      uniqueFilename: string;
+    };
+
+    // 2. Upload file to R2 using the signed URL
+    const uploadResponse = await fetch(signedUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    if (!uploadResponse.ok) {
+      // Basic error handling, could parse XML like before if needed
+      console.error("R2 Upload Error Status:", uploadResponse.status);
+      console.error("R2 Upload Error Text:", await uploadResponse.text());
+      throw new Error("Failed to upload file to storage.");
     }
-    return json.url;
+
+    // 3. Confirm Upload with backend
+    const confirmRes = await API().v2.blogs[":blog_id"].media[
+      "confirm-upload"
+    ].$post({
+      param: {
+        blog_id: blogId,
+      },
+      json: {
+        fileName: uniqueFilename,
+        contentType: file.type,
+        sizeInBytes: file.size,
+      },
+    });
+
+    if (!confirmRes.ok) {
+      const confirmError = await confirmRes.json();
+      // Log error, maybe attempt cleanup of R2 object?
+      console.error("Confirm Upload Error:", confirmError);
+      throw new Error(
+        (confirmError as { error: string }).error || "Failed to confirm upload"
+      );
+    }
+
+    const confirmData = await confirmRes.json();
+    // Return the final public URL provided by the confirmation endpoint
+    return (confirmData as { url: string }).url;
   }
 
   const editor = useEditor(
@@ -212,7 +264,7 @@ export const ZendoEditor = (props: Props) => {
       editorProps: {
         editable: () => !props.readOnly || false,
         handlePaste: (view, event) =>
-          handleImagePaste(view, event, uploadImage, blogId),
+          handleImagePaste(view, event, uploadImage, blogId, isProPlan),
         handleDOMEvents: {
           keydown: (view, event) => {
             // if slash command is open, don't handle keydown events
@@ -420,6 +472,10 @@ export const ZendoEditor = (props: Props) => {
 
   return (
     <div className="relative min-h-screen pb-24">
+      <Head>
+        <title>{props.post?.title || title || "Zenblog - New post"}</title>
+        <link rel="icon" href="/static/favicon.ico" />
+      </Head>
       {editorLoading && (
         <div className="absolute inset-0 z-30 bg-zinc-50/50 backdrop-blur-sm">
           <div className="flex h-screen items-center justify-center">
@@ -564,7 +620,7 @@ export const ZendoEditor = (props: Props) => {
               open={showImagePicker}
               onOpenChange={setShowImagePicker}
               onSelect={(img) => {
-                onCoverImageSelect(img.url);
+                onCoverImageSelect(img.url || "");
                 setShowImagePicker(false);
               }}
               onCancel={() => {}}
@@ -842,7 +898,7 @@ function EditorPropValue({
     <div
       onClick={onClick}
       className={cn(
-        "relative col-span-4 flex cursor-pointer items-center rounded-lg border border-b transition-all focus-within:bg-zinc-100/60 hover:bg-zinc-100/60 hover:text-zinc-800 md:col-span-3 md:border-none",
+        "relative col-span-4 flex min-h-8 cursor-pointer items-center rounded-lg border border-b transition-all focus-within:bg-zinc-100/60 hover:bg-zinc-100/60 hover:text-zinc-800 md:col-span-3 md:border-none",
         className
       )}
     >

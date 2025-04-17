@@ -29,6 +29,7 @@ export default function MediaPage() {
   return (
     <AppLayout
       title="Media"
+      description="Media you have uploaded in blog posts"
       loading={media.isLoading}
       actions={
         <div className="flex gap-2">
@@ -48,7 +49,17 @@ export default function MediaPage() {
                 open={confirmDeleteDialogOpen}
                 onOpenChange={setConfirmDeleteDialogOpen}
                 title="Are you sure you want to delete these files?"
-                description="If there are still posts using this image, it will show a broken image icon. Make sure to update the post to use a different image first."
+                description={
+                  <div className="mt-4 space-y-1 rounded-lg border border-yellow-300 bg-yellow-50 p-2">
+                    <h2 className="font-bold text-yellow-700">Read this!</h2>
+                    <p className="text-yellow-700">
+                      If there are posts using this image, it will show a broken
+                      image icon.
+                      <br /> Make sure to update the posts to use a different
+                      image first.
+                    </p>
+                  </div>
+                }
                 onConfirm={async () => {
                   const paths = selectedImages.map((img) => ({
                     path: `${blogId}/${img.name}`,
@@ -57,7 +68,7 @@ export default function MediaPage() {
                   }));
                   const res = await deleteMedia.mutateAsync(paths);
 
-                  toast.success("Images deleted");
+                  toast.success("Media deleted");
                   setConfirmDeleteDialogOpen(false);
                   setSelectedImages([]);
                 }}
@@ -74,7 +85,7 @@ export default function MediaPage() {
               />
             </>
           )}
-          <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+          {/* <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
             <DialogTrigger asChild>
               <Button variant="outline">
                 <Upload size="16" />
@@ -91,7 +102,7 @@ export default function MediaPage() {
                 }}
               />
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
         </div>
       }
     >
@@ -101,7 +112,7 @@ export default function MediaPage() {
             <div className="p-12 py-32 text-center">
               <div className="text-2xl">📷</div>
               <div className="text-lg text-zinc-500">
-                No images uploaded yet
+                No images or videos uploaded yet
               </div>
             </div>
           </>
