@@ -170,6 +170,12 @@ export default function TermsOfService() {
           remaining unused portion of your subscription period.
         </li>
         <li>
+          <h3>Fair Use Policy</h3>
+          <br />
+          We reserve the right to terminate accounts that we determine to be
+          abusing the fair use policy.
+        </li>
+        <li>
           <h3>Contact Us</h3>
           <br />
           If you have any questions about these Terms, please contact us at

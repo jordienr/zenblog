@@ -177,6 +177,11 @@ export function PricingCard({
           </li>
         ))}
       </ul>
+      <div className="mt-5">
+        <span className="text-xs font-medium text-slate-500">
+          * Under fair use policy
+        </span>
+      </div>
       {!isCurrentPlan && (
         <div className="mt-5">
           {monthlyPrice !== 0 && (
