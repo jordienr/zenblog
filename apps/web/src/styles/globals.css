@@ -119,6 +119,9 @@ p div {
 .ProseMirror .node-image.ProseMirror-selectednode {
   @apply rounded-lg ring-1 ring-orange-300 ring-offset-2;
 }
+.ProseMirror hr.ProseMirror-selectednode {
+  @apply block border-slate-400 transition-all duration-100;
+}
 
 .ProseMirror li p {
   @apply m-0;

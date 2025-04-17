@@ -1,4 +1,5 @@
 import { BubbleMenu, Editor } from "@tiptap/react";
+import { NodeSelection } from "@tiptap/pm/state";
 import {
   BanIcon,
   ChevronDown,
@@ -221,15 +222,26 @@ export function EditorMenu({ editor }: { editor: Editor | null }) {
       {/** BUBBLE EDITOR */}
       {editor && (
         <BubbleMenu
-          className="flex items-center gap-1 rounded-xl bg-zinc-800 p-1 text-xs text-white shadow-md"
+          className="flex items-center gap-px rounded-xl bg-zinc-800 p-1 text-xs text-white shadow-md"
           tippyOptions={{
             duration: 100,
             appendTo: "parent",
+            onHide: () => setShowTextTypeMenu(false),
           }}
           editor={editor}
           shouldShow={({ editor }) => {
             if (editor.isActive("image")) return false;
             if (editor.isActive("link")) return false;
+            if (editor.isActive("video")) return false;
+            if (editor.isActive("iframe")) return false;
+
+            const { selection } = editor.state;
+            if (
+              selection instanceof NodeSelection &&
+              selection.node.type.name === "horizontalRule"
+            ) {
+              return false;
+            }
 
             // if the user has something selected, show
             if (editor.view.state.selection.content().size) return true;
