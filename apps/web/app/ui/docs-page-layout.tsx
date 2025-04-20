@@ -16,7 +16,7 @@ export function DocsPageLayout({
       <main className="max-w-full px-6">
         <header>
           <h1 className="text-4xl font-semibold">{title}</h1>
-          <p className="mt-2 text-balance">{description}</p>
+          <p className="mt-4 text-balance">{description}</p>
         </header>
         {children}
       </main>
