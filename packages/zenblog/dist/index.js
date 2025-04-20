@@ -39,7 +39,7 @@ function createFetcher(config, log) {
 }
 function createZenblogClient({ blogId, _url, _debug, }) {
     if (typeof window !== "undefined") {
-        (0, lib_1.throwError)("Zenblog is not supported in the browser. Make sure you don't leak your access token.");
+        console.warn("Looks like you're trying to use Zenblog in the browser. This is not advised. We recommend using server-side rendering frameworks to fetch data.");
     }
     const logger = (0, lib_1.createLogger)(_debug || false);
     const fetcher = createFetcher({
