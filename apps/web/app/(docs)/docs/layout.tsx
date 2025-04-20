@@ -18,9 +18,10 @@ export default function DocsLayout({
   children: React.ReactNode;
 }) {
   const Links = () => (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-px">
       <SidebarTitle>Docs</SidebarTitle>
       <SidebarLink href="/docs/getting-started">Getting Started</SidebarLink>
+      <SidebarLink href="/docs/typescript">TypeScript</SidebarLink>
       {/* <SidebarLink href="/docs/fetching-posts">Fetching posts</SidebarLink>
       <SidebarLink href="/docs/fetching-a-post">Fetching a post</SidebarLink>
       <SidebarLink href="/docs/rendering-a-post">Rendering a post</SidebarLink>
