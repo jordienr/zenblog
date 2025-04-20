@@ -46,12 +46,23 @@ export const posts: Endpoint = {
     title: "string",
     html_content: "string",
     slug: "string",
-    category_name?: "string",
-    category_slug?: "string",
-    tags?: "object",
+    category?: {
+      name: "string",
+      slug: "string",
+    },
+    tags?: [{
+      name: "string",
+      slug: "string",
+    }],
     excerpt?: "string",
     published_at: "string",
-    authors?: "object",
+    authors?: [{
+      slug: "string",
+      name: "string",
+      image_url?: "string",
+      website?: "string",
+      twitter?: "string",
+    }],
   }],
   total?: number,
   offset?: number,
@@ -138,6 +149,9 @@ export const authors: Endpoint = {
   method: "GET",
   title: "Authors list",
   description: "Get the authors for a blog",
+  typescriptExample: `
+  const { data: authors } = await zenblogClient.authors.list()
+  `,
   response: {
     200: {
       description: "The authors",

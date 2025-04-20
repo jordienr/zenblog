@@ -7,6 +7,7 @@ export type Endpoint = {
   headers?: Header[];
   query?: Query[];
   response: Response;
+  typescriptExample?: string;
 };
 
 export type Header = {
