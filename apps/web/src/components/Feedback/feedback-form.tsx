@@ -91,6 +91,8 @@ export function FeedbackForm({
             </div>
             <Textarea
               required
+              name="feedback"
+              id="feedback"
               className="resize-none"
               placeholder="Your feedback"
             ></Textarea>
