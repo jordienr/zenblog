@@ -1,6 +1,6 @@
 {
   "name": "zenblog",
-  "version": "0.7.6",
+  "version": "1.0.0",
   "description": "The typescript client for zenblog",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

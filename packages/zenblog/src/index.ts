@@ -63,8 +63,8 @@ export function createZenblogClient({
   _debug,
 }: CreateClientOpts) {
   if (typeof window !== "undefined") {
-    throwError(
-      "Zenblog is not supported in the browser. Make sure you don't leak your access token."
+    console.warn(
+      "Looks like you're trying to use Zenblog in the browser. This is not advised. We recommend using server-side rendering frameworks to fetch data."
     );
   }
 
