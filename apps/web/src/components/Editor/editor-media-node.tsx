@@ -131,7 +131,7 @@ export function EditorMediaNode({
                   }}
                 />
                 {videoDimensions && (
-                  <div className="flex items-center justify-end gap-2 text-xs text-zinc-500">
+                  <div className="flex items-center justify-end gap-2 px-3 pb-1 font-mono text-xs text-zinc-500">
                     <span>
                       {videoDimensions.width} × {videoDimensions.height}
                     </span>
