@@ -292,14 +292,14 @@ export const ImageUploader = ({
             {imageInfo && (
               <div className="w-full px-1">
                 <div className="mt-2 grid w-full gap-2 font-mono tracking-tight">
-                  <input
+                  {/* <input
                     type="text"
                     name="filename"
                     id="filename"
                     value={editableFileName}
                     onChange={(e) => setEditableFileName(e.target.value)}
                     className="w-full border-b bg-white px-1 text-slate-600 shadow-sm outline-none hover:border-slate-300 focus:border-slate-400"
-                  />
+                  /> */}
                   <span className="text-xs text-slate-500">
                     Original resolution:{" "}
                     {`${imageInfo.height}x${imageInfo.width}px`}

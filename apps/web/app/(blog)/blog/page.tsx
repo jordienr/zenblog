@@ -9,7 +9,6 @@ export const metadata = {};
 const Blog = async () => {
   const blog = getBlogClient();
   const { data: posts } = await blog.posts.list();
-  const { data: categories } = await blog.categories.list();
 
   const latestPost = posts[0];
   const postsWithoutLatest = posts.slice(1);
