@@ -69,6 +69,7 @@ test("Authors get by slug", async () => {
   expect(author).toBeDefined();
   expect(author.data).toBeDefined();
   expect(author.data.slug).toBe("pepe");
+  expect(author.data.name).toBe("Pepe");
 });
 
 test("Tags list", async () => {
