@@ -1,10 +1,11 @@
 import { ObjectRenderer } from "app/(docs)/ui/object-renderer";
-import { useParams } from "next/navigation";
 import {
   BASE_API_URL,
   endpoints,
 } from "app/api/public/[...route]/public-api.constants";
 import { Metadata } from "next";
+import { CodeExamples } from "./code-examples";
+import { CodeBlock } from "@/components/CodeBlock";
 
 type Props = {
   params: Promise<{ endpointId: string }>;
@@ -61,9 +62,11 @@ export default async function Endpoint(props: Props) {
             <ul className="mt-2 list-disc space-y-2 pl-4">
               {endpoint.headers?.map((header) => (
                 <li key={header.key}>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <p className="font-medium">{header.key}</p>
-                    <p>{header.required ? "Required" : "Optional"}</p>
+                    <p className="text-xs text-zinc-400">
+                      {header.required ? "Required" : "Optional"}
+                    </p>
                   </div>
                   <p>{header.description}</p>
                 </li>
@@ -77,9 +80,11 @@ export default async function Endpoint(props: Props) {
             <ul className="mt-2 list-disc space-y-2 pl-4">
               {endpoint.query?.map((query) => (
                 <li key={query.key}>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <p className="font-medium">{query.key}</p>
-                    <p>{query.required ? "Required" : "Optional"}</p>
+                    <p className="text-xs text-zinc-400">
+                      {query.required ? "Required" : "Optional"}
+                    </p>
                   </div>
                   <p>{query.description}</p>
                 </li>
@@ -97,13 +102,17 @@ export default async function Endpoint(props: Props) {
                   <p className="font-medium">{status}</p>
                   <p>{response.description}</p>
                 </div>
-                <pre className="mt-2 overflow-x-auto rounded-md bg-gray-100 p-4 text-xs">
-                  {response.example}
-                </pre>
+                <CodeBlock language="typescript">{response.example}</CodeBlock>
               </div>
             ))}
           </div>
         </div>
+
+        <hr className="my-4" />
+        <section>
+          <h3 className="text-md font-medium">Usage</h3>
+          <CodeExamples examples={endpoint.examples} />
+        </section>
       </div>
     </>
   );

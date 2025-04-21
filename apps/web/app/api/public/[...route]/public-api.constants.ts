@@ -8,6 +8,38 @@ export const posts: Endpoint = {
   method: "GET",
   title: "Post list",
   description: "Get posts for a blog",
+  examples: {
+    typescript: [
+      {
+        description: "Get posts for a blog",
+        code: `const { data: posts } = await zenblog.posts.list()`,
+      },
+      {
+        description: "Get posts for a blog filtered by a category",
+        code: `const { data: posts } = await zenblog.posts.list({
+  category: "news",
+})`,
+      },
+      {
+        description: "Get posts limit results to 10",
+        code: `const { data: posts } = await zenblog.posts.list({
+  limit: 10,
+})`,
+      },
+      {
+        description: "Get posts filtered by tag slugs",
+        code: `const { data: posts } = await zenblog.posts.list({
+  tags: ["tag1", "tag2"],
+})`,
+      },
+      {
+        description: "Get posts filtered by author slug",
+        code: `const { data: posts } = await zenblog.posts.list({
+  author: "author-slug",
+})`,
+      },
+    ],
+  },
   query: [
     {
       key: "offset",
@@ -22,8 +54,7 @@ export const posts: Endpoint = {
     {
       key: "category",
       required: false,
-      description:
-        "The category slug to filter posts by. Example: &category=news",
+      description: "The category slug to filter posts by. Ex: &category=news",
     },
     {
       key: "tags",
@@ -85,13 +116,35 @@ export const postBySlug: Endpoint = {
 title: "string",
 html_content: "string",
 slug: "string",
-category_name: "string",
-category_slug: "string",
-tags: "object",
-excerpt: "string",
-published_at: "string",
+category?: {
+      name: "string",
+      slug: "string",
+    },
+    tags?: [{
+      name: "string",
+      slug: "string",
+    }],
+    authors?: [{
+      slug: "string",
+      name: "string",
+      image_url?: "string",
+      website?: "string",
+      twitter?: "string",
+    }],
+    excerpt: "string",
+    published_at: "string",
 }`,
     },
+  },
+  examples: {
+    typescript: [
+      {
+        description: "Get a post by its slug",
+        code: `const { data: post } = await zenblog.posts.get({
+  slug: "post-slug",
+})`,
+      },
+    ],
   },
 };
 export const categories: Endpoint = {
@@ -117,6 +170,14 @@ export const categories: Endpoint = {
 }`,
     },
   },
+  examples: {
+    typescript: [
+      {
+        description: "Get the categories for a blog",
+        code: `const { data: categories } = await zenblog.categories.list()`,
+      },
+    ],
+  },
 };
 export const tags: Endpoint = {
   id: "tags",
@@ -141,6 +202,14 @@ export const tags: Endpoint = {
 }`,
     },
   },
+  examples: {
+    typescript: [
+      {
+        description: "Get the tags for a blog",
+        code: `const { data: tags } = await zenblog.tags.list()`,
+      },
+    ],
+  },
 };
 
 export const authors: Endpoint = {
@@ -149,9 +218,14 @@ export const authors: Endpoint = {
   method: "GET",
   title: "Authors list",
   description: "Get the authors for a blog",
-  typescriptExample: `
-  const { data: authors } = await zenblogClient.authors.list()
-  `,
+  examples: {
+    typescript: [
+      {
+        description: "Get the authors for a blog",
+        code: `const { data: authors } = await zenblog.authors.list()`,
+      },
+    ],
+  },
   response: {
     200: {
       description: "The authors",
@@ -195,6 +269,16 @@ export const authorBySlug: Endpoint = {
   }
 }`,
     },
+  },
+  examples: {
+    typescript: [
+      {
+        description: "Get an author by their slug",
+        code: `const { data: author } = await zenblog.authors.get({
+  slug: "author-slug",
+})`,
+      },
+    ],
   },
 };
 

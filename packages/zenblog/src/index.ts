@@ -152,6 +152,17 @@ export function createZenblogClient({
 
         return data as PaginatedApiResponse<Author[]>;
       },
+      get: async function (
+        { slug }: { slug: string },
+        opts?: ReqOpts
+      ): Promise<ApiResponse<Author>> {
+        const data = await fetcher(`authors/${slug}`, {
+          method: "GET",
+          cache: opts?.cache || "default",
+        });
+
+        return data as ApiResponse<Author>;
+      },
     },
   };
 }

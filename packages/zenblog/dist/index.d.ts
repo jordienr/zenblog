@@ -39,6 +39,13 @@ export declare function createZenblogClient({ blogId, _url, _debug, }: CreateCli
     };
     authors: {
         list: () => Promise<PaginatedApiResponse<Author[]>>;
+        get: ({ slug }: {
+            slug: string;
+        }, opts?: {
+            cache?: RequestInit["cache"];
+            limit?: number;
+            offset?: number;
+        }) => Promise<ApiResponse<Author>>;
     };
 };
 export {};

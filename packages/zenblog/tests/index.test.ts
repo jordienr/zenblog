@@ -36,10 +36,12 @@ test("Posts get by slug", async () => {
     blogId: DEMO_BLOG_ID,
   });
 
-  const post = await client.posts.get({ slug: "test" });
+  const post = await client.posts.get({
+    slug: "reginald-lord-of-the-highlands",
+  });
   expect(post).toBeDefined();
   expect(post.data).toBeDefined();
-  expect(post.data.slug).toBe("test");
+  expect(post.data.slug).toBe("reginald-lord-of-the-highlands");
   expect(post.data.html_content).toBeDefined();
 });
 
@@ -55,6 +57,18 @@ test("Authors list", async () => {
   expect(authors.total).toBeDefined();
   expect(authors.offset).toBeDefined();
   expect(authors.limit).toBeDefined();
+});
+
+test("Authors get by slug", async () => {
+  const client = createZenblogClient({
+    blogId: DEMO_BLOG_ID,
+  });
+
+  const author = await client.authors.get({ slug: "pepe" });
+
+  expect(author).toBeDefined();
+  expect(author.data).toBeDefined();
+  expect(author.data.slug).toBe("pepe");
 });
 
 test("Tags list", async () => {

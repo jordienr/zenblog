@@ -1,3 +1,12 @@
+export type CodeExample = {
+  description: string;
+  code: string;
+};
+
+export type EndpointCodeExamples = {
+  typescript: CodeExample[];
+};
+
 export type Endpoint = {
   id: string;
   path: string;
@@ -7,7 +16,7 @@ export type Endpoint = {
   headers?: Header[];
   query?: Query[];
   response: Response;
-  typescriptExample?: string;
+  examples: EndpointCodeExamples;
 };
 
 export type Header = {

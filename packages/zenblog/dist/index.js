@@ -92,6 +92,13 @@ function createZenblogClient({ blogId, _url, _debug, }) {
                 });
                 return data;
             },
+            get: async function ({ slug }, opts) {
+                const data = await fetcher(`authors/${slug}`, {
+                    method: "GET",
+                    cache: opts?.cache || "default",
+                });
+                return data;
+            },
         },
     };
 }
