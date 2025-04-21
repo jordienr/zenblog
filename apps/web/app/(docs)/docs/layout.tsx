@@ -22,6 +22,7 @@ export default function DocsLayout({
       <SidebarTitle>Docs</SidebarTitle>
       <SidebarLink href="/docs/getting-started">Getting Started</SidebarLink>
       <SidebarLink href="/docs/typescript">TypeScript</SidebarLink>
+      <SidebarLink href="/docs/ai-rules">AI Rules</SidebarLink>
       {/* <SidebarLink href="/docs/fetching-posts">Fetching posts</SidebarLink>
       <SidebarLink href="/docs/fetching-a-post">Fetching a post</SidebarLink>
       <SidebarLink href="/docs/rendering-a-post">Rendering a post</SidebarLink>

@@ -21,9 +21,11 @@ export function DocsPageLayout({
         {children}
       </main>
       <div className="hidden md:block">
-        <div className="sticky top-[84px] min-w-[240px] flex-col px-4 md:flex">
-          <TableOfContents items={tocItems} />
-        </div>
+        {tocItems.length > 0 ? (
+          <div className="sticky top-[84px] min-w-[240px] flex-col px-4 md:flex">
+            <TableOfContents items={tocItems} />
+          </div>
+        ) : null}
       </div>
     </div>
   );

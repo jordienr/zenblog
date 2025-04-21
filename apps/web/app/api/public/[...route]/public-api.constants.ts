@@ -211,7 +211,6 @@ export const tags: Endpoint = {
     ],
   },
 };
-
 export const authors: Endpoint = {
   id: "authors",
   path: "/blogs/:blogId/authors",
@@ -247,7 +246,6 @@ export const authors: Endpoint = {
     },
   },
 };
-
 export const authorBySlug: Endpoint = {
   id: "authorBySlug",
   path: "/blogs/:blogId/authors/:slug",
