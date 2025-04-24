@@ -245,21 +245,6 @@ const AccountPage = () => {
                       }
                     />
                   )}
-                {subscription.data?.subscription?.items?.data?.[0]?.plan
-                  ?.amount && (
-                  <AccountListItem
-                    label="Price"
-                    value={
-                      `$${(
-                        subscription.data?.subscription?.items?.data?.[0]?.plan
-                          ?.amount / 100
-                      ).toFixed(2)} per ${
-                        subscription.data?.subscription?.items?.data?.[0]?.plan
-                          ?.interval
-                      }` || "Free"
-                    }
-                  />
-                )}
                 {subscription.data?.subscription?.created && (
                   <AccountListItem
                     label="Started at"
