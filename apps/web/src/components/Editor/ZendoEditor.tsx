@@ -650,7 +650,7 @@ export const ZendoEditor = (props: Props) => {
               }
             }}
             className="mt-1 w-full overflow-hidden
-            rounded-xl bg-transparent text-4xl font-semibold text-zinc-900 outline-none"
+             bg-transparent text-4xl font-semibold text-zinc-900 outline-none"
           />
           <AnimatePresence>
             {showPropertyList && (
