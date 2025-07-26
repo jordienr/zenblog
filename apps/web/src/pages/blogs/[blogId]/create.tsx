@@ -18,7 +18,7 @@ export default function CreatePost() {
         loading={loading}
         onSave={async (content) => {
           setLoading(true);
-          const { tags, authors, ...post } = content;
+          const { tags, authors, metadata, ...post } = content;
           try {
             if (post.category_id === 0) {
               // remove category_id from post
@@ -28,7 +28,7 @@ export default function CreatePost() {
             // Create post and get the result
             const { data: newPost, error: postError } = await supa
               .from("posts")
-              .insert({ ...post, blog_id: blogId })
+              .insert({ ...post, blog_id: blogId, meta: metadata })
               .select("slug, id")
               .single();
 

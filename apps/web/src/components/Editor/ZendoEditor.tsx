@@ -66,6 +66,19 @@ import { Skeleton } from "../ui/skeleton";
 import { CreateAuthorDialog } from "@/pages/blogs/[blogId]/authors";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import Head from "next/head";
+import { PostMetadataEditor } from "../post-metadata-editor";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { IsDevMode } from "../is-dev-mode";
+import { IS_DEV } from "@/lib/constants";
 
 const formSchema = z.object({
   title: z.string(),
@@ -111,6 +124,8 @@ type Props = {
 
 export const ZendoEditor = (props: Props) => {
   const editorLoading = props.loading || false;
+  const queryClient = useQueryClient();
+  const supa = createSupabaseBrowserClient();
   const { register, handleSubmit, setValue, watch, getValues } =
     useForm<FormData>({
       defaultValues: {
@@ -138,7 +153,9 @@ export const ZendoEditor = (props: Props) => {
     props.authors?.map((a) => a.id) || []
   );
 
-  const [metadata, setMetadata] = React.useState(props.post?.metadata || []);
+  const [metadata, setMetadata] = React.useState<Record<string, string>>(
+    (props.post?.meta as any) || {}
+  );
   const today = new Date().toISOString();
   const [publishedAt, setPublishedAt] = React.useState<string | undefined>(
     props.post?.published_at || today
@@ -434,6 +451,10 @@ export const ZendoEditor = (props: Props) => {
     });
   });
 
+  // METADATA STATE
+  const [isMetadataDialogOpen, setMetadataDialogOpen] = useState(false);
+
+  //
   useEffect(() => {
     // on cmd + enter or cmd + s save the post
     const handleSave = (e: KeyboardEvent) => {
@@ -659,7 +680,7 @@ export const ZendoEditor = (props: Props) => {
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.2, ease: "easeInOut" }}
-                className="mt-6 grid grid-cols-4 gap-2 gap-y-2 overflow-hidden text-zinc-500"
+                className="mt-6 grid grid-cols-4 gap-y-2 overflow-hidden text-zinc-500"
               >
                 <EditorPropLabel
                   className="items-center"
@@ -807,6 +828,54 @@ export const ZendoEditor = (props: Props) => {
                     </div>
                   </div>
                 </EditorPropValue>
+                {IS_DEV && (
+                  <>
+                    <EditorPropLabel tooltip="Custom metadata for your post.">
+                      Metadata
+                    </EditorPropLabel>
+                    <EditorPropValue className="mx-0 flex flex-col gap-2 px-0">
+                      <Dialog
+                        open={isMetadataDialogOpen}
+                        onOpenChange={setMetadataDialogOpen}
+                      >
+                        <DialogTrigger className="flex h-full w-full items-center px-3 text-left text-xs font-semibold">
+                          {metadata && Object.keys(metadata).length > 0 ? (
+                            <div className="font-semibol flex h-full w-full flex-col py-1 text-left text-xs">
+                              {Object.keys(metadata).map((key) => (
+                                <div className="flex gap-2" key={key}>
+                                  <span className="w-1/4 truncate text-zinc-500">
+                                    {key}
+                                  </span>
+                                  <span className="truncate text-zinc-500">
+                                    {metadata[key]}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            "Edit"
+                          )}
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Custom Metadata</DialogTitle>
+                            <DialogDescription>
+                              Add any custom metadata you need to your post.
+                              This will be received in the post payload.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <PostMetadataEditor
+                            metadata={metadata}
+                            onSubmit={(newMetadata) => {
+                              setMetadata(newMetadata);
+                              setMetadataDialogOpen(false);
+                            }}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    </EditorPropValue>
+                  </>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

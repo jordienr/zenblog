@@ -417,6 +417,7 @@ export type Database = {
           excerpt: string
           html_content: string
           id: string
+          meta: Json | null
           metadata: Json[] | null
           published: boolean
           published_at: string | null
@@ -435,6 +436,7 @@ export type Database = {
           excerpt?: string
           html_content?: string
           id?: string
+          meta?: Json | null
           metadata?: Json[] | null
           published?: boolean
           published_at?: string | null
@@ -453,6 +455,7 @@ export type Database = {
           excerpt?: string
           html_content?: string
           id?: string
+          meta?: Json | null
           metadata?: Json[] | null
           published?: boolean
           published_at?: string | null

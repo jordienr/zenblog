@@ -8,10 +8,7 @@ export const IsDevMode = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <div className="rounded-md border-2 border-dashed border-yellow-300 p-2">
-      <span className="text-xs font-medium text-yellow-600">
-        Development Tip:
-      </span>
+    <div className="w-full rounded-md border-2 border-dashed border-yellow-300 p-2">
       {children}
     </div>
   );

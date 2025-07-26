@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { Inter, IBM_Plex_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { useRouter } from "next/router";
 import PlausibleProvider from "next-plausible";
@@ -20,13 +20,6 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-  variable: "--font-mono",
-});
-
 // Main Component
 function MyApp({ Component, pageProps }: AppProps) {
   const { pathname, isReady } = useRouter();
@@ -42,7 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 
   return (
-    <div className={`${ibmPlexMono.variable} ${inter.variable} font-sans`}>
+    <div className={`${inter.variable}`}>
       <UserProvider>
         <PlausibleProvider domain="zenblog.com">
           <QueryClientProvider client={queryClient}>

@@ -75,12 +75,12 @@ export default function Post() {
     <div className="">
       <ZendoEditor
         onSave={async (data) => {
-          const { tags, authors, ...newData } = data;
+          const { tags, authors, metadata, ...newData } = data;
           try {
             // TO DO: move this to an rfc
             const { error } = await sb
               .from("posts")
-              .update(newData)
+              .update({ ...newData, meta: metadata })
               .eq("slug", postSlug)
               .select();
 
