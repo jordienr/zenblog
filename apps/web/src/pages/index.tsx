@@ -5,8 +5,10 @@ import {
   FaCheckCircle,
   FaCode,
   FaCopy,
+  FaHandPeace,
   FaImage,
   FaNetworkWired,
+  FaPencilAlt,
   FaPencilRuler,
   FaPenFancy,
   FaRocket,
@@ -32,6 +34,8 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Marquee } from "@/components/magicui/marquee";
 import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
+import { HeroImages } from "@/components/Homepage/hero-images";
 
 const h1Font = Lora({
   subsets: ["latin"],
@@ -40,53 +44,40 @@ const h1Font = Lora({
 
 const FEATURES = [
   {
-    icon: <FaRocket />,
-    title: "Get started in minutes",
+    Icon: (props: any) => <FaRocket {...props} />,
+    title: "Speed & Simplicity",
     description:
-      "No need to configure models, create a blog, write a post, publish.",
-  },
-  // {
-  //   icon: <FaPencilAlt />,
-  //   title: "More than blogs",
-  //   description:
-  //     "Manage your website content easily. Blog, job postings, changelog, docs, help center, etc.",
-  // },
-  {
-    icon: <FaNetworkWired />,
-    title: "Easy to integrate",
-    description:
-      "Use our HTTP API to fetch your content and display it on your website however you want. Works with any stack.",
+      "No need to configure models, create a blog, write a post, publish. Get up and running in minutes.",
   },
   {
-    icon: <FaCode />,
-    title: "Type safety",
-    description:
-      "Use our typesafe API client to fetch your content. No more parsing issues.",
+    Icon: (props: any) => <FaCode {...props} />,
+    title: "Developer‑First",
+    description: "Type‑safe SDK, REST API, framework-friendly",
   },
   {
-    icon: <FaSmile />,
+    Icon: (props: any) => <FaImage {...props} />,
+    title: "Image & Video Hosting",
+    description:
+      "We host your media for you. No need to upload them to another service. Forget about S3 or CDNs.",
+  },
+  {
+    Icon: (props: any) => <FaPencilAlt {...props} />,
+    title: "Writer‑Friendly",
+    description:
+      "Inspired by tools like Notion, we made an editor that is both powerful and simple to use.",
+  },
+  {
+    Icon: (props: any) => <FaHandPeace {...props} />,
+    title: "Fully featured",
+    description:
+      "You can manage tags, categories, authors, multiple blogs, images and videos without configuring anything!",
+  },
+  {
+    Icon: (props: any) => <FaSmile {...props} />,
     title: "It's not Wordpress",
     description:
       "Forget about wordpress headaches. Just focus on writing great content.",
   },
-  {
-    icon: <FaImage />,
-    title: "Image hosting",
-    description:
-      "We host your images for you. No need to upload them to another service.",
-  },
-  {
-    icon: <FaPencilRuler />,
-    title: "Simple editor",
-    description:
-      "Inspired by tools like Notion, we made an editor that is both powerful and simple to use.",
-  },
-  // {
-  //   icon: <FaPalette />,
-  //   title: "Themes!",
-  //   description:
-  //     "We offer free themes for the most popular frameworks. Or you can build your own.",
-  // },
 ];
 
 const Home = () => {
@@ -140,34 +131,30 @@ const Home = () => {
       <div className={`${h1Font.variable}`}>
         <div className="flex flex-col">
           <Navigation />
-          <motion.main
-            className="mt-12 px-6 pb-24"
-            initial={{ opacity: 0, y: 10, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="mx-auto mt-20 max-w-5xl px-6 text-center md:mt-12">
+          <main className="mt-12 px-6 pb-24">
+            <div className="mx-auto mt-8 max-w-5xl px-6 text-center">
               <h1
-                className={`mt-4 text-balance text-4xl font-semibold tracking-tight text-slate-800 md:text-5xl`}
+                className={`mt-4 text-balance text-4xl font-semibold tracking-tight text-slate-800 md:text-6xl`}
               >
-                Notion-like editor with <br />a simple headless API
+                Launch your blog in minutes
               </h1>
 
               <div className="mt-4 text-slate-500">
-                <p className="text-balance text-lg">
-                  A simple blogging CMS for devs and marketers
+                <p className="mx-auto max-w-xl text-balance text-lg font-medium">
+                  A headless CMS with Notion-style editor, hosted image and
+                  video uploads, and a type-safe API.
                 </p>
                 <Link className="mt-6 inline-flex" href="/sign-up">
                   <Button
                     size="default"
-                    className="h-10 rounded-xl font-medium"
+                    className="h-12 rounded-xl text-lg font-medium"
                   >
-                    Start blogging for free
+                    Start blogging for free <ArrowRight className="ml-0.5" />
                   </Button>
                 </Link>
                 <div>
                   <code
-                    className="mt-4 inline-block cursor-copy rounded-lg px-3 py-1.5 text-sm text-zinc-600 transition-all hover:bg-zinc-100"
+                    className="mt-4 inline-block cursor-copy rounded-lg px-3 py-1.5 text-sm text-slate-600 transition-all hover:bg-slate-100"
                     onClick={() => {
                       navigator.clipboard.writeText("npm i zenblog");
                       toast.success("Copied to clipboard");
@@ -178,97 +165,30 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <div className="mx-auto mt-24 max-w-6xl rounded-xl shadow-xl">
-              <Image
-                className="aspect-square w-full rounded-lg border border-zinc-200 object-cover shadow-sm transition-all md:aspect-video"
-                src="/static/zenblog-ui.webp"
-                loading="lazy"
-                blurDataURL="/static/zenblog-ui.webp"
-                placeholder="blur"
-                width={1200}
-                height={600}
-                alt="The zenblog editor UI"
-              />
+
+            <div className="mx-auto mt-12 flex max-w-7xl items-center justify-center">
+              <HeroImages />
             </div>
 
-            <div className="relative mx-auto mt-12 max-w-5xl">
-              <Marquee pauseOnHover className="[--duration:30s]">
-                {tweets.map((tweet) => (
-                  <TweetItem key={tweet.username} {...tweet} />
-                ))}
-              </Marquee>
-              <div className="from-background pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r"></div>
-              <div className="from-background pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l"></div>
-            </div>
-
-            <div className="mx-auto mt-24 max-w-5xl rounded-xl bg-slate-950 p-2 font-mono text-white">
-              <div className="mb-3 p-2 px-4">
-                <FaCode className="text-2xl text-emerald-400" />
-                <h2 className="mt-2 text-xl font-medium">Developer friendly</h2>
-                <p className="mt-2 text-balance font-sans text-sm text-slate-300">
-                  Zenblog is very easy to integrate into any stack by using our
-                  HTTP API or our typesafe, typescript API client.
-                </p>
-                <Link
-                  className="mt-2 flex items-center gap-2 text-emerald-400 underline"
-                  href="/docs"
-                >
-                  Go to docs
-                </Link>
-              </div>
-              <CodeBlockComponent
-                filename="blog.tsx"
-                language="typescript"
-                highlightedLines={[]}
-              >
-                {`import { createZenblogClient } from "zenblog";
-
-const client = createZenblogClient({ blogId: "your-blog-id" });
-
-const posts = await client.posts.list();
-const post = await client.posts.get({ slug: "hello-world" });`}
-              </CodeBlockComponent>
-            </div>
-
-            <div className="mx-auto mt-24 max-w-5xl rounded-xl border bg-white/80 p-2 backdrop-blur-lg">
-              <div className="p-2 px-4">
-                <FaPenFancy className="text-2xl text-orange-400" />
-                <h2 className="mt-2 text-2xl font-medium">
-                  <span className="font-serif italic">Wonderful,</span> simple,
-                  writing experience
-                </h2>
-                <p className="mt-2 text-balance font-sans text-sm text-slate-500">
-                  Our editor is designed to be both powerful and simple to use.
-                  You can focus on writing without worrying about the rest.
-                </p>
-                <Link
-                  className="mt-2 flex items-center gap-2 text-orange-600 underline"
-                  href="/sign-up"
-                >
-                  Try it for free
-                </Link>
-              </div>
-              <div className="mt-4">
-                <Image
-                  className="w-full rounded-lg border shadow-sm"
-                  src="/static/editor-screenshot.webp"
-                  width={1200}
-                  height={400}
-                  alt="The zenblog editor UI"
-                />
-              </div>
+            <div className="mx-auto mt-12 flex max-w-6xl flex-wrap justify-center gap-6">
+              {tweets.map((tweet) => (
+                <TweetItem key={tweet.username} {...tweet} />
+              ))}
             </div>
 
             <div className="mx-auto mt-24 max-w-4xl">
-              <h2 className="text-2xl font-medium">Features</h2>
-              <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
+              <h2 className="text-center text-2xl font-medium">Why Zenblog?</h2>
+              <div className="mx-auto mt-8 divide-y rounded-xl border bg-slate-100/40">
                 {FEATURES.map((feature) => (
-                  <div key={feature.title} className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-slate-400">
-                      {feature.icon && feature.icon}
+                  <div
+                    key={feature.title}
+                    className="border-1 group flex flex-col gap-2 overflow-hidden p-6"
+                  >
+                    <div className="">
+                      <feature.Icon className="size-6 text-slate-400/70 transition-all group-hover:scale-105 group-hover:text-orange-500" />
                     </div>
-                    <h3 className="text-lg font-medium">{feature.title}</h3>
-                    <p className="max-w-xs text-sm text-zinc-500">
+                    <h3 className="text-xl font-medium">{feature.title}</h3>
+                    <p className="text-xl text-slate-500">
                       {feature.description}
                     </p>
                   </div>
@@ -297,7 +217,10 @@ const post = await client.posts.get({ slug: "hello-world" });`}
                   //   image: "/static/zenblog-astro-template.webp",
                   // },
                 ].map((fw) => (
-                  <article key={fw.id} className="grid md:grid-cols-2">
+                  <article
+                    key={fw.id}
+                    className="grid rounded-xl border border-slate-200 bg-slate-100/50 p-2 md:grid-cols-2"
+                  >
                     <div>
                       <Image
                         className="w-full rounded-lg border shadow-sm"
@@ -309,10 +232,10 @@ const post = await client.posts.get({ slug: "hello-world" });`}
                     </div>
                     <div className="p-4 text-left">
                       <h3 className="text-lg font-medium">{fw.name}</h3>
-                      <p className="text-balance text-sm text-zinc-500">
+                      <p className="text-balance text-lg text-slate-400">
                         {fw.desc}
                       </p>
-                      <div className="mt-4 flex flex-wrap gap-4 text-orange-600">
+                      <div className="mt-4 grid gap-4 text-orange-600">
                         <Link
                           href={fw.link}
                           target="_blank"
@@ -323,7 +246,7 @@ const post = await client.posts.get({ slug: "hello-world" });`}
                         <Link
                           href={fw.demo}
                           target="_blank"
-                          className="mt-4 flex items-center gap-2 underline"
+                          className="mt-1 flex items-center gap-2 underline"
                         >
                           Try the demo
                         </Link>
@@ -387,7 +310,7 @@ const post = await client.posts.get({ slug: "hello-world" });`}
                 </Accordion>
               </div>
             </section>
-          </motion.main>
+          </main>
         </div>
         <Footer />
       </div>
@@ -428,7 +351,7 @@ function PricingItem({
   return (
     <div className="flex w-full max-w-lg flex-1 flex-col rounded-lg border px-4 py-3 pb-8 text-left shadow-sm">
       <h2 className="text-lg font-medium">{title}</h2>
-      <p className="text-sm text-zinc-500">{description}</p>
+      <p className="text-sm text-slate-500">{description}</p>
       <ul className="mt-6 space-y-3 text-left">
         {formattedFeatures.map((feature, idx) => (
           <li
@@ -445,9 +368,9 @@ function PricingItem({
           <div>
             <p className="mt-8 font-mono text-2xl font-medium">
               ${price}
-              <span className="text-sm text-zinc-500">/month</span>
+              <span className="text-sm text-slate-500">/month</span>
             </p>
-            <p className="text-xs font-medium text-zinc-500">
+            <p className="text-xs font-medium text-slate-500">
               ${String(+price * 12)} Billed annually
             </p>
           </div>
@@ -517,10 +440,7 @@ const TweetItem = ({
   return (
     <div
       className={cn(
-        "relative flex w-96 flex-col gap-2 rounded-xl p-4  hover:bg-slate-100/70",
-        {
-          "min-h-32": !isThread,
-        }
+        "relative flex w-80 flex-col gap-2 rounded-xl border  bg-slate-100/50 p-4"
       )}
     >
       <div className="flex items-center gap-2">
@@ -536,7 +456,7 @@ const TweetItem = ({
         />
         <div className={cn("flex flex-col")}>
           <p className="text-sm font-medium">{name}</p>
-          <p className="text-xs font-medium text-zinc-500">{username}</p>
+          <p className="text-xs font-medium text-slate-500">{username}</p>
         </div>
       </div>
       <div className="flex flex-col">

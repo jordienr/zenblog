@@ -18,7 +18,7 @@ module.exports = {
     border: {
       "1": "1px",
       "2": "2px",
-      DEFAULT: "0.3px solid var(--border-color)",
+      DEFAULT: "1px solid var(--border-color)",
     },
     container: {
       center: true,
