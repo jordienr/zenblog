@@ -176,7 +176,7 @@ const Home = () => {
               ))}
             </div>
 
-            <div className="mx-auto mt-24 max-w-4xl">
+            <div className="mx-auto mt-24 max-w-4xl pt-24">
               <h2 className="text-center text-2xl font-medium">Why Zenblog?</h2>
               <div className="mx-auto mt-8 divide-y rounded-xl border bg-slate-100/40">
                 {FEATURES.map((feature) => (
@@ -261,14 +261,14 @@ const Home = () => {
               <h2 className="text-2xl font-medium">
                 Frequently asked questions
               </h2>
-              <div className="mx-auto mt-12 max-w-xl text-left">
+              <div className="mx-auto mt-12 max-w-2xl text-left">
                 <Accordion
                   type="multiple"
-                  className="divide-y rounded-xl border *:px-4"
+                  className="divide-y rounded-xl border bg-slate-100/50 *:px-4 [&_div]:text-lg"
                 >
                   <AccordionItem value="zenblog">
                     <AccordionTrigger>What is zenblog?</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionContent className="text-lg">
                       Zenblog is a simple, headless blogging CMS. You can use it
                       to manage your own blog, build blogs for your clients, use
                       it to manage content in a website like a blog, job
@@ -317,74 +317,6 @@ const Home = () => {
     </>
   );
 };
-
-function PricingItem({
-  title,
-  description,
-  features,
-  action,
-  price,
-  onClick,
-}: {
-  title: string;
-  description: string;
-  features: string[];
-  price: string;
-  action: string;
-  onClick?: () => void;
-}) {
-  const formattedFeatures = features.map((feat) => {
-    if (feat.includes("<soon>")) {
-      const [feature, soon] = feat.split("<soon>");
-      return (
-        <span key={feature}>
-          {feature}{" "}
-          <span className="rounded-full bg-orange-50 px-1 py-0.5 text-xs text-orange-500">
-            Coming soon
-          </span>
-        </span>
-      );
-    }
-    return <span key={feat}>{feat}</span>;
-  });
-
-  return (
-    <div className="flex w-full max-w-lg flex-1 flex-col rounded-lg border px-4 py-3 pb-8 text-left shadow-sm">
-      <h2 className="text-lg font-medium">{title}</h2>
-      <p className="text-sm text-slate-500">{description}</p>
-      <ul className="mt-6 space-y-3 text-left">
-        {formattedFeatures.map((feature, idx) => (
-          <li
-            className="flex items-center gap-2 font-mono text-sm"
-            key={idx + "-feat"}
-          >
-            <FaCheckCircle size="16" className="text-green-500" />
-            {feature}
-          </li>
-        ))}
-      </ul>
-      <div className="mt-auto justify-self-end">
-        {+price > 0 && (
-          <div>
-            <p className="mt-8 font-mono text-2xl font-medium">
-              ${price}
-              <span className="text-sm text-slate-500">/month</span>
-            </p>
-            <p className="text-xs font-medium text-slate-500">
-              ${String(+price * 12)} Billed annually
-            </p>
-          </div>
-        )}
-
-        {/* <div className="flex justify-center pt-4">
-          <Button onClick={onClick} className="w-full">
-            {action}
-          </Button>
-        </div> */}
-      </div>
-    </div>
-  );
-}
 
 const tweets = [
   {
@@ -450,18 +382,18 @@ const TweetItem = ({
         <Image
           src={image}
           alt={name}
-          width={40}
-          height={40}
+          width={60}
+          height={60}
           className="z-10 rounded-full border border-slate-100"
         />
         <div className={cn("flex flex-col")}>
-          <p className="text-sm font-medium">{name}</p>
-          <p className="text-xs font-medium text-slate-500">{username}</p>
+          <p className="text-lg font-medium">{name}</p>
+          <p className="text-lg font-medium text-slate-500">{username}</p>
         </div>
       </div>
       <div className="flex flex-col">
         <p
-          className={cn("text-sm", {
+          className={cn("text-lg", {
             "ml-12": isThread,
           })}
         >
