@@ -6,6 +6,7 @@ import { HttpApiExample } from "./http-api-example";
 import { LaptopMinimal, PencilLine } from "lucide-react";
 import { TbBrandTypescript } from "react-icons/tb";
 import { TbHttpGet } from "react-icons/tb";
+import { cn } from "@/lib/utils";
 
 export const HeroImages = () => {
   const FEATURES = [
@@ -56,15 +57,17 @@ export const HeroImages = () => {
 
   return (
     <Tabs value={currentFeature?.id} className="w-full">
-      <TabsList className="mb-4 w-full space-x-4">
+      <TabsList className="flex h-16 w-full justify-start space-x-2 overflow-x-auto md:justify-center md:space-x-4">
         {FEATURES.map((f, index) => (
           <TabsTrigger
             key={`${f.id}-trigger`}
             value={f.id}
             onClick={() => setCurrentIndex(index)}
-            className="relative flex cursor-pointer items-center overflow-hidden rounded-full border px-4 py-2 text-lg font-semibold opacity-70 data-[state=active]:border data-[state=active]:border-b data-[state=active]:border-slate-800 data-[state=active]:bg-slate-900 data-[state=active]:text-slate-100 data-[state=active]:opacity-100"
+            className={cn(
+              "relative flex min-w-fit cursor-pointer items-center overflow-hidden rounded-full border px-4 py-2 font-semibold opacity-70 data-[state=active]:border-b data-[state=active]:border-slate-300 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-800 data-[state=active]:opacity-100 md:text-lg"
+            )}
           >
-            {f.icon}
+            <span className="opacity-70">{f.icon}</span>
             {f.title}
           </TabsTrigger>
         ))}
