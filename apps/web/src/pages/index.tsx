@@ -7,6 +7,7 @@ import {
   FaCopy,
   FaHandPeace,
   FaImage,
+  FaLock,
   FaNetworkWired,
   FaPencilAlt,
   FaPencilRuler,
@@ -51,8 +52,8 @@ const FEATURES = [
   },
   {
     Icon: (props: any) => <FaCode {...props} />,
-    title: "Developer‑First",
-    description: "Type‑safe SDK, REST API, framework-friendly",
+    title: "Developer first",
+    description: "Type‑safe SDK, REST API, framework-friendly.",
   },
   {
     Icon: (props: any) => <FaImage {...props} />,
@@ -62,7 +63,7 @@ const FEATURES = [
   },
   {
     Icon: (props: any) => <FaPencilAlt {...props} />,
-    title: "Writer‑Friendly",
+    title: "Writer friendly",
     description:
       "Inspired by tools like Notion, we made an editor that is both powerful and simple to use.",
   },
@@ -73,10 +74,10 @@ const FEATURES = [
       "You can manage tags, categories, authors, multiple blogs, images and videos without configuring anything!",
   },
   {
-    Icon: (props: any) => <FaSmile {...props} />,
-    title: "It's not Wordpress",
+    Icon: (props: any) => <FaLock {...props} />,
+    title: "Privacy friendly",
     description:
-      "Forget about wordpress headaches. Just focus on writing great content.",
+      "You decide the limit. You have full control over your data. We just give you your content.",
   },
 ];
 
@@ -134,9 +135,10 @@ const Home = () => {
           <main className="mt-12 px-6 pb-24">
             <div className="mx-auto mt-8 max-w-5xl px-6 text-center">
               <h1
-                className={`mt-4 text-balance text-4xl font-semibold tracking-tight text-slate-800 md:text-6xl`}
+                className={`mt-4 text-balance text-4xl font-semibold tracking-tight text-slate-800`}
               >
-                Launch your blog in minutes
+                <span className="text-slate-400">Think, write, publish.</span>
+                <br />A simple blogging CMS.
               </h1>
 
               <div className="mt-4 text-slate-500">
@@ -147,7 +149,7 @@ const Home = () => {
                 <Link className="mt-6 inline-flex" href="/sign-up">
                   <Button
                     size="default"
-                    className="h-12 rounded-xl text-lg font-medium"
+                    className="rounded-full bg-gradient-to-b from-slate-800 to-slate-900 font-medium"
                   >
                     Start blogging for free <ArrowRight className="ml-0.5" />
                   </Button>
@@ -170,15 +172,30 @@ const Home = () => {
               <HeroImages />
             </div>
 
-            <div className="mx-auto mt-12 flex max-w-6xl flex-wrap justify-center gap-6">
+            <div className="mx-auto mt-24 max-w-2xl justify-center gap-6 p-6 text-center">
+              <h2 className="text-2xl font-medium">
+                <span className="rounded-lg bg-gray-100 px-1 font-mono font-semibold tracking-tight text-orange-500">
+                  Developers
+                </span>{" "}
+                love it
+              </h2>
+              <p className="mb-6 text-slate-500">
+                What people say about zenblog.
+              </p>
+
               {tweets.map((tweet) => (
                 <TweetItem key={tweet.username} {...tweet} />
               ))}
             </div>
 
             <div className="mx-auto mt-24 max-w-4xl pt-24">
-              <h2 className="text-center text-2xl font-medium">Why Zenblog?</h2>
-              <div className="mx-auto mt-8 divide-y rounded-xl border bg-slate-100/40">
+              <h2 className="text-center text-2xl font-medium">
+                Why should you use Zenblog?
+              </h2>
+              <p className="mx-auto mt-2 max-w-xl text-center text-slate-500">
+                Every feature developers love.
+              </p>
+              <div className="mx-auto mt-8 grid grid-cols-1 rounded-xl border bg-slate-50 md:grid-cols-2">
                 {FEATURES.map((feature) => (
                   <div
                     key={feature.title}
@@ -187,8 +204,8 @@ const Home = () => {
                     <div className="">
                       <feature.Icon className="size-6 text-slate-400/70 transition-all group-hover:scale-105 group-hover:text-orange-500" />
                     </div>
-                    <h3 className="text-xl font-medium">{feature.title}</h3>
-                    <p className="text-xl text-slate-500">
+                    <h3 className="mt-1 font-semibold">{feature.title}</h3>
+                    <p className="max-w-sm text-balance text-slate-600">
                       {feature.description}
                     </p>
                   </div>
@@ -321,30 +338,29 @@ const Home = () => {
 const tweets = [
   {
     content:
-      "By the way, the CMS is @zenbloghq. A brilliant CMS that simply works. Integrating it with the website didn't take 5 minutes.",
-    name: "Narix Hine",
-    username: "leximory",
-    image: "/static/tweets/leximory.jpg",
-  },
-  {
-    content:
-      "Just tried @zenbloghq last night and i started a blog and connected to my website with some help from cursor.The site is coming together, time for a real domain I think https://jesselawrence.replit.app/blog",
-    name: "Jesse",
-    username: "lawrencejessej",
-    image: "/static/tweets/lawrencejessej.jpg",
-  },
-  {
-    content:
       "I started using @zenbloghq yesterday. I literally got it running on my Astro site in 10 minutes. Really great product",
     name: "Alvaro",
     username: "metasurfero",
     image: "/static/tweets/metasurfero.jpg",
   },
   {
-    content: "i use zenblog to manage the blog in zenblog",
-    name: "jordi",
-    username: "jordienr",
-    image: "/static/tweets/jordienr.jpg",
+    content: "I'm using @zenbloghq and you probably should too",
+    name: "Duncan Lutz",
+    username: "duncanthedev",
+    image: "/static/tweets/duncanthedev.jpg",
+  },
+  {
+    content:
+      "By the way, the CMS is @zenbloghq. A brilliant CMS that simply works. Integrating it with the website didn't take 5 minutes.",
+    name: "Narix Hine",
+    username: "leximory",
+    image: "/static/tweets/leximory.jpg",
+  },
+  {
+    content: "@zenbloghq is the best",
+    name: "dmytro",
+    username: "pqoqubbw",
+    image: "/static/tweets/pqoqubbw.jpg",
   },
   {
     content: "zenblog gud",
@@ -359,46 +375,33 @@ const TweetItem = ({
   name,
   username,
   image,
-  isThread = false,
-  isLast = false,
 }: {
   content: string;
   name: string;
   username: string;
   image: string;
-  isThread?: boolean;
-  isLast?: boolean;
 }) => {
   return (
     <div
       className={cn(
-        "relative flex w-80 flex-col gap-2 rounded-xl border  bg-slate-100/50 p-4"
+        "relative mb-4 flex gap-4 rounded-lg border bg-slate-50 p-4 text-left"
       )}
     >
-      <div className="flex items-center gap-2">
-        {isThread && !isLast ? (
-          <div className="absolute left-[36px] top-[70px] h-full w-px bg-slate-200"></div>
-        ) : null}
+      <div className="flex-shrink-0">
         <Image
           src={image}
           alt={name}
-          width={60}
-          height={60}
-          className="z-10 rounded-full border border-slate-100"
+          width={48}
+          height={48}
+          className="rounded-full"
         />
-        <div className={cn("flex flex-col")}>
-          <p className="text-lg font-medium">{name}</p>
-          <p className="text-lg font-medium text-slate-500">{username}</p>
-        </div>
       </div>
-      <div className="flex flex-col">
-        <p
-          className={cn("text-lg", {
-            "ml-12": isThread,
-          })}
-        >
-          {content}
-        </p>
+      <div className={cn("")}>
+        <div className="flex items-center gap-2">
+          <p className="font-semibold">{name}</p>
+          <p className=" text-slate-500">@{username}</p>
+        </div>
+        <p className={cn("text-balance text-slate-800")}>{content}</p>
       </div>
     </div>
   );

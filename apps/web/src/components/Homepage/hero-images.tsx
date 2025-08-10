@@ -64,7 +64,7 @@ export const HeroImages = () => {
             value={f.id}
             onClick={() => setCurrentIndex(index)}
             className={cn(
-              "relative flex min-w-fit cursor-pointer items-center overflow-hidden rounded-full border px-4 py-2 font-semibold opacity-70 data-[state=active]:border-b data-[state=active]:border-slate-300 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-800 data-[state=active]:opacity-100 md:text-lg"
+              "relative flex min-w-fit cursor-pointer items-center overflow-hidden rounded-full border px-4 py-2 font-semibold opacity-70 data-[state=active]:border-b data-[state=active]:border-slate-300 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-800 data-[state=active]:opacity-100"
             )}
           >
             <span className="opacity-70">{f.icon}</span>
@@ -73,7 +73,11 @@ export const HeroImages = () => {
         ))}
       </TabsList>
       {FEATURES.map((f) => (
-        <TabsContent key={`${f.id}-content`} value={f.id}>
+        <TabsContent
+          key={`${f.id}-content`}
+          value={f.id}
+          className="mx-auto max-w-6xl rounded-2xl border border-orange-400 bg-gradient-to-b from-orange-300 to-orange-500 px-20 pb-4 pt-20"
+        >
           {f.content}
         </TabsContent>
       ))}
