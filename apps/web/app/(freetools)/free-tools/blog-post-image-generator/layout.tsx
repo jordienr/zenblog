@@ -1,5 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Zenblog - Create Free Beautiful Blog Post Images",
@@ -12,5 +13,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div>{children}</div>;
+  return <Suspense>{children}</Suspense>;
 }
