@@ -38,6 +38,10 @@ const Footer = (props: Props) => {
       label: "Docs",
       href: "/docs",
     },
+    {
+      label: "Blog Post Image Generator",
+      href: "/free-tools/blog-post-image-generator",
+    },
   ];
 
   return (
