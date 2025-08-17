@@ -1,6 +1,7 @@
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import PlausibleProvider from "next-plausible";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata = {
   title: "Zenblog blog",
@@ -43,7 +44,7 @@ export default function RootLayout({
         />{" "}
       </head>
       <body className={`${ibmPlexMono.variable} ${inter.variable}`}>
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
       </body>
     </html>
   );

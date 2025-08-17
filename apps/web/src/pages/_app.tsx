@@ -11,7 +11,6 @@ import {
 import { Toaster } from "sonner";
 import { useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
-import { trpc } from "@/trpc/utils";
 
 // Fonts
 const inter = Inter({
@@ -61,4 +60,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default trpc.withTRPC(MyApp);
+export default MyApp;
