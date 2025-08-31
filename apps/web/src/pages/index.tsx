@@ -2,22 +2,16 @@
 import Head from "next/head";
 import Link from "next/link";
 import {
-  FaCheckCircle,
   FaCode,
-  FaCopy,
   FaHandPeace,
   FaImage,
   FaLock,
-  FaNetworkWired,
   FaPencilAlt,
-  FaPencilRuler,
-  FaPenFancy,
   FaRocket,
-  FaSmile,
 } from "react-icons/fa";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
@@ -29,14 +23,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Navigation from "@/components/marketing/Navigation";
-import { CodeBlockComponent } from "@/components/code-block";
 import { Lora } from "next/font/google";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Marquee } from "@/components/magicui/marquee";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { HeroImages } from "@/components/Homepage/hero-images";
+import { useRouter } from "next/router";
 
 const h1Font = Lora({
   subsets: ["latin"],
@@ -82,28 +74,13 @@ const FEATURES = [
 ];
 
 const Home = () => {
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-
-  const formSchema = z.object({
-    name: z.string(),
-    email: z.string().email(),
-  });
-
-  type FormData = z.infer<typeof formSchema>;
-
-  const { register, handleSubmit, formState } = useForm<FormData>({});
-
-  const onSubmit = handleSubmit(async (data) => {
-    const formData = formSchema.parse(data);
-
-    const sb = createSupabaseBrowserClient();
-
-    await sb.from("homepage_signup").insert(formData);
-
-    setHasSubmitted(true);
-
-    return;
-  });
+  const router = useRouter();
+  useEffect(() => {
+    // if we have code in the url redirect to /blogs
+    if (router.query.code) {
+      router.push("/blogs");
+    }
+  }, [router]);
 
   return (
     <>
