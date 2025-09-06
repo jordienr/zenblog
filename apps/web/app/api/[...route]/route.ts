@@ -28,7 +28,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { resend, RESEND_NOREPLY_EMAIL } from "lib/resend";
-import { provideAuthDependencies } from "./middlewares/provide-auth-dependencies";
+import { createBlogsRoutes } from "./blogs";
 
 const UnauthorizedError = (c: Context) => {
   return c.json({ message: "Unauthorized" }, { status: 401 });
@@ -63,40 +63,14 @@ const handleError = (c: Context, error: keyof typeof errors, rawLog: any) => {
   return errors[error](c);
 };
 
-/**
- * Returns user from cookies
- */
 const getUser = async () => {
   const supabase = createClient();
   const res = await supabase.auth.getUser();
-
-  console.log("🔴 res", res);
 
   return {
     user: res.data.user,
     error: res.error,
   };
-};
-
-const getUserRole = async (blogId: string) => {
-  const supabase = createAdminClient();
-  const user = await getUser();
-  if (user.error || !user.user) {
-    return null;
-  }
-
-  const { data, error } = await supabase
-    .from("blog_members")
-    .select("role")
-    .eq("user_id", user.user.id)
-    .eq("blog_id", blogId)
-    .single();
-
-  if (error) {
-    return null;
-  }
-
-  return data.role;
 };
 
 const getBlogOwnership = async (blogId: string, userId: string) => {
@@ -858,90 +832,6 @@ const api = new Hono()
       return c.json({ message: "Author updated" }, { status: 200 });
     }
   )
-  .get(
-    "/blogs/:blog_id",
-    zValidator("param", z.object({ blog_id: z.string() })),
-    async (c) => {
-      const { blog_id } = c.req.valid("param");
-
-      const { user } = await getUser();
-      if (!user || !user.id) {
-        return c.json({ data: null, error: "Unauthorized" }, { status: 401 });
-      }
-      const userRole = await getUserRole(blog_id);
-      if (!userRole) {
-        return c.json({ data: null, error: "Unauthorized" }, { status: 401 });
-      }
-
-      const db = createAdminClient();
-      const { data, error } = await db
-        .from("blogs")
-        .select("*")
-        .eq("id", blog_id)
-        .single();
-
-      if (error) {
-        return c.json(
-          { data: null, error: "Error fetching blog" },
-          { status: 500 }
-        );
-      }
-
-      return c.json({ data, error: null }, { status: 200 });
-    }
-  )
-  .get(
-    "/blogs/:blog_id/posts",
-    zValidator("param", z.object({ blog_id: z.string() })),
-    zValidator(
-      "query",
-      z.object({
-        page: z.coerce.number().int().positive().optional().default(1),
-        page_size: z.coerce.number().int().positive().optional().default(10),
-        sort_by: z.enum(["created", "published"]).optional().default("created"),
-      })
-    ),
-    provideAuthDependencies,
-    async (c) => {
-      const { blog_id } = c.req.valid("param");
-      const { page, page_size, sort_by } = c.req.valid("query");
-
-      const db = createAdminClient();
-      const { user } = await getUser();
-
-      if (!user || !user.id) {
-        return c.json({ data: null, error: "Unauthorized" }, { status: 401 });
-      }
-
-      const userRole = await getUserRole(blog_id);
-      if (!userRole) {
-        return c.json({ data: null, error: "Unauthorized" }, { status: 401 });
-      }
-
-      const from = (page - 1) * page_size;
-      const to = from + page_size - 1;
-
-      const { data, error } = await db
-        .from("posts_v10")
-        .select("*")
-        .eq("blog_id", blog_id)
-        .eq("deleted", false)
-        .range(from, to)
-        .order(sort_by === "created" ? "created_at" : "published_at", {
-          ascending: false,
-        });
-
-      if (error) {
-        console.error("Error fetching posts", error);
-        return c.json(
-          { data: null, error: "Error fetching posts" },
-          { status: 500 }
-        );
-      }
-
-      return c.json({ data, error: null }, { status: 200 });
-    }
-  )
   .post(
     "/blogs/:blog_id/media/confirm-upload",
     zValidator(
@@ -1465,261 +1355,9 @@ const api = new Hono()
         );
       }
     }
-  )
-  .get("/blogs", provideAuthDependencies, async (c) => {
-    try {
-      const { user, db } = c.var;
-
-      if (!user || !user.id) {
-        return c.json({ error: "Unauthorized" }, { status: 401 });
-      }
-
-      // Get blogs the user owns
-      const { data: ownedBlogs, error: ownedError } = await db
-        .from("blogs")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true });
-
-      if (ownedError) {
-        console.error("Error fetching owned blogs:", ownedError);
-        return c.json(
-          { error: "Failed to fetch owned blogs" },
-          { status: 500 }
-        );
-      }
-
-      // Get blogs the user is a member of
-      const { data: memberBlogs, error: memberError } = await db
-        .from("blog_members")
-        .select(
-          `
-            blogs!inner (
-              id,
-              title,
-              emoji,
-              description,
-              created_at,
-              slug,
-              theme,
-              twitter,
-              instagram,
-              website,
-              user_id
-            )
-          `
-        )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true });
-
-      if (memberError) {
-        console.error("Error fetching member blogs:", memberError);
-        return c.json(
-          { error: "Failed to fetch member blogs" },
-          { status: 500 }
-        );
-      }
-
-      // Extract blog data from the joined result
-      const memberBlogsData = memberBlogs?.map((item) => item.blogs) || [];
-
-      // Combine owned and member blogs, removing duplicates
-      const allBlogs = [...(ownedBlogs || []), ...memberBlogsData];
-
-      // Remove duplicates based on blog ID
-      const uniqueBlogs = allBlogs.filter(
-        (blog, index, self) => index === self.findIndex((b) => b.id === blog.id)
-      );
-
-      // add is_owner flag to each blog
-      const blogsWithOwner = uniqueBlogs.map((blog) => ({
-        ...blog,
-        is_owner: blog.user_id === user.id,
-      }));
-
-      return c.json(
-        {
-          blogs: blogsWithOwner,
-        },
-        { status: 200 }
-      );
-    } catch (error) {
-      console.error("Fetch blogs error:", error);
-      return c.json({ error: "Error fetching blogs" }, { status: 500 });
-    }
-  })
-  .post(
-    "/blogs/:blog_id/posts",
-    zValidator(
-      "query",
-      z.object({
-        isVideo: z.string().optional(),
-        convertToWebp: z.string().optional(),
-        imageName: z.string().optional(),
-      })
-    ),
-    zValidator(
-      "form",
-      z.object({
-        image: z.instanceof(File),
-      })
-    ),
-    async (c) => {
-      try {
-        const blogId = c.req.param("blog_id");
-
-        // Check if the user owns the blog
-        const { user } = await getUser();
-        if (!user || !user.id) {
-          console.log("🔴 !user || !user.id", user);
-          return c.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const isOwner = await getBlogOwnership(blogId, user.id);
-
-        if (!isOwner) {
-          console.log("🔴 !isOwner", user.id, blogId);
-          return c.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const convertToWebp = c.req.query("convertToWebp") === "true";
-        const isVideo = c.req.query("isVideo") === "true";
-        const providedName = c.req.query("imageName");
-
-        // Get the file from the request
-        const formData = await c.req.formData();
-        const file = formData.get("image") as File;
-
-        if (!file) {
-          return c.json({ error: "No file provided" }, { status: 400 });
-        }
-
-        // Convert file to buffer
-        const buffer = Buffer.from(await file.arrayBuffer());
-        let processedBuffer: Buffer;
-        let contentType: string;
-        let fileExtension: string;
-
-        if (isVideo) {
-          // For videos, we don't process with Sharp
-          processedBuffer = buffer;
-          contentType = file.type;
-          fileExtension = file.name.split(".").pop() || "mp4";
-        } else {
-          // Process image with Sharp
-          let imageProcessor = sharp(buffer)
-            .resize(2560, 2560, {
-              // Max dimensions
-              fit: "inside",
-              withoutEnlargement: true, // Don't upscale
-            })
-            .jpeg({ quality: 80 }); // Compress
-
-          if (convertToWebp) {
-            imageProcessor = imageProcessor.webp({ quality: 80 });
-          }
-
-          processedBuffer = await imageProcessor.toBuffer();
-          contentType = convertToWebp ? "image/webp" : "image/jpeg";
-          fileExtension = convertToWebp ? "webp" : "jpg";
-        }
-
-        // Upload to R2
-        const r2 = createR2Client();
-        const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
-        const baseName = providedName
-          ? providedName
-              .toLowerCase()
-              .replace(/[^a-z0-9]/g, "-") // Replace non-alphanumeric with hyphens
-              .replace(/-+/g, "-") // Replace multiple hyphens with single
-              .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
-          : isVideo
-          ? "video"
-          : "image";
-
-        const fileName = `${baseName}-${timestamp}.${fileExtension}`;
-
-        try {
-          await r2.send(
-            new PutObjectCommand({
-              Bucket: process.env.R2_IMAGES_BUCKET_NAME,
-              Key: fileName,
-              Body: processedBuffer,
-              ContentType: contentType,
-              Metadata: {
-                blog_id: blogId,
-                uploaded_at: new Date().toISOString(),
-                is_video: isVideo.toString(),
-              },
-            })
-          );
-
-          // Construct the public URL
-          const publicUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/${fileName}`;
-
-          // Insert record into blog_images table
-          const supabase = createClient();
-          const { error: dbError } = await supabase.from("blog_images").insert({
-            blog_id: blogId,
-            file_name: fileName,
-            file_url: publicUrl,
-            size_in_bytes: processedBuffer.length,
-            content_type: contentType,
-            is_video: isVideo,
-          });
-
-          if (dbError) {
-            console.error("Database insert error:", dbError);
-            // Attempt to clean up the R2 upload
-            try {
-              await r2.send(
-                new DeleteObjectCommand({
-                  Bucket: process.env.R2_IMAGES_BUCKET_NAME,
-                  Key: fileName,
-                })
-              );
-              return c.json(
-                { error: "Failed to save image metadata" },
-                { status: 500 }
-              );
-            } catch (deleteError) {
-              // Log both errors for investigation
-              console.error("Failed to delete orphaned R2 image:", deleteError);
-              axiom.ingest(AXIOM_DATASETS.api, {
-                message: "Orphaned R2 image",
-                fileName,
-                blogId,
-                dbError,
-                deleteError,
-                error: true,
-              });
-              return c.json(
-                { error: "Failed to process image completely" },
-                { status: 500 }
-              );
-            }
-          }
-
-          return c.json(
-            {
-              url: publicUrl,
-              fileName: fileName,
-            },
-            { status: 200 }
-          );
-        } catch (error) {
-          console.error("R2 upload error:", error);
-          return c.json({ error: "Failed to upload image" }, { status: 500 });
-        }
-      } catch (error) {
-        console.error("Image upload error:", error);
-        return c.json(
-          { error: "Error processing or uploading image" },
-          { status: 500 }
-        );
-      }
-    }
   );
+
+const blogsRoutes = createBlogsRoutes(getUser, createClient, createAdminClient);
 
 const app = new Hono()
   .basePath("/api")
@@ -1727,7 +1365,8 @@ const app = new Hono()
   .use("*", logger())
   .use("*", prettyJSON())
   // ROUTES
-  .route("/v2", api);
+  .route("/v2", api)
+  .route("/v2/blogs", blogsRoutes);
 
 export type ManagementAPI = typeof app;
 

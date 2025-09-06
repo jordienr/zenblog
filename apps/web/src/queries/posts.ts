@@ -1,3 +1,4 @@
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import {
   useInfiniteQuery,
   useMutation,
@@ -5,46 +6,32 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { API } from "app/utils/api-client";
-import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 export const usePostsQuery = ({
   pageSize = 10,
   sortBy = "created",
 }: { pageSize?: number; sortBy?: "created" | "published" } = {}) => {
-  const api = API();
+  const sb = createSupabaseBrowserClient();
   const { query } = useRouter();
-  const blogId = (query.blogId as string) || "";
+  const blogId = query.blogId || "";
 
   return useInfiniteQuery({
     queryKey: ["posts", blogId, sortBy, pageSize],
     enabled: !!blogId,
-    initialPageParam: 1,
-    getNextPageParam: (lastPage: any, allPages: any, pageParam: any) => {
-      if (Array.isArray(lastPage) && lastPage.length === pageSize) {
-        return pageParam + 1;
-      }
-      return undefined;
+    initialPageParam: 0,
+    getNextPageParam: (lastPage: any, pages: any) => {
+      return lastPage?.length > 0 ? pages.length * pageSize : undefined;
     },
-    queryFn: async ({ pageParam = 1 }) => {
-      const res = await api.v2.blogs[":blog_id"].posts.$get({
-        param: { blog_id: blogId },
-        query: {
-          page: pageParam.toString(),
-          page_size: pageSize.toString(),
-          sort_by: sortBy,
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch posts");
-      }
-
-      const { data, error } = await res.json();
-
-      if (error) {
-        throw new Error(error);
-      }
+    queryFn: async ({ pageParam = 0 }) => {
+      const { data, error } = await sb
+        .from("posts_v10")
+        .select("*")
+        .eq("blog_id", blogId)
+        .eq("deleted", false)
+        .range(pageParam, pageParam + pageSize)
+        .order(sortBy === "created" ? "created_at" : "published_at", {
+          ascending: false,
+        });
 
       return data;
     },
