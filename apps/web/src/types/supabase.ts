@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.4"
+  }
   public: {
     Tables: {
       authors: {
@@ -107,6 +112,93 @@ export type Database = {
           },
           {
             foreignKeyName: "blog_images_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "category_post_count"
+            referencedColumns: ["blog_id"]
+          },
+        ]
+      }
+      blog_invitations: {
+        Row: {
+          blog_id: string
+          blog_name: string | null
+          created_at: string
+          email: string
+          id: number
+          role: Database["public"]["Enums"]["blog_member_role"]
+          status: string
+        }
+        Insert: {
+          blog_id: string
+          blog_name?: string | null
+          created_at?: string
+          email: string
+          id?: number
+          role?: Database["public"]["Enums"]["blog_member_role"]
+          status?: string
+        }
+        Update: {
+          blog_id?: string
+          blog_name?: string | null
+          created_at?: string
+          email?: string
+          id?: number
+          role?: Database["public"]["Enums"]["blog_member_role"]
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_invitations_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blog_invitations_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "category_post_count"
+            referencedColumns: ["blog_id"]
+          },
+        ]
+      }
+      blog_members: {
+        Row: {
+          blog_id: string
+          created_at: string
+          email: string
+          id: number
+          role: Database["public"]["Enums"]["blog_member_role"]
+          user_id: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string
+          email: string
+          id?: number
+          role?: Database["public"]["Enums"]["blog_member_role"]
+          user_id: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string
+          email?: string
+          id?: number
+          role?: Database["public"]["Enums"]["blog_member_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_members_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blog_members_blog_id_fkey"
             columns: ["blog_id"]
             isOneToOne: false
             referencedRelation: "category_post_count"
@@ -825,6 +917,10 @@ export type Database = {
       }
     }
     Functions: {
+      accept_blog_invitation: {
+        Args: { invitation_id: number }
+        Returns: boolean
+      }
       generate_random_string: {
         Args: { length: number }
         Returns: string
@@ -836,14 +932,14 @@ export type Database = {
       get_blog_post: {
         Args: { p_blog_id: string; p_slug: string }
         Returns: {
-          title: string
-          html_content: string
-          slug: string
+          abstract: string
           category_name: string
           category_slug: string
-          tags: Json
-          abstract: string
+          html_content: string
           published_at: string
+          slug: string
+          tags: Json
+          title: string
         }[]
       }
       get_posts_by_blog: {
@@ -854,17 +950,24 @@ export type Database = {
         Args: { post_slug: string }
         Returns: {
           id: string
-          slug: string
           name: string
+          slug: string
         }[]
       }
       get_tags_by_post_slug_and_blog_id: {
-        Args: { post_slug: string; blog_id: string }
+        Args: { blog_id: string; post_slug: string }
         Returns: {
           id: string
-          slug: string
           name: string
+          slug: string
         }[]
+      }
+      has_blog_role: {
+        Args: {
+          blog_id: string
+          min_role: Database["public"]["Enums"]["blog_member_role"]
+        }
+        Returns: boolean
       }
       is_blog_owner: {
         Args: { blog_id: string; given_user_id: string }
@@ -876,6 +979,7 @@ export type Database = {
       }
     }
     Enums: {
+      blog_member_role: "owner" | "admin" | "editor" | "viewer"
       blog_sort_order: "asc" | "desc"
       media_status: "pending" | "uploaded"
     }
@@ -885,21 +989,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -917,14 +1025,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -940,14 +1050,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -963,14 +1075,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -978,14 +1092,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
@@ -993,6 +1109,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      blog_member_role: ["owner", "admin", "editor", "viewer"],
       blog_sort_order: ["asc", "desc"],
       media_status: ["pending", "uploaded"],
     },

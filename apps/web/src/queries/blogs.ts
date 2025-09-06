@@ -1,5 +1,6 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { API, handleAPIError } from "app/utils/api-client";
 
 export const keys = {
   blogs: () => ["blogs"],
@@ -24,22 +25,26 @@ export const useBlogQuery = (blogId: string) =>
     enabled: !!blogId && blogId !== "demo",
   });
 
-export const useBlogsQuery = ({ enabled }: { enabled: boolean }) =>
-  useQuery({
+export const useBlogsQuery = ({ enabled }: { enabled: boolean }) => {
+  const api = API();
+  return useQuery({
     enabled,
     queryKey: keys.blogs(),
     queryFn: async () => {
-      const { data, error } = await sb
-        .from("blogs")
-        .select("*")
-        .order("created_at", { ascending: true });
-      if (error) {
-        throw error;
+      const res = await api.v2.blogs.$get();
+
+      const data = await res.json();
+
+      // Type guard to check if response has blogs
+      if ("blogs" in data && Array.isArray(data.blogs)) {
+        return data.blogs;
       }
-      return data;
+
+      throw new Error("Invalid response format from blogs API");
     },
     staleTime: 5 * 60 * 1000,
   });
+};
 
 export const useCreateBlogMutation = () => {
   const queryClient = useQueryClient();

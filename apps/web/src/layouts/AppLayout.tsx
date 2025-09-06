@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Feedback from "@/components/Feedback";
 import Footer from "@/components/Footer";
 import AppChecks from "@/components/LoggedInUserChecks";
-import { Loader2 } from "lucide-react";
+import { Bell, Loader2, Mailbox } from "lucide-react";
 import { useUser } from "@/utils/supabase/browser";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -20,9 +20,14 @@ import { useBlogsQuery } from "@/queries/blogs";
 import { cn } from "@/lib/utils";
 import Head from "next/head";
 import { useSubscriptionQuery } from "@/queries/subscription";
-import { ZenblogToolbar } from "@/components/dev/zenblog-toolbar";
 import { IS_DEV } from "@/lib/constants";
 import { OnboardingDropdown } from "@/components/onboarding";
+import {
+  useUserInvitationsQuery,
+  useUpdateInvitationMutation,
+} from "@/queries/members";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   children?: React.ReactNode;
@@ -44,6 +49,9 @@ export default function AppLayout({
   const { data: blogs, isLoading: blogsLoading } = useBlogsQuery({
     enabled: true,
   });
+
+  const { data: invitations } = useUserInvitationsQuery(user?.email as string);
+  const updateInvitation = useUpdateInvitationMutation();
 
   useEffect(() => {
     if (!user && !loading && !IS_DEV) {
@@ -87,6 +95,36 @@ export default function AppLayout({
     //   href: `/blogs/${selectedBlog?.id}/usage`,
     // },
   ];
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    );
+  };
+
+  const handleAcceptInvitation = async (invitationId: number) => {
+    try {
+      await updateInvitation.mutateAsync({
+        invitationId: invitationId.toString(),
+        action: "accept",
+      });
+    } catch (error) {
+      console.error("Failed to accept invitation:", error);
+    }
+  };
+
+  const handleRejectInvitation = async (invitationId: number) => {
+    try {
+      await updateInvitation.mutateAsync({
+        invitationId: invitationId.toString(),
+        action: "deny",
+      });
+    } catch (error) {
+      console.error("Failed to reject invitation:", error);
+    }
+  };
 
   return (
     <div
@@ -209,6 +247,39 @@ export default function AppLayout({
               </div>
             </div>
           </nav>
+          {invitations && invitations.length > 0
+            ? invitations.map((inv) => (
+                <div className="border-b bg-white p-4" key={inv.id}>
+                  <div className="mx-auto flex max-w-5xl items-center gap-4 px-4">
+                    <Bell className="size-6 rounded-full border border-orange-200 bg-orange-50 p-1 text-orange-500" />
+                    <p className="text-sm font-medium">
+                      You&apos;ve been invited to join the blog:{" "}
+                      <span className="font-medium">{inv.blog_name}</span>
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-auto"
+                        onClick={() => handleAcceptInvitation(inv.id)}
+                        disabled={updateInvitation.isPending}
+                      >
+                        {updateInvitation.isPending ? "Accepting..." : "Accept"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-auto"
+                        onClick={() => handleRejectInvitation(inv.id)}
+                        disabled={updateInvitation.isPending}
+                      >
+                        {updateInvitation.isPending ? "Rejecting..." : "Reject"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            : null}
           {selectedBlog && (
             <div className="border-b bg-white shadow-sm">
               <div className="mx-auto flex max-w-5xl items-center justify-between overflow-x-auto">
@@ -294,7 +365,12 @@ export function Section({
   className?: string;
 }) {
   return (
-    <div className={cn("rounded-xl border bg-white py-2 shadow-sm", className)}>
+    <div
+      className={cn(
+        "rounded-xl border border-slate-300/60 bg-white py-2 shadow-sm",
+        className
+      )}
+    >
       {children}
     </div>
   );

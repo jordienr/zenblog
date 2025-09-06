@@ -1,6 +1,7 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { ManagementAPI } from "app/api/[...route]/route";
 import { hc } from "hono/client";
+import { toast } from "sonner";
 
 export const API = () => {
   const client = hc<ManagementAPI>("");
@@ -26,3 +27,14 @@ export const useAPIQuery = <T>({
     ...options,
   });
 };
+
+export function handleAPIError(error: unknown) {
+  console.error(error);
+  if (error instanceof Error) {
+    toast.error(error.message);
+    return error.message;
+  } else {
+    toast.error("Something went wrong");
+    return "Something went wrong";
+  }
+}

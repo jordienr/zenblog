@@ -5,6 +5,7 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { handle } from "hono/vercel";
 import { createClient } from "@/lib/server/supabase";
+import { createAdminClient } from "@/lib/server/supabase/admin";
 import { axiom, AXIOM_DATASETS, getApiUsageForBlog } from "lib/axiom";
 import {
   createOrRetrieveCustomer,
@@ -26,6 +27,8 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { resend, RESEND_NOREPLY_EMAIL } from "lib/resend";
+import { createBlogsRoutes } from "./blogs";
 
 const UnauthorizedError = (c: Context) => {
   return c.json({ message: "Unauthorized" }, { status: 401 });
@@ -895,7 +898,466 @@ const api = new Hono()
         { status: 200 }
       );
     }
+  )
+  .post(
+    "/blogs/:blog_id/invitations",
+    zValidator(
+      "json",
+      z.object({
+        email: z.string().email("Invalid email address"),
+        role: z.enum(["editor", "viewer"]).optional().default("editor"),
+      })
+    ),
+    async (c) => {
+      try {
+        const blogId = c.req.param("blog_id");
+        const { email, role } = await c.req.json();
+
+        // Check if the user owns the blog
+        const { user } = await getUser();
+        if (!user || !user.id) {
+          return handleError(c, "UnauthorizedError", {
+            reason: "No user found",
+          });
+        }
+
+        const isOwner = await getBlogOwnership(blogId, user.id);
+        if (!isOwner) {
+          return handleError(c, "UnauthorizedError", {
+            reason: "Not blog owner",
+            userId: user.id,
+            blogId,
+          });
+        }
+
+        const supabase = createClient();
+        const adminSupabase = createAdminClient();
+
+        // Get blog details for the email
+        const { data: blog, error: blogError } = await supabase
+          .from("blogs")
+          .select("title, emoji")
+          .eq("id", blogId)
+          .single();
+
+        if (blogError || !blog) {
+          return handleError(c, "BlogNotFoundError", {
+            blogId,
+            error: blogError,
+          });
+        }
+
+        // Check if user is already a member
+        const { data: existingMember } = await adminSupabase
+          .from("blog_members")
+          .select("id")
+          .eq("blog_id", blogId)
+          .eq("email", email)
+          .maybeSingle();
+
+        if (existingMember) {
+          return c.json(
+            { error: "User is already a member of this blog" },
+            { status: 409 }
+          );
+        }
+
+        // Check if invitation already exists
+        const { data: existingInvitation } = await adminSupabase
+          .from("blog_invitations")
+          .select("id")
+          .eq("blog_id", blogId)
+          .eq("email", email)
+          .maybeSingle();
+
+        if (existingInvitation) {
+          return c.json(
+            { error: "Invitation already exists for this email" },
+            { status: 409 }
+          );
+        }
+
+        // Create invitation record
+        const { data: invitation, error: invitationError } = await adminSupabase
+          .from("blog_invitations")
+          .insert({
+            blog_id: blogId,
+            email: email,
+            role: role,
+            blog_name: blog.title,
+          })
+          .select("*")
+          .single();
+
+        if (invitationError) {
+          console.error("Database insert error:", invitationError);
+          return c.json(
+            { error: "Failed to create invitation" },
+            { status: 500 }
+          );
+        }
+
+        // Send invitation email
+        try {
+          const resendRes = await resend.emails.send({
+            from: RESEND_NOREPLY_EMAIL,
+            to: email,
+            subject: `You're invited to collaborate on ${blog.emoji} ${blog.title}`,
+            html: `
+              <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #1f2937; margin-bottom: 24px;">
+                  ${blog.emoji} You're invited to ${blog.title}
+                </h1>
+                <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">
+                  Sign in or create a new Zenblog account with this email address. You'll see a notification to accept or decline the invitation once you're logged in.
+                </p>
+                <div style="text-align: center; margin-bottom: 32px;">
+                  <a href="${process.env.NEXT_PUBLIC_BASE_URL}/sign-in" style="background-color: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
+                    Sign in to Zenblog
+                  </a>
+                </div>
+                <p style="color: #6b7280; font-size: 14px; line-height: 1.5;">
+                  Don't have a Zenblog account? <a href="${process.env.NEXT_PUBLIC_BASE_URL}/sign-up" style="color: #f97316;">Create one here</a> using this email address.
+                </p>
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 32px 0;">
+                <p style="color: #9ca3af; font-size: 12px;">
+                  This invitation was sent by Zenblog. If you didn't expect this invitation, you can safely ignore this email.
+                </p>
+              </div>
+            `,
+          });
+
+          if (resendRes.error) {
+            console.error("Resend error:", resendRes.error);
+            axiom.ingest(AXIOM_DATASETS.api, {
+              message: "Failed to send invitation email",
+              blogId,
+              email,
+              resendRes,
+              error: true,
+            });
+            return c.json(
+              { error: "Failed to send invitation email" },
+              { status: 500 }
+            );
+          }
+
+          console.log("Resend response:", JSON.stringify(resendRes, null, 2));
+
+          return c.json(
+            {
+              message: "Invitation sent successfully",
+              invitation: {
+                id: invitation.id,
+                email: invitation.email,
+                role: invitation.role,
+                created_at: invitation.created_at,
+              },
+            },
+            { status: 201 }
+          );
+        } catch (emailError) {
+          console.error("Email sending error:", emailError);
+
+          // Delete the invitation record if email failed
+          await adminSupabase
+            .from("blog_invitations")
+            .delete()
+            .eq("id", invitation.id);
+
+          axiom.ingest(AXIOM_DATASETS.api, {
+            message: "Failed to send invitation email",
+            blogId,
+            email,
+            emailError,
+            error: true,
+          });
+
+          return c.json(
+            { error: "Failed to send invitation email" },
+            { status: 500 }
+          );
+        }
+      } catch (error) {
+        console.error("Invitation creation error:", error);
+        axiom.ingest(AXIOM_DATASETS.api, {
+          message: "Invitation creation failed",
+          error: true,
+          rawError: error,
+        });
+        return c.json({ error: "Error creating invitation" }, { status: 500 });
+      }
+    }
+  )
+  .get("/invitations", async (c) => {
+    try {
+      // Check if the user is authenticated
+      const { user } = await getUser();
+      if (!user || !user.id || !user.email) {
+        return handleError(c, "UnauthorizedError", {
+          reason: "User must be authenticated to fetch invitations",
+        });
+      }
+
+      const adminSupabase = createAdminClient();
+
+      // Get all invitations for the authenticated user's email
+      const { data: invitations, error: invitationsError } = await adminSupabase
+        .from("blog_invitations")
+        .select(
+          `
+          id,
+          blog_id,
+          email,
+          role,
+          created_at,
+          blog_name
+        `
+        )
+        .eq("email", user.email)
+        .order("created_at", { ascending: false });
+
+      if (invitationsError) {
+        console.error("Error fetching user invitations:", invitationsError);
+        axiom.ingest(AXIOM_DATASETS.api, {
+          message: "Failed to fetch user invitations",
+          userId: user.id,
+          userEmail: user.email,
+          invitationsError,
+          error: true,
+        });
+        return c.json(
+          { error: "Failed to fetch invitations" },
+          { status: 500 }
+        );
+      }
+
+      // Log successful fetch
+      axiom.ingest(AXIOM_DATASETS.api, {
+        message: "User invitations fetched successfully",
+        userId: user.id,
+        userEmail: user.email,
+        invitationCount: invitations?.length || 0,
+      });
+
+      return c.json(
+        {
+          invitations: invitations || [],
+        },
+        { status: 200 }
+      );
+    } catch (error) {
+      console.error("Fetch invitations error:", error);
+      axiom.ingest(AXIOM_DATASETS.api, {
+        message: "Fetch invitations failed",
+        error: true,
+        rawError: error,
+      });
+      return c.json({ error: "Error fetching invitations" }, { status: 500 });
+    }
+  })
+  .post(
+    "/invitations/:invitation_id/update",
+    zValidator(
+      "json",
+      z.object({
+        action: z.enum(["accept", "deny"]),
+      })
+    ),
+    async (c) => {
+      try {
+        const invitationId = c.req.param("invitation_id");
+        const { action } = await c.req.json();
+
+        // Check if the user is authenticated
+        const { user } = await getUser();
+        if (!user || !user.id || !user.email) {
+          console.error("User not authenticated");
+          return handleError(c, "UnauthorizedError", {
+            reason: "User must be authenticated to respond to invitation",
+          });
+        }
+
+        const supabase = createClient();
+        const adminSupabase = createAdminClient();
+
+        // Get invitation details
+        const { data: invitation, error: invitationError } = await adminSupabase
+          .from("blog_invitations")
+          .select("*")
+          .eq("id", invitationId)
+          .single();
+
+        if (invitationError || !invitation) {
+          console.error("Invitation not found or has expired");
+          return c.json(
+            { error: "Invitation not found or has expired" },
+            { status: 404 }
+          );
+        }
+
+        // Verify the invitation email matches the authenticated user's email
+        if (invitation.email !== user.email) {
+          console.error(
+            "Invitation email does not match authenticated user's email"
+          );
+          return c.json(
+            { error: "This invitation is not for your email address" },
+            { status: 403 }
+          );
+        }
+
+        // Get blog details for response
+        const { data: blog, error: blogError } = await adminSupabase
+          .from("blogs")
+          .select("title, emoji")
+          .eq("id", invitation.blog_id)
+          .single();
+
+        if (blogError || !blog) {
+          console.error("Blog not found");
+          return c.json({ error: "Blog not found" }, { status: 404 });
+        }
+
+        if (action === "deny") {
+          // Delete the invitation record
+          const { error: deleteError } = await adminSupabase
+            .from("blog_invitations")
+            .delete()
+            .eq("id", invitationId);
+
+          if (deleteError) {
+            console.error("Error deleting invitation:", deleteError);
+            return c.json(
+              { error: "Failed to decline invitation" },
+              { status: 500 }
+            );
+          }
+
+          // Log successful decline
+          axiom.ingest(AXIOM_DATASETS.api, {
+            message: "Invitation declined",
+            invitationId,
+            userId: user.id,
+            blogId: invitation.blog_id,
+            action: "deny",
+          });
+
+          return c.json(
+            {
+              message: `You have declined the invitation to ${blog.emoji} ${blog.title}`,
+              action: "denied",
+            },
+            { status: 200 }
+          );
+        }
+
+        // Handle accept action
+        if (action === "accept") {
+          // Check if user is already a member of this blog
+          const { data: existingMember } = await adminSupabase
+            .from("blog_members")
+            .select("id")
+            .eq("blog_id", invitation.blog_id)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          if (existingMember) {
+            // Clean up the invitation since user is already a member
+            await adminSupabase
+              .from("blog_invitations")
+              .delete()
+              .eq("id", invitationId);
+
+            return c.json(
+              { error: "You are already a member of this blog" },
+              { status: 409 }
+            );
+          }
+
+          // Create member record
+          const { data: newMember, error: memberError } = await adminSupabase
+            .from("blog_members")
+            .insert({
+              blog_id: invitation.blog_id,
+              user_id: user.id,
+              email: user.email,
+              role: invitation.role,
+            })
+            .select("*")
+            .single();
+
+          if (memberError) {
+            console.error("Error creating blog member:", memberError);
+            return c.json(
+              { error: "Failed to add you as a blog member" },
+              { status: 500 }
+            );
+          }
+
+          // Delete the invitation record
+          const { error: deleteError } = await adminSupabase
+            .from("blog_invitations")
+            .delete()
+            .eq("id", invitationId);
+
+          if (deleteError) {
+            console.error("Error deleting invitation:", deleteError);
+            // Log but don't fail the request since member was created successfully
+            axiom.ingest(AXIOM_DATASETS.api, {
+              message: "Failed to delete invitation after accepting",
+              invitationId,
+              userId: user.id,
+              blogId: invitation.blog_id,
+              deleteError,
+              error: true,
+            });
+          }
+
+          // Log successful acceptance
+          axiom.ingest(AXIOM_DATASETS.api, {
+            message: "Invitation accepted successfully",
+            invitationId,
+            userId: user.id,
+            blogId: invitation.blog_id,
+            role: invitation.role,
+            action: "accept",
+          });
+
+          return c.json(
+            {
+              message: `Welcome to ${blog.emoji} ${blog.title}!`,
+              action: "accepted",
+              member: {
+                id: newMember.id,
+                blog_id: newMember.blog_id,
+                role: newMember.role,
+                created_at: newMember.created_at,
+              },
+              blog: {
+                title: blog.title,
+                emoji: blog.emoji,
+              },
+            },
+            { status: 201 }
+          );
+        }
+      } catch (error) {
+        console.error("Invitation update error:", error);
+        axiom.ingest(AXIOM_DATASETS.api, {
+          message: "Invitation update failed",
+          error: true,
+          rawError: error,
+        });
+        return c.json(
+          { error: "Error processing invitation" },
+          { status: 500 }
+        );
+      }
+    }
   );
+
+const blogsRoutes = createBlogsRoutes(getUser, createClient, createAdminClient);
 
 const app = new Hono()
   .basePath("/api")
@@ -903,7 +1365,8 @@ const app = new Hono()
   .use("*", logger())
   .use("*", prettyJSON())
   // ROUTES
-  .route("/v2", api);
+  .route("/v2", api)
+  .route("/v2/blogs", blogsRoutes);
 
 export type ManagementAPI = typeof app;
 
