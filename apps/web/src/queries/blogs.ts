@@ -13,14 +13,19 @@ export const useBlogQuery = (blogId: string) =>
   useQuery({
     queryKey: keys.blog(blogId),
     queryFn: async () => {
-      const res = await sb
-        .from("blogs")
-        .select(
-          "id, title, emoji, description, created_at, slug, theme, twitter, instagram, website"
-        )
-        .eq("id", blogId)
-        .single();
-      return res.data;
+      const api = API();
+
+      const res = await api.v2.blogs[":blog_id"].$get({
+        param: { blog_id: blogId },
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      return data.data;
     },
     enabled: !!blogId && blogId !== "demo",
   });

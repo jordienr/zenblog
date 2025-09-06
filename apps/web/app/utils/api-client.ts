@@ -5,7 +5,6 @@ import { toast } from "sonner";
 
 export const API = () => {
   const client = hc<ManagementAPI>("");
-
   return client.api;
 };
 
