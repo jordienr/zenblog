@@ -128,10 +128,12 @@ export default function Dashboard() {
           </div>
         )}
         <BlogList title="Owned blogs" blogs={userOwnerBlogs} />
-        <section className="mt-6">
-          <h2 className="py-4 text-lg font-medium">Joined blogs</h2>
-          <BlogList title="Member blogs" blogs={userMemberBlogs} />
-        </section>
+        {userMemberBlogs && userMemberBlogs.length > 0 && (
+          <section className="mt-6">
+            <h2 className="py-4 text-lg font-medium">Joined blogs</h2>
+            <BlogList title="Member blogs" blogs={userMemberBlogs} />
+          </section>
+        )}
       </div>
     </AppLayout>
   );
