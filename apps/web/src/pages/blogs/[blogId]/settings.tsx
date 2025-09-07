@@ -116,7 +116,7 @@ export default function BlogSettings() {
 
   // Team management state
   const [inviteEmail, setInviteEmail] = useState("");
-  const [selectedRole, setSelectedRole] = useState<string>("editor");
+  const [selectedRole, setSelectedRole] = useState<string>("viewer");
 
   // Team management queries
   const {
@@ -371,14 +371,24 @@ export default function BlogSettings() {
                     disabled={!canManageBlog}
                   >
                     <SelectTrigger
-                      className="w-full min-w-[100px]"
+                      className="w-full min-w-[100px] capitalize"
                       disabled={!canManageBlog}
                     >
-                      <SelectValue placeholder="Select a role" />
+                      {selectedRole}
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="editor">Editor</SelectItem>
-                      <SelectItem value="viewer">Viewer</SelectItem>
+                      <SelectItem value="editor">
+                        <div>Editor</div>
+                        <div className="text-xs text-zinc-500">
+                          Can create, update and delete content
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="viewer">
+                        <div>Viewer</div>
+                        <div className="text-xs text-zinc-500">
+                          Can only view content
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
