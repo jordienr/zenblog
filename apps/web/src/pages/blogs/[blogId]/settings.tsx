@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
+  blogsKeys,
   useBlogQuery,
   useDeleteBlogMutation,
   useUpdateBlogMutation,
@@ -45,6 +46,7 @@ import {
 } from "@/components/ui/select";
 import { useUserRole } from "@/queries/user-role";
 import { useUser } from "@/utils/supabase/browser";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function BlogSettings() {
   type FormData = {
@@ -183,6 +185,39 @@ export default function BlogSettings() {
         blogId,
         memberId,
       });
+    }
+  };
+
+  const queryClient = useQueryClient();
+
+  const handleLeaveBlog = async () => {
+    if (!user) return;
+
+    const member = members.find((m) => m.user_id === user.id);
+
+    if (!member) {
+      toast.error("Could not find your membership details.");
+      return;
+    }
+
+    if (
+      confirm(
+        "Are you sure you want to leave this blog? This action cannot be undone."
+      )
+    ) {
+      await removeMember.mutateAsync(
+        {
+          blogId,
+          memberId: member.id,
+        },
+        {
+          onSuccess: () => {
+            toast.success("You have left the blog");
+            queryClient.invalidateQueries({ queryKey: blogsKeys.blogs() });
+            router.push("/blogs");
+          },
+        }
+      );
     }
   };
 
@@ -574,6 +609,29 @@ export default function BlogSettings() {
             </Section>
           </>
         ) : null}
+        {userRole && userRole !== "owner" && (
+          <>
+            <div className="py-8 text-center text-zinc-400">~</div>
+            <Section className="p-4">
+              <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
+                Danger zone
+              </h2>
+              <p className="text-zinc-500">
+                This action cannot be undone. You will no longer have access to
+                this blog and its content.
+              </p>
+              <div className="actions">
+                <Button
+                  onClick={handleLeaveBlog}
+                  variant={"destructive"}
+                  className="mt-4"
+                >
+                  Leave blog
+                </Button>
+              </div>
+            </Section>
+          </>
+        )}
       </div>
     </AppLayout>
   );

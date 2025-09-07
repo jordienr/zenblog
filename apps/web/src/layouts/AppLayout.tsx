@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useBlogsQuery } from "@/queries/blogs";
+import { blogsKeys, useBlogsQuery } from "@/queries/blogs";
 import { cn } from "@/lib/utils";
 import Head from "next/head";
 import { useSubscriptionQuery } from "@/queries/subscription";
@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/queries/user-role";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   children?: React.ReactNode;
@@ -104,12 +105,15 @@ export default function AppLayout({
     },
   ];
 
+  const queryClient = useQueryClient();
+
   const handleAcceptInvitation = async (invitationId: number) => {
     try {
       await updateInvitation.mutateAsync({
         invitationId: invitationId.toString(),
         action: "accept",
       });
+      queryClient.invalidateQueries({ queryKey: blogsKeys.blogs() });
     } catch (error) {
       console.error("Failed to accept invitation:", error);
     }
@@ -130,7 +134,6 @@ export default function AppLayout({
     <div
       className={`flex min-h-screen flex-col border-b bg-slate-50 font-sans`}
     >
-      {IS_DEV && <pre>{JSON.stringify(userRole, null, 2)}</pre>}
       <Head>
         <title>Zenblog</title>
         <meta name="description" content="Simple, headless, blogging CMS." />
@@ -249,31 +252,28 @@ export default function AppLayout({
           </nav>
           {invitations && invitations.length > 0
             ? invitations.map((inv) => (
-                <div className="border-b bg-white p-4" key={inv.id}>
+                <div className="mb-2 border-y bg-amber-300 p-2" key={inv.id}>
                   <div className="mx-auto flex max-w-5xl items-center gap-4 px-4">
-                    <Bell className="size-6 rounded-full border border-orange-200 bg-orange-50 p-1 text-orange-500" />
+                    <Bell className="size-5 rounded-full border text-orange-800" />
                     <p className="text-sm font-medium">
                       You&apos;ve been invited to join the blog:{" "}
                       <span className="font-medium">{inv.blog_name}</span>
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-grow items-center justify-end gap-2">
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="ml-auto"
-                        onClick={() => handleAcceptInvitation(inv.id)}
-                        disabled={updateInvitation.isPending}
-                      >
-                        {updateInvitation.isPending ? "Accepting..." : "Accept"}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="ml-auto"
                         onClick={() => handleRejectInvitation(inv.id)}
                         disabled={updateInvitation.isPending}
                       >
                         {updateInvitation.isPending ? "Rejecting..." : "Reject"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleAcceptInvitation(inv.id)}
+                        disabled={updateInvitation.isPending}
+                      >
+                        {updateInvitation.isPending ? "Accepting..." : "Accept"}
                       </Button>
                     </div>
                   </div>

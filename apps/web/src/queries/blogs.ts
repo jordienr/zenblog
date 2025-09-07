@@ -1,8 +1,8 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { API, handleAPIError } from "app/utils/api-client";
+import { API } from "app/utils/api-client";
 
-export const keys = {
+export const blogsKeys = {
   blogs: () => ["blogs"],
   blog: (blogId: string) => ["blog", blogId],
 };
@@ -11,7 +11,7 @@ const sb = createSupabaseBrowserClient();
 
 export const useBlogQuery = (blogId: string, opts?: { enabled: boolean }) =>
   useQuery({
-    queryKey: keys.blog(blogId),
+    queryKey: blogsKeys.blog(blogId),
     queryFn: async () => {
       const res = await sb
         .from("blogs")
@@ -29,7 +29,7 @@ export const useBlogsQuery = ({ enabled }: { enabled: boolean }) => {
   const api = API();
   return useQuery({
     enabled,
-    queryKey: keys.blogs(),
+    queryKey: blogsKeys.blogs(),
     queryFn: async () => {
       const res = await api.v2.blogs.$get();
 
@@ -61,7 +61,7 @@ export const useCreateBlogMutation = () => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: keys.blogs() });
+      queryClient.invalidateQueries({ queryKey: blogsKeys.blogs() });
     },
   });
 };
@@ -89,7 +89,7 @@ export const useUpdateBlogMutation = (opts?: { onSuccess?: () => void }) => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: keys.blogs() });
+      queryClient.invalidateQueries({ queryKey: blogsKeys.blogs() });
       opts?.onSuccess?.();
     },
   });
@@ -104,7 +104,7 @@ export const useDeleteBlogMutation = () => {
       await supa.from("blogs").delete().eq("id", blogId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: keys.blogs() });
+      queryClient.invalidateQueries({ queryKey: blogsKeys.blogs() });
     },
   });
 };
