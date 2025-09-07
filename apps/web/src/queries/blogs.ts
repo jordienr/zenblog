@@ -9,7 +9,7 @@ export const keys = {
 
 const sb = createSupabaseBrowserClient();
 
-export const useBlogQuery = (blogId: string) =>
+export const useBlogQuery = (blogId: string, opts?: { enabled: boolean }) =>
   useQuery({
     queryKey: keys.blog(blogId),
     queryFn: async () => {
@@ -22,7 +22,7 @@ export const useBlogQuery = (blogId: string) =>
         .single();
       return res.data;
     },
-    enabled: !!blogId && blogId !== "demo",
+    enabled: !!blogId && blogId !== "demo" && opts?.enabled,
   });
 
 export const useBlogsQuery = ({ enabled }: { enabled: boolean }) => {

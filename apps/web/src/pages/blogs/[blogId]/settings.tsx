@@ -22,10 +22,11 @@ import {
   useRevokeInvitationMutation,
   useUpdateMemberRoleMutation,
   type BlogMemberRole,
+  useRemoveMemberMutation,
 } from "@/queries/members";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +35,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { Mail, Trash2, User, Clock, X, ChevronDown } from "lucide-react";
+import { Mail, Trash2, User, Clock, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -43,6 +44,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUserRole } from "@/queries/user-role";
+import { useUser } from "@/utils/supabase/browser";
 
 export default function BlogSettings() {
   type FormData = {
@@ -69,7 +71,7 @@ export default function BlogSettings() {
     data: blog,
     error: blogError,
     refetch: refetchBlog,
-  } = useBlogQuery(blogId);
+  } = useBlogQuery(blogId, { enabled: !!userRole });
 
   const updateBlog = useUpdateBlogMutation();
 
@@ -133,6 +135,9 @@ export default function BlogSettings() {
   const sendInvitation = useSendInvitationMutation();
   const revokeInvitation = useRevokeInvitationMutation();
   const updateMemberRole = useUpdateMemberRoleMutation();
+  const removeMember = useRemoveMemberMutation();
+
+  const user = useUser();
 
   // Team management functions
   const handleSendInvitation = async (e: React.FormEvent) => {
@@ -169,6 +174,15 @@ export default function BlogSettings() {
     } catch (error) {
       // Error handling is done in the mutation
       console.error("Failed to revoke invitation:", error);
+    }
+  };
+
+  const handleRemoveMember = async (memberId: number) => {
+    if (confirm("Are you sure you want to remove this member?")) {
+      await removeMember.mutateAsync({
+        blogId,
+        memberId,
+      });
     }
   };
 
@@ -417,25 +431,35 @@ export default function BlogSettings() {
                         </p>
                       </div>
                     </div>
-                    <Select
-                      value={member.role}
-                      onValueChange={(value) =>
-                        handleRoleChange(member.id, value as BlogMemberRole)
-                      }
-                      disabled={member.role === "owner"}
-                    >
-                      <SelectTrigger
-                        className="w-[120px] capitalize"
-                        disabled={!canManageBlog}
+                    <div className="flex items-center gap-2">
+                      <Select
+                        value={member.role}
+                        onValueChange={(value) =>
+                          handleRoleChange(member.id, value as BlogMemberRole)
+                        }
+                        disabled={member.role === "owner" || !canManageBlog}
                       >
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="editor">Editor</SelectItem>
-                        <SelectItem value="viewer">Viewer</SelectItem>
-                      </SelectContent>
-                    </Select>
+                        <SelectTrigger className="w-[120px] capitalize">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="editor">Editor</SelectItem>
+                          <SelectItem value="viewer">Viewer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {member.user_id === user?.id || !canManageBlog ? null : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={member.role === "owner" || !canManageBlog}
+                          onClick={() => handleRemoveMember(member.id)}
+                          className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

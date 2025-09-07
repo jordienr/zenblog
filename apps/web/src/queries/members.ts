@@ -20,7 +20,7 @@ export interface BlogInvitation {
   email: string;
   role: BlogMemberRole;
   created_at: string;
-  blog_name: string;
+  blog_name: string | null;
 }
 
 // Query to get blog members

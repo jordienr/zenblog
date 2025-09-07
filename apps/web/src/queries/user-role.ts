@@ -21,10 +21,12 @@ export function useUserRole(blogId: string) {
         .eq("user_id", user?.id || "")
         .single();
       if (error) {
+        console.log(error);
         throw new Error(error.message);
       }
       return data?.role;
     },
     enabled: !!user?.id && !!blogId,
+    retry: false,
   });
 }

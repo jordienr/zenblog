@@ -28,6 +28,7 @@ import {
 } from "@/queries/members";
 import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/queries/user-role";
+import { toast } from "sonner";
 
 type Props = {
   children?: React.ReactNode;
@@ -53,7 +54,18 @@ export default function AppLayout({
   const { data: invitations } = useUserInvitationsQuery(user?.email as string);
   const updateInvitation = useUpdateInvitationMutation();
 
-  const { data: userRole } = useUserRole(router.query.blogId as string);
+  const {
+    data: userRole,
+    isLoading: userRoleLoading,
+    error: userRoleError,
+  } = useUserRole(router.query.blogId as string);
+
+  useEffect(() => {
+    if (userRoleError) {
+      toast.error("Blog not found.");
+      router.replace("/blogs");
+    }
+  }, [userRoleError]);
 
   useEffect(() => {
     if (!user && !loading && !IS_DEV) {
@@ -64,8 +76,6 @@ export default function AppLayout({
   }, [user, loading]);
 
   const selectedBlog = blogs?.find((blog) => blog.id === router.query.blogId);
-
-  const isDev = IS_DEV;
 
   const BlogNavItems = [
     {
@@ -289,9 +299,15 @@ export default function AppLayout({
               </div>
             )}
           </div>
-          {loading ? (
+          {loading || userRoleLoading ? (
             <div className="flex h-[600px] items-center justify-center">
               <Loader2 className="animate-spin text-orange-500" size={32} />
+            </div>
+          ) : userRoleError ? (
+            <div className="">
+              <div className="flex h-[600px] items-center justify-center">
+                <h1>Blog not found.</h1>
+              </div>
             </div>
           ) : (
             <div className="">
@@ -304,7 +320,6 @@ export default function AppLayout({
                 </div>
                 <SectionActions>{actions}</SectionActions>
               </div>
-
               <motion.main
                 id="main"
                 initial={{ opacity: 0 }}
