@@ -8,6 +8,7 @@ import { usePostTags } from "@/queries/tags";
 import { Loader2 } from "lucide-react";
 import { usePostAuthorsQuery } from "@/queries/authors";
 import { useMemo } from "react";
+import { useUserRole } from "@/queries/user-role";
 
 export default function Post() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function Post() {
 
   const blogId = router.query.blogId as string;
   const postSlug = router.query.postSlug as string;
-
+  const { data: userRole } = useUserRole(blogId);
   const sb = createSupabaseBrowserClient();
 
   const {
@@ -74,6 +75,7 @@ export default function Post() {
   return (
     <div className="">
       <ZendoEditor
+        userRole={userRole}
         onSave={async (data) => {
           const { tags, authors, metadata, ...newData } = data;
           try {

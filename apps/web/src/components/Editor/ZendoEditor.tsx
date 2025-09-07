@@ -12,6 +12,7 @@ import {
   Info,
   Loader2,
   Plus,
+  LockIcon,
 } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -75,10 +76,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { useQueryClient } from "@tanstack/react-query";
-import { createSupabaseBrowserClient } from "@/lib/supabase";
-import { IsDevMode } from "../is-dev-mode";
 import { IS_DEV } from "@/lib/constants";
+import { UserRole } from "@/queries/user-role";
 
 const formSchema = z.object({
   title: z.string(),
@@ -120,23 +119,22 @@ type Props = {
   autoCompleteSlug?: boolean;
   showPublishedDialog?: boolean;
   categories?: { id: number; name: string }[];
+  userRole: UserRole;
 };
 
 export const ZendoEditor = (props: Props) => {
+  const userRole = props.userRole;
   const editorLoading = props.loading || false;
-  const queryClient = useQueryClient();
-  const supa = createSupabaseBrowserClient();
-  const { register, handleSubmit, setValue, watch, getValues } =
-    useForm<FormData>({
-      defaultValues: {
-        title: props.post?.title || "",
-        slug: props.post?.slug || "",
-        cover_image: props.post?.cover_image || "",
-        excerpt: props.post?.excerpt || "",
-        category_id: props.post?.category_id || null,
-      },
-    });
-  const router = useRouter();
+  const { register, handleSubmit, setValue, watch } = useForm<FormData>({
+    defaultValues: {
+      title: props.post?.title || "",
+      slug: props.post?.slug || "",
+      cover_image: props.post?.cover_image || "",
+      excerpt: props.post?.excerpt || "",
+      category_id: props.post?.category_id || null,
+    },
+  });
+
   const blogId = useBlogId();
   const blogTags = useBlogTags({ blogId });
   const [published, setPublished] = React.useState(
@@ -178,16 +176,6 @@ export const ZendoEditor = (props: Props) => {
 
   const title = watch("title");
   const slug = watch("slug");
-
-  const [publishedDialog, setPublishedDialog] = useState(
-    !!router.query.pub || false
-  );
-
-  useEffect(() => {
-    if (!!router.query.pub) {
-      setPublishedDialog(true);
-    }
-  }, [router.query.pub]);
 
   useEffect(() => {
     // When a user writes a space or a '/', change it for a dash
@@ -278,6 +266,7 @@ export const ZendoEditor = (props: Props) => {
   const editor = useEditor(
     {
       content: (props.post?.content as any) || "",
+      editable: userRole !== "viewer",
       editorProps: {
         editable: () => !props.readOnly || false,
         handlePaste: (view, event) =>
@@ -592,26 +581,47 @@ export const ZendoEditor = (props: Props) => {
           </div>
         </div>
         <div className="flex w-full items-center justify-end gap-2">
-          <div className="flex items-center">
-            <Checkbox
-              id="published"
-              defaultChecked={published}
-              onCheckedChange={(e) => {
-                setPublished(!!e);
-              }}
-              checked={published}
-            />
-            <Label
-              className="flex cursor-pointer items-center p-2  text-xs font-medium text-zinc-600 transition-all hover:text-zinc-800"
-              htmlFor="published"
-            >
-              Publish
-            </Label>
-          </div>
-          <Button type="submit" variant={"default"}>
-            <SaveIcon size={16} />
-            Save
-          </Button>
+          {userRole === "viewer" ? (
+            <>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger
+                    type="button"
+                    className="flex cursor-default items-center gap-1 rounded-md bg-orange-100 px-2 py-1 text-xs font-semibold text-orange-600"
+                  >
+                    <LockIcon size="14" />
+                    <span>Readonly mode</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Viewers cannot edit or publish posts
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center">
+                <Checkbox
+                  id="published"
+                  defaultChecked={published}
+                  onCheckedChange={(e) => {
+                    setPublished(!!e);
+                  }}
+                  checked={published}
+                />
+                <Label
+                  className="flex cursor-pointer items-center p-2  text-xs font-medium text-zinc-600 transition-all hover:text-zinc-800"
+                  htmlFor="published"
+                >
+                  Publish
+                </Label>
+              </div>
+              <Button type="submit" variant={"default"}>
+                <SaveIcon size={16} />
+                Save
+              </Button>
+            </>
+          )}
         </div>
       </form>
       <div className="mx-auto flex w-full max-w-3xl flex-col rounded-md bg-white px-2 pb-6 md:px-8">
@@ -620,7 +630,9 @@ export const ZendoEditor = (props: Props) => {
             <button
               className="absolute -right-2 -top-2 z-10 rounded-full border bg-white p-1 shadow-sm"
               type="button"
+              disabled={userRole === "viewer"}
               onClick={() => {
+                if (userRole === "viewer") return;
                 setCoverImgUrl("");
                 setValue("cover_image", "");
               }}
@@ -650,6 +662,15 @@ export const ZendoEditor = (props: Props) => {
               <Button
                 variant={"ghost"}
                 className="px-0 text-zinc-500 hover:bg-white"
+                disabled={userRole === "viewer"}
+                tooltip={
+                  userRole === "viewer"
+                    ? {
+                        content: "Viewers cannot change cover images",
+                        side: "bottom",
+                      }
+                    : undefined
+                }
               >
                 <span className="flex gap-1.5 whitespace-nowrap !text-xs">
                   <BsFillImageFill className="h-4 w-4 text-zinc-400" />
@@ -660,6 +681,7 @@ export const ZendoEditor = (props: Props) => {
           </div>
 
           <textarea
+            disabled={props.userRole === "viewer"}
             id="title-input"
             placeholder="A great title"
             {...register("title")}
@@ -691,6 +713,7 @@ export const ZendoEditor = (props: Props) => {
                 <EditorPropValue>
                   <div className="flex w-full items-center gap-1 py-1 pl-3 pr-1">
                     <textarea
+                      disabled={userRole === "viewer"}
                       className="field-sizinc w-full resize-none truncate bg-transparent text-xs font-semibold outline-none"
                       rows={1}
                       placeholder="a-great-title"
@@ -706,6 +729,7 @@ export const ZendoEditor = (props: Props) => {
                 </EditorPropLabel>
                 <EditorPropValue>
                   <AuthorSelector
+                    disabled={userRole === "viewer"}
                     authors={authors || []}
                     value={selectedAuthors}
                     onChange={(authors) => {
@@ -726,7 +750,10 @@ export const ZendoEditor = (props: Props) => {
                     open={showPublishedAtDropdown}
                     modal={false}
                   >
-                    <DropdownMenuTrigger className="w-full px-3 py-1 text-left text-xs font-semibold">
+                    <DropdownMenuTrigger
+                      disabled={userRole === "viewer"}
+                      className="w-full px-3 py-1 text-left text-xs font-semibold"
+                    >
                       {publishedAt
                         ? new Date(publishedAt).toLocaleDateString(undefined, {
                             year: "numeric",
@@ -741,6 +768,7 @@ export const ZendoEditor = (props: Props) => {
                         selected={
                           publishedAt ? new Date(publishedAt) : undefined
                         }
+                        disabled={userRole === "viewer"}
                         onSelect={(date) => {
                           setPublishedAt(date?.toISOString() || "");
                           setShowPublishedAtDropdown(false);
@@ -755,6 +783,7 @@ export const ZendoEditor = (props: Props) => {
                 </EditorPropLabel>
                 <EditorPropValue>
                   <textarea
+                    disabled={userRole === "viewer"}
                     className="field-size-zinc w-full resize-none bg-transparent px-3 py-1 text-xs font-semibold outline-none"
                     rows={3}
                     placeholder="A short description of your post. Recommended to be 155 characters or less."
@@ -774,6 +803,7 @@ export const ZendoEditor = (props: Props) => {
                 </EditorPropLabel>
                 <EditorPropValue>
                   <EditorCategoryPicker
+                    disabled={userRole === "viewer"}
                     isLoading={isCategoriesLoading}
                     categories={categories || []}
                     onChange={(e) => {
@@ -785,9 +815,15 @@ export const ZendoEditor = (props: Props) => {
                 <EditorPropLabel tooltip="Posts can have multiple tags. Good for finding related posts.">
                   Tags
                 </EditorPropLabel>
-                <EditorPropValue onClick={() => setShowTagPicker(true)}>
+                <EditorPropValue
+                  onClick={() => {
+                    if (userRole === "viewer") return;
+                    setShowTagPicker(true);
+                  }}
+                >
                   <div className="flex items-center gap-1 py-1 pl-2 pr-3 text-left">
                     <TagPicker
+                      disabled={userRole === "viewer"}
                       allTags={blogTags.data || []}
                       selectedTags={tags || []}
                       onChange={(newTags) => {
@@ -797,7 +833,7 @@ export const ZendoEditor = (props: Props) => {
                       open={showTagPicker}
                       onOpenChange={setShowTagPicker}
                     >
-                      <span className="mt-6"></span>
+                      <div></div>
                     </TagPicker>
                     <div className="-mr-2">
                       <span className="text-xs font-semibold">
@@ -838,7 +874,10 @@ export const ZendoEditor = (props: Props) => {
                         open={isMetadataDialogOpen}
                         onOpenChange={setMetadataDialogOpen}
                       >
-                        <DialogTrigger className="flex h-full w-full items-center px-3 text-left text-xs font-semibold">
+                        <DialogTrigger
+                          className="flex h-full w-full items-center px-3 text-left text-xs font-semibold"
+                          disabled={userRole === "viewer"}
+                        >
                           {metadata && Object.keys(metadata).length > 0 ? (
                             <div className="font-semibol flex h-full w-full flex-col py-1 text-left text-xs">
                               {Object.keys(metadata).map((key) => (
@@ -880,9 +919,8 @@ export const ZendoEditor = (props: Props) => {
             )}
           </AnimatePresence>
 
-          <Button
-            variant={"ghost"}
-            className="mt-1 flex items-center justify-center px-0 py-4 text-center opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-100 md:w-auto md:text-left"
+          <button
+            className="mt-1 flex w-full items-center gap-2 border-b border-transparent px-0 py-3 text-left text-sm font-medium opacity-40 transition-opacity hover:opacity-100 group-hover:border-slate-300 group-hover:opacity-100"
             onClick={() => setShowPropertyList(!showPropertyList)}
           >
             <ChevronUp
@@ -893,7 +931,7 @@ export const ZendoEditor = (props: Props) => {
               size={14}
             />
             {showPropertyList ? "Hide properties" : "Show properties"}
-          </Button>
+          </button>
         </div>
         <div
           className="group cursor-text"
@@ -911,7 +949,11 @@ export const ZendoEditor = (props: Props) => {
             className="prose prose-p:text-lg prose-headings:font-medium prose-headings:mt-6 !prose-code:p-0 prose-li:[&_p]:my-1 mx-auto mt-4 min-h-[500px] w-full max-w-3xl  cursor-text rounded-lg px-2 font-normal tracking-normal transition-all md:px-6"
           >
             {/* <pre>{JSON.stringify(editor?.getHTML(), null, 2)}</pre> */}
-            <EditorContent className="w-full" editor={editor} />
+            <EditorContent
+              readOnly={userRole === "viewer"}
+              className="w-full"
+              editor={editor}
+            />
           </div>
         </div>
       </div>
@@ -931,11 +973,11 @@ function EditorPropLabel({
   return (
     <div
       className={cn(
-        "col-span-4 mt-4 flex items-start gap-1 px-3 py-1 font-medium md:col-span-1 md:mt-0 md:px-0",
+        "group/label col-span-4 mt-4 flex items-start gap-1 px-3 py-1 text-sm font-medium md:col-span-1 md:mt-0 md:px-0",
         className
       )}
     >
-      <div className="group/label flex items-center gap-1">
+      <div className="flex items-center gap-1">
         {children}
         <TooltipProvider>
           <Tooltip delayDuration={300}>
@@ -981,11 +1023,13 @@ export function AuthorSelector({
   onChange,
   value,
   isLoading,
+  disabled,
 }: {
   authors: { id: number; name: string; image_url: string | null }[]; // author ids
   onChange: (authors: number[]) => void;
   value: number[];
   isLoading: boolean;
+  disabled?: boolean;
 }) {
   const getAuthorFromValue = (id: number) => {
     return authors.find((author) => author.id === id);
@@ -1034,8 +1078,8 @@ export function AuthorSelector({
         setOpen={setCreateAuthorOpen}
       />
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button variant={"ghost"} className="">
+        <DropdownMenuTrigger disabled={disabled} asChild>
+          <Button variant={"ghost"} className="" disabled={disabled}>
             <AuthorsLabel />
           </Button>
         </DropdownMenuTrigger>

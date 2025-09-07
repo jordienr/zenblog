@@ -26,8 +26,8 @@ import {
   useUserInvitationsQuery,
   useUpdateInvitationMutation,
 } from "@/queries/members";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useUserRole } from "@/queries/user-role";
 
 type Props = {
   children?: React.ReactNode;
@@ -52,6 +52,8 @@ export default function AppLayout({
 
   const { data: invitations } = useUserInvitationsQuery(user?.email as string);
   const updateInvitation = useUpdateInvitationMutation();
+
+  const { data: userRole } = useUserRole(router.query.blogId as string);
 
   useEffect(() => {
     if (!user && !loading && !IS_DEV) {
@@ -90,19 +92,7 @@ export default function AppLayout({
       label: "Settings",
       href: `/blogs/${selectedBlog?.id}/settings`,
     },
-    // {
-    //   label: "Usage",
-    //   href: `/blogs/${selectedBlog?.id}/usage`,
-    // },
   ];
-
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-    );
-  };
 
   const handleAcceptInvitation = async (invitationId: number) => {
     try {
@@ -130,7 +120,7 @@ export default function AppLayout({
     <div
       className={`flex min-h-screen flex-col border-b bg-slate-50 font-sans`}
     >
-      {/* {IS_DEV && <ZenblogToolbar />} */}
+      {IS_DEV && <pre>{JSON.stringify(userRole, null, 2)}</pre>}
       <Head>
         <title>Zenblog</title>
         <meta name="description" content="Simple, headless, blogging CMS." />
@@ -280,23 +270,25 @@ export default function AppLayout({
                 </div>
               ))
             : null}
-          {selectedBlog && (
-            <div className="border-b bg-white shadow-sm">
-              <div className="mx-auto flex max-w-5xl items-center justify-between overflow-x-auto">
-                <div className="flex max-w-5xl items-center px-2">
-                  {BlogNavItems.map((item) => (
-                    <NavItem
-                      key={item.href}
-                      href={item.href}
-                      selected={item.href === router.asPath}
-                    >
-                      {item.label}
-                    </NavItem>
-                  ))}
+          <div className="">
+            {selectedBlog && (
+              <div className="border-b bg-white shadow-sm">
+                <div className="mx-auto flex max-w-5xl items-center justify-between">
+                  <div className="flex max-w-5xl items-center px-2">
+                    {BlogNavItems.map((item) => (
+                      <NavItem
+                        key={item.href}
+                        href={item.href}
+                        selected={item.href === router.asPath}
+                      >
+                        {item.label}
+                      </NavItem>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
           {loading ? (
             <div className="flex h-[600px] items-center justify-center">
               <Loader2 className="animate-spin text-orange-500" size={32} />

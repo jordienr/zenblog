@@ -30,6 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuthors, useAuthorsQuery } from "@/queries/authors";
+import { UserRole, useUserRole } from "@/queries/user-role";
 
 export function StatePill({ published }: { published: boolean }) {
   const text = published ? "Published" : "Draft";
@@ -52,6 +53,7 @@ export default function BlogPosts() {
 
   const { data: blog, isLoading: blogLoading } = useBlogQuery(blogId);
   const [sortBy, setSortBy] = useState<"created" | "published">("created");
+  const { data: userRole } = useUserRole(blogId);
 
   const POST_PAGE_SIZE = 15;
   const {
@@ -122,11 +124,23 @@ export default function BlogPosts() {
           </div>
         }
         actions={
-          <Button asChild>
-            <Link href={`/blogs/${blog.id}/create`}>
-              <Plus size="16" />
-              New post
-            </Link>
+          <Button
+            disabled={userRole === "viewer"}
+            tooltip={
+              userRole === "viewer"
+                ? {
+                    content: "Viewers cannot create posts",
+                    side: "bottom",
+                    delay: 0,
+                  }
+                : undefined
+            }
+            onClick={() => {
+              router.push(`/blogs/${blog.id}/create`);
+            }}
+          >
+            <Plus size="16" />
+            New post
           </Button>
         }
       >
@@ -155,6 +169,10 @@ export default function BlogPosts() {
                   blogId={blogId}
                   authors={getAuthorsByIds(post?.authors || [])}
                   onDeleteClick={async () => {
+                    if (userRole === "viewer") {
+                      toast.error("Viewers cannot delete posts");
+                      return;
+                    }
                     const confirmed = window.confirm(
                       "Are you sure you want to delete this post?"
                     );

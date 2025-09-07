@@ -20,6 +20,8 @@ import {
   useBlogInvitationsQuery,
   useSendInvitationMutation,
   useRevokeInvitationMutation,
+  useUpdateMemberRoleMutation,
+  type BlogMemberRole,
 } from "@/queries/members";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
@@ -127,6 +129,7 @@ export default function BlogSettings() {
   // Team management mutations
   const sendInvitation = useSendInvitationMutation();
   const revokeInvitation = useRevokeInvitationMutation();
+  const updateMemberRole = useUpdateMemberRoleMutation();
 
   // Team management functions
   const handleSendInvitation = async (e: React.FormEvent) => {
@@ -164,6 +167,14 @@ export default function BlogSettings() {
       // Error handling is done in the mutation
       console.error("Failed to revoke invitation:", error);
     }
+  };
+
+  const handleRoleChange = async (memberId: number, role: BlogMemberRole) => {
+    await updateMemberRole.mutateAsync({
+      blogId,
+      memberId,
+      role,
+    });
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -382,14 +393,24 @@ export default function BlogSettings() {
                         <p className="text-sm font-medium text-slate-900">
                           {member.email}
                         </p>
-                        <p className="text-xs capitalize text-slate-500">
-                          {member.role}
-                        </p>
                       </div>
                     </div>
-                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
-                      Active
-                    </span>
+                    <Select
+                      value={member.role}
+                      onValueChange={(value) =>
+                        handleRoleChange(member.id, value as BlogMemberRole)
+                      }
+                      disabled={member.role === "owner"}
+                    >
+                      <SelectTrigger className="w-[120px] capitalize">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="editor">Editor</SelectItem>
+                        <SelectItem value="viewer">Viewer</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 ))}
               </div>

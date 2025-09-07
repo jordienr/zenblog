@@ -3,12 +3,14 @@ import { ZendoEditor } from "@/components/Editor/ZendoEditor";
 import { toast } from "sonner";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useState } from "react";
+import { useUserRole } from "@/queries/user-role";
 
 export default function CreatePost() {
   const router = useRouter();
   const blogId = router.query.blogId as string;
   const supa = createSupabaseBrowserClient();
   const [loading, setLoading] = useState(false);
+  const { data: userRole } = useUserRole(blogId);
 
   return (
     <>
@@ -16,6 +18,7 @@ export default function CreatePost() {
         autoCompleteSlug={true}
         tags={[]} // initial tags, none when creating a new post.
         loading={loading}
+        userRole={userRole}
         onSave={async (content) => {
           setLoading(true);
           const { tags, authors, metadata, ...post } = content;

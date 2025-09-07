@@ -16,6 +16,7 @@ type Tag = {
 };
 
 type Props = {
+  disabled: boolean;
   allTags: Tag[];
   onChange: (tag: Tag[]) => void;
   selectedTags: Tag[];
@@ -25,6 +26,7 @@ type Props = {
 };
 
 export function TagPicker({
+  disabled,
   allTags,
   onChange,
   selectedTags,
@@ -36,9 +38,17 @@ export function TagPicker({
   const [showCreateTag, setShowCreateTag] = useState(false);
 
   return (
-    <DropdownMenu open={open} onOpenChange={onOpenChange}>
-      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[280px] rounded-xl p-1" align="start">
+    <DropdownMenu
+      open={open}
+      onOpenChange={(val) => {
+        if (disabled) return;
+        onOpenChange(val);
+      }}
+    >
+      <DropdownMenuTrigger asChild disabled={disabled}>
+        {children}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-[300px] rounded-xl p-1" align="start">
         <div className="flex w-full items-center justify-between pb-3">
           <h3 className="px-3 text-xs font-semibold">Tags</h3>
           <Button

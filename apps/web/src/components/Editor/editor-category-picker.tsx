@@ -23,11 +23,13 @@ import { useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 
 export function EditorCategoryPicker({
+  disabled,
   isLoading,
   categories,
   onChange,
   value,
 }: {
+  disabled: boolean;
   isLoading: boolean;
   categories: {
     id: number;
@@ -38,6 +40,7 @@ export function EditorCategoryPicker({
   value: number | null;
 }) {
   const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const hasCategory = value !== null;
   const selectedCategory = categories?.find?.((c) => c.id === value);
   return (
@@ -48,9 +51,19 @@ export function EditorCategoryPicker({
           <Skeleton className="h-4 w-[120px]" />
         </div>
       ) : (
-        <DropdownMenu modal={false}>
-          <div className="flex items-center">
-            <DropdownMenuTrigger className="w-full py-1 pl-3 pr-1 text-left text-xs font-semibold">
+        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+          <div
+            className="flex w-full items-center"
+            onClick={() => {
+              if (disabled) return;
+              // adding this here to make the whole div trigger the dropdown
+              setDropdownOpen(true);
+            }}
+          >
+            <DropdownMenuTrigger
+              className="cursor-pointer py-1 pl-3 pr-1 text-left text-xs font-semibold focus-visible:outline-none"
+              disabled={disabled}
+            >
               {hasCategory ? selectedCategory?.name : "Select a category"}
             </DropdownMenuTrigger>
             {hasCategory && (
@@ -58,7 +71,7 @@ export function EditorCategoryPicker({
                 className="p-1 text-slate-500 hover:text-slate-700"
                 onClick={() => onChange(null)}
               >
-                <X size={15} />
+                <X size={14} />
               </button>
             )}
           </div>
