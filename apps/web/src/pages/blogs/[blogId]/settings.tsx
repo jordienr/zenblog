@@ -47,6 +47,8 @@ import {
 import { useUserRole } from "@/queries/user-role";
 import { useUser } from "@/utils/supabase/browser";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSubscriptionQuery } from "@/queries/subscription";
+import { FaRocket, FaTree } from "react-icons/fa";
 
 export default function BlogSettings() {
   type FormData = {
@@ -67,6 +69,12 @@ export default function BlogSettings() {
   const blogId = router.query.blogId as string;
 
   const { data: userRole } = useUserRole(blogId);
+
+  const subscription = useSubscriptionQuery();
+
+  const isFreePlan =
+    subscription.data?.plan === "free" ||
+    !subscription.data?.isValidSubscription;
 
   const {
     isLoading: blogLoading,
@@ -370,209 +378,237 @@ export default function BlogSettings() {
           </Dialog>
         </Section>
 
-        <Section className="">
-          <div className="border-b px-4 pb-4 pt-1">
-            <SectionTitle>Team Management</SectionTitle>
-            <SectionDescription>
-              Invite team members to collaborate on your blog. Members can help
-              create and manage content.
-            </SectionDescription>
-            {/* Invite form */}
-            <div className="mt-4">
-              <form
-                onSubmit={handleSendInvitation}
-                className="flex max-w-sm gap-2"
-              >
-                <div className="flex-grow">
-                  <Input
-                    disabled={!canManageBlog}
-                    type="email"
-                    placeholder="Enter email address"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    className="w-full min-w-[240px]"
-                    required
-                    autoComplete="off"
-                    data-bwignore
-                    data-1p-ignore
-                    data-lpignore="true"
-                    data-form-type="other"
-                  />
-                </div>
-                <div className="relative">
-                  <Select
-                    value={selectedRole}
-                    onValueChange={(value) => setSelectedRole(value)}
-                    disabled={!canManageBlog}
-                  >
-                    <SelectTrigger
-                      className="w-full min-w-[100px] capitalize"
+        {isFreePlan ? (
+          <Section className="p-1 text-center">
+            <div className="m-2 rounded-lg border-2 border-dashed px-4 py-8">
+              <div className="mb-4 flex justify-center">
+                <FaTree size={26} className="-mr-2 text-emerald-400" />
+                <FaTree size={32} className="text-emerald-400" />
+                <FaTree size={20} className="-ml-2 text-emerald-400" />
+              </div>
+              <h2 className="text-lg font-medium">Team & Collaboration</h2>
+              <p className="font-medium text-slate-500">
+                Upgrade to a paid plan to invite team members to this blog.
+              </p>
+              <div>
+                <Button size="lg" variant="outline" asChild className="mt-4">
+                  <Link href="/account" className="flex items-center gap-2">
+                    <FaRocket size={16} /> Upgrade
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </Section>
+        ) : (
+          <Section className="relative">
+            <div className="border-b px-4 pb-4 pt-1">
+              <SectionTitle>Team Management</SectionTitle>
+              <SectionDescription>
+                Invite team members to collaborate on your blog. Members can
+                help create and manage content.
+              </SectionDescription>
+              {/* Invite form */}
+              <div className="mt-4">
+                <form
+                  onSubmit={handleSendInvitation}
+                  className="flex max-w-sm gap-2"
+                >
+                  <div className="flex-grow">
+                    <Input
+                      disabled={!canManageBlog}
+                      type="email"
+                      placeholder="Enter email address"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      className="w-full min-w-[240px]"
+                      required
+                      autoComplete="off"
+                      data-bwignore
+                      data-1p-ignore
+                      data-lpignore="true"
+                      data-form-type="other"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Select
+                      value={selectedRole}
+                      onValueChange={(value) => setSelectedRole(value)}
                       disabled={!canManageBlog}
                     >
-                      {selectedRole}
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="editor">
-                        <div>Editor</div>
-                        <div className="text-xs text-zinc-500">
-                          Can create, update and delete content
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="viewer">
-                        <div>Viewer</div>
-                        <div className="text-xs text-zinc-500">
-                          Can only view content
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  type="submit"
-                  disabled={
-                    sendInvitation.isPending ||
-                    !inviteEmail.trim() ||
-                    !canManageBlog
-                  }
-                >
-                  <Mail className="h-4 w-4" />
-                  {sendInvitation.isPending ? "Sending..." : "Invite"}
-                </Button>
-              </form>
-            </div>
-          </div>
-
-          {/* Current members */}
-          <div className="mt-4 px-4">
-            <h3 className="mb-3 text-sm font-medium text-slate-700">
-              Team Members ({membersLoading ? "..." : members.length})
-            </h3>
-            {membersLoading ? (
-              <div className="p-4 text-center text-sm text-slate-500">
-                Loading members...
-              </div>
-            ) : membersError ? (
-              <div className="p-4 text-center text-sm text-red-500">
-                Error loading members
-              </div>
-            ) : members.length === 0 ? (
-              <div className="p-4 text-center text-sm text-slate-500">
-                No team members yet
-              </div>
-            ) : (
-              <div className="divide-y">
-                {members.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between py-1.5"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200">
-                        <User className="h-4 w-4 text-slate-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900">
-                          {member.email}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Select
-                        value={member.role}
-                        onValueChange={(value) =>
-                          handleRoleChange(member.id, value as BlogMemberRole)
-                        }
-                        disabled={member.role === "owner" || !canManageBlog}
+                      <SelectTrigger
+                        className="w-full min-w-[100px] capitalize"
+                        disabled={!canManageBlog}
                       >
-                        <SelectTrigger className="w-[120px] capitalize">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="editor">Editor</SelectItem>
-                          <SelectItem value="viewer">Viewer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {member.user_id === user?.id || !canManageBlog ? null : (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          disabled={member.role === "owner" || !canManageBlog}
-                          onClick={() => handleRemoveMember(member.id)}
-                          className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
+                        {selectedRole}
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="editor">
+                          <div>Editor</div>
+                          <div className="text-xs text-zinc-500">
+                            Can create, update and delete content
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="viewer">
+                          <div>Viewer</div>
+                          <div className="text-xs text-zinc-500">
+                            Can only view content
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                ))}
+                  <Button
+                    type="submit"
+                    disabled={
+                      sendInvitation.isPending ||
+                      !inviteEmail.trim() ||
+                      !canManageBlog
+                    }
+                  >
+                    <Mail className="h-4 w-4" />
+                    {sendInvitation.isPending ? "Sending..." : "Invite"}
+                  </Button>
+                </form>
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Pending invitations */}
-          {(invitationsLoading || invitations.length > 0) && canManageBlog && (
-            <div className="mt-6">
-              <h3 className="mb-3 px-4 text-sm font-medium text-slate-700">
-                Pending Invitations (
-                {invitationsLoading ? "..." : invitations.length})
+            {/* Current members */}
+            <div className="mt-4 px-4">
+              <h3 className="mb-3 text-sm font-medium text-slate-700">
+                Team Members ({membersLoading ? "..." : members.length})
               </h3>
-              {invitationsLoading ? (
+              {membersLoading ? (
                 <div className="p-4 text-center text-sm text-slate-500">
-                  Loading invitations...
+                  Loading members...
                 </div>
-              ) : invitationsError ? (
+              ) : membersError ? (
                 <div className="p-4 text-center text-sm text-red-500">
-                  Error loading invitations
+                  Error loading members
                 </div>
-              ) : invitations.length === 0 ? (
+              ) : members.length === 0 ? (
                 <div className="p-4 text-center text-sm text-slate-500">
-                  No pending invitations
+                  No team members yet
                 </div>
               ) : (
-                <div className="space-y-2 divide-y">
-                  {invitations.map((invitation) => (
+                <div className="divide-y">
+                  {members.map((member) => (
                     <div
-                      key={invitation.id}
-                      className="flex items-center justify-between p-3 hover:bg-slate-50"
+                      key={member.id}
+                      className="flex items-center justify-between py-1.5"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-200">
-                          <Clock className="h-4 w-4 text-orange-600" />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200">
+                          <User className="h-4 w-4 text-slate-600" />
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-900">
-                            {invitation.email}
-                          </p>
-                          <p className="text-xs capitalize text-slate-500">
-                            {invitation.role} • Sent{" "}
-                            {formatTimeAgo(invitation.created_at)}
+                            {member.email}
                           </p>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          handleRevokeInvitation(
-                            invitation.id,
-                            invitation.email
-                          )
-                        }
-                        disabled={revokeInvitation.isPending}
-                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                      >
-                        <X className="h-4 w-4" />
-                        {revokeInvitation.isPending ? "Revoking..." : "Revoke"}
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={member.role}
+                          onValueChange={(value) =>
+                            handleRoleChange(member.id, value as BlogMemberRole)
+                          }
+                          disabled={member.role === "owner" || !canManageBlog}
+                        >
+                          <SelectTrigger className="w-[120px] capitalize">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="editor">Editor</SelectItem>
+                            <SelectItem value="viewer">Viewer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {member.user_id === user?.id ||
+                        !canManageBlog ? null : (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled={member.role === "owner" || !canManageBlog}
+                            onClick={() => handleRemoveMember(member.id)}
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-          )}
-        </Section>
+
+            {/* Pending invitations */}
+            {(invitationsLoading || invitations.length > 0) &&
+              canManageBlog && (
+                <div className="mt-6">
+                  <h3 className="mb-3 px-4 text-sm font-medium text-slate-700">
+                    Pending Invitations (
+                    {invitationsLoading ? "..." : invitations.length})
+                  </h3>
+                  {invitationsLoading ? (
+                    <div className="p-4 text-center text-sm text-slate-500">
+                      Loading invitations...
+                    </div>
+                  ) : invitationsError ? (
+                    <div className="p-4 text-center text-sm text-red-500">
+                      Error loading invitations
+                    </div>
+                  ) : invitations.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-slate-500">
+                      No pending invitations
+                    </div>
+                  ) : (
+                    <div className="space-y-2 divide-y">
+                      {invitations.map((invitation) => (
+                        <div
+                          key={invitation.id}
+                          className="flex items-center justify-between p-3 hover:bg-slate-50"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-200">
+                              <Clock className="h-4 w-4 text-orange-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-slate-900">
+                                {invitation.email}
+                              </p>
+                              <p className="text-xs capitalize text-slate-500">
+                                {invitation.role} • Sent{" "}
+                                {formatTimeAgo(invitation.created_at)}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              handleRevokeInvitation(
+                                invitation.id,
+                                invitation.email
+                              )
+                            }
+                            disabled={revokeInvitation.isPending}
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4" />
+                            {revokeInvitation.isPending
+                              ? "Revoking..."
+                              : "Revoke"}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+          </Section>
+        )}
+
         {canManageBlog ? (
           <>
             <Section className="p-4">
