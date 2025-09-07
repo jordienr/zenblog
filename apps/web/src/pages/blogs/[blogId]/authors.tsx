@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
+import { cn } from "@/lib/utils";
 import {
   Author,
   CreateAuthorInput,
@@ -36,6 +37,7 @@ import {
   useUpdateAuthorMutation,
 } from "@/queries/authors";
 import { useSubscriptionQuery } from "@/queries/subscription";
+import { useUserRole } from "@/queries/user-role";
 import { slugify } from "app/utils/slugify";
 import { MoreHorizontal, Plus } from "lucide-react";
 import Link from "next/link";
@@ -148,10 +150,12 @@ export function CreateAuthorDialog({
   hideTrigger,
   open,
   setOpen,
+  disabled,
 }: {
   hideTrigger?: boolean;
   open: boolean;
   setOpen: (open: boolean) => void;
+  disabled: boolean;
 }) {
   const subscription = useSubscriptionQuery();
   const createAuthor = useCreateAuthor();
@@ -167,7 +171,19 @@ export function CreateAuthorDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       {!hideTrigger && (
         <DialogTrigger asChild>
-          <Button size="sm" variant={"outline"}>
+          <Button
+            size="sm"
+            variant={"outline"}
+            disabled={disabled}
+            tooltip={
+              disabled
+                ? {
+                    content: "Viewers cannot create authors",
+                    side: "bottom",
+                  }
+                : undefined
+            }
+          >
             <Plus size={16} />
             <div>Create author</div>
           </Button>
@@ -290,10 +306,7 @@ export function AuthorsPage() {
 
   const [deleteAuthorOpen, setDeleteAuthorOpen] = useState(false);
   const deleteAuthor = useDeleteAuthorMutation(blogId);
-
-  const subscription = useSubscriptionQuery();
-
-  const isFreePlan = subscription?.data?.plan === "free";
+  const { data: userRole } = useUserRole(blogId);
 
   const [createAuthorOpen, setCreateAuthorOpen] = useState(false);
 
@@ -305,6 +318,7 @@ export function AuthorsPage() {
         <CreateAuthorDialog
           open={createAuthorOpen}
           setOpen={setCreateAuthorOpen}
+          disabled={userRole === "viewer"}
         />
       }
     >
@@ -364,7 +378,14 @@ export function AuthorsPage() {
                 <TableCell className="text-right">
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn("", {
+                          "pointer-events-none opacity-0":
+                            userRole === "viewer",
+                        })}
+                      >
                         <MoreHorizontal size={16} />
                       </Button>
                     </DropdownMenuTrigger>

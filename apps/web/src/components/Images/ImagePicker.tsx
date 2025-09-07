@@ -276,12 +276,14 @@ type ImageSelector = {
   onChange: (media: Media[]) => void;
   selected: Media[];
   type: "single" | "multiple";
+  disabled: boolean;
 };
 export function ImageSelector({
   media,
   onChange,
   selected,
   type,
+  disabled,
 }: ImageSelector) {
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
@@ -346,6 +348,7 @@ export function ImageSelector({
             <Button
               variant="outline"
               size="sm"
+              disabled={disabled}
               onClick={() => {
                 onChange([]);
                 setLastSelectedIndex(null);
@@ -367,6 +370,7 @@ export function ImageSelector({
               exit={{ opacity: 0 }}
             >
               <ImageItem
+                disabled={disabled}
                 item={item}
                 selected={isSelected(item)}
                 onClick={(clickedItem, event) =>
@@ -385,8 +389,9 @@ type ImageItem = {
   item: Media;
   selected: boolean;
   onClick: (item: Media, event: React.MouseEvent) => void;
+  disabled: boolean;
 };
-export function ImageItem({ item, selected, onClick }: ImageItem) {
+export function ImageItem({ item, selected, onClick, disabled }: ImageItem) {
   // Handle null URL for getMediaType
   const mediaType = getMediaType(item.url ?? "");
   const displaySize = formatBytes(item.size_in_bytes);
@@ -399,8 +404,10 @@ export function ImageItem({ item, selected, onClick }: ImageItem) {
         "group flex w-full max-w-[240px] flex-col gap-0.5 rounded-xl text-left transition-all hover:opacity-90"
       )}
       onClick={(e) => {
+        if (disabled) return;
         onClick(item, e);
       }}
+      disabled={disabled}
     >
       <div className="relative w-full">
         {mediaType === "video" ? (
@@ -448,6 +455,7 @@ export function ImageItem({ item, selected, onClick }: ImageItem) {
             {
               "border-orange-600 bg-orange-600 text-orange-100 opacity-100":
                 selected,
+              "opacity-0 group-hover:opacity-0": disabled,
             }
           )}
         >

@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -25,6 +24,7 @@ import {
 } from "@/components/ui/table";
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
+import { cn } from "@/lib/utils";
 import { generateSlug } from "@/lib/utils/slugs";
 import {
   useCategoriesWithPostCount,
@@ -32,6 +32,7 @@ import {
   useDeleteCategoryMutation,
   useUpdateCategoryMutation,
 } from "@/queries/categories";
+import { useUserRole } from "@/queries/user-role";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -118,6 +119,8 @@ export default function CategoriesPage() {
   const [updateCategoryOpen, setUpdateCategoryOpen] = useState(false);
   const updateCategory = useUpdateCategoryMutation();
 
+  const { data: userRole } = useUserRole(blogId);
+
   const [deleteCategoryOpen, setDeleteCategoryOpen] = useState(false);
   const deleteCategory = useDeleteCategoryMutation(blogId);
   const [open, setOpen] = useState(false);
@@ -126,7 +129,21 @@ export default function CategoriesPage() {
       title="Categories"
       loading={isLoading}
       actions={
-        <Button size="sm" variant={"outline"} onClick={() => setOpen(true)}>
+        <Button
+          disabled={userRole === "viewer"}
+          tooltip={
+            userRole === "viewer"
+              ? {
+                  content: "Viewers cannot create categories",
+                  side: "bottom",
+                  delay: 0,
+                }
+              : undefined
+          }
+          size="sm"
+          variant={"outline"}
+          onClick={() => setOpen(true)}
+        >
           <Plus size={16} />
           <div>Create category</div>
         </Button>
@@ -171,7 +188,14 @@ export default function CategoriesPage() {
                 <TableCell className="text-right">
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn("", {
+                          "pointer-events-none opacity-0":
+                            userRole === "viewer",
+                        })}
+                      >
                         <MoreHorizontal size={16} />
                       </Button>
                     </DropdownMenuTrigger>

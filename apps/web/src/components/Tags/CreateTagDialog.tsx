@@ -9,8 +9,18 @@ import { generateSlug } from "@/lib/utils/slugs";
 
 type Props = {
   blogId: string;
+  disabled?: boolean;
+  tooltip?: {
+    content: string;
+    side: "top" | "bottom" | "left" | "right";
+    delay: number;
+  };
 };
-export function CreateTagDialog({ blogId }: PropsWithChildren<Props>) {
+export function CreateTagDialog({
+  blogId,
+  disabled = false,
+  tooltip,
+}: PropsWithChildren<Props>) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
@@ -25,7 +35,13 @@ export function CreateTagDialog({ blogId }: PropsWithChildren<Props>) {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button size="sm" variant={"outline"} title="Create tag">
+          <Button
+            size="sm"
+            variant={"outline"}
+            title="Create tag"
+            disabled={disabled}
+            tooltip={tooltip}
+          >
             <Plus />
             <div>Create tag</div>
           </Button>

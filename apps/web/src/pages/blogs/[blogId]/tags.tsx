@@ -18,11 +18,13 @@ import {
 } from "@/components/ui/table";
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
+import { cn } from "@/lib/utils";
 import {
   useDeleteTagMutation,
   useTagsWithUsageQuery,
   useUpdateTagMutation,
 } from "@/queries/tags";
+import { useUserRole } from "@/queries/user-role";
 import { MoreHorizontal, MoreVertical, Pen, Trash } from "lucide-react";
 import { useState } from "react";
 import { PiTag } from "react-icons/pi";
@@ -42,10 +44,26 @@ export default function TagsPage() {
   const [updateTagDialogOpen, setUpdateTagDialogOpen] = useState(false);
   const [deleteTagDialogOpen, setDeleteTagDialogOpen] = useState(false);
 
+  const { data: userRole } = useUserRole(blogId);
+
   return (
     <AppLayout
       title="Tags"
-      actions={<CreateTagDialog blogId={blogId} />}
+      actions={
+        <CreateTagDialog
+          blogId={blogId}
+          disabled={userRole === "viewer"}
+          tooltip={
+            userRole === "viewer"
+              ? {
+                  content: "Viewers cannot create tags",
+                  side: "bottom",
+                  delay: 0,
+                }
+              : undefined
+          }
+        />
+      }
       description="Posts can have multiple tags."
       loading={tags.isLoading}
     >
@@ -84,7 +102,14 @@ export default function TagsPage() {
                 <TableCell className="text-right">
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant={"ghost"}>
+                      <Button
+                        size="icon"
+                        variant={"ghost"}
+                        className={cn("", {
+                          "pointer-events-none opacity-0":
+                            userRole === "viewer",
+                        })}
+                      >
                         <MoreHorizontal size="16" />
                       </Button>
                     </DropdownMenuTrigger>

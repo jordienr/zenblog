@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useUserRole } from "@/queries/user-role";
 
 export default function BlogSettings() {
   type FormData = {
@@ -60,6 +61,8 @@ export default function BlogSettings() {
   } = useForm<FormData>();
   const router = useRouter();
   const blogId = router.query.blogId as string;
+
+  const { data: userRole } = useUserRole(blogId);
 
   const {
     isLoading: blogLoading,
@@ -202,6 +205,8 @@ export default function BlogSettings() {
     return <div>Blog not found</div>;
   }
 
+  const canManageBlog = ["owner", "admin"].includes(userRole || "");
+
   return (
     <AppLayout title="Settings">
       <div className="space-y-8">
@@ -215,7 +220,11 @@ export default function BlogSettings() {
                     name="emoji"
                     defaultValue={blog.emoji}
                     render={({ field: { onChange, value } }) => (
-                      <EmojiPicker onEmojiChange={onChange} emoji={value} />
+                      <EmojiPicker
+                        onEmojiChange={onChange}
+                        emoji={value}
+                        disabled={userRole === "viewer"}
+                      />
                     )}
                   ></Controller>
                 </label>
@@ -226,6 +235,7 @@ export default function BlogSettings() {
                   <Input
                     type="text"
                     id="title"
+                    disabled={userRole === "viewer"}
                     className="flex w-full flex-grow"
                     required
                     {...register("title", {
@@ -237,6 +247,7 @@ export default function BlogSettings() {
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
+                  disabled={userRole === "viewer"}
                   className="resize-none"
                   id="description"
                   {...register("description", {
@@ -246,7 +257,9 @@ export default function BlogSettings() {
               </div>
 
               <div className="actions mt-1 pb-2">
-                <Button type="submit">Save</Button>
+                <Button type="submit" disabled={userRole === "viewer"}>
+                  Save
+                </Button>
               </div>
             </form>
           </div>
@@ -323,6 +336,7 @@ export default function BlogSettings() {
               >
                 <div className="flex-grow">
                   <Input
+                    disabled={!canManageBlog}
                     type="email"
                     placeholder="Enter email address"
                     value={inviteEmail}
@@ -340,8 +354,12 @@ export default function BlogSettings() {
                   <Select
                     value={selectedRole}
                     onValueChange={(value) => setSelectedRole(value)}
+                    disabled={!canManageBlog}
                   >
-                    <SelectTrigger className="w-full min-w-[100px]">
+                    <SelectTrigger
+                      className="w-full min-w-[100px]"
+                      disabled={!canManageBlog}
+                    >
                       <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -352,7 +370,11 @@ export default function BlogSettings() {
                 </div>
                 <Button
                   type="submit"
-                  disabled={sendInvitation.isPending || !inviteEmail.trim()}
+                  disabled={
+                    sendInvitation.isPending ||
+                    !inviteEmail.trim() ||
+                    !canManageBlog
+                  }
                 >
                   <Mail className="h-4 w-4" />
                   {sendInvitation.isPending ? "Sending..." : "Invite"}
@@ -402,7 +424,10 @@ export default function BlogSettings() {
                       }
                       disabled={member.role === "owner"}
                     >
-                      <SelectTrigger className="w-[120px] capitalize">
+                      <SelectTrigger
+                        className="w-[120px] capitalize"
+                        disabled={!canManageBlog}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -418,9 +443,9 @@ export default function BlogSettings() {
           </div>
 
           {/* Pending invitations */}
-          {(invitationsLoading || invitations.length > 0) && (
+          {(invitationsLoading || invitations.length > 0) && canManageBlog && (
             <div className="mt-6">
-              <h3 className="mb-3 text-sm font-medium text-slate-700">
+              <h3 className="mb-3 px-4 text-sm font-medium text-slate-700">
                 Pending Invitations (
                 {invitationsLoading ? "..." : invitations.length})
               </h3>
@@ -479,39 +504,42 @@ export default function BlogSettings() {
             </div>
           )}
         </Section>
+        {canManageBlog ? (
+          <>
+            <Section className="p-4">
+              <SectionTitle>Manage subscription</SectionTitle>
+              <SectionDescription>
+                You can manage your subscription from the account page.
+              </SectionDescription>
+              <div className="mt-4">
+                <Link href="/account">
+                  <Button variant={"outline"}>Go to account</Button>
+                </Link>
+              </div>
+            </Section>
 
-        <Section className="p-4">
-          <SectionTitle>Manage subscription</SectionTitle>
-          <SectionDescription>
-            You can manage your subscription from the account page.
-          </SectionDescription>
-          <div className="mt-4">
-            <Link href="/account">
-              <Button variant={"outline"}>Go to account</Button>
-            </Link>
-          </div>
-        </Section>
+            <div className="py-8 text-center text-zinc-400">~</div>
 
-        <div className="py-8 text-center text-zinc-400">~</div>
-
-        <Section className="p-4">
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
-            Danger zone
-          </h2>
-          <p className="text-zinc-500">
-            This action cannot be undone. This will delete all posts in the
-            blog.
-          </p>
-          <div className="actions">
-            <Button
-              onClick={onDeleteBlogClick}
-              variant={"destructive"}
-              className="mt-4"
-            >
-              Delete blog
-            </Button>
-          </div>
-        </Section>
+            <Section className="p-4">
+              <h2 className="mb-4 flex items-center gap-2 text-lg font-medium text-red-600">
+                Danger zone
+              </h2>
+              <p className="text-zinc-500">
+                This action cannot be undone. This will delete all posts in the
+                blog.
+              </p>
+              <div className="actions">
+                <Button
+                  onClick={onDeleteBlogClick}
+                  variant={"destructive"}
+                  className="mt-4"
+                >
+                  Delete blog
+                </Button>
+              </div>
+            </Section>
+          </>
+        ) : null}
       </div>
     </AppLayout>
   );

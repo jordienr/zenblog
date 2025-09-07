@@ -4,17 +4,11 @@ import {
   useDeleteMediaMutation,
   useMediaQuery,
 } from "@/components/Images/Images.queries";
-import { ImageUploader } from "@/components/Images/ImageUploader";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { useBlogId } from "@/hooks/use-blog-id";
 import AppLayout, { Section } from "@/layouts/AppLayout";
-import { TrashIcon, Upload } from "lucide-react";
+import { useUserRole } from "@/queries/user-role";
+import { TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,7 +18,7 @@ export default function MediaPage() {
   const [selectedImages, setSelectedImages] = useState<Media[]>([]);
   const deleteMedia = useDeleteMediaMutation();
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
-  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const { data: userRole } = useUserRole(blogId);
 
   return (
     <AppLayout
@@ -85,24 +79,6 @@ export default function MediaPage() {
               />
             </>
           )}
-          {/* <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Upload size="16" />
-                Upload media
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="md:max-w-sm">
-              <DialogTitle className="sr-only">Upload media</DialogTitle>
-              <ImageUploader
-                blogId={blogId}
-                onSuccessfulUpload={() => {
-                  setShowUploadDialog(false);
-                  media.refetch();
-                }}
-              />
-            </DialogContent>
-          </Dialog> */}
         </div>
       }
     >
@@ -119,6 +95,7 @@ export default function MediaPage() {
         ) : (
           <div className="flex flex-col gap-2 px-3 pt-1">
             <ImageSelector
+              disabled={userRole === "viewer"}
               media={media.data || []}
               onChange={(imgs) => {
                 setSelectedImages(imgs);

@@ -11,8 +11,9 @@ import {
 type Props = {
   onEmojiChange: (emoji: string) => void;
   emoji: string;
+  disabled?: boolean;
 };
-export function EmojiPicker({ emoji, onEmojiChange }: Props) {
+export function EmojiPicker({ emoji, onEmojiChange, disabled }: Props) {
   const [_emoji, setEmoji] = useState(emoji);
 
   function _onEmojiChange(e: any) {
@@ -22,10 +23,11 @@ export function EmojiPicker({ emoji, onEmojiChange }: Props) {
   return (
     <div className="relative">
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild disabled={disabled}>
           <button
             className="h-10 w-10 rounded-full border border-zinc-200 bg-white text-xl shadow-sm hover:border-orange-400"
             title="Toggle emoji picker"
+            disabled={disabled}
           >
             {_emoji}
           </button>
