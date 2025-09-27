@@ -41,3 +41,22 @@ export async function createOrRetrieveCustomer({
     return newCustomer;
   }
 }
+
+export async function getPriceIdByLookupKey(
+  lookupKey: string | undefined
+): Promise<string | null> {
+  const stripe = createStripeClient();
+
+  if (!lookupKey) {
+    // Just return null, could be a cancelled subscription
+    return null;
+  }
+
+  const r = await stripe.prices.list({
+    lookup_keys: [lookupKey],
+    active: true,
+    limit: 1,
+  });
+  if (!r.data[0]) throw new Error(`No price for lookup_key=${lookupKey}`);
+  return r.data[0].id;
+}

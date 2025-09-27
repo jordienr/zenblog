@@ -6,7 +6,7 @@ import { prettyJSON } from "hono/pretty-json";
 import { handle } from "hono/vercel";
 import { createClient } from "@/lib/server/supabase";
 import { createAdminClient } from "@/lib/server/supabase/admin";
-import { axiom, AXIOM_DATASETS, getApiUsageForBlog } from "lib/axiom";
+import { axiomIngest, getApiUsageForBlog } from "lib/axiom";
 import {
   createOrRetrieveCustomer,
   createStripeClient,
@@ -19,6 +19,7 @@ import {
   PricingPlanInterval,
   PricingPlanId,
   TRIAL_PERIOD_DAYS,
+  MAX_TEAM_MEMBERS_PER_PLAN,
 } from "@/lib/pricing.constants";
 import sharp from "sharp";
 import {
@@ -29,6 +30,18 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { resend, RESEND_NOREPLY_EMAIL } from "lib/resend";
 import { createBlogsRoutes } from "./blogs";
+import { PRICING_PLAN_KEYS } from "@/lib/pricing.constants";
+import Stripe from "stripe";
+
+type SubscriptionStatus =
+  | "incomplete"
+  | "incomplete_expired"
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "unpaid"
+  | "paused";
 
 const UnauthorizedError = (c: Context) => {
   return c.json({ message: "Unauthorized" }, { status: 401 });
@@ -49,8 +62,7 @@ const errors = {
 };
 
 const handleError = (c: Context, error: keyof typeof errors, rawLog: any) => {
-  console.log("🔴", error);
-  axiom.ingest(AXIOM_DATASETS.api, {
+  axiomIngest("api", {
     message: error,
     error: true,
     blogId: c.req.param("blogId"),
@@ -119,7 +131,7 @@ const api = new Hono()
 
         if (error || !user || !user.email || !plan || !interval) {
           console.log("🔴 error", error, user, plan, interval);
-          axiom.ingest(AXIOM_DATASETS.stripe, {
+          axiomIngest("stripe", {
             message: "Error loading checkout session",
             payload: { userId, plan, error, user },
             error: true,
@@ -154,8 +166,68 @@ const api = new Hono()
           return c.json({ error: "Invalid plan" }, { status: 400 });
         }
 
-        const price =
-          selectedPlan?.[interval === "month" ? "monthlyPrice" : "yearlyPrice"];
+        const intervalType = interval === "month" ? "monthly" : "yearly";
+        const selectedPlanId = selectedPlan.id;
+
+        if (selectedPlanId === "free") {
+          return c.json(
+            { error: "Free plan is not available for checkout" },
+            { status: 400 }
+          );
+        }
+
+        const priceMapping = {
+          yearly: {
+            pro: PRICING_PLAN_KEYS.pro_yearly,
+            team: PRICING_PLAN_KEYS.team_yearly,
+          },
+          monthly: {
+            pro: PRICING_PLAN_KEYS.pro_monthly,
+            team: PRICING_PLAN_KEYS.team_monthly,
+          },
+        } as const;
+
+        const selectedPriceLookupKey =
+          priceMapping[intervalType][selectedPlanId];
+
+        async function getPriceIdByLookupKey(lookupKey: string) {
+          const r = await stripe.prices.list({
+            lookup_keys: [lookupKey],
+            active: true,
+            limit: 1,
+          });
+          if (!r.data[0])
+            throw new Error(`No price for lookup_key=${lookupKey}`);
+          return r.data[0].id;
+        }
+
+        const selectedPriceId = await getPriceIdByLookupKey(
+          selectedPriceLookupKey
+        );
+
+        // Check if the user has used the trial before by checking if a subscription exists
+        const supabase = createAdminClient();
+        const { data: subscriptionData, error: subscriptionError } =
+          await supabase
+            .from("subscriptions")
+            .select("subscription, status")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (subscriptionData?.status !== "canceled") {
+          // If the user has an active subscription we dont want to create a new checkout session
+          // We should show the manage subscription page
+
+          const session = await stripe.billingPortal.sessions.create({
+            customer: customer.id,
+            return_url: process.env.NEXT_PUBLIC_BASE_URL + "/account",
+          });
+
+          return c.json({ url: session.url }, { status: 200 });
+        }
+
+        const hasUsedTrialBefore =
+          subscriptionData && subscriptionError === null;
 
         const session = await stripe.checkout.sessions.create({
           customer: customer.id,
@@ -164,40 +236,34 @@ const api = new Hono()
           success_url: `${BASE_URL}/account?success=true`,
           cancel_url: `${BASE_URL}/account?canceled=true`,
           subscription_data: {
-            trial_period_days: TRIAL_PERIOD_DAYS,
+            trial_period_days: hasUsedTrialBefore
+              ? undefined
+              : TRIAL_PERIOD_DAYS,
             metadata: {
-              plan_id: selectedPlan.id,
+              lookup_key: selectedPriceLookupKey,
+              interval,
+              plan_name: selectedPlanId,
             },
           },
           line_items: [
             {
+              price: selectedPriceId,
               quantity: 1,
-              price_data: {
-                product_data: {
-                  name: selectedPlan.title,
-                  description: selectedPlan.description,
-                },
-                currency: "usd",
-                unit_amount: price * 100,
-                recurring: {
-                  interval,
-                },
+              adjustable_quantity: {
+                enabled: false,
               },
             },
           ],
         });
 
         if (!session.url) {
-          console.log("🔴 !session.url", session.url);
+          console.log("🔴 Error creating session");
           return c.json({ error: "Error creating session" }, { status: 500 });
         }
 
-        console.log("session", session);
-
         return c.json({ url: session.url }, { status: 200 });
       } catch (error) {
-        console.log("🔴 error", error);
-        console.error(error);
+        console.log("🔴 Error creating session", error);
 
         return c.json(
           { errorMessage: "Error creating session", error },
@@ -533,7 +599,7 @@ const api = new Hono()
             } catch (deleteError) {
               // Log both errors for investigation
               console.error("Failed to delete orphaned R2 image:", deleteError);
-              axiom.ingest(AXIOM_DATASETS.api, {
+              axiomIngest("api", {
                 message: "Orphaned R2 image",
                 fileName,
                 blogId,
@@ -605,7 +671,7 @@ const api = new Hono()
           console.error("Database delete error:", dbError);
           // Log error, but maybe proceed to R2 deletion attempt anyway?
           // For now, we stop if DB delete fails.
-          axiom.ingest(AXIOM_DATASETS.api, {
+          axiomIngest("api", {
             message: "Failed to delete image metadata from DB",
             blogId,
             fileNames,
@@ -640,7 +706,7 @@ const api = new Hono()
         );
 
         if (deleteErrors.length > 0) {
-          axiom.ingest(AXIOM_DATASETS.api, {
+          axiomIngest("api", {
             message: "Failed to delete some R2 images",
             blogId,
             error: true,
@@ -882,7 +948,7 @@ const api = new Hono()
         console.error("Database update error on confirm:", updateError);
         // If the update failed, maybe the record wasn't 'pending' or didn't exist?
         // Consider adding cleanup logic for R2 object if needed
-        axiom.ingest(AXIOM_DATASETS.api, {
+        axiomIngest("api", {
           message: "Failed to confirm upload in DB",
           fileName,
           blogId,
@@ -945,6 +1011,70 @@ const api = new Hono()
             blogId,
             error: blogError,
           });
+        }
+
+        // Check team member limit
+        const { data: subscriptionData, error: subError } = await supabase
+          .from("subscriptions")
+          .select("plan")
+          .eq("user_id", user.id) // user is the blog owner
+          .in("status", ["active", "trialing", "past_due"])
+          .maybeSingle();
+
+        if (subError) {
+          console.error("Error fetching subscription:", subError);
+          return c.json(
+            { error: "Could not verify subscription status." },
+            { status: 500 }
+          );
+        }
+
+        const planId = (subscriptionData?.plan as PricingPlanId) || "free";
+        const maxMembers = MAX_TEAM_MEMBERS_PER_PLAN[planId];
+
+        if (maxMembers !== Infinity) {
+          // No need to check for Infinity
+          // Get current member count
+          const { count: memberCount, error: memberCountError } =
+            await adminSupabase
+              .from("blog_members")
+              .select("id", { count: "exact", head: true })
+              .eq("blog_id", blogId);
+
+          if (memberCountError) {
+            console.error("Error fetching member count:", memberCountError);
+            return c.json(
+              { error: "Could not verify team member count." },
+              { status: 500 }
+            );
+          }
+
+          // Get pending invitation count
+          const { count: invitationCount, error: invitationCountError } =
+            await adminSupabase
+              .from("blog_invitations")
+              .select("id", { count: "exact", head: true })
+              .eq("blog_id", blogId);
+
+          if (invitationCountError) {
+            console.error(
+              "Error fetching invitation count:",
+              invitationCountError
+            );
+            return c.json(
+              { error: "Could not verify team invitation count." },
+              { status: 500 }
+            );
+          }
+
+          if (memberCount! + invitationCount! >= maxMembers) {
+            return c.json(
+              {
+                error: `You have reached the ${maxMembers} team member limit for the ${planId} plan.`,
+              },
+              { status: 403 }
+            );
+          }
         }
 
         // Check if user is already a member
@@ -1029,7 +1159,7 @@ const api = new Hono()
 
           if (resendRes.error) {
             console.error("Resend error:", resendRes.error);
-            axiom.ingest(AXIOM_DATASETS.api, {
+            axiomIngest("api", {
               message: "Failed to send invitation email",
               blogId,
               email,
@@ -1065,7 +1195,7 @@ const api = new Hono()
             .delete()
             .eq("id", invitation.id);
 
-          axiom.ingest(AXIOM_DATASETS.api, {
+          axiomIngest("api", {
             message: "Failed to send invitation email",
             blogId,
             email,
@@ -1080,7 +1210,7 @@ const api = new Hono()
         }
       } catch (error) {
         console.error("Invitation creation error:", error);
-        axiom.ingest(AXIOM_DATASETS.api, {
+        axiomIngest("api", {
           message: "Invitation creation failed",
           error: true,
           rawError: error,
@@ -1119,7 +1249,7 @@ const api = new Hono()
 
       if (invitationsError) {
         console.error("Error fetching user invitations:", invitationsError);
-        axiom.ingest(AXIOM_DATASETS.api, {
+        axiomIngest("api", {
           message: "Failed to fetch user invitations",
           userId: user.id,
           userEmail: user.email,
@@ -1133,7 +1263,7 @@ const api = new Hono()
       }
 
       // Log successful fetch
-      axiom.ingest(AXIOM_DATASETS.api, {
+      axiomIngest("api", {
         message: "User invitations fetched successfully",
         userId: user.id,
         userEmail: user.email,
@@ -1148,7 +1278,7 @@ const api = new Hono()
       );
     } catch (error) {
       console.error("Fetch invitations error:", error);
-      axiom.ingest(AXIOM_DATASETS.api, {
+      axiomIngest("api", {
         message: "Fetch invitations failed",
         error: true,
         rawError: error,
@@ -1235,7 +1365,7 @@ const api = new Hono()
           }
 
           // Log successful decline
-          axiom.ingest(AXIOM_DATASETS.api, {
+          axiomIngest("api", {
             message: "Invitation declined",
             invitationId,
             userId: user.id,
@@ -1304,7 +1434,7 @@ const api = new Hono()
           if (deleteError) {
             console.error("Error deleting invitation:", deleteError);
             // Log but don't fail the request since member was created successfully
-            axiom.ingest(AXIOM_DATASETS.api, {
+            axiomIngest("api", {
               message: "Failed to delete invitation after accepting",
               invitationId,
               userId: user.id,
@@ -1315,7 +1445,7 @@ const api = new Hono()
           }
 
           // Log successful acceptance
-          axiom.ingest(AXIOM_DATASETS.api, {
+          axiomIngest("api", {
             message: "Invitation accepted successfully",
             invitationId,
             userId: user.id,
@@ -1344,7 +1474,7 @@ const api = new Hono()
         }
       } catch (error) {
         console.error("Invitation update error:", error);
-        axiom.ingest(AXIOM_DATASETS.api, {
+        axiomIngest("api", {
           message: "Invitation update failed",
           error: true,
           rawError: error,

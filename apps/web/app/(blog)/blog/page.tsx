@@ -17,7 +17,7 @@ const Blog = async () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-semibold">Blog</h1>
-      <p className="text-lg font-medium text-zinc-500">
+      <p className="text-lg font-medium text-slate-500">
         Tools and insights to help you grow your business with blogging.
       </p>
       <div className="mt-12">
@@ -34,7 +34,7 @@ const Blog = async () => {
               alt=""
             />
             <div className="flex w-full flex-col justify-center p-5 pb-8 transition-all">
-              <p className="w-full text-sm text-zinc-500">
+              <p className="w-full text-sm text-slate-500">
                 <span className="mr-2 font-medium text-orange-600">New!</span>
                 <time>
                   {new Date(latestPost.published_at).toLocaleDateString(
@@ -51,7 +51,9 @@ const Blog = async () => {
               <h2 className="text-2xl font-medium md:text-3xl">
                 {latestPost.title}
               </h2>
-              <p className="mt-1 text-sm text-zinc-500">{latestPost.excerpt}</p>
+              <p className="mt-1 text-sm text-slate-500">
+                {latestPost.excerpt}
+              </p>
 
               <div className="mt-4 flex items-center gap-2">
                 {latestPost.authors?.map((author) => (
@@ -96,7 +98,7 @@ const Blog = async () => {
                     {post.category?.name}
                   </Link>
                 )}
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm text-slate-500">
                   {new Date(post.published_at).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
@@ -106,7 +108,7 @@ const Blog = async () => {
               </div>
 
               <h3 className="pr-4 text-lg font-medium">{post.title}</h3>
-              <p className="text-sm text-zinc-500">{post.excerpt}</p>
+              <p className="text-sm text-slate-500">{post.excerpt}</p>
             </div>
           </Link>
         ))}

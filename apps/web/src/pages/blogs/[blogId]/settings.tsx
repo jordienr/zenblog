@@ -27,15 +27,7 @@ import {
 } from "@/queries/members";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-} from "@/components/ui/dialog";
-import { DialogTitle } from "@radix-ui/react-dialog";
+import { useState } from "react";
 import { Mail, Trash2, User, Clock, X } from "lucide-react";
 import {
   Select,
@@ -49,6 +41,8 @@ import { useUser } from "@/utils/supabase/browser";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import { FaRocket, FaTree } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { MAX_TEAM_MEMBERS_PER_PLAN } from "@/lib/pricing.constants";
 
 export default function BlogSettings() {
   type FormData = {
@@ -121,9 +115,6 @@ export default function BlogSettings() {
     }
   }
 
-  const [newAPIKey, setNewAPIKey] = useState("");
-  const [showNewAPIKeyDialog, setShowNewAPIKeyDialog] = useState(false);
-
   // Team management state
   const [inviteEmail, setInviteEmail] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("viewer");
@@ -155,6 +146,16 @@ export default function BlogSettings() {
     if (!inviteEmail.trim() || !blogId) return;
 
     if (selectedRole !== "editor" && selectedRole !== "viewer") return;
+
+    if (
+      members.length + invitations.length >=
+      MAX_TEAM_MEMBERS_PER_PLAN[subscription.data?.plan || "free"]
+    ) {
+      toast.error(
+        "You have reached the maximum number of team members for your plan."
+      );
+      return;
+    }
 
     try {
       await sendInvitation.mutateAsync({
@@ -254,15 +255,19 @@ export default function BlogSettings() {
     return <AppLayout loading={true}></AppLayout>;
   }
 
-  if (blogError) {
+  if (blogError && !blogLoading) {
     return <div>Error loading blog</div>;
   }
 
-  if (!blog) {
-    return <div>Blog not found</div>;
+  if (!blog && !blogLoading) {
+    return <div></div>;
   }
 
   const canManageBlog = ["owner", "admin"].includes(userRole || "");
+  const maxTeamMembers =
+    MAX_TEAM_MEMBERS_PER_PLAN[subscription.data?.plan || "free"];
+  const hasReachedTeamLimit =
+    members.length + invitations.length >= maxTeamMembers;
 
   return (
     <AppLayout title="Settings">
@@ -275,7 +280,7 @@ export default function BlogSettings() {
                   <Controller
                     control={control}
                     name="emoji"
-                    defaultValue={blog.emoji}
+                    defaultValue={blog?.emoji}
                     render={({ field: { onChange, value } }) => (
                       <EmojiPicker
                         onEmojiChange={onChange}
@@ -296,7 +301,7 @@ export default function BlogSettings() {
                     className="flex w-full flex-grow"
                     required
                     {...register("title", {
-                      value: blog.title,
+                      value: blog?.title,
                     })}
                   />
                 </div>
@@ -308,7 +313,7 @@ export default function BlogSettings() {
                   className="resize-none"
                   id="description"
                   {...register("description", {
-                    value: blog.description || "",
+                    value: blog?.description || "",
                   })}
                 />
               </div>
@@ -343,55 +348,40 @@ export default function BlogSettings() {
               Copy
             </Button>
           </div>
-          <Dialog open={showNewAPIKeyDialog}>
-            <DialogContent className="flex max-w-sm flex-col gap-4">
-              <DialogHeader>
-                <DialogTitle>New API key</DialogTitle>
-                <DialogDescription>
-                  Make sure to save this key in a secure location. <br /> It
-                  will not be shown again.{" "}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={newAPIKey}
-                  readOnly
-                  className="flex-grow font-mono"
-                />
-                <Button
-                  variant={"outline"}
-                  onClick={() => {
-                    navigator.clipboard.writeText(newAPIKey || "");
-                    toast.success("API key copied to clipboard");
-                  }}
-                >
-                  Copy
-                </Button>
-              </div>
-
-              <DialogFooter className="p-2">
-                <Button onClick={() => setShowNewAPIKeyDialog(false)}>
-                  I have saved the key securely
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         </Section>
 
-        {isFreePlan ? (
+        {isFreePlan && userRole === "owner" ? (
           <Section className="p-1 text-center">
             <div className="m-2 rounded-lg border-2 border-dashed px-4 py-8">
               <div className="mb-4 flex justify-center">
-                <FaTree size={26} className="-mr-2 text-emerald-400" />
-                <FaTree size={32} className="text-emerald-400" />
-                <FaTree size={20} className="-ml-2 text-emerald-400" />
+                <motion.span
+                  initial={{ opacity: 0, y: 10, scale: 0 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 1 }}
+                >
+                  <FaTree size={26} className="-mr-2 text-emerald-600" />
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, y: 10, scale: 0 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 1.6 }}
+                >
+                  <FaTree size={32} className="text-emerald-400" />
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, y: 10, scale: 0 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 2.4 }}
+                >
+                  <FaTree size={20} className="-ml-2 text-emerald-500" />
+                </motion.span>
               </div>
-              <h2 className="text-lg font-medium">Team & Collaboration</h2>
-              <p className="font-medium text-slate-500">
-                Upgrade to a paid plan to invite team members to this blog.
+              <h2 className="text-lg font-medium">Grow with your team</h2>
+              <p className="text-slate-500">
+                Upgrade your plan to invite team members to this blog.
               </p>
-              <div>
-                <Button size="lg" variant="outline" asChild className="mt-4">
+              <div className="flex justify-center">
+                <Button asChild className="mt-4 h-10 rounded-full px-4">
                   <Link href="/account" className="flex items-center gap-2">
                     <FaRocket size={16} /> Upgrade
                   </Link>
@@ -408,68 +398,111 @@ export default function BlogSettings() {
                 help create and manage content.
               </SectionDescription>
               {/* Invite form */}
-              <div className="mt-4">
-                <form
-                  onSubmit={handleSendInvitation}
-                  className="flex max-w-sm gap-2"
-                >
-                  <div className="flex-grow">
-                    <Input
-                      disabled={!canManageBlog}
-                      type="email"
-                      placeholder="Enter email address"
-                      value={inviteEmail}
-                      onChange={(e) => setInviteEmail(e.target.value)}
-                      className="w-full min-w-[240px]"
-                      required
-                      autoComplete="off"
-                      data-bwignore
-                      data-1p-ignore
-                      data-lpignore="true"
-                      data-form-type="other"
-                    />
-                  </div>
-                  <div className="relative">
-                    <Select
-                      value={selectedRole}
-                      onValueChange={(value) => setSelectedRole(value)}
-                      disabled={!canManageBlog}
-                    >
-                      <SelectTrigger
-                        className="w-full min-w-[100px] capitalize"
-                        disabled={!canManageBlog}
+              {!canManageBlog ? (
+                <div className="mt-4 inline-flex rounded-md bg-orange-100 px-2 py-1 text-sm font-medium text-orange-500">
+                  Only owner or admins can invite team members.
+                </div>
+              ) : hasReachedTeamLimit ? (
+                <div className="-mx-2 mt-4 rounded-md bg-orange-100 p-3 text-sm font-medium">
+                  <h3 className="text-sm font-bold">Max members reached</h3>
+                  <p className="mt-2">
+                    You have reached the maximum number of team members for your
+                    plan.
+                    <br /> If you need more team members, you can:
+                  </p>
+                  <ol className="mt-2 list-disc space-y-2 pl-5">
+                    <li>Remove team members you no longer need</li>
+                    <li>Remove pending invitations</li>
+                    <li>
+                      <Link
+                        href="/account"
+                        className="text-orange-500 underline"
                       >
-                        {selectedRole}
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="editor">
-                          <div>Editor</div>
-                          <div className="text-xs text-zinc-500">
-                            Can create, update and delete content
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="viewer">
-                          <div>Viewer</div>
-                          <div className="text-xs text-zinc-500">
-                            Can only view content
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    type="submit"
-                    disabled={
-                      sendInvitation.isPending ||
-                      !inviteEmail.trim() ||
-                      !canManageBlog
-                    }
+                        Upgrade to the Team plan
+                      </Link>{" "}
+                      for unlimited team members.
+                    </li>
+                  </ol>
+                </div>
+              ) : (
+                <div className="mt-4">
+                  {!hasReachedTeamLimit && userRole === "owner" && (
+                    <div className="rounded-md bg-orange-100 p-2">
+                      <h3 className="text-sm font-bold">
+                        Members: {members.length + invitations.length} /{" "}
+                        {maxTeamMembers}
+                      </h3>
+                      {subscription.data?.plan === "pro" && (
+                        <p className="text-sm font-medium">
+                          Your plan allows you to have up to {maxTeamMembers}{" "}
+                          unique team members between all your blogs.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  <form
+                    onSubmit={handleSendInvitation}
+                    className="mt-4 flex max-w-sm gap-2"
                   >
-                    <Mail className="h-4 w-4" />
-                    {sendInvitation.isPending ? "Sending..." : "Invite"}
-                  </Button>
-                </form>
-              </div>
+                    <div className="flex-grow">
+                      <Input
+                        disabled={!canManageBlog || hasReachedTeamLimit}
+                        type="email"
+                        placeholder="Enter email address"
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        className="w-full min-w-[240px]"
+                        required
+                        autoComplete="off"
+                        data-bwignore
+                        data-1p-ignore
+                        data-lpignore="true"
+                        data-form-type="other"
+                      />
+                    </div>
+                    <div className="relative">
+                      <Select
+                        value={selectedRole}
+                        onValueChange={(value) => setSelectedRole(value)}
+                        disabled={!canManageBlog || hasReachedTeamLimit}
+                      >
+                        <SelectTrigger
+                          className="w-full min-w-[100px] capitalize"
+                          disabled={!canManageBlog}
+                        >
+                          {selectedRole}
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="editor">
+                            <div>Editor</div>
+                            <div className="text-xs text-zinc-500">
+                              Can create, update and delete content
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="viewer">
+                            <div>Viewer</div>
+                            <div className="text-xs text-zinc-500">
+                              Can only view content
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      type="submit"
+                      disabled={
+                        sendInvitation.isPending ||
+                        !inviteEmail.trim() ||
+                        !canManageBlog ||
+                        hasReachedTeamLimit
+                      }
+                    >
+                      <Mail className="h-4 w-4" />
+                      {sendInvitation.isPending ? "Sending..." : "Invite"}
+                    </Button>
+                  </form>
+                </div>
+              )}
             </div>
 
             {/* Current members */}
@@ -502,27 +535,42 @@ export default function BlogSettings() {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-900">
-                            {member.email}
+                            {member.email}{" "}
+                            {member.user_id === user?.id && (
+                              <span className="rounded-full bg-orange-100 px-2 py-1 text-xs text-orange-500">
+                                You
+                              </span>
+                            )}
                           </p>
+                          <div className="text-xs capitalize text-zinc-500">
+                            {member.role} • Joined{" "}
+                            {formatTimeAgo(member.created_at)}
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Select
-                          value={member.role}
-                          onValueChange={(value) =>
-                            handleRoleChange(member.id, value as BlogMemberRole)
-                          }
-                          disabled={member.role === "owner" || !canManageBlog}
-                        >
-                          <SelectTrigger className="w-[120px] capitalize">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="admin">Admin</SelectItem>
-                            <SelectItem value="editor">Editor</SelectItem>
-                            <SelectItem value="viewer">Viewer</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        {member.user_id === user?.id ||
+                        !canManageBlog ? null : (
+                          <Select
+                            value={member.role}
+                            onValueChange={(value) =>
+                              handleRoleChange(
+                                member.id,
+                                value as BlogMemberRole
+                              )
+                            }
+                            disabled={member.role === "owner" || !canManageBlog}
+                          >
+                            <SelectTrigger className="w-[120px] capitalize">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="admin">Admin</SelectItem>
+                              <SelectItem value="editor">Editor</SelectItem>
+                              <SelectItem value="viewer">Viewer</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
                         {member.user_id === user?.id ||
                         !canManageBlog ? null : (
                           <Button

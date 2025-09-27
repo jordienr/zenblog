@@ -252,7 +252,10 @@ export default function AppLayout({
           </nav>
           {invitations && invitations.length > 0
             ? invitations.map((inv) => (
-                <div className="mb-2 border-y bg-amber-300 p-2" key={inv.id}>
+                <div
+                  className="m-2 mb-2 rounded-lg border border-amber-300 bg-amber-100 p-2"
+                  key={inv.id}
+                >
                   <div className="mx-auto flex max-w-5xl items-center gap-4 px-4">
                     <Bell className="size-5 rounded-full border text-orange-800" />
                     <p className="text-sm font-medium">

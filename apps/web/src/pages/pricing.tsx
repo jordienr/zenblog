@@ -109,6 +109,7 @@ export function PricingCard({
   type,
   highlight = false,
   isCurrentPlan,
+  description,
 }: {
   id: string;
   title: string;
@@ -119,6 +120,7 @@ export function PricingCard({
   type: "month" | "year";
   highlight?: boolean;
   isCurrentPlan: boolean;
+  description: string;
 }) {
   const yearlyToMonth = yearlyPrice / 12;
 
@@ -154,10 +156,6 @@ export function PricingCard({
     );
   };
 
-  function getButtonVariant() {
-    return "default";
-  }
-
   return (
     <div
       className={cn(
@@ -168,6 +166,9 @@ export function PricingCard({
       <h3 className="text-lg font-medium">{title}</h3>
       <div className="h-16">
         <PricingText />
+      </div>
+      <div className="mt-2">
+        <p className="text-sm font-medium text-slate-500">{description}</p>
       </div>
       <ul className="mt-5 h-full flex-1 space-y-2 font-medium">
         {features.map((feature) => (
@@ -185,7 +186,7 @@ export function PricingCard({
       {!isCurrentPlan && (
         <div className="mt-5">
           {monthlyPrice !== 0 && (
-            <div className="mb-2 text-center font-mono text-xs text-slate-500">
+            <div className="mb-2 text-center text-xs text-slate-500">
               Try it free for {TRIAL_PERIOD_DAYS} days!
             </div>
           )}

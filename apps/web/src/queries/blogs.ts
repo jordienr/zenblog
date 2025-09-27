@@ -57,7 +57,12 @@ export const useCreateBlogMutation = () => {
       emoji: string;
       // slug: string;
     }) => {
-      const res = await supa.from("blogs").insert(newBlog).select().single();
+      const res = await supa.rpc("create_blog_for_me", {
+        p_title: newBlog.title,
+        p_description: newBlog.description,
+        p_emoji: newBlog.emoji,
+        p_slug: "",
+      });
       return res;
     },
     onSuccess: () => {

@@ -1,4 +1,7 @@
-import { PricingPlanId } from "@/lib/pricing.constants";
+import {
+  PricingPlanId,
+  PricingPlanIntervalType,
+} from "@/lib/pricing.constants";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
 import { useQuery } from "@tanstack/react-query";
@@ -24,17 +27,25 @@ export function useSubscriptionQuery() {
     queryFn: async () => {
       const { data } = await sb
         .from("subscriptions")
-        .select("subscription")
+        .select("plan, status, interval, subscription")
         .eq("user_id", user?.id || "")
         .limit(1)
         .throwOnError();
 
-      const res = data?.[0]?.subscription as unknown as Stripe.Subscription;
+      const res = data?.[0];
 
-      const plan = (res?.metadata?.plan_id as PricingPlanId) || "free";
-      const interval = res?.items?.data[0]?.plan?.interval as
-        | Stripe.Plan.Interval
-        | undefined;
+      if (!res) {
+        return {
+          plan: "free",
+          interval: "month",
+          status: "active",
+          isValidSubscription: true,
+          subscription: null,
+        };
+      }
+
+      const plan = res.plan || "free";
+      const interval = res.interval as PricingPlanIntervalType | undefined;
       const status = res?.status;
 
       const validSubscriptionStatus = ["active", "trialing", "past_due"];
@@ -46,7 +57,7 @@ export function useSubscriptionQuery() {
         interval,
         status,
         isValidSubscription,
-        subscription: res,
+        subscription: res.subscription as unknown as Stripe.Subscription,
       };
     },
   });

@@ -6,40 +6,30 @@ import {
   PricingPlanId,
   TRIAL_PERIOD_DAYS,
 } from "@/lib/pricing.constants";
-import { usePricesQuery } from "@/queries/prices";
-import { useProductsQuery } from "@/queries/products";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import { useUser } from "@/utils/supabase/browser";
-import {
-  Check,
-  CheckCircle,
-  CircleCheckIcon,
-  KeyRound,
-  Landmark,
-  Loader,
-  Loader2,
-} from "lucide-react";
+import { KeyRound, Landmark, Loader2 } from "lucide-react";
 import React, { ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PricingCard } from "../pricing";
 import { API } from "app/utils/api-client";
-import { getOnboardingItems, useOnboardingQuery } from "@/queries/onboarding";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/router";
 
 type Props = {};
 
-export const SubscribeSection = () => {
-  const products = useProductsQuery();
-  const prices = usePricesQuery();
+export const SubscribeSection = ({
+  currentPlan,
+}: {
+  currentPlan: PricingPlanId;
+}) => {
   const user = useUser();
   const [interval, setInterval] = React.useState<"year" | "month">("year");
   const [isLoading, setIsLoading] = useState(false);
-  const subscription = useSubscriptionQuery();
+
   async function openCheckoutPage(plan: PricingPlan) {
     setIsLoading(true);
     toast.info("Redirecting to Stripe...");
@@ -62,8 +52,6 @@ export const SubscribeSection = () => {
 
     const resJson = await response.json();
 
-    console.log(resJson);
-
     if ("error" in resJson) {
       toast.error("Error creating checkout session");
       console.error(resJson.error);
@@ -74,9 +62,7 @@ export const SubscribeSection = () => {
     window.location.href = resJson.url;
   }
 
-  const loading = products.isLoading || prices.isLoading || isLoading;
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex w-full items-center justify-center py-24">
         <Loader2 className="animate-spin text-orange-500" size={24} />
@@ -104,13 +90,13 @@ export const SubscribeSection = () => {
         </Label>
       </div>
 
-      <div className="mx-auto mt-4 grid w-full max-w-lg grid-cols-1 items-center justify-center gap-4">
+      <div className="mx-auto mt-4 grid w-full max-w-2xl grid-cols-2 items-center justify-center gap-4">
         {PRICING_PLANS.filter((plan) => plan.id !== "free").map((plan) => (
           <div key={plan.title}>
             <PricingCard
               {...plan}
               type={interval}
-              isCurrentPlan={false}
+              isCurrentPlan={currentPlan === plan.id}
               onClick={() => openCheckoutPage(plan)}
             />
           </div>
@@ -126,6 +112,7 @@ const AccountPage = () => {
   const router = useRouter();
 
   const isSuccess = router.query.success === "true";
+  const isCanceled = router.query.canceled === "true";
 
   const activeSubscriptions = ["free", "trialing", "active", "incomplete"];
 
@@ -175,16 +162,18 @@ const AccountPage = () => {
     });
   }
 
-  const planIdToTitle = (planId: PricingPlanId) => {
+  const planIdToTitle = (planId: PricingPlanId | string) => {
     return PRICING_PLANS.find((plan) => plan.id === planId)?.title || "Free";
   };
 
   useEffect(() => {
     if (isSuccess) {
       toast.success("Subscription updated successfully");
-      router.replace("/account", undefined, { shallow: true });
     }
-  }, [isSuccess]);
+    if (isCanceled) {
+      toast.error("Subscription checkout canceled");
+    }
+  }, []);
 
   return (
     <AppLayout
@@ -226,6 +215,14 @@ const AccountPage = () => {
               valueClassName="capitalize"
               value={subscription.data?.status || "Free"}
             />
+            {subscription.data?.interval &&
+              subscription.data?.status !== "canceled" && (
+                <AccountListItem
+                  label="Interval"
+                  valueClassName="capitalize"
+                  value={subscription.data?.interval}
+                />
+              )}
             {isActiveSubscription && (
               <>
                 <AccountListItem
@@ -236,7 +233,7 @@ const AccountPage = () => {
                 {subscription.data?.subscription?.cancel_at_period_end &&
                   subscription.data?.status !== "canceled" && (
                     <AccountListItem
-                      label="Cancel at period end"
+                      label="Cancellation status"
                       value={
                         <div className="rounded-md bg-emerald-50 p-2 text-sm font-medium text-emerald-600">
                           Your subscription will be canceled at the end of the
@@ -255,7 +252,7 @@ const AccountPage = () => {
                     )}
                   />
                 )}
-                {subscription.data?.subscription.trial_end &&
+                {subscription.data?.subscription?.trial_end &&
                   subscription.data?.status === "trialing" && (
                     <AccountListItem
                       label="Trial ends at"
@@ -292,21 +289,15 @@ const AccountPage = () => {
                 ></AccountListItem>
               </>
             )}
-
-            {/* <pre className="max-h-40 overflow-y-auto text-xs">
-              {JSON.stringify(subscription.data?.subscription, null, 2)}
-            </pre> */}
           </AccountList>
         )}
       </Section>
 
-      {subscription.data?.status !== "active" &&
-        subscription.data?.status !== "trialing" &&
-        subscription.data?.status !== "incomplete" && (
-          <section className="my-4 px-4 py-8">
-            <SubscribeSection />
-          </section>
-        )}
+      <section className="my-4 px-4 py-8">
+        <SubscribeSection
+          currentPlan={(subscription.data?.plan as PricingPlanId) || "free"}
+        />
+      </section>
     </AppLayout>
   );
 };

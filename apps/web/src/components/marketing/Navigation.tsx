@@ -64,12 +64,12 @@ const Navigation = (props: Props) => {
               </Button>
             </div>
           ) : (
-            <div className="ml-2 flex">
-              <Button asChild variant={"ghost"} size="default">
+            <div className="ml-2 flex gap-3">
+              <Button asChild variant={"outline"}>
                 <Link href="/sign-in">Sign in</Link>
               </Button>
-              <Button asChild variant={"ghost"} size="default">
-                <Link href="/sign-up">Sign up</Link>
+              <Button asChild>
+                <Link href="/sign-up">Start for free</Link>
               </Button>
             </div>
           )}

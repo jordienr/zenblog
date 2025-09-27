@@ -68,6 +68,45 @@ export type Database = {
           },
         ]
       }
+      billing_prices: {
+        Row: {
+          active: boolean
+          created_at: string
+          currency: string
+          interval: string
+          metadata: Json | null
+          plan_code: string
+          price_id: string
+          product_id: string
+          unit_amount: number
+          version: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          currency: string
+          interval: string
+          metadata?: Json | null
+          plan_code: string
+          price_id: string
+          product_id: string
+          unit_amount: number
+          version?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          currency?: string
+          interval?: string
+          metadata?: Json | null
+          plan_code?: string
+          price_id?: string
+          product_id?: string
+          unit_amount?: number
+          version?: number
+        }
+        Relationships: []
+      }
       blog_images: {
         Row: {
           blog_id: string
@@ -587,27 +626,6 @@ export type Database = {
           },
         ]
       }
-      prices: {
-        Row: {
-          created_at: string
-          id: number
-          price: Json
-          stripe_price_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          price: Json
-          stripe_price_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          price?: Json
-          stripe_price_id?: string
-        }
-        Relationships: []
-      }
       products: {
         Row: {
           created_at: string
@@ -631,27 +649,63 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          blog_limit: number | null
+          cancel_at: string | null
+          cancel_at_period_end: boolean | null
           created_at: string
+          currency: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          interval: string | null
           plan: string | null
+          plan_version: number | null
+          price_id: string | null
+          price_lookup_key: string | null
+          product_id: string | null
           status: string
           stripe_subscription_id: string
           subscription: Json
+          unit_amount: number | null
           user_id: string
         }
         Insert: {
+          blog_limit?: number | null
+          cancel_at?: string | null
+          cancel_at_period_end?: boolean | null
           created_at?: string
+          currency?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          interval?: string | null
           plan?: string | null
+          plan_version?: number | null
+          price_id?: string | null
+          price_lookup_key?: string | null
+          product_id?: string | null
           status: string
           stripe_subscription_id: string
           subscription: Json
+          unit_amount?: number | null
           user_id: string
         }
         Update: {
+          blog_limit?: number | null
+          cancel_at?: string | null
+          cancel_at_period_end?: boolean | null
           created_at?: string
+          currency?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          interval?: string | null
           plan?: string | null
+          plan_version?: number | null
+          price_id?: string | null
+          price_lookup_key?: string | null
+          product_id?: string | null
           status?: string
           stripe_subscription_id?: string
           subscription?: Json
+          unit_amount?: number | null
           user_id?: string
         }
         Relationships: []
@@ -921,6 +975,38 @@ export type Database = {
         Args: { invitation_id: number }
         Returns: boolean
       }
+      check_blog_role: {
+        Args: {
+          blog_id: string
+          min_role: Database["public"]["Enums"]["blog_member_role"]
+        }
+        Returns: boolean
+      }
+      create_blog_for_me: {
+        Args: {
+          p_description?: string
+          p_emoji: string
+          p_slug?: string
+          p_title: string
+        }
+        Returns: {
+          access_token: string | null
+          active: boolean
+          created_at: string
+          description: string
+          emoji: string
+          id: string
+          instagram: string
+          order: Database["public"]["Enums"]["blog_sort_order"]
+          slug: string | null
+          theme: string
+          title: string
+          twitter: string
+          updated_at: string
+          user_id: string
+          website: string
+        }
+      }
       generate_random_string: {
         Args: { length: number }
         Returns: string
@@ -976,6 +1062,13 @@ export type Database = {
       requesting_user_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      total_blog_members_for_current_user: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_members_excluding_owner: number
+          total_members_including_owner: number
+        }[]
       }
     }
     Enums: {
