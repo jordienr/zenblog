@@ -109,38 +109,40 @@ const Home = () => {
       <div className={`${h1Font.variable}`}>
         <div className="flex flex-col">
           <Navigation />
-          <main className="mt-12 px-6 pb-24">
-            <div className="mx-auto mt-8 max-w-5xl px-6 text-center">
+          <main className="mt-12 px-4 pb-24">
+            <div className="mx-auto mt-8 max-w-5xl">
               <h1
-                className={`mt-4 text-balance text-4xl font-semibold tracking-tight text-slate-800`}
+                className={`mt-4 text-balance text-3xl font-semibold tracking-tight text-slate-800`}
               >
-                <span className="text-slate-400">Think, write, publish.</span>
-                <br />A simple blogging CMS.
+                Focused writing and the best
+                <br />
+                developer experience in one tool
               </h1>
 
               <div className="mt-4 text-slate-500">
-                <p className="mx-auto max-w-xl text-balance text-lg font-medium">
-                  A headless CMS with Notion-style editor, hosted image and
-                  video uploads, and a type-safe API.
+                <p className="max-w-2xl text-balance text-lg font-medium">
+                  Zenblog is a headless CMS with Notion-style editor, hosted
+                  image and video uploads, and a type-safe API client.
                 </p>
-                <Link className="mt-6 inline-flex" href="/sign-up">
-                  <Button
-                    size="default"
-                    className="rounded-full bg-gradient-to-b from-slate-800 to-slate-900 font-medium"
-                  >
-                    Start blogging for free <ArrowRight className="ml-0.5" />
-                  </Button>
-                </Link>
-                <div>
-                  <code
-                    className="mt-4 inline-block cursor-copy rounded-lg px-3 py-1.5 text-sm text-slate-600 transition-all hover:bg-slate-100"
+                <div className="mt-5 flex items-center gap-4">
+                  <Link className="inline-flex" href="/sign-up">
+                    <Button
+                      size="default"
+                      className="rounded-full bg-gradient-to-b from-slate-800 to-slate-900 font-medium"
+                    >
+                      Start blogging for free <ArrowRight className="ml-0.5" />
+                    </Button>
+                  </Link>
+
+                  <button
+                    className="cursor-copy rounded-lg px-3 py-1.5 text-sm text-slate-600 transition-all hover:bg-slate-100"
                     onClick={() => {
                       navigator.clipboard.writeText("npm i zenblog");
                       toast.success("Copied to clipboard");
                     }}
                   >
-                    npm i zenblog
-                  </code>
+                    <code>npm i zenblog</code>
+                  </button>
                 </div>
               </div>
             </div>

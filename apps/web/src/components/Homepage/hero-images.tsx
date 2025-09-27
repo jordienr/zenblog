@@ -13,7 +13,7 @@ export const HeroImages = () => {
     {
       id: "editor",
       title: "Editor",
-      icon: <PencilLine className="mr-2 size-5 opacity-80" />,
+      icon: <PencilLine className="mr-2 size-4 opacity-80" />,
       content: (
         <BrowserWrapper>
           <img
@@ -27,7 +27,7 @@ export const HeroImages = () => {
     {
       id: "dashboard",
       title: "Dashboard",
-      icon: <LaptopMinimal className="mr-2 size-5 opacity-80" />,
+      icon: <LaptopMinimal className="mr-2 size-4 opacity-80" />,
       content: (
         <BrowserWrapper>
           <img
@@ -42,13 +42,13 @@ export const HeroImages = () => {
       id: "tsapi",
       title: "TypeScript",
       content: <TsApiExample />,
-      icon: <TbBrandTypescript className="mr-2 size-5 opacity-80" />,
+      icon: <TbBrandTypescript className="mr-2 size-4 opacity-80" />,
     },
     {
       id: "httpapi",
       title: "HTTP",
       content: <HttpApiExample />,
-      icon: <TbHttpGet className="mr-2 size-5 opacity-80" />,
+      icon: <TbHttpGet className="mr-2 size-4 opacity-80" />,
     },
   ];
 
@@ -56,15 +56,15 @@ export const HeroImages = () => {
   const currentFeature = FEATURES[currentIndex];
 
   return (
-    <Tabs value={currentFeature?.id} className="w-full">
-      <TabsList className="flex h-16 w-full justify-start space-x-2 overflow-x-auto md:justify-center md:space-x-4">
+    <Tabs value={currentFeature?.id} className="mx-auto w-full max-w-5xl">
+      <TabsList className="flex h-16 w-full justify-start space-x-2 overflow-x-auto">
         {FEATURES.map((f, index) => (
           <TabsTrigger
             key={`${f.id}-trigger`}
             value={f.id}
             onClick={() => setCurrentIndex(index)}
             className={cn(
-              "relative flex min-w-fit cursor-pointer items-center overflow-hidden rounded-full border px-4 py-2 font-semibold opacity-70 data-[state=active]:border-b data-[state=active]:border-slate-300 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-800 data-[state=active]:opacity-100"
+              "relative flex min-w-fit cursor-pointer items-center overflow-hidden rounded-lg border px-3 py-1.5 font-semibold opacity-70 data-[state=active]:border-b data-[state=active]:border-slate-300 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-800 data-[state=active]:opacity-100"
             )}
           >
             <span className="opacity-70">{f.icon}</span>
@@ -76,7 +76,7 @@ export const HeroImages = () => {
         <TabsContent
           key={`${f.id}-content`}
           value={f.id}
-          className="mx-auto max-w-6xl rounded-2xl border border-orange-400 bg-gradient-to-b from-orange-300 to-orange-500 px-20 pb-4 pt-20"
+          className="mx-auto max-w-5xl"
         >
           {f.content}
         </TabsContent>
