@@ -72,6 +72,8 @@ export function CreateCategoryDialog({
                 blog_id: blogId,
               });
               toast.success("Category created");
+              setName("");
+              setSlug("");
               setOpen(false);
             } catch (error) {
               toast.error("Failed to create category. Slugs must be unique.");
