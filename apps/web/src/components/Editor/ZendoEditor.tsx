@@ -331,6 +331,7 @@ export const ZendoEditor = (props: Props) => {
                 renderHTML: (attributes) => ({
                   alt: attributes.alt,
                 }),
+                parseHTML: (element) => element.getAttribute("alt"),
               },
               isVideo: {
                 default: false,

@@ -29,9 +29,11 @@ function AltTextArea({
 export function EditorMediaNode({
   node,
   editor,
+  updateAttributes,
 }: {
   node: Node;
   editor: Editor;
+  updateAttributes: (attrs: Record<string, any>) => void;
 }) {
   const { src } = node.attrs;
   const [showImagePicker, setShowImagePicker] = useState(src ? false : true);
@@ -50,7 +52,7 @@ export function EditorMediaNode({
 
   function setImageSrc(src: string) {
     const isVideo = videoFormats.some((format) => src?.endsWith(`.${format}`));
-    editor.commands.updateAttributes("image", {
+    updateAttributes({
       src,
       isVideo: isVideo.toString(),
       isYoutube: "false",
@@ -61,7 +63,7 @@ export function EditorMediaNode({
     const videoId = getYoutubeVideoId(url);
     if (videoId) {
       // Replace the current image with the youtube video
-      editor.commands.updateAttributes("image", {
+      updateAttributes({
         src: `https://www.youtube.com/embed/${videoId}`,
         isVideo: "true",
         isYoutube: "true",
@@ -79,7 +81,7 @@ export function EditorMediaNode({
 
   function updateAlt(newAlt: string) {
     setAlt(newAlt);
-    editor.commands.updateAttributes("image", { alt: newAlt });
+    updateAttributes({ alt: newAlt });
   }
 
   const videoFormats = ["mp4", "webm", "ogg"];
@@ -93,7 +95,7 @@ export function EditorMediaNode({
       height: video.videoHeight,
     };
     setVideoDimensions(dimensions);
-    editor.commands.updateAttributes("image", {
+    updateAttributes({
       videoDimensions: JSON.stringify(dimensions),
     });
   };
