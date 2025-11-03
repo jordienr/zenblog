@@ -10,6 +10,8 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { FeedbackForm } from "./Feedback/feedback-form";
+import posthog from "posthog-js";
+import { posthogCapture } from "lib/posthog";
 
 type Props = {};
 
@@ -36,6 +38,12 @@ const Feedback = (props: Props) => {
             if (user.error) {
               throw user.error;
             }
+
+            posthogCapture("feedback", {
+              feedback,
+              type,
+              user_email: user.data.user.email,
+            });
 
             const { data, error } = await sb
               .from("feedback")

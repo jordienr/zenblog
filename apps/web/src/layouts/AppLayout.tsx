@@ -23,6 +23,7 @@ import { useSubscriptionQuery } from "@/queries/subscription";
 import { ZenblogToolbar } from "@/components/dev/zenblog-toolbar";
 import { IS_DEV } from "@/lib/constants";
 import { OnboardingDropdown } from "@/components/onboarding";
+import { posthogIdentify } from "lib/posthog";
 
 type Props = {
   children?: React.ReactNode;
@@ -53,9 +54,14 @@ export default function AppLayout({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
-  const selectedBlog = blogs?.find((blog) => blog.id === router.query.blogId);
+  useEffect(() => {
+    if (user && user.email) {
+      console.log("Identifying user", user.email);
+      posthogIdentify({ email: user.email });
+    }
+  }, [user]);
 
-  const isDev = IS_DEV;
+  const selectedBlog = blogs?.find((blog) => blog.id === router.query.blogId);
 
   const BlogNavItems = [
     {
@@ -211,7 +217,7 @@ export default function AppLayout({
           </nav>
           {selectedBlog && (
             <div className="border-b bg-white shadow-sm">
-              <div className="mx-auto flex max-w-5xl items-center justify-between overflow-x-auto">
+              <div className="mx-auto flex max-w-5xl items-center justify-between">
                 <div className="flex max-w-5xl items-center px-2">
                   {BlogNavItems.map((item) => (
                     <NavItem

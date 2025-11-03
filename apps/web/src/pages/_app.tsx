@@ -9,8 +9,10 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { Toaster } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
+import { PostHogProvider } from "posthog-js/react";
+import posthog from "posthog-js";
 
 // Fonts
 const inter = Inter({
@@ -33,29 +35,44 @@ function MyApp({ Component, pageProps }: AppProps) {
       })
   );
 
+  useEffect(() => {
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
+      api_host: "https://eu.i.posthog.com",
+      person_profiles: "always",
+      defaults: "2025-05-24",
+      // Enable debug mode in development
+      loaded: (posthog) => {
+        if (process.env.NODE_ENV === "development") posthog.debug();
+      },
+    });
+    console.log("PostHog initialized", posthog);
+  }, []);
+
   return (
     <div className={`${inter.variable}`}>
-      <UserProvider>
-        <PlausibleProvider domain="zenblog.com">
-          <QueryClientProvider client={queryClient}>
-            <HydrationBoundary state={pageProps.dehydratedState}>
-              <Component key={pathname} {...pageProps} />
-              <Toaster
-                position="bottom-center"
-                toastOptions={{
-                  style: {
-                    borderRadius: "12px",
-                    backgroundColor: "#333333",
-                    color: "white",
-                    padding: "10px 12px",
-                    border: "none",
-                  },
-                }}
-              />
-            </HydrationBoundary>
-          </QueryClientProvider>
-        </PlausibleProvider>
-      </UserProvider>
+      <PostHogProvider client={posthog}>
+        <UserProvider>
+          <PlausibleProvider domain="zenblog.com">
+            <QueryClientProvider client={queryClient}>
+              <HydrationBoundary state={pageProps.dehydratedState}>
+                <Component key={pathname} {...pageProps} />
+                <Toaster
+                  position="bottom-center"
+                  toastOptions={{
+                    style: {
+                      borderRadius: "12px",
+                      backgroundColor: "#333333",
+                      color: "white",
+                      padding: "10px 12px",
+                      border: "none",
+                    },
+                  }}
+                />
+              </HydrationBoundary>
+            </QueryClientProvider>
+          </PlausibleProvider>
+        </UserProvider>
+      </PostHogProvider>
     </div>
   );
 }
