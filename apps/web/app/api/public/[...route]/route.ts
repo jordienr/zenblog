@@ -15,6 +15,7 @@ import { PublicApiResponse } from "./public-api.types";
 import { Post, PostWithContent } from "@zenblog/types";
 import { throwError } from "./public-api.errors";
 import { trackApiUsage } from "lib/axiom";
+import { isValidBlogId } from "./public-api.validation";
 
 const app = new Hono()
   .basePath("/api/public")
@@ -23,25 +24,23 @@ const app = new Hono()
   .use("*", async (ctx, next) => {
     // middleware doesnt get the blogId param
     // so we need to get it from the url
-    const blogId = ctx.req.url.split("/")[6];
+    const rawBlogId = ctx.req.url.split("/")[6];
 
-    if (!blogId) {
-      await next();
-      return;
+    if (isValidBlogId(rawBlogId)) {
+      const blogId: string = rawBlogId;
+      trackApiUsage({
+        blogId,
+        event: "api-usage",
+        timestamp: new Date().toISOString(),
+        path: ctx.req.url,
+      });
     }
-
-    trackApiUsage({
-      blogId,
-      event: "api-usage",
-      timestamp: new Date().toISOString(),
-      path: ctx.req.url,
-    });
 
     await next();
   });
 
 app.get(posts.path, async (c) => {
-  const blogId = c.req.param("blogId");
+  const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
   const categoryFilter = c.req.query("category");
@@ -49,9 +48,11 @@ app.get(posts.path, async (c) => {
   const authorFilter = c.req.query("author");
   const supabase = createClient();
 
-  if (!blogId) {
+  if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
   }
+
+  const blogId: string = rawBlogId;
 
   let postsQuery = supabase
     .from("posts_v10")
@@ -141,13 +142,15 @@ app.get(posts.path, async (c) => {
 });
 
 app.get(postBySlug.path, async (c) => {
-  const blogId = c.req.param("blogId");
+  const rawBlogId = c.req.param("blogId");
   const slug = c.req.param("slug");
   const supabase = createClient();
 
-  if (!blogId || !slug) {
+  if (!isValidBlogId(rawBlogId) || !slug?.trim()) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
   }
+
+  const blogId: string = rawBlogId;
 
   const { data: post, error } = await supabase
     .from("posts_v10")
@@ -212,14 +215,16 @@ app.get(postBySlug.path, async (c) => {
 });
 
 app.get(categories.path, async (c) => {
-  const blogId = c.req.param("blogId");
+  const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
   const supabase = createClient();
 
-  if (!blogId) {
+  if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
   }
+
+  const blogId: string = rawBlogId;
 
   const {
     data: categories,
@@ -246,14 +251,16 @@ app.get(categories.path, async (c) => {
 });
 
 app.get(tags.path, async (c) => {
-  const blogId = c.req.param("blogId");
+  const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
   const supabase = createClient();
 
-  if (!blogId) {
+  if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
   }
+
+  const blogId: string = rawBlogId;
 
   const {
     data: tags,
@@ -280,14 +287,16 @@ app.get(tags.path, async (c) => {
 });
 
 app.get(authors.path, async (c) => {
-  const blogId = c.req.param("blogId");
+  const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
   const supabase = createClient();
 
-  if (!blogId) {
+  if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
   }
+
+  const blogId: string = rawBlogId;
 
   const {
     data: authors,
@@ -314,13 +323,15 @@ app.get(authors.path, async (c) => {
 });
 
 app.get(authorBySlug.path, async (c) => {
-  const blogId = c.req.param("blogId");
+  const rawBlogId = c.req.param("blogId");
   const slug = c.req.param("slug");
   const supabase = createClient();
 
-  if (!blogId || !slug) {
+  if (!isValidBlogId(rawBlogId) || !slug?.trim()) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
   }
+
+  const blogId: string = rawBlogId;
 
   const { data: author, error } = await supabase
     .from("authors")
