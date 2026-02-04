@@ -1,18 +1,19 @@
-import { ZendoLogo } from "@/components/ZendoLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
-import { TabsContent } from "@radix-ui/react-tabs";
-import { CornerUpLeft, Loader, Loader2 } from "lucide-react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { CornerUpLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const user = useUser();
   const router = useRouter();
@@ -37,16 +38,31 @@ export default function SignIn() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      alert(error.message);
+    if (!captchaToken) {
+      toast.error("Please complete the captcha");
       setLoading(false);
-    } else {
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+        options: {
+          captchaToken,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
       await router.push("/blogs");
+    } catch (error: any) {
+      toast.error(error.message || "Error signing in");
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
+      setLoading(false);
     }
   }
 
@@ -87,6 +103,12 @@ export default function SignIn() {
               </Label>
               <Input required type="password" name="password" />
             </div>
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+              onSuccess={setCaptchaToken}
+              onExpire={() => setCaptchaToken(null)}
+            />
             <div className="mt-2 flex flex-col">
               <Button type="submit">Sign in</Button>
             </div>
