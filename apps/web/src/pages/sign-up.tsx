@@ -3,15 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<{ reset: () => void }>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
 
@@ -32,10 +35,19 @@ export default function SignIn() {
       const email = form.email.value;
       const password = form.password.value;
 
+      if (!captchaToken) {
+        toast.error("Please complete the captcha");
+        setLoading(false);
+        return;
+      }
+
       const sb = createSupabaseBrowserClient();
       const { data, error } = await sb.auth.signUp({
         email,
         password,
+        options: {
+          captchaToken,
+        },
       });
 
       if (error) {
@@ -47,6 +59,8 @@ export default function SignIn() {
     } catch (error) {
       console.error("Error creating account", error);
       toast.error("Error creating account");
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
     }
 
     setLoading(false);
@@ -83,6 +97,12 @@ export default function SignIn() {
           <Label htmlFor="password">Password</Label>
           <Input required type="password" name="password" />
         </div>
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+          onSuccess={setCaptchaToken}
+          onExpire={() => setCaptchaToken(null)}
+        />
         {loading ? (
           <Spinner />
         ) : (

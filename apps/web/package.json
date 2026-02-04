@@ -25,6 +25,7 @@
     "@hono/zod-openapi": "^0.16.4",
     "@hono/zod-validator": "^0.3.0",
     "@hookform/resolvers": "^3.4.2",
+    "@marsidev/react-turnstile": "^1.4.1",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^14.2.15",
