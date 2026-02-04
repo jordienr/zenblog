@@ -7,7 +7,7 @@ export const metadata = {
   title: "Zenblog blog",
   description: "A simple headless blogging CMS",
   icons: {
-    icon: "/static/favicon.ico",
+    icon: "/static/logo.svg",
   },
   openGraph: {
     title: "Zenblog blog",

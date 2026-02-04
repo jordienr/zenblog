@@ -21,7 +21,7 @@ export default function Pricing() {
       <Head>
         <title>Zenblog - Pricing</title>
         <meta name="description" content="Simple, headless, blogging CMS." />
-        <link rel="icon" href="/static/favicon.ico" />
+        <link rel="icon" href="/static/logo.svg" />
       </Head>
       <Navigation />
       <main className="mx-auto mt-8 max-w-4xl px-4">

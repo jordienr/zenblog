@@ -11,17 +11,17 @@ export function ZendoLogo(props: Props) {
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5 text-lg font-semibold tracking-tight",
+        "flex items-center gap-2 text-lg font-semibold tracking-tight",
         props.className
       )}
     >
       <Image
         src="/static/logo.svg"
-        width={props.size || 27}
-        height={props.size || 27}
+        width={props.size || 23}
+        height={props.size || 23}
         alt="Zenblog logotype"
       />
-      {!props.hideText && "zenblog"}
+      {!props.hideText && "Zenblog"}
     </div>
   );
 }

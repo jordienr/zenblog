@@ -496,7 +496,7 @@ export const ZendoEditor = (props: Props) => {
     <div className="relative min-h-screen pb-24">
       <Head>
         <title>{props.post?.title || title || "Zenblog - New post"}</title>
-        <link rel="icon" href="/static/favicon.ico" />
+        <link rel="icon" href="/static/logo.svg" />
       </Head>
       {editorLoading && (
         <div className="absolute inset-0 z-30 bg-zinc-50/50 backdrop-blur-sm">

@@ -87,7 +87,7 @@ const Home = () => {
       <Head>
         <title>Zenblog - A tiny blogging CMS</title>
         <meta name="description" content="Simple, headless, blogging CMS." />
-        <link rel="icon" href="/static/favicon.ico" />
+        <link rel="icon" href="/static/logo.svg" />
         <meta property="og:url" content="https://www.zenblog.com/" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Zenblog" />

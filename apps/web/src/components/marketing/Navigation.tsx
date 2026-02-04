@@ -38,9 +38,9 @@ const Navigation = (props: Props) => {
   ];
 
   return (
-    <nav className="sticky top-0 z-20 mx-auto grid w-full max-w-5xl grid-cols-3 bg-white py-4 md:relative">
+    <nav className="sticky top-0 z-20 mx-auto grid w-full max-w-5xl grid-cols-3 bg-white px-4 py-4 md:relative">
       <Link href="/">
-        <ZendoLogo size={27} />
+        <ZendoLogo size={24} />
       </Link>
 
       <div className="flex items-center justify-center gap-2">

@@ -102,7 +102,7 @@ export default function AppLayout({
       <Head>
         <title>Zenblog</title>
         <meta name="description" content="Simple, headless, blogging CMS." />
-        <link rel="icon" href="/static/favicon.ico" />
+        <link rel="icon" href="/static/logo.svg" />
         <meta property="og:title" content="Zenblog" />
         <meta
           property="og:description"
