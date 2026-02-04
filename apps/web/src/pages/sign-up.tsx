@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -14,7 +14,7 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const turnstileRef = useRef<{ reset: () => void }>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
 
