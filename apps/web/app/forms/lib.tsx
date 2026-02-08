@@ -176,7 +176,7 @@ export function createForm(schema: z.ZodObject<any>) {
           <Input {...sharedProps} placeholder={placeholder} type="number" />
         </InputGroup>
       );
-    } else return <pre>{JSON.stringify(value, null, 2)}</pre>;
+    } else return <pre key={key}>{JSON.stringify(value, null, 2)}</pre>;
   });
 
   const Component = (props: React.FormHTMLAttributes<HTMLFormElement>) => (
