@@ -65,7 +65,7 @@ test("posts limit and offset", async () => {
 });
 
 test("posts endpoint filter by category", async () => {
-  const category = "news";
+  const category = "capybaras";
 
   const response = await fetch(`${BASE_URL}/posts?category=${category}`);
 
@@ -79,7 +79,7 @@ test("posts endpoint filter by category", async () => {
 });
 
 test("posts endpoint filter by tag", async () => {
-  const tags = ["random", "test"];
+  const tags = ["marmots", "capybaras"];
 
   const response = await fetch(`${BASE_URL}/posts?tags=${tags.join(",")}`);
 
@@ -98,20 +98,21 @@ test("posts endpoint filter by tag", async () => {
 
 test("posts endpoint accepts multiple configuration of query params", async () => {
   const queries = [
-    "category=hiking&tags=random,test",
-    "tags=test,random&category=hiking",
-    "tags=random,test&category=hiking&limit=4&offset=0",
+    "category=capybaras&tags=marmots,capybaras",
+    "tags=capybaras,marmots&category=capybaras",
+    "tags=marmots,capybaras&category=capybaras&limit=4&offset=0",
     "limit=4&offset=2",
-    "tags=random,test",
-    "category=hiking",
+    "tags=marmots,capybaras",
+    "category=capybaras",
   ];
 
-  queries.forEach(async (query) => {
+  for (const query of queries) {
     const response = await fetch(`${BASE_URL}/posts?${query}`);
+    expect(response.status).toBe(200);
     const data = await response.json();
     const parsedData = postsResponseSchema.parse(data);
     expect(parsedData.data.length).toBeGreaterThan(0);
-  });
+  }
 });
 
 test("posts endpoint filters by author correctly", async () => {
@@ -136,7 +137,7 @@ test("authors endpoint returns correct data", async () => {
 });
 
 test("postBySlug endpoint returns correct data with tags", async () => {
-  const slug = "test";
+  const slug = "reginald-lord-of-the-highlands";
   const response = await fetch(`${BASE_URL}/posts/${slug}`);
   const data = await response.json();
 

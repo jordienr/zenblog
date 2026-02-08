@@ -2,7 +2,6 @@
 import { ZendoLogo } from "@/components/ZendoLogo";
 import Link from "next/link";
 import { SidebarLink, SidebarTitle } from "../ui/sidebar";
-import { endpoints } from "app/api/public/[...route]/public-api.constants";
 import {
   Drawer,
   DrawerContent,
@@ -33,18 +32,9 @@ export default function DocsLayout({
       {/* <SidebarLink href="/docs/typescript">TypeScript client</SidebarLink> */}
       <SidebarLink href="/docs/nextjs">Next.js</SidebarLink>
       <SidebarTitle>API Reference</SidebarTitle>
-      {endpoints.map((endpoint) => (
-        <SidebarLink
-          className="space-x-2"
-          key={endpoint.id}
-          href={`/docs/api/${endpoint.id}`}
-        >
-          <span className="font-mono text-xs font-medium text-slate-500">
-            {endpoint.method}
-          </span>
-          <span>{endpoint.title}</span>
-        </SidebarLink>
-      ))}
+      <SidebarLink href="/api/public/docs">
+        API Documentation
+      </SidebarLink>
     </div>
   );
 
