@@ -34,7 +34,6 @@ import { useRouter } from "next/router";
 import { Input } from "@/components/ui/input";
 
 type Props = {};
-const UPDATE_EMAIL_FLAG_KEY = "zenblog:feature:update-user-email";
 
 export const SubscribeSection = () => {
   const products = useProductsQuery();
@@ -129,7 +128,6 @@ const AccountPage = () => {
   const [emailDraft, setEmailDraft] = React.useState("");
   const [updatingEmail, setUpdatingEmail] = React.useState(false);
   const [emailUpdateMessage, setEmailUpdateMessage] = React.useState("");
-  const [isUpdateEmailEnabled, setIsUpdateEmailEnabled] = React.useState(false);
   const user = useUser();
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
@@ -199,14 +197,6 @@ const AccountPage = () => {
     setEmailDraft(user?.email || "");
   }, [user?.email]);
 
-  useEffect(() => {
-    const raw = window.localStorage.getItem(UPDATE_EMAIL_FLAG_KEY) || "";
-    const enabled = ["1", "true", "on", "enabled"].includes(
-      raw.trim().toLowerCase()
-    );
-    setIsUpdateEmailEnabled(enabled);
-  }, []);
-
   async function onUpdateEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const nextEmail = emailDraft.trim();
@@ -252,7 +242,7 @@ const AccountPage = () => {
           <AccountListItem
             label="Email"
             value={
-              isUpdateEmailEnabled && isEditingEmail ? (
+              isEditingEmail ? (
                 <form
                   className="flex max-w-sm flex-col items-start gap-2"
                   onSubmit={onUpdateEmailSubmit}
@@ -298,15 +288,13 @@ const AccountPage = () => {
               ) : (
                 <div className="flex items-center gap-2">
                   <span>{user?.email || "Unknown"}</span>
-                  {isUpdateEmailEnabled && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setIsEditingEmail(true)}
-                    >
-                      Update
-                    </Button>
-                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsEditingEmail(true)}
+                  >
+                    Update
+                  </Button>
                 </div>
               )
             }
