@@ -128,11 +128,14 @@ const AccountPage = () => {
   const [emailDraft, setEmailDraft] = React.useState("");
   const [updatingEmail, setUpdatingEmail] = React.useState(false);
   const [emailUpdateMessage, setEmailUpdateMessage] = React.useState("");
+  const [isEmailUpdateConfirmed, setIsEmailUpdateConfirmed] =
+    React.useState(false);
   const user = useUser();
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
   const isSuccess = router.query.success === "true";
+  const isEmailUpdated = router.query.email_updated === "true";
 
   const activeSubscriptions = ["free", "trialing", "active", "incomplete"];
 
@@ -194,6 +197,15 @@ const AccountPage = () => {
   }, [isSuccess, router]);
 
   useEffect(() => {
+    if (isEmailUpdated) {
+      setIsEditingEmail(false);
+      setIsEmailUpdateConfirmed(true);
+      toast.success("Email updated successfully");
+      router.replace("/account", undefined, { shallow: true });
+    }
+  }, [isEmailUpdated, router]);
+
+  useEffect(() => {
     setEmailDraft(user?.email || "");
   }, [user?.email]);
 
@@ -201,6 +213,7 @@ const AccountPage = () => {
     e.preventDefault();
     const nextEmail = emailDraft.trim();
     setEmailUpdateMessage("");
+    setIsEmailUpdateConfirmed(false);
 
     if (!nextEmail) {
       toast.error("Please enter an email");
@@ -286,15 +299,25 @@ const AccountPage = () => {
                   )}
                 </form>
               ) : (
-                <div className="flex items-center gap-2">
-                  <span>{user?.email || "Unknown"}</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setIsEditingEmail(true)}
-                  >
-                    Update
-                  </Button>
+                <div className="flex flex-col items-start gap-1">
+                  <div className="flex items-center gap-2">
+                    <span>{user?.email || "Unknown"}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditingEmail(true);
+                        setIsEmailUpdateConfirmed(false);
+                      }}
+                    >
+                      Update
+                    </Button>
+                  </div>
+                  {isEmailUpdateConfirmed && (
+                    <p className="text-xs font-medium text-emerald-600">
+                      Email updated successfully.
+                    </p>
+                  )}
                 </div>
               )
             }

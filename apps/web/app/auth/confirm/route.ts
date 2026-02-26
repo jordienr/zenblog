@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
+      if (type === "email_change") {
+        redirectTo.searchParams.set("email_updated", "true");
+      }
       redirectTo.searchParams.delete("next");
       return NextResponse.redirect(redirectTo);
     }
