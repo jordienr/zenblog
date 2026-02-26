@@ -9,6 +9,7 @@ import {
 import { usePricesQuery } from "@/queries/prices";
 import { useProductsQuery } from "@/queries/products";
 import { useSubscriptionQuery } from "@/queries/subscription";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
 import {
   Check,
@@ -30,8 +31,10 @@ import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/router";
+import { Input } from "@/components/ui/input";
 
 type Props = {};
+const UPDATE_EMAIL_FLAG_KEY = "zenblog:feature:update-user-email";
 
 export const SubscribeSection = () => {
   const products = useProductsQuery();
@@ -122,8 +125,13 @@ export const SubscribeSection = () => {
 
 const AccountPage = () => {
   const [loading, setLoading] = React.useState(false);
+  const [isEditingEmail, setIsEditingEmail] = React.useState(false);
+  const [emailDraft, setEmailDraft] = React.useState("");
+  const [updatingEmail, setUpdatingEmail] = React.useState(false);
+  const [isUpdateEmailEnabled, setIsUpdateEmailEnabled] = React.useState(false);
   const user = useUser();
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
 
   const isSuccess = router.query.success === "true";
 
@@ -184,7 +192,48 @@ const AccountPage = () => {
       toast.success("Subscription updated successfully");
       router.replace("/account", undefined, { shallow: true });
     }
-  }, [isSuccess]);
+  }, [isSuccess, router]);
+
+  useEffect(() => {
+    setEmailDraft(user?.email || "");
+  }, [user?.email]);
+
+  useEffect(() => {
+    const raw = window.localStorage.getItem(UPDATE_EMAIL_FLAG_KEY) || "";
+    const enabled = ["1", "true", "on", "enabled"].includes(
+      raw.trim().toLowerCase()
+    );
+    setIsUpdateEmailEnabled(enabled);
+  }, []);
+
+  async function onUpdateEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const nextEmail = emailDraft.trim();
+
+    if (!nextEmail) {
+      toast.error("Please enter an email");
+      return;
+    }
+
+    if (nextEmail === user?.email) {
+      setIsEditingEmail(false);
+      return;
+    }
+
+    setUpdatingEmail(true);
+    const { error } = await supabase.auth.updateUser({
+      email: nextEmail,
+    });
+    setUpdatingEmail(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setIsEditingEmail(false);
+    toast.success("Check your new inbox to confirm this email update");
+  }
 
   return (
     <AppLayout
@@ -195,7 +244,59 @@ const AccountPage = () => {
       <Section className="px-4">
         <SectionTitle>Account</SectionTitle>
         <AccountList>
-          <AccountListItem label="Email" value={user?.email} />
+          <AccountListItem
+            label="Email"
+            value={
+              isUpdateEmailEnabled && isEditingEmail ? (
+                <form
+                  className="flex max-w-sm flex-col items-start gap-2"
+                  onSubmit={onUpdateEmailSubmit}
+                >
+                  <Input
+                    type="email"
+                    value={emailDraft}
+                    onChange={(e) => setEmailDraft(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button type="submit" size="sm" disabled={updatingEmail}>
+                      {updatingEmail && <Loader2 className="animate-spin" />}
+                      Save
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      disabled={updatingEmail}
+                      onClick={() => {
+                        setIsEditingEmail(false);
+                        setEmailDraft(user?.email || "");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                  <p className="text-xs text-zinc-500">
+                    A confirmation email will be sent to the new address.
+                  </p>
+                </form>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span>{user?.email || "Unknown"}</span>
+                  {isUpdateEmailEnabled && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsEditingEmail(true)}
+                    >
+                      Update
+                    </Button>
+                  )}
+                </div>
+              )
+            }
+          />
           <AccountListItem
             label="Created at"
             value={formatDate(user?.created_at || "")}
