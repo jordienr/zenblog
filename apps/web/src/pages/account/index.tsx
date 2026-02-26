@@ -128,6 +128,7 @@ const AccountPage = () => {
   const [isEditingEmail, setIsEditingEmail] = React.useState(false);
   const [emailDraft, setEmailDraft] = React.useState("");
   const [updatingEmail, setUpdatingEmail] = React.useState(false);
+  const [emailUpdateMessage, setEmailUpdateMessage] = React.useState("");
   const [isUpdateEmailEnabled, setIsUpdateEmailEnabled] = React.useState(false);
   const user = useUser();
   const router = useRouter();
@@ -209,6 +210,7 @@ const AccountPage = () => {
   async function onUpdateEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const nextEmail = emailDraft.trim();
+    setEmailUpdateMessage("");
 
     if (!nextEmail) {
       toast.error("Please enter an email");
@@ -223,6 +225,8 @@ const AccountPage = () => {
     setUpdatingEmail(true);
     const { error } = await supabase.auth.updateUser({
       email: nextEmail,
+    }, {
+      emailRedirectTo: `${window.location.origin}/auth/confirm?next=/account`,
     });
     setUpdatingEmail(false);
 
@@ -231,8 +235,9 @@ const AccountPage = () => {
       return;
     }
 
-    setIsEditingEmail(false);
-    toast.success("Check your new inbox to confirm this email update");
+    setEmailUpdateMessage(
+      "Confirmation email sent. Open the link in that email to finish updating your address."
+    );
   }
 
   return (
@@ -255,7 +260,10 @@ const AccountPage = () => {
                   <Input
                     type="email"
                     value={emailDraft}
-                    onChange={(e) => setEmailDraft(e.target.value)}
+                    onChange={(e) => {
+                      setEmailDraft(e.target.value);
+                      setEmailUpdateMessage("");
+                    }}
                     placeholder="you@example.com"
                     required
                   />
@@ -272,6 +280,7 @@ const AccountPage = () => {
                       onClick={() => {
                         setIsEditingEmail(false);
                         setEmailDraft(user?.email || "");
+                        setEmailUpdateMessage("");
                       }}
                     >
                       Cancel
@@ -280,6 +289,11 @@ const AccountPage = () => {
                   <p className="text-xs text-zinc-500">
                     A confirmation email will be sent to the new address.
                   </p>
+                  {emailUpdateMessage && (
+                    <p className="text-xs font-medium text-emerald-600">
+                      {emailUpdateMessage}
+                    </p>
+                  )}
                 </form>
               ) : (
                 <div className="flex items-center gap-2">
