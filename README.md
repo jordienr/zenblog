@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/jordienr/zenblog/stargazers>
+  <a href="https://github.com/jordienr/zenblog/stargazers">
     <img src="https://img.shields.io/github/stars/jordienr/zenblog?logo=github&style=for-the-badge&color=yellow" alt="Github Stars"></a>
   </a>
 </p>
