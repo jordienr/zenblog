@@ -10,7 +10,6 @@ import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 import { toast } from "sonner";
 
 export default function SignIn() {
@@ -20,11 +19,14 @@ export default function SignIn() {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
-  const isGoogleSignInEnabled = useFeatureFlagEnabled("google-sign-in");
+  const [isGoogleSignInEnabled, setIsGoogleSignInEnabled] = useState(false);
   const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
 
   useEffect(() => {
     setIsTurnstileEnabled(isProductionDeployment());
+    setIsGoogleSignInEnabled(
+      window.localStorage.getItem("google-signin") === "true"
+    );
 
     supabase.auth.getSession().then((res) => {
       if (res.data.session?.user) {
