@@ -20,6 +20,7 @@ export default function SignIn() {
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
   const isGoogleSignInEnabled = useFeatureFlagEnabled("google-sign-in");
+  const isTurnstileEnabled = process.env.NODE_ENV === "production";
 
   useEffect(() => {
     supabase.auth.getSession().then((res) => {
@@ -55,7 +56,7 @@ export default function SignIn() {
       const email = form.email.value;
       const password = form.password.value;
 
-      if (!captchaToken) {
+      if (isTurnstileEnabled && !captchaToken) {
         toast.error("Please complete the captcha");
         setLoading(false);
         return;
@@ -65,9 +66,11 @@ export default function SignIn() {
       const { data, error } = await sb.auth.signUp({
         email,
         password,
-        options: {
-          captchaToken,
-        },
+        options: isTurnstileEnabled
+          ? {
+              captchaToken: captchaToken ?? undefined,
+            }
+          : undefined,
       });
 
       if (error) {
@@ -129,12 +132,14 @@ export default function SignIn() {
           <Label htmlFor="password">Password</Label>
           <Input required type="password" name="password" />
         </div>
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-          onSuccess={setCaptchaToken}
-          onExpire={() => setCaptchaToken(null)}
-        />
+        {isTurnstileEnabled ? (
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            onSuccess={setCaptchaToken}
+            onExpire={() => setCaptchaToken(null)}
+          />
+        ) : null}
         {loading ? (
           <Spinner />
         ) : (

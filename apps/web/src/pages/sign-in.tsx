@@ -20,6 +20,7 @@ export default function SignIn() {
   const user = useUser();
   const router = useRouter();
   const isGoogleSignInEnabled = useFeatureFlagEnabled("google-sign-in");
+  const isTurnstileEnabled = process.env.NODE_ENV === "production";
 
   useEffect(() => {
     if (user) {
@@ -57,19 +58,21 @@ export default function SignIn() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    if (!captchaToken) {
+    if (isTurnstileEnabled && !captchaToken) {
       toast.error("Please complete the captcha");
       setLoading(false);
       return;
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          captchaToken,
-        },
+        options: isTurnstileEnabled
+          ? {
+              captchaToken: captchaToken ?? undefined,
+            }
+          : undefined,
       });
 
       if (error) {
@@ -132,12 +135,14 @@ export default function SignIn() {
               </Label>
               <Input required type="password" name="password" />
             </div>
-            <Turnstile
-              ref={turnstileRef}
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-              onSuccess={setCaptchaToken}
-              onExpire={() => setCaptchaToken(null)}
-            />
+            {isTurnstileEnabled ? (
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onSuccess={setCaptchaToken}
+                onExpire={() => setCaptchaToken(null)}
+              />
+            ) : null}
             <div className="mt-2 flex flex-col">
               <Button type="submit">Sign in</Button>
             </div>
