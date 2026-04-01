@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
 import { PostHogProvider } from "posthog-js/react";
 import posthog from "posthog-js";
+import { isPreviewOrDevDeployment } from "@/lib/runtime-env";
 
 // Fonts
 const inter = Inter({
@@ -43,7 +44,16 @@ function MyApp({ Component, pageProps }: AppProps) {
       defaults: "2025-05-24",
       // Enable debug mode in development
       loaded: (posthog) => {
-        if (process.env.NODE_ENV === "development") posthog.debug();
+        const isPreviewOrDev = isPreviewOrDevDeployment();
+
+        posthog.setPersonPropertiesForFlags(
+          {
+            is_dev: isPreviewOrDev,
+          },
+          true
+        );
+
+        if (isPreviewOrDev) posthog.debug();
       },
     });
     console.log("PostHog initialized", posthog);

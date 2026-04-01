@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { isProductionDeployment } from "@/lib/runtime-env";
 import { getOAuthRedirectUrl } from "@/lib/utils/auth";
 import { useUser } from "@/utils/supabase/browser";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
@@ -20,9 +21,11 @@ export default function SignIn() {
   const user = useUser();
   const router = useRouter();
   const isGoogleSignInEnabled = useFeatureFlagEnabled("google-sign-in");
-  const isTurnstileEnabled = process.env.NODE_ENV === "production";
+  const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
 
   useEffect(() => {
+    setIsTurnstileEnabled(isProductionDeployment());
+
     if (user) {
       router.push("/blogs");
       return;
