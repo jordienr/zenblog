@@ -25,6 +25,11 @@ export function posthogCaptureException(
 
 export function posthogIdentify({ email }: { email: string }) {
   posthog.identify(email, {
+    email,
     is_dev: IS_DEV,
   });
+}
+
+export function posthogReset() {
+  posthog.reset();
 }

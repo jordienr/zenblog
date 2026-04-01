@@ -1,4 +1,5 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { posthogIdentify, posthogReset } from "lib/posthog";
 import { UserResponse } from "@supabase/supabase-js";
 import {
   PropsWithChildren,
@@ -17,9 +18,29 @@ export function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser?.email) {
+        posthogIdentify({ email: currentUser.email });
+      }
     });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser?.email) {
+        posthogIdentify({ email: currentUser.email });
+      } else if (event === "SIGNED_OUT") {
+        posthogReset();
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
