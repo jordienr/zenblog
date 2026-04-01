@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { getOAuthRedirectUrl } from "@/lib/utils/auth";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
@@ -25,6 +26,23 @@ export default function SignIn() {
       }
     });
   }, [router, supabase]);
+
+  async function onGoogleAuth() {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: getOAuthRedirectUrl("/sign-in"),
+      },
+    });
+
+    if (error) {
+      console.error("Error signing in with Google", error);
+      toast.error(error.message || "Error signing in with Google");
+      setLoading(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -75,7 +93,9 @@ export default function SignIn() {
           Please, <span className="underline">check your email</span> 📧 to
           confirm your account.
         </p>
-        <p className="">You can close this tab.</p>
+        <p className="">
+          After signing in, add a payment method to start your 7-day trial.
+        </p>
       </div>
     );
   }
@@ -89,6 +109,14 @@ export default function SignIn() {
       </div>
       <form className="mt-4 flex flex-col gap-4" onSubmit={onSubmit}>
         <h1 className="text-2xl font-medium">Create your account</h1>
+        <div className="flex flex-col gap-3">
+          <Button type="button" variant="white" onClick={onGoogleAuth}>
+            Continue with Google
+          </Button>
+          <p className="text-center text-xs uppercase tracking-[0.2em] text-slate-400">
+            Or create an account with email
+          </p>
+        </div>
         <div>
           <Label htmlFor="email">Email</Label>
           <Input required type="email" name="email" />

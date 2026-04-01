@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { getOAuthRedirectUrl } from "@/lib/utils/auth";
 import { useUser } from "@/utils/supabase/browser";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft, Loader2 } from "lucide-react";
@@ -29,6 +30,22 @@ export default function SignIn() {
       }
     });
   }, [router, supabase, user]);
+
+  async function onGoogleAuth() {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: getOAuthRedirectUrl("/sign-in"),
+      },
+    });
+
+    if (error) {
+      toast.error(error.message || "Error signing in with Google");
+      setLoading(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -87,6 +104,14 @@ export default function SignIn() {
                 Sign up
               </Link>
             </p>
+            <div className="mt-4 flex flex-col gap-3">
+              <Button type="button" variant="white" onClick={onGoogleAuth}>
+                Continue with Google
+              </Button>
+              <p className="text-center text-xs uppercase tracking-[0.2em] text-slate-400">
+                Or use email
+              </p>
+            </div>
             <div className="mt-4">
               <Label htmlFor="email">Email</Label>
               <Input required type="email" name="email" />
