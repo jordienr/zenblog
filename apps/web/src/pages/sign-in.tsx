@@ -9,6 +9,7 @@ import { CornerUpLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import { useFeatureFlagEnabled } from "posthog-js/react";
 import { toast } from "sonner";
 
 export default function SignIn() {
@@ -18,6 +19,7 @@ export default function SignIn() {
   const supabase = createSupabaseBrowserClient();
   const user = useUser();
   const router = useRouter();
+  const isGoogleSignInEnabled = useFeatureFlagEnabled("google-sign-in");
 
   useEffect(() => {
     if (user) {
@@ -104,14 +106,16 @@ export default function SignIn() {
                 Sign up
               </Link>
             </p>
-            <div className="mt-4 flex flex-col gap-3">
-              <Button type="button" variant="white" onClick={onGoogleAuth}>
-                Continue with Google
-              </Button>
-              <p className="text-center text-xs uppercase tracking-[0.2em] text-slate-400">
-                Or use email
-              </p>
-            </div>
+            {isGoogleSignInEnabled ? (
+              <div className="mt-4 flex flex-col gap-3">
+                <Button type="button" variant="white" onClick={onGoogleAuth}>
+                  Continue with Google
+                </Button>
+                <p className="text-center text-xs uppercase tracking-[0.2em] text-slate-400">
+                  Or use email
+                </p>
+              </div>
+            ) : null}
             <div className="mt-4">
               <Label htmlFor="email">Email</Label>
               <Input required type="email" name="email" />

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateSession } from "./utils/supabase/middleware";
 
-// inspired by https://github.com/vercel/platforms/blob/main/middleware.ts
-
 export const config = {
   matcher: [
     /*
@@ -16,24 +14,6 @@ export const config = {
   ],
 };
 
-const invalidSubdomains = [
-  "www",
-  "localhost:3000",
-  "localhost:8082",
-  "zenblog",
-  "127",
-];
-
 export default async function middleware(req: NextRequest) {
-  const subdomain = req.headers.get("host")?.split(".")[0];
-  const path = req.nextUrl.pathname;
-
-  if (!subdomain || invalidSubdomains.includes(subdomain)) {
-    return await updateSession(req);
-  }
-
-  const newPath = `/pub/${subdomain}${path}`;
-  const url = new URL(newPath, req.url);
-
-  return NextResponse.rewrite(url);
+  return await updateSession(req);
 }
