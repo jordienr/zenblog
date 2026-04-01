@@ -3,13 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [step1Success, setStep1Success] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
 
@@ -22,12 +26,21 @@ export default function ResetPassword() {
 
     const url = process.env.NEXT_PUBLIC_BASE_URL;
 
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    if (!captchaToken) {
+      toast.error("Please complete the captcha");
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${url || ""}/reset-password-confirmation`,
+      captchaToken,
     });
 
     if (error) {
-      alert(error.message);
+      toast.error(error.message);
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
       setLoading(false);
       return;
     }
@@ -69,7 +82,13 @@ export default function ResetPassword() {
         ) : (
           <>
             <Label htmlFor="email">Email</Label>
-            <Input type="email" name="email" id="email" />
+            <Input required type="email" name="email" id="email" />
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+              onSuccess={setCaptchaToken}
+              onExpire={() => setCaptchaToken(null)}
+            />
             <Button type="submit">Send reset link</Button>
           </>
         )}
