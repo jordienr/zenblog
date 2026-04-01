@@ -6,9 +6,9 @@ export default async function Layout({
   children,
   params,
 }: PropsWithChildren<{
-  params: { subdomain: string };
+  params: Promise<{ subdomain: string }>;
 }>) {
-  const { subdomain } = params;
+  const { subdomain } = await params;
   const { data: blog } = await getBlog(subdomain);
 
   return (

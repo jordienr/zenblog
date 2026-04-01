@@ -4,6 +4,7 @@ import { z } from "zod";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { handle } from "hono/vercel";
+import type { NextRequest } from "next/server";
 import { createClient } from "@/lib/server/supabase";
 import { axiom, AXIOM_DATASETS, getApiUsageForBlog } from "lib/axiom";
 import {
@@ -907,9 +908,21 @@ const app = new Hono()
 
 export type ManagementAPI = typeof app;
 
-export const OPTIONS = handle(app);
-export const GET = handle(app);
-export const POST = handle(app);
-export const PUT = handle(app);
-export const PATCH = handle(app);
-export const DELETE = handle(app);
+class NextFetchEventLike {
+  constructor(readonly request: Request) {}
+  respondWith(_promise: Response | Promise<Response>) {}
+  passThroughOnException() {}
+  waitUntil(_promise: Promise<void>) {}
+}
+
+const honoHandler = handle(app);
+
+const routeHandler = (request: NextRequest) =>
+  honoHandler(request, new NextFetchEventLike(request) as any);
+
+export const OPTIONS = routeHandler;
+export const GET = routeHandler;
+export const POST = routeHandler;
+export const PUT = routeHandler;
+export const PATCH = routeHandler;
+export const DELETE = routeHandler;

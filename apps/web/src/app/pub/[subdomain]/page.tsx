@@ -5,10 +5,11 @@ import { BlogHomePage } from "../themes/blog-home";
 import { Theme } from "app/types";
 
 export async function generateMetadata({
-  params: { subdomain },
+  params,
 }: {
-  params: { subdomain: string };
+  params: Promise<{ subdomain: string }>;
 }): Promise<Metadata> {
+  const { subdomain } = await params;
   console.log(subdomain);
   const { data: blog } = await getBlog(subdomain);
 
@@ -29,10 +30,11 @@ export async function generateMetadata({
 }
 
 async function HostedBlog({
-  params: { subdomain },
+  params,
 }: {
-  params: { subdomain: string };
+  params: Promise<{ subdomain: string }>;
 }) {
+  const { subdomain } = await params;
   const { data: blog, error: blogError } = await getBlog(subdomain);
   const { data: posts, error: postsError } = await getPosts(
     subdomain,

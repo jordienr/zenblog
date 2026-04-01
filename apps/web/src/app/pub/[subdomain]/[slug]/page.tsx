@@ -9,10 +9,11 @@ import Link from "next/link";
 import React from "react";
 
 export async function generateMetadata({
-  params: { subdomain, slug },
+  params,
 }: {
-  params: { subdomain: string; slug: string };
+  params: Promise<{ subdomain: string; slug: string }>;
 }): Promise<Metadata> {
+  const { subdomain, slug } = await params;
   console.log(subdomain);
   const { data: blog } = await getBlog(subdomain);
   const post = await getPost(subdomain, slug);
@@ -51,10 +52,11 @@ export async function generateMetadata({
 }
 
 const Post = async ({
-  params: { slug, subdomain },
+  params,
 }: {
-  params: { slug: string; subdomain: string };
+  params: Promise<{ slug: string; subdomain: string }>;
 }) => {
+  const { slug, subdomain } = await params;
   const { data: blog } = await getBlog(subdomain);
   const post = await getPost(subdomain, slug);
 
