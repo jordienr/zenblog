@@ -98,7 +98,7 @@ app.openapi(getPostsRoute, async (c) => {
   const categoryFilter = c.req.query("category");
   const tagsFilter = c.req.query("tags")?.split(",");
   const authorFilter = c.req.query("author");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -234,7 +234,7 @@ const getPostBySlugRoute = createRoute({
 app.openapi(getPostBySlugRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const slug = c.req.param("slug");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId) || !slug?.trim()) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
@@ -347,7 +347,7 @@ app.openapi(getCategoriesRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -422,7 +422,7 @@ app.openapi(getTagsRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -497,7 +497,7 @@ app.openapi(getAuthorsRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -577,7 +577,7 @@ const getAuthorBySlugRoute = createRoute({
 app.openapi(getAuthorBySlugRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const slug = c.req.param("slug");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId) || !slug?.trim()) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");

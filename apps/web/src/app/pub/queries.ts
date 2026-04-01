@@ -1,7 +1,7 @@
 import { createClient } from "app/supa";
 
 export async function getBlog(subdomain: string) {
-  const supa = createClient();
+  const supa = await createClient();
 
   const res = await supa
     .from("blogs")
@@ -15,7 +15,7 @@ export async function getBlog(subdomain: string) {
 }
 
 export async function getPosts(subdomain: string, sort: string = "desc") {
-  const supa = createClient();
+  const supa = await createClient();
   const res = await supa
     .from("posts_v5")
     .select("title, slug, published_at, cover_image, excerpt")
@@ -36,7 +36,7 @@ export async function getPosts(subdomain: string, sort: string = "desc") {
 }
 
 export async function getPost(subdomain: string, slug: string) {
-  const supa = createClient();
+  const supa = await createClient();
   const { data: post } = await supa
     .from("posts_v5")
     .select("title, cover_image, published_at, created_at, html_content")

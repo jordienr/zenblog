@@ -24,7 +24,7 @@ const invalidSubdomains = [
   "127",
 ];
 
-export default async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const subdomain = req.headers.get("host")?.split(".")[0];
   const path = req.nextUrl.pathname;
 

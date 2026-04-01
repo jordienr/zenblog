@@ -61,7 +61,7 @@ const handleError = (c: Context, error: keyof typeof errors, rawLog: any) => {
 };
 
 const getUser = async () => {
-  const supabase = createClient();
+  const supabase = await createClient();
   const res = await supabase.auth.getUser();
 
   return {
@@ -71,7 +71,7 @@ const getUser = async () => {
 };
 
 const getBlogOwnership = async (blogId: string, userId: string) => {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("blogs")
     .select("user_id")
@@ -291,7 +291,7 @@ const api = new Hono()
       }
 
       // Fetch user's subscription plan
-      const supabase = createClient();
+      const supabase = await createClient();
       const { data: subscriptionData, error: subError } = await supabase
         .from("subscriptions")
         .select("plan, status")
@@ -503,7 +503,7 @@ const api = new Hono()
           const publicUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/${fileName}`;
 
           // Insert record into blog_images table
-          const supabase = createClient();
+          const supabase = await createClient();
           const { error: dbError } = await supabase.from("blog_images").insert({
             blog_id: blogId,
             file_name: fileName,
@@ -590,7 +590,7 @@ const api = new Hono()
         }
 
         // Re-added: Delete from Supabase DB first, matching on file_name
-        const supabase = createClient();
+        const supabase = await createClient();
         const { error: dbError } = await supabase
           .from("blog_images")
           .delete()
@@ -728,7 +728,7 @@ const api = new Hono()
         imageUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/authors/${fileName}`;
       }
 
-      const supabase = createClient();
+      const supabase = await createClient();
       const { error } = await supabase.from("authors").insert({
         name,
         blog_id: blogId,
@@ -815,7 +815,7 @@ const api = new Hono()
       if (imageUrl) updateData.image_url = imageUrl;
 
       // Update author in database
-      const supabase = createClient();
+      const supabase = await createClient();
       const { error } = await supabase
         .from("authors")
         .update(updateData)
@@ -855,7 +855,7 @@ const api = new Hono()
 
       // TODO: Optionally add R2 HeadObjectCommand check here to verify file existence
 
-      const supabase = createClient();
+      const supabase = await createClient();
       const publicUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/${fileName}`;
 
       // Update the existing pending record
