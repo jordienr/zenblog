@@ -20,14 +20,10 @@ export default function SignIn() {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
-  const [isGoogleSignInEnabled, setIsGoogleSignInEnabled] = useState(false);
   const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
 
   useEffect(() => {
     setIsTurnstileEnabled(isProductionDeployment());
-    setIsGoogleSignInEnabled(
-      window.localStorage.getItem("google-signin") === "true"
-    );
 
     supabase.auth.getSession().then((res) => {
       if (res.data.session?.user) {
@@ -120,14 +116,12 @@ export default function SignIn() {
       </div>
       <form className="mt-4 flex flex-col gap-4" onSubmit={onSubmit}>
         <h1 className="text-2xl font-medium">Create your account</h1>
-        {isGoogleSignInEnabled ? (
-          <div className="flex flex-col gap-4">
-            <GoogleAuthButton onClick={onGoogleAuth} />
-            <p className="text-center text-[11px] font-medium uppercase tracking-[0.35em] text-slate-400">
-              Or create an account with email
-            </p>
-          </div>
-        ) : null}
+        <div className="flex flex-col gap-4">
+          <GoogleAuthButton onClick={onGoogleAuth} />
+          <p className="text-center text-[11px] font-medium uppercase tracking-[0.35em] text-slate-400">
+            Or create an account with email
+          </p>
+        </div>
         <div>
           <Label htmlFor="email">Email</Label>
           <Input required type="email" name="email" />

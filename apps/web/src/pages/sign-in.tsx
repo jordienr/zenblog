@@ -20,14 +20,10 @@ export default function SignIn() {
   const supabase = createSupabaseBrowserClient();
   const user = useUser();
   const router = useRouter();
-  const [isGoogleSignInEnabled, setIsGoogleSignInEnabled] = useState(false);
   const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
 
   useEffect(() => {
     setIsTurnstileEnabled(isProductionDeployment());
-    setIsGoogleSignInEnabled(
-      window.localStorage.getItem("google-signin") === "true"
-    );
 
     if (user) {
       router.push("/blogs");
@@ -115,14 +111,12 @@ export default function SignIn() {
                 Sign up
               </Link>
             </p>
-            {isGoogleSignInEnabled ? (
-              <div className="mt-4 flex flex-col gap-4">
-                <GoogleAuthButton onClick={onGoogleAuth} />
-                <p className="text-center text-[11px] font-medium uppercase tracking-[0.35em] text-slate-400">
-                  Or use email
-                </p>
-              </div>
-            ) : null}
+            <div className="mt-4 flex flex-col gap-4">
+              <GoogleAuthButton onClick={onGoogleAuth} />
+              <p className="text-center text-[11px] font-medium uppercase tracking-[0.35em] text-slate-400">
+                Or use email
+              </p>
+            </div>
             <div className="mt-4">
               <Label htmlFor="email">Email</Label>
               <Input required type="email" name="email" />
