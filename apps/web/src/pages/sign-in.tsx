@@ -1,3 +1,4 @@
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,14 +20,10 @@ export default function SignIn() {
   const supabase = createSupabaseBrowserClient();
   const user = useUser();
   const router = useRouter();
-  const [isGoogleSignInEnabled, setIsGoogleSignInEnabled] = useState(false);
   const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
 
   useEffect(() => {
     setIsTurnstileEnabled(isProductionDeployment());
-    setIsGoogleSignInEnabled(
-      window.localStorage.getItem("google-signin") === "true"
-    );
 
     if (user) {
       router.push("/blogs");
@@ -106,7 +103,7 @@ export default function SignIn() {
               <CornerUpLeft size={18} />
             </Link>
           </div>
-          <form className="mt-4 flex flex-col gap-2" onSubmit={onSubmit}>
+          <form className="mt-4 flex flex-col gap-3" onSubmit={onSubmit}>
             <h1 className="text-2xl font-medium">Sign in</h1>
             <p className="text-slate-500">
               Don&apos;t have an account?{" "}
@@ -114,16 +111,12 @@ export default function SignIn() {
                 Sign up
               </Link>
             </p>
-            {isGoogleSignInEnabled ? (
-              <div className="mt-4 flex flex-col gap-3">
-                <Button type="button" variant="white" onClick={onGoogleAuth}>
-                  Continue with Google
-                </Button>
-                <p className="text-center text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Or use email
-                </p>
-              </div>
-            ) : null}
+            <div className="mt-4 flex flex-col gap-4">
+              <GoogleAuthButton onClick={onGoogleAuth} />
+              <p className="text-center text-[11px] font-medium uppercase tracking-[0.35em] text-slate-400">
+                Or use email
+              </p>
+            </div>
             <div className="mt-4">
               <Label htmlFor="email">Email</Label>
               <Input required type="email" name="email" />
@@ -141,12 +134,14 @@ export default function SignIn() {
               <Input required type="password" name="password" />
             </div>
             {isTurnstileEnabled ? (
-              <Turnstile
-                ref={turnstileRef}
-                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                onSuccess={setCaptchaToken}
-                onExpire={() => setCaptchaToken(null)}
-              />
+              <div className="mt-2 flex justify-center rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-4 shadow-sm">
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                  onSuccess={setCaptchaToken}
+                  onExpire={() => setCaptchaToken(null)}
+                />
+              </div>
             ) : null}
             <div className="mt-2 flex flex-col">
               <Button type="submit">Sign in</Button>

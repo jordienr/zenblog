@@ -1,3 +1,4 @@
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,14 +20,10 @@ export default function SignIn() {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
-  const [isGoogleSignInEnabled, setIsGoogleSignInEnabled] = useState(false);
   const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
 
   useEffect(() => {
     setIsTurnstileEnabled(isProductionDeployment());
-    setIsGoogleSignInEnabled(
-      window.localStorage.getItem("google-signin") === "true"
-    );
 
     supabase.auth.getSession().then((res) => {
       if (res.data.session?.user) {
@@ -119,16 +116,12 @@ export default function SignIn() {
       </div>
       <form className="mt-4 flex flex-col gap-4" onSubmit={onSubmit}>
         <h1 className="text-2xl font-medium">Create your account</h1>
-        {isGoogleSignInEnabled ? (
-          <div className="flex flex-col gap-3">
-            <Button type="button" variant="white" onClick={onGoogleAuth}>
-              Continue with Google
-            </Button>
-            <p className="text-center text-xs uppercase tracking-[0.2em] text-slate-400">
-              Or create an account with email
-            </p>
-          </div>
-        ) : null}
+        <div className="flex flex-col gap-4">
+          <GoogleAuthButton onClick={onGoogleAuth} />
+          <p className="text-center text-[11px] font-medium uppercase tracking-[0.35em] text-slate-400">
+            Or create an account with email
+          </p>
+        </div>
         <div>
           <Label htmlFor="email">Email</Label>
           <Input required type="email" name="email" />
@@ -138,12 +131,14 @@ export default function SignIn() {
           <Input required type="password" name="password" />
         </div>
         {isTurnstileEnabled ? (
-          <Turnstile
-            ref={turnstileRef}
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-            onSuccess={setCaptchaToken}
-            onExpire={() => setCaptchaToken(null)}
-          />
+          <div className="flex justify-center rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-4 shadow-sm">
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+              onSuccess={setCaptchaToken}
+              onExpire={() => setCaptchaToken(null)}
+            />
+          </div>
         ) : null}
         {loading ? (
           <Spinner />
