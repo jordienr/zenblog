@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { getTurnstileSiteKey, isTurnstileEnabled } from "@/lib/turnstile";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +18,8 @@ export default function SignIn() {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
+  const turnstileSiteKey = getTurnstileSiteKey();
+  const turnstileEnabled = isTurnstileEnabled();
 
   useEffect(() => {
     supabase.auth.getSession().then((res) => {
@@ -35,7 +38,7 @@ export default function SignIn() {
       const email = form.email.value;
       const password = form.password.value;
 
-      if (!captchaToken) {
+      if (turnstileEnabled && !captchaToken) {
         toast.error("Please complete the captcha");
         setLoading(false);
         return;
@@ -45,9 +48,11 @@ export default function SignIn() {
       const { data, error } = await sb.auth.signUp({
         email,
         password,
-        options: {
-          captchaToken,
-        },
+        options: captchaToken
+          ? {
+              captchaToken,
+            }
+          : undefined,
       });
 
       if (error) {
@@ -97,12 +102,18 @@ export default function SignIn() {
           <Label htmlFor="password">Password</Label>
           <Input required type="password" name="password" />
         </div>
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-          onSuccess={setCaptchaToken}
-          onExpire={() => setCaptchaToken(null)}
-        />
+        {turnstileSiteKey ? (
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={turnstileSiteKey}
+            onSuccess={setCaptchaToken}
+            onExpire={() => setCaptchaToken(null)}
+          />
+        ) : (
+          <p className="text-sm text-zinc-500">
+            Captcha is not configured for this environment.
+          </p>
+        )}
         {loading ? (
           <Spinner />
         ) : (

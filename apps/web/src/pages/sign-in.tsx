@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { getTurnstileSiteKey, isTurnstileEnabled } from "@/lib/turnstile";
 import { useUser } from "@/utils/supabase/browser";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft, Loader2 } from "lucide-react";
@@ -17,6 +18,8 @@ export default function SignIn() {
   const supabase = createSupabaseBrowserClient();
   const user = useUser();
   const router = useRouter();
+  const turnstileSiteKey = getTurnstileSiteKey();
+  const turnstileEnabled = isTurnstileEnabled();
 
   useEffect(() => {
     if (user) {
@@ -38,7 +41,7 @@ export default function SignIn() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    if (!captchaToken) {
+    if (turnstileEnabled && !captchaToken) {
       toast.error("Please complete the captcha");
       setLoading(false);
       return;
@@ -48,9 +51,11 @@ export default function SignIn() {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          captchaToken,
-        },
+        options: captchaToken
+          ? {
+              captchaToken,
+            }
+          : undefined,
       });
 
       if (error) {
@@ -103,12 +108,18 @@ export default function SignIn() {
               </Label>
               <Input required type="password" name="password" />
             </div>
-            <Turnstile
-              ref={turnstileRef}
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-              onSuccess={setCaptchaToken}
-              onExpire={() => setCaptchaToken(null)}
-            />
+            {turnstileSiteKey ? (
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={turnstileSiteKey}
+                onSuccess={setCaptchaToken}
+                onExpire={() => setCaptchaToken(null)}
+              />
+            ) : (
+              <p className="text-sm text-zinc-500">
+                Captcha is not configured for this environment.
+              </p>
+            )}
             <div className="mt-2 flex flex-col">
               <Button type="submit">Sign in</Button>
             </div>
