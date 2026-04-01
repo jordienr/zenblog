@@ -2,7 +2,9 @@ import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isProductionDeployment } from "@/lib/runtime-env";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { getOAuthRedirectUrl } from "@/lib/utils/auth";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft } from "lucide-react";
 import Link from "next/link";
@@ -17,14 +19,38 @@ export default function SignIn() {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
+  const [isGoogleSignInEnabled, setIsGoogleSignInEnabled] = useState(false);
+  const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
 
   useEffect(() => {
+    setIsTurnstileEnabled(isProductionDeployment());
+    setIsGoogleSignInEnabled(
+      window.localStorage.getItem("google-signin") === "true"
+    );
+
     supabase.auth.getSession().then((res) => {
       if (res.data.session?.user) {
         router.push("/blogs");
       }
     });
   }, [router, supabase]);
+
+  async function onGoogleAuth() {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: getOAuthRedirectUrl("/sign-in"),
+      },
+    });
+
+    if (error) {
+      console.error("Error signing in with Google", error);
+      toast.error(error.message || "Error signing in with Google");
+      setLoading(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -35,7 +61,7 @@ export default function SignIn() {
       const email = form.email.value;
       const password = form.password.value;
 
-      if (!captchaToken) {
+      if (isTurnstileEnabled && !captchaToken) {
         toast.error("Please complete the captcha");
         setLoading(false);
         return;
@@ -45,9 +71,11 @@ export default function SignIn() {
       const { data, error } = await sb.auth.signUp({
         email,
         password,
-        options: {
-          captchaToken,
-        },
+        options: isTurnstileEnabled
+          ? {
+              captchaToken: captchaToken ?? undefined,
+            }
+          : undefined,
       });
 
       if (error) {
@@ -75,7 +103,9 @@ export default function SignIn() {
           Please, <span className="underline">check your email</span> 📧 to
           confirm your account.
         </p>
-        <p className="">You can close this tab.</p>
+        <p className="">
+          After signing in, add a payment method to start your 7-day trial.
+        </p>
       </div>
     );
   }
@@ -89,6 +119,16 @@ export default function SignIn() {
       </div>
       <form className="mt-4 flex flex-col gap-4" onSubmit={onSubmit}>
         <h1 className="text-2xl font-medium">Create your account</h1>
+        {isGoogleSignInEnabled ? (
+          <div className="flex flex-col gap-3">
+            <Button type="button" variant="white" onClick={onGoogleAuth}>
+              Continue with Google
+            </Button>
+            <p className="text-center text-xs uppercase tracking-[0.2em] text-slate-400">
+              Or create an account with email
+            </p>
+          </div>
+        ) : null}
         <div>
           <Label htmlFor="email">Email</Label>
           <Input required type="email" name="email" />
@@ -97,12 +137,14 @@ export default function SignIn() {
           <Label htmlFor="password">Password</Label>
           <Input required type="password" name="password" />
         </div>
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-          onSuccess={setCaptchaToken}
-          onExpire={() => setCaptchaToken(null)}
-        />
+        {isTurnstileEnabled ? (
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            onSuccess={setCaptchaToken}
+            onExpire={() => setCaptchaToken(null)}
+          />
+        ) : null}
         {loading ? (
           <Spinner />
         ) : (

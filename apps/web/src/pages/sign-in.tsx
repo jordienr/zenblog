@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { isProductionDeployment } from "@/lib/runtime-env";
+import { getOAuthRedirectUrl } from "@/lib/utils/auth";
 import { useUser } from "@/utils/supabase/browser";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft, Loader2 } from "lucide-react";
@@ -17,8 +19,15 @@ export default function SignIn() {
   const supabase = createSupabaseBrowserClient();
   const user = useUser();
   const router = useRouter();
+  const [isGoogleSignInEnabled, setIsGoogleSignInEnabled] = useState(false);
+  const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
 
   useEffect(() => {
+    setIsTurnstileEnabled(isProductionDeployment());
+    setIsGoogleSignInEnabled(
+      window.localStorage.getItem("google-signin") === "true"
+    );
+
     if (user) {
       router.push("/blogs");
       return;
@@ -30,6 +39,22 @@ export default function SignIn() {
     });
   }, [router, supabase, user]);
 
+  async function onGoogleAuth() {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: getOAuthRedirectUrl("/sign-in"),
+      },
+    });
+
+    if (error) {
+      toast.error(error.message || "Error signing in with Google");
+      setLoading(false);
+    }
+  }
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -38,19 +63,21 @@ export default function SignIn() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    if (!captchaToken) {
+    if (isTurnstileEnabled && !captchaToken) {
       toast.error("Please complete the captcha");
       setLoading(false);
       return;
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          captchaToken,
-        },
+        options: isTurnstileEnabled
+          ? {
+              captchaToken: captchaToken ?? undefined,
+            }
+          : undefined,
       });
 
       if (error) {
@@ -87,6 +114,16 @@ export default function SignIn() {
                 Sign up
               </Link>
             </p>
+            {isGoogleSignInEnabled ? (
+              <div className="mt-4 flex flex-col gap-3">
+                <Button type="button" variant="white" onClick={onGoogleAuth}>
+                  Continue with Google
+                </Button>
+                <p className="text-center text-xs uppercase tracking-[0.2em] text-slate-400">
+                  Or use email
+                </p>
+              </div>
+            ) : null}
             <div className="mt-4">
               <Label htmlFor="email">Email</Label>
               <Input required type="email" name="email" />
@@ -103,12 +140,14 @@ export default function SignIn() {
               </Label>
               <Input required type="password" name="password" />
             </div>
-            <Turnstile
-              ref={turnstileRef}
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-              onSuccess={setCaptchaToken}
-              onExpire={() => setCaptchaToken(null)}
-            />
+            {isTurnstileEnabled ? (
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onSuccess={setCaptchaToken}
+                onExpire={() => setCaptchaToken(null)}
+              />
+            ) : null}
             <div className="mt-2 flex flex-col">
               <Button type="submit">Sign in</Button>
             </div>
