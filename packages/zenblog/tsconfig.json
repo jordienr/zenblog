@@ -11,6 +11,10 @@
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": {
+      "@zenblog/api-client-public": ["../api-client-public/src/index.ts"]
+    },
     "forceConsistentCasingInFileNames": true,
     "stripInternal": true,
     "allowSyntheticDefaultImports": true

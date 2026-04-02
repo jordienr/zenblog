@@ -28,6 +28,7 @@
   "author": "Jordi Enric",
   "license": "MIT",
   "dependencies": {
+    "@zenblog/api-client-public": "*",
     "@types/node": "^20.17.6",
     "@zenblog/types": "^1.0.0"
   },

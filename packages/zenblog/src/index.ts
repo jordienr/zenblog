@@ -1,4 +1,4 @@
-import { createLogger, throwError } from "./lib";
+import { createPublicApiClient } from "@zenblog/api-client-public";
 import { Author, Category, Post, PostWithContent, Tag } from "./types";
 
 type ApiResponse<T> = {
@@ -6,51 +6,10 @@ type ApiResponse<T> = {
 };
 
 type PaginatedApiResponse<T> = ApiResponse<T> & {
-  total: number;
-  offset: number;
-  limit: number;
+  total?: number;
+  offset?: number;
+  limit?: number;
 };
-
-function toQueryString(obj: Record<string, any>) {
-  const params = new URLSearchParams(obj);
-  return params.toString();
-}
-
-function createFetcher(
-  config: { url: string; blogId: string },
-  log: (...args: any[]) => void
-) {
-  return async function _fetch(path: string, opts: RequestInit) {
-    try {
-      const URL = `${config.url}/blogs/${config.blogId}/${path}`;
-      const reqOpts = {
-        ...opts,
-        headers: {
-          "Content-Type": "application/json",
-          ...opts.headers,
-        },
-      };
-
-      log("fetch ", URL, reqOpts.method);
-      const res = await fetch(URL, reqOpts);
-      let json;
-      try {
-        json = await res.json();
-      } catch (e) {
-        throwError("Failed to parse JSON response from API", e);
-      }
-
-      if (!res.ok) {
-        throwError("Error fetching data from API", res);
-      }
-
-      return json;
-    } catch (error) {
-      console.error("[Zenblog Error] ", error);
-      throw error;
-    }
-  };
-}
 
 type CreateClientOpts = {
   blogId: string;
@@ -68,14 +27,9 @@ export function createZenblogClient({
     );
   }
 
-  const logger = createLogger(_debug || false);
-  const fetcher = createFetcher(
-    {
-      url: _url || "https://zenblog.com/api/public",
-      blogId,
-    },
-    logger
-  );
+  const publicClient = createPublicApiClient({
+    baseUrl: _url || "https://zenblog.com/api/public",
+  });
 
   type ReqOpts = {
     cache?: RequestInit["cache"];
@@ -98,70 +52,45 @@ export function createZenblogClient({
         tags,
         author,
       }: PostListOpts = {}): Promise<PaginatedApiResponse<Post[]>> {
-        const data = await fetcher(
-          `posts?${toQueryString({
-            limit,
-            offset,
-            ...(category ? { category } : {}),
-            ...(tags ? { tags: tags.join(",") } : {}),
-            ...(author ? { author } : {}),
-          })}`,
-          {
-            method: "GET",
-            cache,
-          }
-        );
-
-        return data as PaginatedApiResponse<Post[]>;
+        return publicClient.posts.list(blogId, {
+          limit,
+          offset,
+          category,
+          tags,
+          author,
+          cache,
+        });
       },
       get: async function (
         { slug }: { slug: string },
         opts?: ReqOpts
       ): Promise<ApiResponse<PostWithContent>> {
-        const post = await fetcher(`posts/${slug}`, {
-          method: "GET",
+        return publicClient.posts.get(blogId, slug, {
           cache: opts?.cache || "default",
         });
-
-        return post as ApiResponse<PostWithContent>;
       },
     },
     categories: {
       list: async function (): Promise<PaginatedApiResponse<Category[]>> {
-        const data = await fetcher(`categories`, {
-          method: "GET",
-        });
-
-        return data as PaginatedApiResponse<Category[]>;
+        return publicClient.categories.list(blogId);
       },
     },
     tags: {
       list: async function (): Promise<PaginatedApiResponse<Tag[]>> {
-        const data = await fetcher(`tags`, {
-          method: "GET",
-        });
-
-        return data as PaginatedApiResponse<Tag[]>;
+        return publicClient.tags.list(blogId);
       },
     },
     authors: {
       list: async function (): Promise<PaginatedApiResponse<Author[]>> {
-        const data = await fetcher(`authors`, {
-          method: "GET",
-        });
-
-        return data as PaginatedApiResponse<Author[]>;
+        return publicClient.authors.list(blogId);
       },
       get: async function (
         { slug }: { slug: string },
         opts?: ReqOpts
       ): Promise<ApiResponse<Author>> {
-        const data = await fetcher(`authors/${slug}`, {
-          method: "GET",
+        return publicClient.authors.get(blogId, slug, {
           cache: opts?.cache || "default",
         });
-
-        return data as ApiResponse<Author>;
       },
     },
   };
