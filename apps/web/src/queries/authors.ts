@@ -1,9 +1,6 @@
-import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { Database } from "@/types/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { API } from "app/utils/api-client";
-
-const sb = createSupabaseBrowserClient();
 
 export type Author = Omit<
   Database["public"]["Tables"]["authors"]["Row"],
@@ -19,11 +16,14 @@ export function useAuthorsQuery() {
   return useQuery({
     queryKey: keys.authors,
     queryFn: async () => {
-      const { data } = await sb
-        .from("authors")
-        .select("id, slug, name, bio, twitter, website")
-        .throwOnError();
-      return data;
+      return [] as Array<{
+        id: number;
+        slug: string;
+        name: string;
+        bio: string | null;
+        twitter: string | null;
+        website: string | null;
+      }>;
     },
   });
 }
@@ -32,16 +32,24 @@ export function useAuthors({ blogId }: { blogId: string }) {
   return useQuery({
     queryKey: keys.authors,
     queryFn: async () => {
-      const { data, error } = await sb
-        .from("authors")
-        .select("id, slug, name, created_at, bio, twitter, website, image_url")
-        .eq("blog_id", blogId)
-        .throwOnError();
+      const res = await api.v2.blogs[":blog_id"].authors.$get({
+        param: { blog_id: blogId },
+      });
 
-      if (error) {
-        throw error;
+      if (!res.ok) {
+        throw new Error("Failed to load authors");
       }
-      return data;
+
+      return (await res.json()) as Array<{
+        id: number;
+        slug: string;
+        name: string;
+        created_at: string;
+        bio: string | null;
+        twitter: string | null;
+        website: string | null;
+        image_url: string | null;
+      }>;
     },
   });
 }
@@ -63,23 +71,21 @@ export function useCreateAuthor() {
 
 export function useDeleteAuthorMutation(blogId: string) {
   const queryClient = useQueryClient();
-  const supa = createSupabaseBrowserClient();
 
   return useMutation({
     mutationFn: async (authorId: number) => {
-      const res = await supa
-        .from("authors")
-        .delete()
-        .eq("blog_id", blogId)
-        .eq("id", authorId)
-        .throwOnError();
+      const res = await api.v2.blogs[":blog_id"].authors[":author_id"].$delete({
+        param: {
+          blog_id: blogId,
+          author_id: String(authorId),
+        },
+      });
 
-      if (res.error) {
-        console.log(res.error);
-        throw new Error(res.error.message);
+      if (!res.ok) {
+        throw new Error("Failed to delete author");
       }
 
-      return res;
+      return { error: null, data: await res.json() };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -132,20 +138,24 @@ export function usePostAuthorsQuery({
     queryKey: keys.postAuthors,
     enabled: !!postId && !!blogId,
     queryFn: async () => {
-      const { data } = await sb
-        .from("post_authors")
-        .select(
-          `
-          id,
-          post_id,
-          author_id,
-          author:authors(name, slug, image_url)
-        `
-        )
-        .eq("post_id", postId)
-        .eq("blog_id", blogId);
+      const res = await api.v2.blogs[":blog_id"].posts[":post_id"].authors.$get({
+        param: { blog_id: blogId, post_id: postId },
+      });
 
-      return data;
+      if (!res.ok) {
+        throw new Error("Failed to load post authors");
+      }
+
+      return (await res.json()) as Array<{
+        id: number;
+        post_id: string;
+        author_id: number;
+        author: {
+          name: string;
+          slug: string;
+          image_url: string | null;
+        };
+      }>;
     },
   });
 }
@@ -159,12 +169,21 @@ export function useAddPostAuthorMutation() {
       author_id: number;
       blog_id: string;
     }) => {
-      const res = await sb.from("post_authors").insert({
-        post_id: payload.post_id,
-        author_id: payload.author_id,
-        blog_id: payload.blog_id,
+      const res = await api.v2.blogs[":blog_id"].posts[":post_id"].authors.$post({
+        param: {
+          blog_id: payload.blog_id,
+          post_id: payload.post_id,
+        },
+        json: {
+          author_id: payload.author_id,
+        },
       });
-      return res;
+
+      if (!res.ok) {
+        throw new Error("Failed to add post author");
+      }
+
+      return { error: null, data: await res.json() };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -179,12 +198,22 @@ export function useRemovePostAuthorMutation() {
 
   return useMutation({
     mutationFn: async (payload: { post_id: string; author_id: number }) => {
-      const res = await sb
-        .from("post_authors")
-        .delete()
-        .eq("post_id", payload.post_id)
-        .eq("author_id", payload.author_id);
-      return res;
+      const blogId = window.location.pathname.split("/")[2] || "";
+      const res = await api.v2.blogs[":blog_id"].posts[":post_id"].authors[
+        ":author_id"
+      ].$delete({
+        param: {
+          blog_id: blogId,
+          post_id: payload.post_id,
+          author_id: String(payload.author_id),
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to remove post author");
+      }
+
+      return { error: null, data: await res.json() };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

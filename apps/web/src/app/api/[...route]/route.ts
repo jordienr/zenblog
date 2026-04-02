@@ -7,19 +7,24 @@ import { handle } from "hono/vercel";
 import type { NextRequest } from "next/server";
 import { createClient } from "@/lib/server/supabase";
 import {
+  addPostAuthor,
   createBlogCategory,
   createBlogTag,
   createDb,
   createUserBlog,
+  deleteBlogAuthor,
   deleteBlogCategory,
   deleteBlogTag,
   deleteUserBlog,
   getUserBlogById,
+  listBlogAuthors,
   listBlogCategories,
   listBlogCategoriesWithPostCount,
   listBlogTags,
   listBlogTagUsageCounts,
+  listPostAuthors,
   listUserBlogs,
+  removePostAuthor,
   updateBlogCategory,
   updateBlogTag,
   updateUserBlog,
@@ -555,6 +560,90 @@ const api = new Hono()
 
     const db = createDb();
     const deleted = await deleteBlogTag(db, { blogId, tagId });
+
+    return c.json({ ok: !!deleted }, 200);
+  })
+  .get("/blogs/:blog_id/authors", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const authors = await listBlogAuthors(db, blogId);
+
+    return c.json(authors, 200);
+  })
+  .delete("/blogs/:blog_id/authors/:author_id", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const authorId = Number(c.req.param("author_id"));
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const deleted = await deleteBlogAuthor(db, { blogId, authorId });
+
+    return c.json({ ok: !!deleted }, 200);
+  })
+  .get("/blogs/:blog_id/posts/:post_id/authors", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const postId = c.req.param("post_id");
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const authors = await listPostAuthors(db, { blogId, postId });
+
+    return c.json(authors, 200);
+  })
+  .post(
+    "/blogs/:blog_id/posts/:post_id/authors",
+    zValidator(
+      "json",
+      z.object({
+        author_id: z.number(),
+      })
+    ),
+    async (c) => {
+      const blogId = c.req.param("blog_id");
+      const postId = c.req.param("post_id");
+      const { user } = await getUser();
+
+      if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const payload = await c.req.json();
+      const db = createDb();
+      const relation = await addPostAuthor(db, {
+        blogId,
+        postId,
+        authorId: payload.author_id,
+      });
+
+      return c.json(relation, 200);
+    }
+  )
+  .delete("/blogs/:blog_id/posts/:post_id/authors/:author_id", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const postId = c.req.param("post_id");
+    const authorId = Number(c.req.param("author_id"));
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const deleted = await removePostAuthor(db, { postId, authorId });
 
     return c.json({ ok: !!deleted }, 200);
   })

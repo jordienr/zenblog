@@ -1,9 +1,11 @@
 import { and, asc, count, desc, eq } from "drizzle-orm";
 import type { DbClient } from "./client";
 import {
+  authors,
   blogs,
   categories,
   categoryPostCount,
+  postAuthors,
   tags,
   tagUsageCountV2,
 } from "./schema";
@@ -284,4 +286,90 @@ export async function countBlogTags(db: DbClient, blogId: string) {
     .where(eq(tags.blogId, blogId));
 
   return rows[0]?.value || 0;
+}
+
+export async function listBlogAuthors(db: DbClient, blogId: string) {
+  return db
+    .select({
+      id: authors.id,
+      slug: authors.slug,
+      name: authors.name,
+      created_at: authors.createdAt,
+      bio: authors.bio,
+      twitter: authors.twitter,
+      website: authors.website,
+      image_url: authors.imageUrl,
+    })
+    .from(authors)
+    .where(eq(authors.blogId, blogId))
+    .orderBy(asc(authors.createdAt));
+}
+
+export async function deleteBlogAuthor(
+  db: DbClient,
+  input: { blogId: string; authorId: number }
+) {
+  const rows = await db
+    .delete(authors)
+    .where(and(eq(authors.blogId, input.blogId), eq(authors.id, input.authorId)))
+    .returning({ id: authors.id });
+
+  return rows[0] || null;
+}
+
+export async function listPostAuthors(
+  db: DbClient,
+  input: { blogId: string; postId: string }
+) {
+  const rows = await db
+    .select({
+      id: postAuthors.id,
+      post_id: postAuthors.postId,
+      author_id: postAuthors.authorId,
+      author_name: authors.name,
+      author_slug: authors.slug,
+      author_image_url: authors.imageUrl,
+    })
+    .from(postAuthors)
+    .innerJoin(authors, eq(postAuthors.authorId, authors.id))
+    .where(and(eq(postAuthors.blogId, input.blogId), eq(postAuthors.postId, input.postId)));
+
+  return rows.map((row) => ({
+    id: row.id,
+    post_id: row.post_id,
+    author_id: row.author_id,
+    author: {
+      name: row.author_name,
+      slug: row.author_slug,
+      image_url: row.author_image_url,
+    },
+  }));
+}
+
+export async function addPostAuthor(
+  db: DbClient,
+  input: { blogId: string; postId: string; authorId: number }
+) {
+  const rows = await db
+    .insert(postAuthors)
+    .values({
+      blogId: input.blogId,
+      postId: input.postId,
+      authorId: input.authorId,
+    })
+    .returning();
+
+  return rows[0] || null;
+}
+
+export async function removePostAuthor(
+  db: DbClient,
+  input: { postId: string; authorId: number }
+) {
+  const rows = await db
+    .delete(postAuthors)
+    .where(and(eq(postAuthors.postId, input.postId), eq(postAuthors.authorId, input.authorId)))
+    .returning({ id: postAuthors.id });
+
+  return rows[0] || null;
 }
