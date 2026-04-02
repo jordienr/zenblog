@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
-import { isProductionDeployment } from "@/lib/runtime-env";
+import { getTurnstileSiteKey, isTurnstileEnabled } from "@/lib/turnstile";
 import { getOAuthRedirectUrl } from "@/lib/utils/auth";
 import { useUser } from "@/utils/supabase/browser";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
@@ -20,11 +20,10 @@ export default function SignIn() {
   const supabase = createSupabaseBrowserClient();
   const user = useUser();
   const router = useRouter();
-  const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
+  const turnstileSiteKey = getTurnstileSiteKey();
+  const turnstileEnabled = isTurnstileEnabled();
 
   useEffect(() => {
-    setIsTurnstileEnabled(isProductionDeployment());
-
     if (user) {
       router.push("/blogs");
       return;
@@ -60,7 +59,7 @@ export default function SignIn() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    if (isTurnstileEnabled && !captchaToken) {
+    if (turnstileEnabled && !captchaToken) {
       toast.error("Please complete the captcha");
       setLoading(false);
       return;
@@ -70,9 +69,9 @@ export default function SignIn() {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: isTurnstileEnabled
+        options: captchaToken
           ? {
-              captchaToken: captchaToken ?? undefined,
+              captchaToken,
             }
           : undefined,
       });
@@ -133,16 +132,20 @@ export default function SignIn() {
               </Label>
               <Input required type="password" name="password" />
             </div>
-            {isTurnstileEnabled ? (
+            {turnstileSiteKey ? (
               <div className="mt-2 flex justify-center rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-4 shadow-sm">
                 <Turnstile
                   ref={turnstileRef}
-                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                  siteKey={turnstileSiteKey}
                   onSuccess={setCaptchaToken}
                   onExpire={() => setCaptchaToken(null)}
                 />
               </div>
-            ) : null}
+            ) : (
+              <p className="text-sm text-zinc-500">
+                Captcha is not configured for this environment.
+              </p>
+            )}
             <div className="mt-2 flex flex-col">
               <Button type="submit">Sign in</Button>
             </div>

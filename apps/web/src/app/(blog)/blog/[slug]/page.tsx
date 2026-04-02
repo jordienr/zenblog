@@ -8,21 +8,23 @@ import ReactSyntaxHighlighter from "react-syntax-highlighter";
 
 export const dynamic = "force-dynamic";
 type Params = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function generateMetadata({ params }: Params) {
   const blog = getBlogClient();
-  const { data: post } = await blog.posts.get({ slug: params.slug });
+  const { slug } = await params;
+  const { data: post } = await blog.posts.get({ slug });
 
   return {
     title: post.title,
     description: post.excerpt,
   };
 }
-const Post = async ({ params: { slug } }: Params) => {
+const Post = async ({ params }: Params) => {
+  const { slug } = await params;
   const blog = getBlogClient();
   const { data: post } = await blog.posts.get({ slug });
 

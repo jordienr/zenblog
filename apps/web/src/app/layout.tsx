@@ -1,17 +1,51 @@
-import type React from "react";
-import type { Metadata } from "next";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import PlausibleProvider from "next-plausible";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-export const metadata: Metadata = {
-  title: "Zenblog - Create Free Beautiful Blog Post Images",
-  description:
-    "Generate stunning Open Graph images for your blog posts with customizable templates, colors, and fonts.",
+export const metadata = {
+  title: "Zenblog blog",
+  description: "A simple headless blogging CMS",
+  icons: {
+    icon: "/static/logo.svg",
+  },
+  openGraph: {
+    title: "Zenblog blog",
+    description: "A simple headless blogging CMS",
+    images: "/static/og.jpg",
+  },
 };
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  variable: "--font-mono",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-sans",
+});
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  return <div>{children}</div>;
+}) {
+  return (
+    <html lang="en">
+      <head>
+        <PlausibleProvider domain="zenblog.com" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />{" "}
+      </head>
+      <body className={`${ibmPlexMono.variable} ${inter.variable}`}>
+        <NuqsAdapter>{children}</NuqsAdapter>
+      </body>
+    </html>
+  );
 }

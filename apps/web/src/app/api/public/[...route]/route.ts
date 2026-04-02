@@ -1,4 +1,5 @@
 import { handle } from "hono/vercel";
+import type { NextRequest } from "next/server";
 import { createClient } from "@/lib/server/supabase";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
@@ -98,7 +99,7 @@ app.openapi(getPostsRoute, async (c) => {
   const categoryFilter = c.req.query("category");
   const tagsFilter = c.req.query("tags")?.split(",");
   const authorFilter = c.req.query("author");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -234,7 +235,7 @@ const getPostBySlugRoute = createRoute({
 app.openapi(getPostBySlugRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const slug = c.req.param("slug");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId) || !slug?.trim()) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
@@ -347,7 +348,7 @@ app.openapi(getCategoriesRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -422,7 +423,7 @@ app.openapi(getTagsRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -497,7 +498,7 @@ app.openapi(getAuthorsRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -577,7 +578,7 @@ const getAuthorBySlugRoute = createRoute({
 app.openapi(getAuthorBySlugRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const slug = c.req.param("slug");
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (!isValidBlogId(rawBlogId) || !slug?.trim()) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
@@ -650,8 +651,20 @@ app.get(
   })
 );
 
-export const GET = handle(app);
-export const POST = handle(app);
-export const PUT = handle(app);
-export const PATCH = handle(app);
-export const DELETE = handle(app);
+class NextFetchEventLike {
+  constructor(readonly request: Request) {}
+  respondWith(_promise: Response | Promise<Response>) {}
+  passThroughOnException() {}
+  waitUntil(_promise: Promise<void>) {}
+}
+
+const honoHandler = handle(app);
+
+const routeHandler = (request: NextRequest) =>
+  honoHandler(request, new NextFetchEventLike(request) as any);
+
+export const GET = routeHandler;
+export const POST = routeHandler;
+export const PUT = routeHandler;
+export const PATCH = routeHandler;
+export const DELETE = routeHandler;

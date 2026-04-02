@@ -30,7 +30,7 @@
   "devDependencies": {
     "@turbo/gen": "^1.9.7",
     "concurrently": "^8.2.2",
-    "eslint": "^7.32.0",
+    "eslint": "^9.0.0",
     "prettier": "^2.5.1",
     "shiki": "^1.5.1",
     "turbo": "^2.0.3",
@@ -47,7 +47,7 @@
     "@supabase/ssr": "^0.5.0",
     "@types/inquirer": "^9.0.3",
     "hypertune": "^2.1.1",
-    "next": "^14.1.0",
+    "next": "^16.0.0",
     "sugar-high": "^0.6.1",
     "tsx": "^4.7.1",
     "typescript": "^5.6.3",

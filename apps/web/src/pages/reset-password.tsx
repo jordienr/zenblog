@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { getTurnstileSiteKey, isTurnstileEnabled } from "@/lib/turnstile";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -16,6 +17,8 @@ export default function ResetPassword() {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
+  const turnstileSiteKey = getTurnstileSiteKey();
+  const turnstileEnabled = isTurnstileEnabled();
 
   async function onSubmitStep1(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,7 +29,7 @@ export default function ResetPassword() {
 
     const url = process.env.NEXT_PUBLIC_BASE_URL;
 
-    if (!captchaToken) {
+    if (turnstileEnabled && !captchaToken) {
       toast.error("Please complete the captcha");
       setLoading(false);
       return;
@@ -34,7 +37,7 @@ export default function ResetPassword() {
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${url || ""}/reset-password-confirmation`,
-      captchaToken,
+      ...(captchaToken ? { captchaToken } : {}),
     });
 
     if (error) {
@@ -83,12 +86,18 @@ export default function ResetPassword() {
           <>
             <Label htmlFor="email">Email</Label>
             <Input required type="email" name="email" id="email" />
-            <Turnstile
-              ref={turnstileRef}
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-              onSuccess={setCaptchaToken}
-              onExpire={() => setCaptchaToken(null)}
-            />
+            {turnstileSiteKey ? (
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={turnstileSiteKey}
+                onSuccess={setCaptchaToken}
+                onExpire={() => setCaptchaToken(null)}
+              />
+            ) : (
+              <p className="text-sm text-zinc-500">
+                Captcha is not configured for this environment.
+              </p>
+            )}
             <Button type="submit">Send reset link</Button>
           </>
         )}

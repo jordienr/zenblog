@@ -3,8 +3,8 @@ import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { isProductionDeployment } from "@/lib/runtime-env";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { getTurnstileSiteKey, isTurnstileEnabled } from "@/lib/turnstile";
 import { getOAuthRedirectUrl } from "@/lib/utils/auth";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft } from "lucide-react";
@@ -20,11 +20,10 @@ export default function SignIn() {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
-  const [isTurnstileEnabled, setIsTurnstileEnabled] = useState(false);
+  const turnstileSiteKey = getTurnstileSiteKey();
+  const turnstileEnabled = isTurnstileEnabled();
 
   useEffect(() => {
-    setIsTurnstileEnabled(isProductionDeployment());
-
     supabase.auth.getSession().then((res) => {
       if (res.data.session?.user) {
         router.push("/blogs");
@@ -58,7 +57,7 @@ export default function SignIn() {
       const email = form.email.value;
       const password = form.password.value;
 
-      if (isTurnstileEnabled && !captchaToken) {
+      if (turnstileEnabled && !captchaToken) {
         toast.error("Please complete the captcha");
         setLoading(false);
         return;
@@ -68,9 +67,9 @@ export default function SignIn() {
       const { data, error } = await sb.auth.signUp({
         email,
         password,
-        options: isTurnstileEnabled
+        options: captchaToken
           ? {
-              captchaToken: captchaToken ?? undefined,
+              captchaToken,
             }
           : undefined,
       });
@@ -130,16 +129,20 @@ export default function SignIn() {
           <Label htmlFor="password">Password</Label>
           <Input required type="password" name="password" />
         </div>
-        {isTurnstileEnabled ? (
+        {turnstileSiteKey ? (
           <div className="flex justify-center rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-4 shadow-sm">
             <Turnstile
               ref={turnstileRef}
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+              siteKey={turnstileSiteKey}
               onSuccess={setCaptchaToken}
               onExpire={() => setCaptchaToken(null)}
             />
           </div>
-        ) : null}
+        ) : (
+          <p className="text-sm text-zinc-500">
+            Captcha is not configured for this environment.
+          </p>
+        )}
         {loading ? (
           <Spinner />
         ) : (

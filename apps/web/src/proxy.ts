@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { updateSession } from "./utils/supabase/middleware";
 
 export const config = {
@@ -14,6 +14,6 @@ export const config = {
   ],
 };
 
-export default async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   return await updateSession(req);
 }
