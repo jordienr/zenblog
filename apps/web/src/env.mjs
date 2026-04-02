@@ -20,6 +20,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().optional(),
     NEXT_PUBLIC_TURNSTILE_PREVIEW_SITE_KEY: z.string().optional(),
+    NEXT_PUBLIC_DISABLE_TURNSTILE: z.enum([ "true", "false" ]).optional(),
     NEXT_PUBLIC_VERCEL_ENV: z.string().optional(),
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
   },
@@ -35,6 +36,7 @@ export const env = createEnv({
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
     NEXT_PUBLIC_TURNSTILE_PREVIEW_SITE_KEY:
       process.env.NEXT_PUBLIC_TURNSTILE_PREVIEW_SITE_KEY,
+    NEXT_PUBLIC_DISABLE_TURNSTILE: process.env.NEXT_PUBLIC_DISABLE_TURNSTILE,
     NEXT_PUBLIC_VERCEL_ENV: process.env.NEXT_PUBLIC_VERCEL_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },

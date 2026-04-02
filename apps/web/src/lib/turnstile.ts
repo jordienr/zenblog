@@ -1,6 +1,14 @@
 import { env } from "@/env.mjs";
 
+function isTurnstileForceDisabled() {
+  return env.NEXT_PUBLIC_DISABLE_TURNSTILE === "true";
+}
+
 export function getTurnstileSiteKey() {
+  if (isTurnstileForceDisabled()) {
+    return null;
+  }
+
   if (
     env.NEXT_PUBLIC_VERCEL_ENV === "preview" &&
     env.NEXT_PUBLIC_TURNSTILE_PREVIEW_SITE_KEY
@@ -12,5 +20,5 @@ export function getTurnstileSiteKey() {
 }
 
 export function isTurnstileEnabled() {
-  return Boolean(getTurnstileSiteKey());
+  return !isTurnstileForceDisabled() && Boolean(getTurnstileSiteKey());
 }
