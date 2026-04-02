@@ -6,6 +6,13 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "outputs": []
+    },
     "api#build": {
       "dependsOn": ["^build"],
       "env": [

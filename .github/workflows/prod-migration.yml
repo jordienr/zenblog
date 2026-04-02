@@ -1,0 +1,28 @@
+name: Production Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: "Git ref to migrate"
+        required: true
+        default: "main"
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test
