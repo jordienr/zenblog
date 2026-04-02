@@ -170,3 +170,12 @@ export const authorBySlug: Endpoint = {
     ],
   },
 };
+
+export const endpoints = [
+  posts,
+  postBySlug,
+  categories,
+  tags,
+  authors,
+  authorBySlug,
+];

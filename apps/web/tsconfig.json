@@ -27,6 +27,21 @@
       ],
       "app/*": [
         "./src/app/*"
+      ],
+      "@zenblog/db": [
+        "../../packages/db/src/index.ts"
+      ],
+      "@zenblog/contracts-public": [
+        "../../packages/contracts-public/src/index.ts"
+      ],
+      "@zenblog/contracts-v2": [
+        "../../packages/contracts-v2/src/index.ts"
+      ],
+      "@zenblog/api-client-public": [
+        "../../packages/api-client-public/src/index.ts"
+      ],
+      "@zenblog/api-client-v2": [
+        "../../packages/api-client-v2/src/index.ts"
       ]
     },
     "plugins": [

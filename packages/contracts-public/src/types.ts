@@ -32,7 +32,7 @@ export type Query = {
 };
 
 export type Response = {
-  [200]: {
+  [statusCode: string]: {
     description: string;
     type: string;
     example: string;

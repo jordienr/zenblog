@@ -1,4 +1,4 @@
-import { and, arrayOverlaps, desc, eq, inArray } from "drizzle-orm";
+import { and, arrayOverlaps, count, desc, eq, inArray } from "drizzle-orm";
 import { authors, categories, postsV10, tagUsageCountV2, tags } from "./schema";
 import type { DbClient } from "./client";
 
@@ -46,39 +46,48 @@ export async function listPublicPosts(db: DbClient, input: ListPostsInput) {
     authorFilter ? arrayOverlaps(postsV10.authors, [authorFilter.id]) : undefined,
   ].filter(Boolean);
 
-  const rows = await db
+  const [rows, countRows] = await Promise.all([
+    db
     .select()
     .from(postsV10)
     .where(and(...(filters as Parameters<typeof and>)))
     .orderBy(desc(postsV10.publishedAt))
     .offset(input.offset)
-    .limit(input.limit);
+    .limit(input.limit),
+    db
+      .select({ value: count() })
+      .from(postsV10)
+      .where(and(...(filters as Parameters<typeof and>))),
+  ]);
 
-  return rows.map((post) => ({
-    title: post.title || "",
-    slug: post.slug || "",
-    published_at: post.publishedAt?.toISOString() || "",
-    excerpt: post.excerpt || "",
-    cover_image: post.coverImage || "",
-    category:
-      post.categoryName && post.categorySlug
-        ? {
-            name: post.categoryName,
-            slug: post.categorySlug,
-          }
-        : null,
-    tags: blogTags.filter((tag) => post.tags?.includes(tag.slug)),
-    authors: authorRows
-      .filter((author) => post.authors?.includes(author.id))
-      .map((author) => ({
-        name: author.name,
-        slug: author.slug,
-        image_url: author.image_url || "",
-        bio: author.bio || undefined,
-        website_url: author.website || undefined,
-        twitter_url: author.twitter || undefined,
-      })),
-  }));
+  return {
+    data: rows.map((post) => ({
+      title: post.title || "",
+      slug: post.slug || "",
+      published_at: post.publishedAt?.toISOString() || "",
+      excerpt: post.excerpt || "",
+      cover_image: post.coverImage || "",
+      category:
+        post.categoryName && post.categorySlug
+          ? {
+              name: post.categoryName,
+              slug: post.categorySlug,
+            }
+          : null,
+      tags: blogTags.filter((tag) => post.tags?.includes(tag.slug)),
+      authors: authorRows
+        .filter((author) => post.authors?.includes(author.id))
+        .map((author) => ({
+          name: author.name,
+          slug: author.slug,
+          image_url: author.image_url || "",
+          bio: author.bio || undefined,
+          website_url: author.website || undefined,
+          twitter_url: author.twitter || undefined,
+        })),
+    })),
+    total: countRows[0]?.value || 0,
+  };
 }
 
 export async function getPublicPostBySlug(
@@ -150,31 +159,48 @@ export async function listPublicCategories(
   db: DbClient,
   input: { blogId: string; offset: number; limit: number }
 ) {
-  return db
+  const [data, totalRows] = await Promise.all([
+    db
     .select({ name: categories.name, slug: categories.slug })
     .from(categories)
     .where(eq(categories.blogId, input.blogId))
     .offset(input.offset)
-    .limit(input.limit);
+    .limit(input.limit),
+    db
+      .select({ value: count() })
+      .from(categories)
+      .where(eq(categories.blogId, input.blogId)),
+  ]);
+
+  return { data, total: totalRows[0]?.value || 0 };
 }
 
 export async function listPublicTags(
   db: DbClient,
   input: { blogId: string; offset: number; limit: number }
 ) {
-  return db
+  const [data, totalRows] = await Promise.all([
+    db
     .select({ name: tags.name, slug: tags.slug })
     .from(tags)
     .where(eq(tags.blogId, input.blogId))
     .offset(input.offset)
-    .limit(input.limit);
+    .limit(input.limit),
+    db
+      .select({ value: count() })
+      .from(tags)
+      .where(eq(tags.blogId, input.blogId)),
+  ]);
+
+  return { data, total: totalRows[0]?.value || 0 };
 }
 
 export async function listPublicAuthors(
   db: DbClient,
   input: { blogId: string; offset: number; limit: number }
 ) {
-  const rows = await db
+  const [rows, totalRows] = await Promise.all([
+    db
     .select({
       name: authors.name,
       slug: authors.slug,
@@ -186,13 +212,21 @@ export async function listPublicAuthors(
     .from(authors)
     .where(eq(authors.blogId, input.blogId))
     .offset(input.offset)
-    .limit(input.limit);
+    .limit(input.limit),
+    db
+      .select({ value: count() })
+      .from(authors)
+      .where(eq(authors.blogId, input.blogId)),
+  ]);
 
-  return rows.map((author) => ({
-    ...author,
-    twitter_url: author.twitter || undefined,
-    website_url: author.website || undefined,
-  }));
+  return {
+    data: rows.map((author) => ({
+      ...author,
+      twitter_url: author.twitter || undefined,
+      website_url: author.website || undefined,
+    })),
+    total: totalRows[0]?.value || 0,
+  };
 }
 
 export async function getPublicAuthorBySlug(

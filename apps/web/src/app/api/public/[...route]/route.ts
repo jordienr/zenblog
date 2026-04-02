@@ -1,9 +1,17 @@
 import { handle } from "hono/vercel";
 import type { NextRequest } from "next/server";
-import { createClient } from "@/lib/server/supabase";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import {
+  createDb,
+  getPublicAuthorBySlug,
+  getPublicPostBySlug,
+  listPublicAuthors,
+  listPublicCategories,
+  listPublicPosts,
+  listPublicTags,
+} from "@zenblog/db";
 import {
   categories,
   postBySlug,
@@ -99,7 +107,7 @@ app.openapi(getPostsRoute, async (c) => {
   const categoryFilter = c.req.query("category");
   const tagsFilter = c.req.query("tags")?.split(",");
   const authorFilter = c.req.query("author");
-  const supabase = await createClient();
+  const db = createDb();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -107,86 +115,22 @@ app.openapi(getPostsRoute, async (c) => {
 
   const blogId: string = rawBlogId;
 
-  let postsQuery = supabase
-    .from("posts_v10")
-    .select(
-      "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug, authors",
-      { count: "exact" }
-    )
-    .eq("blog_id", blogId)
-    .eq("published", true)
-    .eq("deleted", false)
-    .order("published_at", { ascending: false })
-    .range(offset, offset + limit - 1);
+  const postsResult = await listPublicPosts(db, {
+    blogId,
+    offset,
+    limit,
+    category: categoryFilter,
+    tags: tagsFilter,
+    author: authorFilter,
+  });
 
-  if (categoryFilter) {
-    postsQuery.eq("category_slug", categoryFilter);
-  }
-
-  const blogTagsQuery = await supabase
-    .from("tags")
-    .select("slug, name")
-    .eq("blog_id", blogId);
-
-  if (tagsFilter && tagsFilter.length > 0) {
-    // Filter posts query by tags in request
-    postsQuery = postsQuery.overlaps("tags", tagsFilter);
-  }
-
-  const authorsQuery = await supabase
-    .from("authors")
-    .select("id, slug, name, image_url, bio, website, twitter")
-    .eq("blog_id", blogId);
-
-  if (authorFilter) {
-    const authorData = authorsQuery.data?.find((a) => a.slug === authorFilter);
-
-    postsQuery = postsQuery.overlaps("authors", [authorData?.id]);
-  }
-
-  const { data: posts, error, count } = await postsQuery;
-
-  if (error) {
-    console.log(error);
+  if (!postsResult.data.length) {
     return throwError(c, "NO_POSTS_FOUND");
   }
-
-  if (!posts) {
-    return throwError(c, "NO_POSTS_FOUND");
-  }
-
-  const formattedPostsRes = posts.map(
-    ({ category_name, category_slug, ...post }) => {
-      const basePost = {
-        ...post,
-        category:
-          category_name && category_slug
-            ? { name: category_name, slug: category_slug }
-            : null,
-        tags: post.tags
-          ? blogTagsQuery.data?.filter((tag) => post.tags?.includes(tag.slug))
-          : [],
-        authors:
-          post.authors && authorsQuery.data
-            ? authorsQuery.data
-                .filter((author) => post.authors?.includes(author.id))
-                .map(({ id, ...author }) => ({
-                  ...author,
-                  image_url: author.image_url || "",
-                  bio: author.bio || undefined,
-                  website_url: author.website || undefined,
-                  twitter_url: author.twitter || undefined,
-                }))
-            : [],
-      };
-
-      return basePost;
-    }
-  );
 
   const res: PublicApiResponse<Post[]> = {
-    data: formattedPostsRes as unknown as Post[],
-    total: count || 0,
+    data: postsResult.data as Post[],
+    total: postsResult.total,
     offset,
     limit,
   };
@@ -235,7 +179,7 @@ const getPostBySlugRoute = createRoute({
 app.openapi(getPostBySlugRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const slug = c.req.param("slug");
-  const supabase = await createClient();
+  const db = createDb();
 
   if (!isValidBlogId(rawBlogId) || !slug?.trim()) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
@@ -243,66 +187,13 @@ app.openapi(getPostBySlugRoute, async (c) => {
 
   const blogId: string = rawBlogId;
 
-  const { data: post, error } = await supabase
-    .from("posts_v10")
-    .select(
-      "title, slug, published_at, excerpt, cover_image, tags, category_name, category_slug, html_content, authors"
-    )
-    .eq("blog_id", blogId)
-    .eq("slug", slug)
-    .single();
+  const post = await getPublicPostBySlug(db, { blogId, slug });
 
-  if (error || !post) {
+  if (!post) {
     return throwError(c, "NO_POSTS_FOUND");
   }
 
-  // Fetch tags data
-  const { data: tagsData } = await supabase
-    .from("tags")
-    .select("slug, name")
-    .eq("blog_id", blogId)
-    .in("slug", post.tags || []);
-
-  // Create initial formatted post with correct tags
-  let formattedPost: PostWithContent = {
-    title: post.title || "",
-    slug: post.slug || "",
-    published_at: post.published_at || "",
-    excerpt: post.excerpt || "",
-    cover_image: post.cover_image || "",
-    tags: tagsData || [],
-    category:
-      !post.category_name || !post.category_slug
-        ? null
-        : {
-            name: post.category_name,
-            slug: post.category_slug,
-          },
-    authors: [],
-    html_content: post.html_content || "",
-  };
-
-  if (post.authors && post.authors.length > 0) {
-    const { data: authorsData } = await supabase
-      .from("authors")
-      .select("id, slug, name, image_url, bio, website, twitter")
-      .eq("blog_id", blogId)
-      .in("id", post.authors);
-    if (authorsData) {
-      formattedPost = {
-        ...formattedPost, // Spread the existing formattedPost to keep the correct tags
-        authors: authorsData.map(({ id, ...author }) => ({
-          ...author,
-          image_url: author.image_url || "",
-          bio: author.bio || undefined,
-          website_url: author.website || undefined,
-          twitter_url: author.twitter || undefined,
-        })),
-      };
-    }
-  }
-
-  return c.json({ data: formattedPost }, 200);
+  return c.json({ data: post as PostWithContent }, 200);
 });
 
 // Define route: Get categories
@@ -348,7 +239,7 @@ app.openapi(getCategoriesRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = await createClient();
+  const db = createDb();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -356,23 +247,19 @@ app.openapi(getCategoriesRoute, async (c) => {
 
   const blogId: string = rawBlogId;
 
-  const {
-    data: categories,
-    error,
-    count,
-  } = await supabase
-    .from("categories")
-    .select("name, slug", { count: "exact" })
-    .eq("blog_id", blogId)
-    .range(offset, offset + limit - 1);
+  const categoriesResult = await listPublicCategories(db, {
+    blogId,
+    offset,
+    limit,
+  });
 
-  if (error) {
+  if (!categoriesResult.data.length) {
     return throwError(c, "NO_CATEGORIES_FOUND");
   }
 
-  const res: PublicApiResponse<typeof categories> = {
-    data: categories,
-    total: count || 0,
+  const res: PublicApiResponse<typeof categoriesResult.data> = {
+    data: categoriesResult.data,
+    total: categoriesResult.total,
     offset,
     limit,
   };
@@ -423,7 +310,7 @@ app.openapi(getTagsRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = await createClient();
+  const db = createDb();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -431,23 +318,19 @@ app.openapi(getTagsRoute, async (c) => {
 
   const blogId: string = rawBlogId;
 
-  const {
-    data: tags,
-    error,
-    count,
-  } = await supabase
-    .from("tags")
-    .select("name, slug", { count: "exact" })
-    .eq("blog_id", blogId)
-    .range(offset, offset + limit - 1);
+  const tagsResult = await listPublicTags(db, {
+    blogId,
+    offset,
+    limit,
+  });
 
-  if (error) {
+  if (!tagsResult.data.length) {
     return throwError(c, "NO_TAGS_FOUND");
   }
 
-  const res: PublicApiResponse<typeof tags> = {
-    data: tags,
-    total: count || 0,
+  const res: PublicApiResponse<typeof tagsResult.data> = {
+    data: tagsResult.data,
+    total: tagsResult.total,
     offset,
     limit,
   };
@@ -498,7 +381,7 @@ app.openapi(getAuthorsRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const offset = parseInt(c.req.query("offset") || "0");
   const limit = parseInt(c.req.query("limit") || "30");
-  const supabase = await createClient();
+  const db = createDb();
 
   if (!isValidBlogId(rawBlogId)) {
     return throwError(c, "MISSING_BLOG_ID");
@@ -506,30 +389,19 @@ app.openapi(getAuthorsRoute, async (c) => {
 
   const blogId: string = rawBlogId;
 
-  const {
-    data: authors,
-    error,
-    count,
-  } = await supabase
-    .from("authors")
-    .select("name, slug, image_url, twitter, website, bio", { count: "exact" })
-    .eq("blog_id", blogId)
-    .range(offset, offset + limit - 1);
+  const authorsResult = await listPublicAuthors(db, {
+    blogId,
+    offset,
+    limit,
+  });
 
-  if (error) {
+  if (!authorsResult.data.length) {
     return throwError(c, "NO_AUTHORS_FOUND");
   }
 
-  const formattedAuthors =
-    authors?.map((author) => ({
-      ...author,
-      twitter_url: author.twitter || undefined,
-      website_url: author.website || undefined,
-    })) || [];
-
-  const res: PublicApiResponse<typeof formattedAuthors> = {
-    data: formattedAuthors,
-    total: count || 0,
+  const res: PublicApiResponse<typeof authorsResult.data> = {
+    data: authorsResult.data,
+    total: authorsResult.total,
     offset,
     limit,
   };
@@ -578,7 +450,7 @@ const getAuthorBySlugRoute = createRoute({
 app.openapi(getAuthorBySlugRoute, async (c) => {
   const rawBlogId = c.req.param("blogId");
   const slug = c.req.param("slug");
-  const supabase = await createClient();
+  const db = createDb();
 
   if (!isValidBlogId(rawBlogId) || !slug?.trim()) {
     return throwError(c, "MISSING_BLOG_ID_OR_SLUG");
@@ -586,31 +458,14 @@ app.openapi(getAuthorBySlugRoute, async (c) => {
 
   const blogId: string = rawBlogId;
 
-  const { data: author, error } = await supabase
-    .from("authors")
-    .select("name, slug, image_url, twitter, website, bio")
-    .eq("blog_id", blogId)
-    .eq("slug", slug)
-    .single();
+  const author = await getPublicAuthorBySlug(db, { blogId, slug });
 
-  if (error || !author) {
+  if (!author) {
     return throwError(c, "AUTHOR_NOT_FOUND");
   }
 
-  const normalizedAuthor = {
-    ...author,
-    image_url: author.image_url || "",
-    bio: author.bio || "",
-    website: author.website || "",
-    twitter: author.twitter || "",
-  };
-
   return c.json({
-    data: {
-      ...normalizedAuthor,
-      website_url: normalizedAuthor.website,
-      twitter_url: normalizedAuthor.twitter,
-    },
+    data: author,
   }, 200);
 });
 
