@@ -6,6 +6,24 @@ import { prettyJSON } from "hono/pretty-json";
 import { handle } from "hono/vercel";
 import type { NextRequest } from "next/server";
 import { createClient } from "@/lib/server/supabase";
+import {
+  createBlogCategory,
+  createBlogTag,
+  createDb,
+  createUserBlog,
+  deleteBlogCategory,
+  deleteBlogTag,
+  deleteUserBlog,
+  getUserBlogById,
+  listBlogCategories,
+  listBlogCategoriesWithPostCount,
+  listBlogTags,
+  listBlogTagUsageCounts,
+  listUserBlogs,
+  updateBlogCategory,
+  updateBlogTag,
+  updateUserBlog,
+} from "@zenblog/db";
 import { axiom, AXIOM_DATASETS, getApiUsageForBlog } from "lib/axiom";
 import {
   createOrRetrieveCustomer,
@@ -72,18 +90,9 @@ const getUser = async () => {
 };
 
 const getBlogOwnership = async (blogId: string, userId: string) => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("blogs")
-    .select("user_id")
-    .eq("id", blogId)
-    .single();
-
-  if (error || !data) {
-    return false;
-  }
-
-  return data.user_id === userId;
+  const db = createDb();
+  const blog = await getUserBlogById(db, { blogId, userId });
+  return !!blog;
 };
 
 const createR2Client = () => {
@@ -235,6 +244,319 @@ const api = new Hono()
         { status: 500 }
       );
     }
+  })
+  .get("/blogs", async (c) => {
+    const { user } = await getUser();
+
+    if (!user?.id) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const blogs = await listUserBlogs(db, user.id);
+
+    return c.json(blogs, 200);
+  })
+  .post(
+    "/blogs",
+    zValidator(
+      "json",
+      z.object({
+        title: z.string(),
+        description: z.string(),
+        emoji: z.string(),
+      })
+    ),
+    async (c) => {
+      const { user } = await getUser();
+
+      if (!user?.id) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const db = createDb();
+      const payload = await c.req.json();
+      const blog = await createUserBlog(db, {
+        userId: user.id,
+        title: payload.title,
+        description: payload.description,
+        emoji: payload.emoji,
+      });
+
+      return c.json(blog, 200);
+    }
+  )
+  .get("/blogs/:blog_id", async (c) => {
+    const { user } = await getUser();
+    const blogId = c.req.param("blog_id");
+
+    if (!user?.id) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const blog = await getUserBlogById(db, {
+      userId: user.id,
+      blogId,
+    });
+
+    if (!blog) {
+      return BlogNotFoundError(c);
+    }
+
+    return c.json(blog, 200);
+  })
+  .patch(
+    "/blogs/:blog_id",
+    zValidator(
+      "json",
+      z.object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+        emoji: z.string().optional(),
+        theme: z.string().optional(),
+        access_token: z.string().optional(),
+      })
+    ),
+    async (c) => {
+      const { user } = await getUser();
+      const blogId = c.req.param("blog_id");
+
+      if (!user?.id) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const db = createDb();
+      const payload = await c.req.json();
+      const blog = await updateUserBlog(db, {
+        userId: user.id,
+        blogId,
+        title: payload.title,
+        description: payload.description,
+        emoji: payload.emoji,
+        theme: payload.theme,
+        accessToken: payload.access_token,
+      });
+
+      if (!blog) {
+        return BlogNotFoundError(c);
+      }
+
+      return c.json(blog, 200);
+    }
+  )
+  .delete("/blogs/:blog_id", async (c) => {
+    const { user } = await getUser();
+    const blogId = c.req.param("blog_id");
+
+    if (!user?.id) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const deleted = await deleteUserBlog(db, { userId: user.id, blogId });
+
+    if (!deleted) {
+      return BlogNotFoundError(c);
+    }
+
+    return c.json({ ok: true }, 200);
+  })
+  .get("/blogs/:blog_id/categories", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const categories = await listBlogCategories(db, blogId);
+
+    return c.json(categories, 200);
+  })
+  .get("/blogs/:blog_id/categories/usage", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const categories = await listBlogCategoriesWithPostCount(db, blogId);
+
+    return c.json(categories, 200);
+  })
+  .post(
+    "/blogs/:blog_id/categories",
+    zValidator(
+      "json",
+      z.object({
+        name: z.string(),
+        slug: z.string(),
+      })
+    ),
+    async (c) => {
+      const blogId = c.req.param("blog_id");
+      const { user } = await getUser();
+
+      if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const db = createDb();
+      const payload = await c.req.json();
+      const category = await createBlogCategory(db, {
+        blogId,
+        name: payload.name,
+        slug: payload.slug,
+      });
+
+      return c.json(category, 200);
+    }
+  )
+  .patch(
+    "/blogs/:blog_id/categories/:category_id",
+    zValidator(
+      "json",
+      z.object({
+        name: z.string(),
+        slug: z.string(),
+      })
+    ),
+    async (c) => {
+      const blogId = c.req.param("blog_id");
+      const categoryId = Number(c.req.param("category_id"));
+      const { user } = await getUser();
+
+      if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const db = createDb();
+      const payload = await c.req.json();
+      const category = await updateBlogCategory(db, {
+        blogId,
+        categoryId,
+        name: payload.name,
+        slug: payload.slug,
+      });
+
+      return c.json(category, 200);
+    }
+  )
+  .delete("/blogs/:blog_id/categories/:category_id", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const categoryId = Number(c.req.param("category_id"));
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const deleted = await deleteBlogCategory(db, { blogId, categoryId });
+
+    return c.json({ ok: !!deleted }, 200);
+  })
+  .get("/blogs/:blog_id/tags", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const tags = await listBlogTags(db, blogId);
+
+    return c.json(tags, 200);
+  })
+  .get("/blogs/:blog_id/tags/usage", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const tags = await listBlogTagUsageCounts(db, blogId);
+
+    return c.json(tags, 200);
+  })
+  .post(
+    "/blogs/:blog_id/tags",
+    zValidator(
+      "json",
+      z.object({
+        name: z.string(),
+        slug: z.string(),
+      })
+    ),
+    async (c) => {
+      const blogId = c.req.param("blog_id");
+      const { user } = await getUser();
+
+      if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const db = createDb();
+      const payload = await c.req.json();
+      const tag = await createBlogTag(db, {
+        blogId,
+        name: payload.name,
+        slug: payload.slug,
+      });
+
+      return c.json(tag, 200);
+    }
+  )
+  .patch(
+    "/blogs/:blog_id/tags/:tag_id",
+    zValidator(
+      "json",
+      z.object({
+        name: z.string(),
+        slug: z.string(),
+      })
+    ),
+    async (c) => {
+      const blogId = c.req.param("blog_id");
+      const tagId = c.req.param("tag_id");
+      const { user } = await getUser();
+
+      if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+        return c.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const db = createDb();
+      const payload = await c.req.json();
+      const tag = await updateBlogTag(db, {
+        blogId,
+        tagId,
+        name: payload.name,
+        slug: payload.slug,
+      });
+
+      return c.json(tag, 200);
+    }
+  )
+  .delete("/blogs/:blog_id/tags/:tag_id", async (c) => {
+    const blogId = c.req.param("blog_id");
+    const tagId = c.req.param("tag_id");
+    const { user } = await getUser();
+
+    if (!user?.id || !(await getBlogOwnership(blogId, user.id))) {
+      return c.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createDb();
+    const deleted = await deleteBlogTag(db, { blogId, tagId });
+
+    return c.json({ ok: !!deleted }, 200);
   })
   .get(
     "/blogs/:blog_id/usage",

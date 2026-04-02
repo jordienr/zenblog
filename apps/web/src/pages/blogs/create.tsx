@@ -42,7 +42,7 @@ export default function CreateBlog() {
     });
 
     if (res.error) {
-      if (res.error.code === "23505") {
+      if ("code" in res.error && res.error.code === "23505") {
         toast.error("Slug already exists. Please choose another slug");
         document.getElementById("slug-input")?.focus();
         return;

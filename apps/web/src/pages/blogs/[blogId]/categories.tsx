@@ -216,6 +216,7 @@ export default function CategoriesPage() {
 
                 await updateCategory.mutateAsync({
                   id: selectedCategory.category_id,
+                  blog_id: blogId,
                   name: name as string,
                   slug: slug as string,
                 });

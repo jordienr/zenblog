@@ -1,5 +1,18 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { API } from "app/utils/api-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+const api = API();
+
+type TagUsageRow = {
+  tag_id: string | null;
+  tag_name: string | null;
+  slug: string | null;
+  post_count: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+  blog_id: string | null;
+};
 
 export const tagKeys = {
   tags: (blogId: string) => ["tags", blogId],
@@ -15,39 +28,52 @@ export function useTagsWithUsageQuery(
     enabled: boolean;
   }
 ) {
-  const supa = createSupabaseBrowserClient();
-
   return useQuery({
     queryKey: tagKeys.tags(blogId),
     enabled: !!blogId && enabled,
     queryFn: async () => {
-      const { data } = await supa
-        .from("tag_usage_count_v2")
-        .select("*")
-        .eq("blog_id", blogId);
-
-      return data;
+      const res = await api.v2.blogs[":blog_id"].tags.usage.$get({
+        param: { blog_id: blogId },
+      });
+      if (!res.ok) {
+        throw new Error("Failed to load tag usage");
+      }
+      const data = (await res.json()) as Array<{
+        tagId: string | null;
+        tagName: string | null;
+        slug: string | null;
+        postCount: number | null;
+        createdAt: string | null;
+        updatedAt: string | null;
+        blogId: string | null;
+      }>;
+      return data.map((tag): TagUsageRow => ({
+        tag_id: tag.tagId,
+        tag_name: tag.tagName,
+        slug: tag.slug,
+        post_count: tag.postCount,
+        created_at: tag.createdAt,
+        updated_at: tag.updatedAt,
+        blog_id: tag.blogId,
+      }));
     },
   });
 }
 
 export function useDeleteTagMutation(blogId: string) {
   const queryClient = useQueryClient();
-  const supa = createSupabaseBrowserClient();
 
   return useMutation({
     mutationFn: async (tagId: string) => {
-      const res = await supa
-        .from("tags")
-        .delete()
-        .eq("id", tagId)
-        .eq("blog_id", blogId);
+      const res = await api.v2.blogs[":blog_id"].tags[":tag_id"].$delete({
+        param: { blog_id: blogId, tag_id: tagId },
+      });
 
-      if (res.error) {
-        throw new Error(res.error.message);
+      if (!res.ok) {
+        return { error: { message: "Failed to delete tag" } };
       }
 
-      return res;
+      return { error: null, data: (await res.json()) as { ok: boolean } };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tagKeys.tags(blogId) });
@@ -57,17 +83,29 @@ export function useDeleteTagMutation(blogId: string) {
 
 export function useUpdateTagMutation(blogId: string) {
   const queryClient = useQueryClient();
-  const supa = createSupabaseBrowserClient();
 
   return useMutation({
     mutationFn: async (tag: { id: string; name: string; slug: string }) => {
-      const res = await supa.from("tags").update(tag).eq("id", tag.id);
+      const res = await api.v2.blogs[":blog_id"].tags[":tag_id"].$patch({
+        param: { blog_id: blogId, tag_id: tag.id },
+        json: {
+          name: tag.name,
+          slug: tag.slug,
+        },
+      });
 
-      if (res.error) {
-        throw new Error(res.error.message);
+      if (!res.ok) {
+        return { error: { message: "Failed to update tag" } };
       }
 
-      return res;
+      return {
+        error: null,
+        data: (await res.json()) as {
+          id: string;
+          name: string;
+          slug: string;
+        },
+      };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tagKeys.tags(blogId) });
