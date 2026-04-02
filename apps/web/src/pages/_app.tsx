@@ -8,11 +8,12 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { Toaster } from "sonner";
+import { toast, Toaster } from "sonner";
 import { useEffect, useState } from "react";
 import { UserProvider } from "@/utils/supabase/browser";
 import { PostHogProvider } from "posthog-js/react";
 import posthog from "posthog-js";
+import { isPreviewOrDevDeployment } from "@/lib/runtime-env";
 
 // Fonts
 const inter = Inter({
@@ -23,7 +24,8 @@ const inter = Inter({
 
 // Main Component
 function MyApp({ Component, pageProps }: AppProps) {
-  const { pathname, isReady } = useRouter();
+  const router = useRouter();
+  const { pathname, isReady } = router;
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -42,11 +44,60 @@ function MyApp({ Component, pageProps }: AppProps) {
       defaults: "2025-05-24",
       // Enable debug mode in development
       loaded: (posthog) => {
-        if (process.env.NODE_ENV === "development") posthog.debug();
+        const isPreviewOrDev = isPreviewOrDevDeployment();
+
+        posthog.setPersonPropertiesForFlags(
+          {
+            is_dev: isPreviewOrDev,
+          },
+          true
+        );
+
+        if (isPreviewOrDev) posthog.debug();
       },
     });
     console.log("PostHog initialized", posthog);
   }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    const { error, error_code: errorCode, error_description: errorDescription } =
+      router.query;
+
+    if (
+      typeof error !== "string" ||
+      typeof errorCode !== "string" ||
+      typeof errorDescription !== "string"
+    ) {
+      return;
+    }
+
+    let message = decodeURIComponent(errorDescription.replace(/\+/g, " "));
+
+    if (errorCode === "otp_expired") {
+      message =
+        "This confirmation link has expired. Please request a new one and try again.";
+    } else if (error === "access_denied" && !message) {
+      message = "This sign-in link is invalid or has expired.";
+    }
+
+    toast.error(message);
+
+    const nextQuery = { ...router.query };
+    delete nextQuery.error;
+    delete nextQuery.error_code;
+    delete nextQuery.error_description;
+
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: nextQuery,
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [isReady, router]);
 
   return (
     <div className={`${inter.variable}`}>

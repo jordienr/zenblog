@@ -1,8 +1,10 @@
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { getTurnstileSiteKey, isTurnstileEnabled } from "@/lib/turnstile";
+import { getOAuthRedirectUrl } from "@/lib/utils/auth";
 import { useUser } from "@/utils/supabase/browser";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CornerUpLeft, Loader2 } from "lucide-react";
@@ -33,6 +35,22 @@ export default function SignIn() {
     });
   }, [router, supabase, user]);
 
+  async function onGoogleAuth() {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: getOAuthRedirectUrl("/sign-in"),
+      },
+    });
+
+    if (error) {
+      toast.error(error.message || "Error signing in with Google");
+      setLoading(false);
+    }
+  }
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -48,7 +66,7 @@ export default function SignIn() {
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
         options: captchaToken
@@ -84,7 +102,7 @@ export default function SignIn() {
               <CornerUpLeft size={18} />
             </Link>
           </div>
-          <form className="mt-4 flex flex-col gap-2" onSubmit={onSubmit}>
+          <form className="mt-4 flex flex-col gap-3" onSubmit={onSubmit}>
             <h1 className="text-2xl font-medium">Sign in</h1>
             <p className="text-slate-500">
               Don&apos;t have an account?{" "}
@@ -92,6 +110,12 @@ export default function SignIn() {
                 Sign up
               </Link>
             </p>
+            <div className="mt-4 flex flex-col gap-4">
+              <GoogleAuthButton onClick={onGoogleAuth} />
+              <p className="text-center text-[11px] font-medium uppercase tracking-[0.35em] text-slate-400">
+                Or use email
+              </p>
+            </div>
             <div className="mt-4">
               <Label htmlFor="email">Email</Label>
               <Input required type="email" name="email" />
@@ -109,12 +133,14 @@ export default function SignIn() {
               <Input required type="password" name="password" />
             </div>
             {turnstileSiteKey ? (
-              <Turnstile
-                ref={turnstileRef}
-                siteKey={turnstileSiteKey}
-                onSuccess={setCaptchaToken}
-                onExpire={() => setCaptchaToken(null)}
-              />
+              <div className="mt-2 flex justify-center rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-4 shadow-sm">
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={turnstileSiteKey}
+                  onSuccess={setCaptchaToken}
+                  onExpire={() => setCaptchaToken(null)}
+                />
+              </div>
             ) : (
               <p className="text-sm text-zinc-500">
                 Captcha is not configured for this environment.

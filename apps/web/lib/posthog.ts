@@ -1,5 +1,5 @@
 import posthog from "posthog-js";
-import { IS_DEV } from "./is-dev";
+import { isPreviewOrDevDeployment } from "@/lib/runtime-env";
 
 type EventId = "feedback";
 
@@ -9,7 +9,7 @@ export function posthogCapture(
 ) {
   posthog.capture(eventId, {
     ...payload,
-    is_dev: IS_DEV,
+    is_dev: isPreviewOrDevDeployment(),
   });
 }
 
@@ -19,12 +19,17 @@ export function posthogCaptureException(
 ) {
   posthog.captureException(error, {
     ...payload,
-    is_dev: IS_DEV,
+    is_dev: isPreviewOrDevDeployment(),
   });
 }
 
 export function posthogIdentify({ email }: { email: string }) {
   posthog.identify(email, {
-    is_dev: IS_DEV,
+    email,
+    is_dev: isPreviewOrDevDeployment(),
   });
+}
+
+export function posthogReset() {
+  posthog.reset();
 }

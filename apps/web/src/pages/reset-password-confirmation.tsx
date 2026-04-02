@@ -14,10 +14,10 @@ export default function ResetPasswordConfirmation() {
   useEffect(() => {
     supabase.auth.getUser().then((res) => {
       if (!res.data.user) {
-        router.push("/sign-in");
+        void router.push("/sign-in");
       }
     });
-  }, []);
+  }, [router, supabase]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,20 +28,22 @@ export default function ResetPasswordConfirmation() {
     const password2 = formData.get("password2") as string;
 
     if (password !== password2) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
+      setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase.auth.updateUser({
+    const { error } = await supabase.auth.updateUser({
       password,
     });
     if (error) {
-      alert(error.message);
+      toast.error(error.message);
+      setLoading(false);
+      return;
     }
 
-    alert("Password updated");
     toast.success("Password updated");
-    router.push("/blogs");
+    void router.push("/blogs");
     setLoading(false);
   }
 
