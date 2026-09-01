@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { PRICING_PLANS } from "@/lib/pricing.constants";
+import { PRICING_PLAN_TITLES, PricingPlanId } from "@/lib/pricing.constants";
 import { useQueryClient } from "@tanstack/react-query";
 
 export function ZenblogToolbar() {
@@ -51,9 +51,9 @@ export function ZenblogToolbar() {
               <SelectValue placeholder="Select a plan" />
             </SelectTrigger>
             <SelectContent>
-              {PRICING_PLANS.map((plan) => (
-                <SelectItem key={plan.id} value={plan.id}>
-                  {plan.title}
+              {PricingPlanId.options.map((planId) => (
+                <SelectItem key={planId} value={planId}>
+                  {PRICING_PLAN_TITLES[planId]}
                 </SelectItem>
               ))}
             </SelectContent>

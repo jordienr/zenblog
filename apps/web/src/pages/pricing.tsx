@@ -1,19 +1,44 @@
 import Footer from "@/components/Footer";
 import Navigation from "@/components/marketing/Navigation";
 import { Button } from "@/components/ui/button";
-import { Section, SectionHeader, SectionTitle } from "@/layouts/AppLayout";
-import { PRICING_PLANS, TRIAL_PERIOD_DAYS } from "@/lib/pricing.constants";
+import { Section } from "@/layouts/AppLayout";
+import {
+  formatPrice,
+  getYearlySavingsPercentage,
+} from "@/lib/pricing.constants";
+import type {
+  PricingCatalog,
+  PricingPlan,
+  PricingPlanIntervalType,
+} from "@/lib/pricing.constants";
+import { getPricingCatalog } from "@/lib/server/pricing";
 import { cn } from "@/lib/utils";
 import { CheckIcon } from "lucide-react";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-export default function Pricing() {
-  const [subscriptionType, setSubscriptionType] = useState<"month" | "year">(
-    "year"
+type PricingPageProps = {
+  pricing: PricingCatalog;
+};
+
+export const getServerSideProps: GetServerSideProps<
+  PricingPageProps
+> = async () => ({
+  props: {
+    pricing: getPricingCatalog(),
+  },
+});
+
+export default function Pricing({ pricing }: PricingPageProps) {
+  const [subscriptionType, setSubscriptionType] =
+    useState<PricingPlanIntervalType>("year");
+  const paidPlan = pricing.plans.find(
+    (plan) => plan.prices.month.unitAmount > 0
   );
+  const yearlySavings = paidPlan ? getYearlySavingsPercentage(paidPlan) : 0;
 
   const router = useRouter();
   return (
@@ -37,23 +62,27 @@ export default function Pricing() {
           <div className="flex items-center justify-center gap-1">
             <Button
               variant={subscriptionType === "month" ? "secondary" : "ghost"}
+              aria-pressed={subscriptionType === "month"}
               onClick={() => setSubscriptionType("month")}
             >
               Monthly
             </Button>
             <Button
               variant={subscriptionType === "year" ? "secondary" : "ghost"}
+              aria-pressed={subscriptionType === "year"}
               onClick={() => setSubscriptionType("year")}
             >
-              Yearly (Save money!)
+              Yearly{yearlySavings > 0 ? ` (Save ${yearlySavings}%)` : ""}
             </Button>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {PRICING_PLANS.map((plan) => (
+            {pricing.plans.map((plan) => (
               <PricingCard
-                key={plan.title}
-                {...plan}
+                key={plan.id}
+                plan={plan}
+                trialPeriodDays={pricing.trialPeriodDays}
                 type={subscriptionType}
+                headingLevel="h2"
                 isCurrentPlan={false}
                 onClick={() => {
                   router.push(`/sign-in`);
@@ -100,77 +129,70 @@ export default function Pricing() {
 }
 
 export function PricingCard({
-  id,
-  title,
-  monthlyPrice,
-  yearlyPrice,
-  features,
+  plan,
+  trialPeriodDays,
   onClick,
   type,
-  highlight = false,
+  headingLevel = "h3",
   isCurrentPlan,
 }: {
-  id: string;
-  title: string;
-  monthlyPrice: number;
-  yearlyPrice: number;
-  features: string[];
+  plan: PricingPlan;
+  trialPeriodDays: number;
   onClick: () => void;
-  type: "month" | "year";
-  highlight?: boolean;
+  type: PricingPlanIntervalType;
+  headingLevel?: "h2" | "h3";
   isCurrentPlan: boolean;
 }) {
-  const yearlyToMonth = yearlyPrice / 12;
+  const price = plan.prices[type];
 
-  const PricingText = () => {
-    if (monthlyPrice === 0) {
+  const pricingText = (() => {
+    if (price.unitAmount === 0) {
       return <p className="text-2xl font-medium">Free</p>;
     }
+
     if (type === "month") {
       return (
         <p className="text-slate-500">
-          <span className="mr-1 font-mono text-xl font-medium text-slate-400">
-            $
-          </span>
           <span className="text-2xl font-medium text-slate-900">
-            {monthlyPrice}
+            {formatPrice(price)}
           </span>{" "}
           per month <br />
           billed monthly
         </p>
       );
     }
+
+    const monthlyEquivalent = formatPrice({
+      ...price,
+      unitAmount: Math.round(price.unitAmount / 12),
+    });
+
     return (
       <p className="text-slate-500">
-        <span className="mr-1 font-mono text-xl font-medium text-slate-400">
-          $
-        </span>
         <span className="text-2xl font-medium text-slate-900">
-          {yearlyToMonth.toFixed(2)}
+          {formatPrice(price)}
         </span>{" "}
-        per month <br />
-        billed ${yearlyPrice} yearly
+        per year <br />
+        {monthlyEquivalent} per month
       </p>
     );
-  };
-
-  function getButtonVariant() {
-    return "default";
-  }
+  })();
 
   return (
     <div
       className={cn(
         "flex h-full flex-col rounded-2xl border bg-white px-5 py-3 pb-5",
-        highlight && "border-orange-500 ring-4 ring-orange-200"
+        plan.highlight && "border-orange-500 ring-4 ring-orange-200"
       )}
     >
-      <h3 className="text-lg font-medium">{title}</h3>
-      <div className="h-16">
-        <PricingText />
-      </div>
+      {headingLevel === "h2" ? (
+        <h2 className="text-lg font-medium">{plan.title}</h2>
+      ) : (
+        <h3 className="text-lg font-medium">{plan.title}</h3>
+      )}
+      <div className="h-16">{pricingText}</div>
       <ul className="mt-5 h-full flex-1 space-y-2 font-medium">
-        {features.map((feature) => (
+        {plan.features.map((feature) => (
           <li key={feature} className="flex items-center">
             <CheckIcon className="mr-2 h-4 w-4 text-orange-500" />
             {feature}
@@ -184,9 +206,9 @@ export function PricingCard({
       </div>
       {!isCurrentPlan && (
         <div className="mt-5">
-          {monthlyPrice !== 0 && (
+          {price.unitAmount !== 0 && (
             <div className="mb-2 text-center font-mono text-xs text-slate-500">
-              Try it free for {TRIAL_PERIOD_DAYS} days!
+              Try it free for {trialPeriodDays} days!
             </div>
           )}
           <Button className="w-full" onClick={onClick}>

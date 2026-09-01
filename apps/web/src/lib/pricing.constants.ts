@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-export const TRIAL_PERIOD_DAYS = 14;
-
 export const PricingPlanId = z.enum(["pro", "free"]);
 export type PricingPlanId = z.infer<typeof PricingPlanId>;
 export const isPricingPlanId = (value: string): value is PricingPlanId =>
@@ -19,57 +17,49 @@ export type PricingPlan = {
   highlight?: boolean;
   title: string;
   description: string;
-  monthlyPrice: number;
-  yearlyPrice: number;
-  features: string[];
+  prices: Record<PricingPlanIntervalType, PricingPlanPrice>;
+  features: readonly string[];
 };
 
-/**
- * ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
- * ! Changing these values will change the pricing of the plans in Stripe.
- * ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
- */
+export type PricingPlanPrice = {
+  currency: string;
+  unitAmount: number;
+};
+
+export type PricingCatalog = {
+  plans: readonly PricingPlan[];
+  trialPeriodDays: number;
+};
 
 export const MAX_BLOGS_PER_PLAN: Record<PricingPlanId, number> = {
   free: 1,
   pro: 999,
 };
 
-export const PRICING_PLANS: PricingPlan[] = [
-  // ALWAYS KEEP FREE PLAN FIRST IN THE ARRAY
-  {
-    id: "free",
-    title: "Free",
-    description: "For personal blogs or small projects",
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    features: [
-      "1 blog",
-      "1 author",
-      "Unlimited posts",
-      "Limited files",
-      "40k API requests per month",
-      "Limited images",
-      "Limited videos",
-      "Email support",
-    ],
-  },
-  {
-    id: "pro",
-    title: "Pro",
-    description: "For growing teams",
-    monthlyPrice: 20,
-    yearlyPrice: 200,
-    features: [
-      "Unlimited blogs",
-      "Unlimited authors",
-      "Unlimited posts",
-      "Unlimited categories",
-      "Unlimited tags",
-      "Unlimited API requests",
-      "Unlimited images *",
-      "Unlimited videos *",
-      "Email support",
-    ],
-  },
-];
+export const PRICING_PLAN_TITLES: Record<PricingPlanId, string> = {
+  free: "Free",
+  pro: "Pro",
+};
+
+export function formatPrice({ currency, unitAmount }: PricingPlanPrice) {
+  const hasCents = unitAmount % 100 !== 0;
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: 2,
+  }).format(unitAmount / 100);
+}
+
+export function getYearlySavingsPercentage(plan: PricingPlan) {
+  const monthlyTotal = plan.prices.month.unitAmount * 12;
+
+  if (monthlyTotal === 0) {
+    return 0;
+  }
+
+  return Math.round(
+    ((monthlyTotal - plan.prices.year.unitAmount) / monthlyTotal) * 100
+  );
+}

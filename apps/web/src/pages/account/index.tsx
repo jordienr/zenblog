@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
 import AppLayout, { Section, SectionTitle } from "@/layouts/AppLayout";
 import {
-  PRICING_PLANS,
-  PricingPlan,
-  PricingPlanId,
-  TRIAL_PERIOD_DAYS,
+  getYearlySavingsPercentage,
+  PRICING_PLAN_TITLES,
 } from "@/lib/pricing.constants";
-import { usePricesQuery } from "@/queries/prices";
-import { useProductsQuery } from "@/queries/products";
+import type { PricingPlan, PricingPlanId } from "@/lib/pricing.constants";
+import { usePricingQuery } from "@/queries/pricing";
 import { useSubscriptionQuery } from "@/queries/subscription";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { useUser } from "@/utils/supabase/browser";
@@ -36,12 +34,11 @@ import { Input } from "@/components/ui/input";
 type Props = {};
 
 export const SubscribeSection = () => {
-  const products = useProductsQuery();
-  const prices = usePricesQuery();
+  const pricing = usePricingQuery();
   const user = useUser();
   const [interval, setInterval] = React.useState<"year" | "month">("year");
   const [isLoading, setIsLoading] = useState(false);
-  const subscription = useSubscriptionQuery();
+
   async function openCheckoutPage(plan: PricingPlan) {
     setIsLoading(true);
     toast.info("Redirecting to Stripe...");
@@ -76,7 +73,7 @@ export const SubscribeSection = () => {
     window.location.href = resJson.url;
   }
 
-  const loading = products.isLoading || prices.isLoading || isLoading;
+  const loading = pricing.isLoading || isLoading;
 
   if (loading) {
     return (
@@ -86,11 +83,29 @@ export const SubscribeSection = () => {
     );
   }
 
+  if (pricing.isError || !pricing.data) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-12 text-center">
+        <p className="text-sm text-zinc-500">Could not load pricing.</p>
+        <Button variant="outline" onClick={() => pricing.refetch()}>
+          Try again
+        </Button>
+      </div>
+    );
+  }
+
+  const paidPlans = pricing.data.plans.filter(
+    (plan) => plan.prices.month.unitAmount > 0
+  );
+  const yearlySavings = paidPlans[0]
+    ? getYearlySavingsPercentage(paidPlans[0])
+    : 0;
+
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-lg font-medium">Upgrade your plan</h2>
       <p className="text-sm font-medium text-zinc-500">
-        Try it free for {TRIAL_PERIOD_DAYS} days. Cancel anytime.
+        Try it free for {pricing.data.trialPeriodDays} days. Cancel anytime.
       </p>
       <div className="mt-4 flex items-center gap-2">
         <Switch
@@ -101,16 +116,17 @@ export const SubscribeSection = () => {
         <Label htmlFor="yearly" className="text-sm font-medium">
           Pay yearly{" "}
           <span className="rounded-full bg-emerald-100 p-1 text-xs font-medium text-emerald-600">
-            2 months free!
+            Save {yearlySavings}%
           </span>
         </Label>
       </div>
 
       <div className="mx-auto mt-4 grid w-full max-w-lg grid-cols-1 items-center justify-center gap-4">
-        {PRICING_PLANS.filter((plan) => plan.id !== "free").map((plan) => (
-          <div key={plan.title}>
+        {paidPlans.map((plan) => (
+          <div key={plan.id}>
             <PricingCard
-              {...plan}
+              plan={plan}
+              trialPeriodDays={pricing.data.trialPeriodDays}
               type={interval}
               isCurrentPlan={false}
               onClick={() => openCheckoutPage(plan)}
@@ -186,7 +202,7 @@ const AccountPage = () => {
   }
 
   const planIdToTitle = (planId: PricingPlanId) => {
-    return PRICING_PLANS.find((plan) => plan.id === planId)?.title || "Free";
+    return PRICING_PLAN_TITLES[planId] || "Free";
   };
 
   useEffect(() => {

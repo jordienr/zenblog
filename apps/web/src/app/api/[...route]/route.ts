@@ -15,11 +15,10 @@ import { BASE_URL } from "@/lib/config";
 import {
   isPricingPlanInterval,
   isPricingPlanId,
-  PRICING_PLANS,
   PricingPlanInterval,
   PricingPlanId,
-  TRIAL_PERIOD_DAYS,
 } from "@/lib/pricing.constants";
+import { getCheckoutPricing, getPricingCatalog } from "@/lib/server/pricing";
 import sharp from "sharp";
 import {
   S3Client,
@@ -98,6 +97,7 @@ const createR2Client = () => {
 };
 
 const api = new Hono()
+  .get("/pricing", (c) => c.json(getPricingCatalog()))
   .get(
     "/accounts/:user_id/checkout",
     zValidator(
@@ -140,20 +140,18 @@ const api = new Hono()
           return c.json({ error: "Invalid interval" }, { status: 400 });
         }
 
+        const checkoutPricing = getCheckoutPricing(plan, interval);
+
+        if (!checkoutPricing) {
+          console.log("🔴 invalid paid plan", plan, interval);
+          return c.json({ error: "Invalid paid plan" }, { status: 400 });
+        }
+
+        const { lineItem, plan: selectedPlan } = checkoutPricing;
         const customer = await createOrRetrieveCustomer({
           userId: user.id,
           email: user.email,
         });
-
-        const selectedPlan = PRICING_PLANS.find((p) => p.id === plan);
-
-        if (!selectedPlan) {
-          console.log("🔴 !selectedPlan", selectedPlan);
-          return c.json({ error: "Invalid plan" }, { status: 400 });
-        }
-
-        const price =
-          selectedPlan?.[interval === "month" ? "monthlyPrice" : "yearlyPrice"];
 
         const session = await stripe.checkout.sessions.create({
           customer: customer.id,
@@ -162,27 +160,12 @@ const api = new Hono()
           success_url: `${BASE_URL}/account?success=true`,
           cancel_url: `${BASE_URL}/account?canceled=true`,
           subscription_data: {
-            trial_period_days: TRIAL_PERIOD_DAYS,
+            trial_period_days: getPricingCatalog().trialPeriodDays,
             metadata: {
               plan_id: selectedPlan.id,
             },
           },
-          line_items: [
-            {
-              quantity: 1,
-              price_data: {
-                product_data: {
-                  name: selectedPlan.title,
-                  description: selectedPlan.description,
-                },
-                currency: "usd",
-                unit_amount: price * 100,
-                recurring: {
-                  interval,
-                },
-              },
-            },
-          ],
+          line_items: [lineItem],
         });
 
         if (!session.url) {
